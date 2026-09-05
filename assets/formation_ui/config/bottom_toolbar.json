@@ -1,0 +1,109 @@
+{
+  "root": {
+    "sprite_id": 3146,
+    "frame": 1,
+    "stage_x": -2,
+    "stage_y": 337,
+    "bitmap_id": 3034,
+    "size": [
+      382,
+      44
+    ]
+  },
+  "dynamic_text": [
+    {
+      "role": "money",
+      "textfield_id": 3051,
+      "local": [
+        8,
+        25
+      ],
+      "stage": [
+        6,
+        362
+      ],
+      "source": "existing player money"
+    },
+    {
+      "role": "total_provisions",
+      "textfield_id": 3052,
+      "local": [
+        62,
+        25
+      ],
+      "stage": [
+        60,
+        362
+      ],
+      "source": "existing total provisions"
+    }
+  ],
+  "instructions_baked_into_bitmap_3034": [
+    "兵をクリック－詳細画面",
+    "兵をドラッグ－配置移動",
+    "マウスホイール－視野変更"
+  ],
+  "buttons": [
+    {
+      "id": "confirm",
+      "swf_button_id": 3050,
+      "local": [
+        269,
+        4
+      ],
+      "stage": [
+        267,
+        341
+      ],
+      "size": [
+        36,
+        36
+      ],
+      "normal": "confirm_normal",
+      "over": "confirm_over_down",
+      "down": "confirm_over_down",
+      "this_scope": "commit working formation; do not navigate"
+    },
+    {
+      "id": "cancel",
+      "swf_button_id": 3045,
+      "local": [
+        305,
+        4
+      ],
+      "stage": [
+        303,
+        341
+      ],
+      "size": [
+        36,
+        36
+      ],
+      "normal": "cancel_normal",
+      "over": "cancel_over_down",
+      "down": "cancel_over_down",
+      "this_scope": "restore entry snapshot; do not navigate"
+    },
+    {
+      "id": "view",
+      "swf_button_id": 3040,
+      "local": [
+        341,
+        4
+      ],
+      "stage": [
+        339,
+        341
+      ],
+      "size": [
+        36,
+        36
+      ],
+      "normal": "view_normal",
+      "over": "view_over_down",
+      "down": "view_over_down",
+      "this_scope": "toggle 100%/36% camera view"
+    }
+  ],
+  "important_correction": "The original button reads 視野変更 and changes camera scale. It is not 戦闘変更."
+}

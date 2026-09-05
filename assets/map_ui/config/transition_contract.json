@@ -1,0 +1,22 @@
+{
+  "states": [
+    "map",
+    "battle_intro",
+    "battle"
+  ],
+  "selected_map_cell": {
+    "fields": [
+      "cellId",
+      "gridX",
+      "gridY",
+      "type"
+    ],
+    "persist_through_intro": true,
+    "battle_config_effect": "none_for_now"
+  },
+  "transition": {
+    "map_to_intro": "movable cell pointerdown",
+    "intro_to_battle": "sprite2531 frame96",
+    "guard": "once only"
+  }
+}

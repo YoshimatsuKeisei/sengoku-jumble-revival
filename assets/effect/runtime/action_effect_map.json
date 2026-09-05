@@ -1,0 +1,1559 @@
+{
+  "format_version": 1,
+  "lookup_key": "unit_type + action_code",
+  "source_of_action_names": "SWF root act array",
+  "units": {
+    "ashigaru": {
+      "unit_type": "ashigaru",
+      "unit_sprite_id": 522,
+      "actions": {
+        "1": {
+          "action_code": 1,
+          "action_name": "槍撃",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": "ma",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": []
+          },
+          "evidence": "spl() uses direction + 40; no separate extracted effect series."
+        },
+        "21": {
+          "action_code": 21,
+          "action_name": "槍術",
+          "confidence": "confirmed",
+          "character_action_frame_range": null,
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "fr_muso",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          },
+          "evidence": "spl() selects fr.muso."
+        }
+      },
+      "common_actions": {
+        "defeat_or_retreat": {
+          "group_id": "defeat_or_retreat",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_ase1",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_ase2",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          }
+        },
+        "damage_resolution": {
+          "group_id": "damage_resolution",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_pch",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_chp",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "generic_recovery": {
+          "group_id": "generic_recovery",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      },
+      "special_abilities": {
+        "s13": {
+          "group_id": "s13",
+          "ability_code": "s13",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s13 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    "archer": {
+      "unit_type": "archer",
+      "unit_sprite_id": 1033,
+      "actions": {
+        "2": {
+          "action_code": 2,
+          "action_name": "弓矢",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": "ma",
+          "effects": {
+            "caster": [],
+            "projectile": [
+              {
+                "effect_id": "archer_teppou_attack2_projectile",
+                "conditional": false
+              }
+            ],
+            "hit": []
+          },
+          "evidence": "spl() routes through atck(); shared child instance 'ya' is embedded in archer frames 41-48."
+        },
+        "3": {
+          "action_code": 3,
+          "action_name": "遠射",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": "ma",
+          "effects": {
+            "caster": [],
+            "projectile": [
+              {
+                "effect_id": "archer_teppou_attack2_projectile",
+                "conditional": false
+              }
+            ],
+            "hit": []
+          },
+          "evidence": "Same ranged branch and embedded 'ya' child."
+        },
+        "15": {
+          "action_code": 15,
+          "action_name": "火矢",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": "ma",
+          "effects": {
+            "caster": [],
+            "projectile": [
+              {
+                "effect_id": "archer_teppou_attack2_projectile",
+                "conditional": false
+              }
+            ],
+            "hit": [
+              {
+                "effect_id": "fr_fire",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "atck() checks ac=15 and selects fr.fire on the recipient."
+        },
+        "16": {
+          "action_code": 16,
+          "action_name": "焙烙",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": "ma",
+          "effects": {
+            "caster": [],
+            "projectile": [
+              {
+                "effect_id": "archer_teppou_attack2_projectile",
+                "conditional": false
+              }
+            ],
+            "hit": [
+              {
+                "effect_id": "fr_exp",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "atck() checks ac=16 and selects fr.exp on the recipient."
+        }
+      },
+      "common_actions": {
+        "defeat_or_retreat": {
+          "group_id": "defeat_or_retreat",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_ase1",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_ase2",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          }
+        },
+        "damage_resolution": {
+          "group_id": "damage_resolution",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_pch",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_chp",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "generic_recovery": {
+          "group_id": "generic_recovery",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      },
+      "special_abilities": {}
+    },
+    "admiral": {
+      "unit_type": "admiral",
+      "unit_sprite_id": 1229,
+      "actions": {
+        "14": {
+          "action_code": 14,
+          "action_name": "号令",
+          "confidence": "confirmed",
+          "character_action_frame_range": "33-40",
+          "character_action_internal_label": "a",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_gri",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kb",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "spl() selects as.gri and calls sz(mode=4), whose affected-unit visual is fr.kb."
+        },
+        "22": {
+          "action_code": 22,
+          "action_name": "豪傑",
+          "confidence": "confirmed",
+          "character_action_frame_range": null,
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_gri",
+                "conditional": false
+              },
+              {
+                "effect_id": "fr_muso",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kb",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "spl() selects as.gri/fr.muso and calls sz(mode=4)."
+        },
+        "24": {
+          "action_code": 24,
+          "action_name": "治癒",
+          "confidence": "confirmed",
+          "character_action_frame_range": "33-40",
+          "character_action_internal_label": "a",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "spl() selects as.kob and calls sz(mode=5), which selects fr.kai."
+        },
+        "28": {
+          "action_code": 28,
+          "action_name": "奮迅",
+          "confidence": "probable",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_gri",
+                "conditional": false
+              },
+              {
+                "effect_id": "fr_oni",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kb",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "Live spl() branch selects these effects. Assignment to admiral is probable because normal character generation does not emit code 28."
+        }
+      },
+      "common_actions": {
+        "defeat_or_retreat": {
+          "group_id": "defeat_or_retreat",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_ase1",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_ase2",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          }
+        },
+        "damage_resolution": {
+          "group_id": "damage_resolution",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_pch",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_chp",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "generic_recovery": {
+          "group_id": "generic_recovery",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      },
+      "special_abilities": {
+        "s13": {
+          "group_id": "s13",
+          "ability_code": "s13",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s13 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "s14": {
+          "group_id": "s14",
+          "ability_code": "s14",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck()/tat() s14 path uses these visuals; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_fuk",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_isha",
+                "conditional": false
+              },
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "s15": {
+          "group_id": "s15",
+          "ability_code": "s15",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s15 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    "mosa": {
+      "unit_type": "mosa",
+      "unit_sprite_id": 1463,
+      "actions": {
+        "11": {
+          "action_code": 11,
+          "action_name": "旋風",
+          "confidence": "confirmed",
+          "character_action_frame_range": null,
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": []
+          },
+          "evidence": "Live spl() branch changes attack motion values but selects no extracted independent effect series."
+        },
+        "23": {
+          "action_code": 23,
+          "action_name": "無双",
+          "confidence": "confirmed",
+          "character_action_frame_range": null,
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "fr_muso",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          },
+          "evidence": "spl() selects fr.muso."
+        },
+        "25": {
+          "action_code": 25,
+          "action_name": "鬼神",
+          "confidence": "confirmed",
+          "character_action_frame_range": null,
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "fr_oni",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          },
+          "evidence": "spl() selects fr.oni."
+        }
+      },
+      "common_actions": {
+        "defeat_or_retreat": {
+          "group_id": "defeat_or_retreat",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_ase1",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_ase2",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          }
+        },
+        "damage_resolution": {
+          "group_id": "damage_resolution",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_pch",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_chp",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "generic_recovery": {
+          "group_id": "generic_recovery",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      },
+      "special_abilities": {
+        "s13": {
+          "group_id": "s13",
+          "ability_code": "s13",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s13 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "s14": {
+          "group_id": "s14",
+          "ability_code": "s14",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck()/tat() s14 path uses these visuals; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_fuk",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_isha",
+                "conditional": false
+              },
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "s15": {
+          "group_id": "s15",
+          "ability_code": "s15",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s15 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    "strategist": {
+      "unit_type": "strategist",
+      "unit_sprite_id": 1735,
+      "actions": {
+        "6": {
+          "action_code": 6,
+          "action_name": "火遊",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": "ma",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "strategist_attack2_large_flame",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_fire",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "spl() uses frames 41-48 and calls kaen(), which selects fr.fire on affected targets."
+        },
+        "7": {
+          "action_code": 7,
+          "action_name": "火攻",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": "ma",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "strategist_attack2_large_flame",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_fire",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "Same fire-family branch; attack code changes propagation parameters."
+        },
+        "8": {
+          "action_code": 8,
+          "action_name": "火計",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": "ma",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "strategist_attack2_large_flame",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_fire",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "Same fire-family branch; attack code changes propagation parameters."
+        },
+        "9": {
+          "action_code": 9,
+          "action_name": "業火",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": "ma",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "strategist_attack2_large_flame",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_fire",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "Same fire-family branch; attack code changes propagation parameters."
+        },
+        "10": {
+          "action_code": 10,
+          "action_name": "炎術",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": "ma",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "strategist_attack2_large_flame",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_fire",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "Same fire-family branch; attack code changes propagation parameters."
+        },
+        "18": {
+          "action_code": 18,
+          "action_name": "妖術",
+          "confidence": "confirmed",
+          "character_action_frame_range": "33-40 then runtime 41-48",
+          "character_action_internal_label": "a then ma",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "fr_kr1",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kex",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_kr2",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "spl() selects fr.kr1; affected targets receive fr.kex and as.kr2. gen() advances the later 41-48 sequence."
+        },
+        "19": {
+          "action_code": 19,
+          "action_name": "虚報",
+          "confidence": "confirmed",
+          "character_action_frame_range": "33-40 then runtime 41-48",
+          "character_action_internal_label": "a then ma",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "fr_kr1",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_kr2",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "spl() selects fr.kr1 and applies as.kr2 to affected targets."
+        },
+        "24": {
+          "action_code": 24,
+          "action_name": "治癒",
+          "confidence": "confirmed",
+          "character_action_frame_range": "33-40",
+          "character_action_internal_label": "a",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "The same attack-code 24 branch is available to strategist and admiral."
+        }
+      },
+      "common_actions": {
+        "defeat_or_retreat": {
+          "group_id": "defeat_or_retreat",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_ase1",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_ase2",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          }
+        },
+        "damage_resolution": {
+          "group_id": "damage_resolution",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_pch",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_chp",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "generic_recovery": {
+          "group_id": "generic_recovery",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      },
+      "special_abilities": {
+        "s13": {
+          "group_id": "s13",
+          "ability_code": "s13",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s13 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "s14": {
+          "group_id": "s14",
+          "ability_code": "s14",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck()/tat() s14 path uses these visuals; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_fuk",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_isha",
+                "conditional": false
+              },
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "s15": {
+          "group_id": "s15",
+          "ability_code": "s15",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s15 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    "teppou": {
+      "unit_type": "teppou",
+      "unit_sprite_id": 1982,
+      "actions": {
+        "4": {
+          "action_code": 4,
+          "action_name": "射撃",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [],
+            "projectile": [
+              {
+                "effect_id": "archer_teppou_attack2_projectile",
+                "conditional": false
+              }
+            ],
+            "hit": []
+          },
+          "evidence": "spl() routes through atck(); child instance 'ya' is embedded in teppou frames 41-48."
+        },
+        "5": {
+          "action_code": 5,
+          "action_name": "狙撃",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [],
+            "projectile": [
+              {
+                "effect_id": "archer_teppou_attack2_projectile",
+                "conditional": false
+              }
+            ],
+            "hit": []
+          },
+          "evidence": "Same ranged branch and embedded 'ya' child."
+        },
+        "17": {
+          "action_code": 17,
+          "action_name": "砲撃",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [],
+            "projectile": [
+              {
+                "effect_id": "archer_teppou_attack2_projectile",
+                "conditional": false
+              }
+            ],
+            "hit": [
+              {
+                "effect_id": "fr_exp",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "atck() checks ac=17 and selects fr.exp on the recipient."
+        }
+      },
+      "common_actions": {
+        "defeat_or_retreat": {
+          "group_id": "defeat_or_retreat",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_ase1",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_ase2",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          }
+        },
+        "damage_resolution": {
+          "group_id": "damage_resolution",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_pch",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_chp",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "generic_recovery": {
+          "group_id": "generic_recovery",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      },
+      "special_abilities": {
+        "s13": {
+          "group_id": "s13",
+          "ability_code": "s13",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s13 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "s15": {
+          "group_id": "s15",
+          "ability_code": "s15",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s15 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    "ninja": {
+      "unit_type": "ninja",
+      "unit_sprite_id": 2239,
+      "actions": {
+        "12": {
+          "action_code": 12,
+          "action_name": "忍術",
+          "confidence": "confirmed",
+          "character_action_frame_range": "runtime 41-48",
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_exp",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "nin() selects fr.exp on recipients and advances the attacker through frames 41-48."
+        },
+        "13": {
+          "action_code": 13,
+          "action_name": "影走",
+          "confidence": "confirmed",
+          "character_action_frame_range": null,
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": []
+          },
+          "evidence": "Live spl() movement branch; no separate extracted effect series is selected."
+        },
+        "20": {
+          "action_code": 20,
+          "action_name": "幻術",
+          "confidence": "confirmed",
+          "character_action_frame_range": null,
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": []
+          },
+          "evidence": "Live spl() movement branch; no separate extracted effect series is selected."
+        },
+        "27": {
+          "action_code": 27,
+          "action_name": "結界",
+          "confidence": "confirmed",
+          "character_action_frame_range": null,
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_ttgk",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_ettgk",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              },
+              {
+                "effect_id": "fr_kb",
+                "conditional": true
+              },
+              {
+                "effect_id": "as_sztt",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_esztt",
+                "conditional": false
+              }
+            ]
+          },
+          "evidence": "spl() calls sz(mode=6) and jtsz()/ejtsz(); j/e-prefixed pairs are side-specific variants."
+        }
+      },
+      "common_actions": {
+        "defeat_or_retreat": {
+          "group_id": "defeat_or_retreat",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_ase1",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_ase2",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          }
+        },
+        "damage_resolution": {
+          "group_id": "damage_resolution",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_pch",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_chp",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "generic_recovery": {
+          "group_id": "generic_recovery",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      },
+      "special_abilities": {
+        "s13": {
+          "group_id": "s13",
+          "ability_code": "s13",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s13 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "s15": {
+          "group_id": "s15",
+          "ability_code": "s15",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s15 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    "cavalry": {
+      "unit_type": "cavalry",
+      "unit_sprite_id": 2454,
+      "actions": {
+        "26": {
+          "action_code": 26,
+          "action_name": "騎突",
+          "confidence": "confirmed",
+          "character_action_frame_range": "41-48",
+          "character_action_internal_label": null,
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "fr_kiba",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          },
+          "evidence": "spl() selects fr.kiba and directs the unit to direction + 40 frames."
+        }
+      },
+      "common_actions": {
+        "defeat_or_retreat": {
+          "group_id": "defeat_or_retreat",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_ase1",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_ase2",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": []
+          }
+        },
+        "damage_resolution": {
+          "group_id": "damage_resolution",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_pch",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_chp",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "generic_recovery": {
+          "group_id": "generic_recovery",
+          "notes": "Not assigned to one technique code; copied into every unit so no shared-folder lookup is required.",
+          "effects": {
+            "caster": [],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      },
+      "special_abilities": {
+        "s13": {
+          "group_id": "s13",
+          "ability_code": "s13",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s13 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "s14": {
+          "group_id": "s14",
+          "ability_code": "s14",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck()/tat() s14 path uses these visuals; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_fuk",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_isha",
+                "conditional": false
+              },
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "s15": {
+          "group_id": "s15",
+          "ability_code": "s15",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s15 then calls sz(mode=5) and selects as.kob; unit list is observed in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_kob",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "fr_kai",
+                "conditional": false
+              }
+            ]
+          }
+        },
+        "s32": {
+          "group_id": "s32",
+          "ability_code": "s32",
+          "ability_name": null,
+          "confidence": "probable",
+          "basis": "atck() checks s32 and calls jtsz()/ejtsz(); s32 occurs only on cavalry in embedded fixed-character records.",
+          "scope_caveat": "Unit occurrence is based on 127 fixed-character records embedded in the SWF; server-generated characters may extend it.",
+          "effects": {
+            "caster": [
+              {
+                "effect_id": "as_ttgk",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_ettgk",
+                "conditional": false
+              }
+            ],
+            "projectile": [],
+            "hit": [
+              {
+                "effect_id": "as_sztt",
+                "conditional": false
+              },
+              {
+                "effect_id": "as_esztt",
+                "conditional": false
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "notes": [
+    "Effect IDs are canonical and are not duplicated in the runtime atlas.",
+    "Empty effect arrays are intentional when the technique has no separately extracted effect.",
+    "j/e-prefixed variants in action 27 are opposing-side variants retained as separate logical effects."
+  ]
+}

@@ -1,0 +1,252 @@
+{
+  "meta": {
+    "image": "hud_atlas.png",
+    "size": {
+      "w": 512,
+      "h": 128
+    },
+    "format": "RGBA8888",
+    "scale": 1,
+    "padding": 2,
+    "edge_extrusion": 0,
+    "allow_rotation": false,
+    "trimmed": false,
+    "pixel_art": true,
+    "load_policy": "戦闘画面へ入る直前に読み込み、その戦闘中は保持"
+  },
+  "frames": {
+    "bitmap_2553": {
+      "frame": {
+        "x": 2,
+        "y": 47,
+        "w": 202,
+        "h": 24
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 202,
+        "h": 24
+      },
+      "sourceSize": {
+        "w": 202,
+        "h": 24
+      },
+      "bitmap_id": 2553,
+      "source_sha256": "90b0af3e0889bd1182df0d3af80ea7c34e42756851bb03958f38bb24afc5cdf2"
+    },
+    "bitmap_2559": {
+      "frame": {
+        "x": 198,
+        "y": 101,
+        "w": 59,
+        "h": 21
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 59,
+        "h": 21
+      },
+      "sourceSize": {
+        "w": 59,
+        "h": 21
+      },
+      "bitmap_id": 2559,
+      "source_sha256": "b88a28bbaf86b19ae962b283d5db352571729508b95705a152e71739128a43b2"
+    },
+    "bitmap_2562": {
+      "frame": {
+        "x": 2,
+        "y": 75,
+        "w": 193,
+        "h": 22
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 193,
+        "h": 22
+      },
+      "sourceSize": {
+        "w": 193,
+        "h": 22
+      },
+      "bitmap_id": 2562,
+      "source_sha256": "869c38616166ebb3a3f71611152ad7a7d3d67c19dd575e38d96256b6c98a595d"
+    },
+    "bitmap_2565": {
+      "frame": {
+        "x": 282,
+        "y": 87,
+        "w": 15,
+        "h": 16
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 15,
+        "h": 16
+      },
+      "sourceSize": {
+        "w": 15,
+        "h": 16
+      },
+      "bitmap_id": 2565,
+      "source_sha256": "a2eb4da3937d55d0acffe4d954e76be7eb9d00993fcd4d09452e26850c95881c"
+    },
+    "bitmap_2571": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 382,
+        "h": 41
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 382,
+        "h": 41
+      },
+      "sourceSize": {
+        "w": 382,
+        "h": 41
+      },
+      "bitmap_id": 2571,
+      "source_sha256": "5032ddf3a26fe831c1301560c50c0b47551f9687899893e115e0770cb43f3785"
+    },
+    "bitmap_2577": {
+      "frame": {
+        "x": 261,
+        "y": 108,
+        "w": 17,
+        "h": 17
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 17,
+        "h": 17
+      },
+      "sourceSize": {
+        "w": 17,
+        "h": 17
+      },
+      "bitmap_id": 2577,
+      "source_sha256": "6b8263c3df07d3a75e1424e7767dfb86d84bdc7c6cbe847cdb3debc79524e931"
+    },
+    "bitmap_2579": {
+      "frame": {
+        "x": 261,
+        "y": 87,
+        "w": 17,
+        "h": 17
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 17,
+        "h": 17
+      },
+      "sourceSize": {
+        "w": 17,
+        "h": 17
+      },
+      "bitmap_id": 2579,
+      "source_sha256": "ba0d72a77a643a0ef333977e1244712628ae077ff3f000dcd710c95b4da1a283"
+    },
+    "bitmap_2582": {
+      "frame": {
+        "x": 2,
+        "y": 101,
+        "w": 192,
+        "h": 22
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 192,
+        "h": 22
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 22
+      },
+      "bitmap_id": 2582,
+      "source_sha256": "846f1810b1a0859becebe1ac19f676c0d1d99e80e49371f1eab70d8116d70aa1"
+    },
+    "bitmap_2598": {
+      "frame": {
+        "x": 246,
+        "y": 47,
+        "w": 34,
+        "h": 36
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 34,
+        "h": 36
+      },
+      "sourceSize": {
+        "w": 34,
+        "h": 36
+      },
+      "bitmap_id": 2598,
+      "source_sha256": "4969fa1b616f5c1b0a82e67a21540f54518c1e103c55a98603f5b90daf494b61"
+    },
+    "bitmap_2600": {
+      "frame": {
+        "x": 208,
+        "y": 47,
+        "w": 34,
+        "h": 36
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 34,
+        "h": 36
+      },
+      "sourceSize": {
+        "w": 34,
+        "h": 36
+      },
+      "bitmap_id": 2600,
+      "source_sha256": "21ac663b22a8772273daa3234a37a2b3b1abb474883e277a39c64a898b835fa5"
+    }
+  },
+  "aliases": {
+    "bottom_character_status.allegiance_selector.enemy_icon": "bitmap_2579",
+    "bottom_character_status.allegiance_selector.friendly_icon": "bitmap_2577",
+    "bottom_character_status.panel.character_status_panel": "bitmap_2571",
+    "screen_controls.exit_button.exit_button_hover": "bitmap_2600",
+    "screen_controls.exit_button.exit_button_normal": "bitmap_2598",
+    "top_hud.battle_balance.battle_balance_strip": "bitmap_2553",
+    "top_hud.enemy_force.alert_icon": "bitmap_2565",
+    "top_hud.enemy_force.enemy_force_gauge": "bitmap_2562",
+    "top_hud.player_force.alert_icon": "bitmap_2565",
+    "top_hud.player_force.player_force_gauge": "bitmap_2582",
+    "top_hud.timer.timer_panel": "bitmap_2559"
+  }
+}

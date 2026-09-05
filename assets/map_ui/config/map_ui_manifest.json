@@ -1,0 +1,293 @@
+{
+  "coordinate_space": {
+    "width": 380,
+    "height": 380,
+    "fps": 24
+  },
+  "swf_roots": {
+    "map": {
+      "root_frame": 11,
+      "sprite_id": 98,
+      "instance": "mp"
+    },
+    "bottom": {
+      "sprite_id": 167,
+      "instance": "cmbx",
+      "x": -1,
+      "y": 319
+    },
+    "intro": {
+      "root_frame": 13,
+      "sprite_id": 2531,
+      "instance": "bk"
+    }
+  },
+  "cell_grid": {
+    "columns": 17,
+    "rows": 17,
+    "cell_pitch": 22,
+    "origin": {
+      "x": 3,
+      "y": 3
+    },
+    "land_cell_count": 251,
+    "water_cell_count": 38,
+    "cell_sprite_id": 83,
+    "button_id": 55
+  },
+  "movement": {
+    "rectangle_radius_each_axis": 3,
+    "formula": "abs(x-currentX)<=3 && abs(y-currentY)<=3",
+    "sea_route_pairs": [
+      [
+        "x9y15",
+        "x14y15"
+      ],
+      [
+        "x0y10",
+        "x0y6"
+      ],
+      [
+        "x2y16",
+        "x7y15"
+      ],
+      [
+        "x6y2",
+        "x10y1"
+      ]
+    ],
+    "forced_movable": [
+      "x8y10"
+    ]
+  },
+  "cell_states": {
+    "movable": {
+      "asset": "movable_outline",
+      "local_x": -3.9,
+      "local_y": -4.1,
+      "source_sprite_id": 58,
+      "frame": 2
+    },
+    "hover": {
+      "source_sprite_id": 90,
+      "root_formula": {
+        "x": "22*x-7",
+        "y": "22*y-7"
+      },
+      "bitmap": "movable_outline",
+      "bitmap_local": {
+        "x": 6,
+        "y": 6
+      },
+      "color_transform": {
+        "mult": {
+          "r": 0.5,
+          "g": 1,
+          "b": 1,
+          "a": 1
+        },
+        "add": {
+          "r": 0,
+          "g": 255,
+          "b": 255,
+          "a": 0
+        }
+      },
+      "condition": "movable only"
+    },
+    "pressed": {
+      "asset": null,
+      "behavior": "immediate pointerdown dispatch; hover visual remains"
+    },
+    "cleared": {
+      "regular": "cell_cleared",
+      "enemy_castle": "castle_gray_a",
+      "special_castle": "castle_gold_a"
+    },
+    "current_marker": {
+      "frames": [
+        "current_marker_0",
+        "current_marker_1",
+        "current_marker_2",
+        "current_marker_1"
+      ],
+      "frame_holds": [
+        4,
+        2,
+        4,
+        2
+      ],
+      "loop": true,
+      "source_sprite_id": 86,
+      "position_basis": "inferred_cell_anchor",
+      "local_x": 1,
+      "local_y": -6,
+      "evidence": "SWF template is off-stage; no AVM1 or clip-action position assignment found"
+    }
+  },
+  "hover_behavior": {
+    "enter": "resolve bottom info for all cells; show indicator only if movable",
+    "leave": "hide indicator at -100,-100; retain bottom info",
+    "button_condition_flags": {
+      "enter": 1,
+      "leave": 66,
+      "press": 4
+    }
+  },
+  "bottom_ui": {
+    "source_sprite_id": 167,
+    "x": -1,
+    "y": 319,
+    "background": "bottom_panel",
+    "location_label": {
+      "x": 6,
+      "y": 326
+    },
+    "level": {
+      "x": 74,
+      "y": 326
+    },
+    "dynamic_block": {
+      "x": 102,
+      "y": 326,
+      "sprite_id": 109
+    },
+    "money": {
+      "variable": "ttlgd",
+      "x": 325.2,
+      "y": 337.5,
+      "font_px": 11
+    },
+    "total_rank": {
+      "variable": "ttlrk",
+      "x": 324.85,
+      "y": 365.75,
+      "font_px": 11
+    },
+    "buttons": [
+      {
+        "id": "formation",
+        "x": 5,
+        "y": 348,
+        "normal": "formation_button_normal",
+        "over_down": "formation_button_over_down",
+        "source_button_id": 156
+      },
+      {
+        "id": "online",
+        "x": 110,
+        "y": 348,
+        "normal": "online_button_normal",
+        "over_down": "online_button_over_down",
+        "source_button_id": 161
+      },
+      {
+        "id": "reset",
+        "x": 215,
+        "y": 348,
+        "normal": "reset_button_normal",
+        "over_down": "reset_button_over_down",
+        "source_button_id": 166
+      }
+    ],
+    "entry_tip": {
+      "asset": "entry_move_tip",
+      "source_sprite_id": 194,
+      "visible_frames": [
+        1,
+        51
+      ],
+      "slide_frames": [
+        52,
+        60
+      ],
+      "remove_frame": 61,
+      "slide_y": [
+        0,
+        13,
+        24.5,
+        34.45,
+        42.85,
+        49.75,
+        55.1,
+        58.95,
+        61.25,
+        62
+      ]
+    }
+  },
+  "notices": {
+    "move_rule": {
+      "asset": "move_rule_warning",
+      "source_sprite_id": 189,
+      "frames": [
+        3,
+        39
+      ],
+      "duration_ms": 1541.667
+    },
+    "azuchi_locked": {
+      "asset": "azuchi_locked_warning",
+      "source_sprite_id": 189,
+      "frames": [
+        41,
+        78
+      ],
+      "duration_ms": 1583.333,
+      "requires_cleared": [
+        "x3y8",
+        "x16y12",
+        "x6y7",
+        "x14y1",
+        "x13y13",
+        "x3y2"
+      ]
+    },
+    "level_up_tip": {
+      "asset": "level_up_tip",
+      "source_sprite_id": 97,
+      "fade_in": [
+        1,
+        14
+      ],
+      "hold": [
+        15,
+        81
+      ],
+      "fade_out": [
+        82,
+        91
+      ],
+      "remove_frame": 92
+    }
+  },
+  "training_modal": {
+    "source_sprite_id": 222,
+    "trigger_cell": "x8y10",
+    "x": 14,
+    "y": 13,
+    "slide_frames": [
+      2,
+      11
+    ],
+    "panel_y": [
+      -368.95,
+      -291.5,
+      -223.2,
+      -164,
+      -113.85,
+      -72.9,
+      -41,
+      -18.2,
+      -4.55,
+      0
+    ],
+    "panel": "training_panel"
+  },
+  "asset_files": {
+    "map_atlas": "../atlas/map_ui_atlas.png",
+    "map_atlas_json": "../atlas/map_ui_atlas.json",
+    "intro_atlas": "../atlas/battle_intro_atlas.png",
+    "intro_atlas_json": "../atlas/battle_intro_atlas.json"
+  }
+}

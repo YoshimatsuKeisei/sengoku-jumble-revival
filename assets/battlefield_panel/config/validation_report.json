@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "errors": [],
+  "atlas_count": 3,
+  "logical_asset_count": 41,
+  "unique_bitmap_count": 38,
+  "all_atlas_crops_pixel_identical_to_source": true,
+  "all_aliases_resolve": true,
+  "padded_rectangles_do_not_overlap": true,
+  "rotation_used": false,
+  "trim_used": false,
+  "resize_used": false,
+  "padding_px": 2,
+  "empty_directories": [],
+  "unexpected_non_atlas_pngs": [],
+  "sizes": {
+    "reference_bundle_logical_png_bytes_including_duplicates": 302183,
+    "reference_unique_png_bytes": 259313,
+    "atlas_png_bytes": 277335,
+    "runtime_json_bytes": 46227
+  }
+}

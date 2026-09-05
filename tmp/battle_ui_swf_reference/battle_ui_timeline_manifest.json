@@ -1,0 +1,1005 @@
+{
+  "format_version": 1,
+  "source": {
+    "swf": "sgjbgm.swf",
+    "sha256": "47d397d98ed797e2e5e1f7f96c10ba9c3f93d3a3b54b45fbc61401a553c3399c"
+  },
+  "stage": {
+    "width": 380,
+    "height": 380,
+    "fps": 24
+  },
+  "root_battle_flow": [
+    {
+      "frame": 13,
+      "label": "inmv",
+      "role": "battle setup",
+      "ui": "intro bk + progress kalt; dynamic fields initialized"
+    },
+    {
+      "frame": 14,
+      "label": "gmain",
+      "role": "active battle",
+      "ui": "HUD placed; root stops here during normal play"
+    },
+    {
+      "frame": 15,
+      "label": "gset",
+      "role": "result setup",
+      "ui": "intro/result clip re-added"
+    },
+    {
+      "frame": 16,
+      "label": null,
+      "role": "cleanup",
+      "ui": "battle UI/display objects removed"
+    }
+  ],
+  "root_frame14_layout": [
+    {
+      "depth": 29,
+      "name": "ami",
+      "character_id": 2552,
+      "x": 0.0,
+      "y": 0.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "ami"
+    },
+    {
+      "depth": 31,
+      "name": "top balance strip",
+      "character_id": 2554,
+      "x": 0.0,
+      "y": 0.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "top balance strip"
+    },
+    {
+      "depth": 32,
+      "name": "mb",
+      "character_id": 2555,
+      "x": 36.0,
+      "y": 8.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "mb"
+    },
+    {
+      "depth": 33,
+      "name": "mm",
+      "character_id": 2556,
+      "x": 72.0,
+      "y": 8.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "mm"
+    },
+    {
+      "depth": 34,
+      "name": "em",
+      "character_id": 2557,
+      "x": 133.0,
+      "y": 8.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "em"
+    },
+    {
+      "depth": 35,
+      "name": "eb",
+      "character_id": 2558,
+      "x": 170.0,
+      "y": 8.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "eb"
+    },
+    {
+      "depth": 36,
+      "name": "timer background",
+      "character_id": 2560,
+      "x": 0.0,
+      "y": 0.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "timer background"
+    },
+    {
+      "depth": 37,
+      "name": "tm",
+      "character_id": 2561,
+      "x": 345.0,
+      "y": 8.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "tm"
+    },
+    {
+      "depth": 38,
+      "name": "ea",
+      "character_id": 2570,
+      "x": 186.0,
+      "y": 30.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "ea"
+    },
+    {
+      "depth": 44,
+      "name": "bottom status background",
+      "character_id": 2572,
+      "x": 0.0,
+      "y": 0.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "bottom status background"
+    },
+    {
+      "depth": 45,
+      "name": "mnm",
+      "character_id": 2573,
+      "x": 3.8,
+      "y": 347.0,
+      "scale_x": 1.0,
+      "scale_y": 1.002777099609375,
+      "description": "mnm"
+    },
+    {
+      "depth": 46,
+      "name": "mhp",
+      "character_id": 2574,
+      "x": 99.5,
+      "y": 347.0,
+      "scale_x": 1.0,
+      "scale_y": 1.002777099609375,
+      "description": "mhp"
+    },
+    {
+      "depth": 47,
+      "name": "mpw",
+      "character_id": 2575,
+      "x": 99.5,
+      "y": 364.0,
+      "scale_x": 1.0,
+      "scale_y": 1.002777099609375,
+      "description": "mpw"
+    },
+    {
+      "depth": 48,
+      "name": "mdf",
+      "character_id": 2576,
+      "x": 142.5,
+      "y": 364.0,
+      "scale_x": 1.0,
+      "scale_y": 1.002777099609375,
+      "description": "mdf"
+    },
+    {
+      "depth": 49,
+      "name": "trm",
+      "character_id": 2581,
+      "x": 173.0,
+      "y": 344.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "trm"
+    },
+    {
+      "depth": 51,
+      "name": "ma",
+      "character_id": 2587,
+      "x": -1.0,
+      "y": 30.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "ma"
+    },
+    {
+      "depth": 57,
+      "name": "kpb",
+      "character_id": 2591,
+      "x": 21.0,
+      "y": 366.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "kpb"
+    },
+    {
+      "depth": 62,
+      "name": "tmp",
+      "character_id": 2592,
+      "x": 191.0,
+      "y": 347.0,
+      "scale_x": 1.0,
+      "scale_y": 1.002777099609375,
+      "description": "tmp"
+    },
+    {
+      "depth": 63,
+      "name": "ts",
+      "character_id": 2593,
+      "x": 283.0,
+      "y": 347.0,
+      "scale_x": 1.0,
+      "scale_y": 1.002777099609375,
+      "description": "ts"
+    },
+    {
+      "depth": 68,
+      "name": "uwd",
+      "character_id": 2603,
+      "x": 343.0,
+      "y": 343.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "uwd"
+    },
+    {
+      "depth": 73,
+      "name": "htbr",
+      "character_id": 2609,
+      "x": 2.0,
+      "y": 20.0,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "htbr"
+    },
+    {
+      "depth": 79,
+      "name": "snd",
+      "character_id": 2633,
+      "x": 158.0,
+      "y": -63.55,
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "description": "sound holder"
+    }
+  ],
+  "timeline_files": {
+    "enemy_event_notice_ea": {
+      "sprite_id": 2570,
+      "root_position": {
+        "x": 186,
+        "y": 30
+      },
+      "declared_frames": 45,
+      "duration_s_at_24fps": 1.875,
+      "csv": "timelines/enemy_event_notice_ea.csv"
+    },
+    "player_event_notice_ma": {
+      "sprite_id": 2587,
+      "root_position": {
+        "x": -1,
+        "y": 30
+      },
+      "declared_frames": 45,
+      "duration_s_at_24fps": 1.875,
+      "csv": "timelines/player_event_notice_ma.csv"
+    },
+    "message_controller_uwd": {
+      "sprite_id": 2603,
+      "root_position": {
+        "x": 343,
+        "y": 343
+      },
+      "declared_frames": 108,
+      "duration_s_at_24fps": 4.5,
+      "csv": "timelines/message_controller_uwd.csv"
+    },
+    "message_content_selector": {
+      "sprite_id": 2526,
+      "root_position": {
+        "x": -2,
+        "y": 340
+      },
+      "declared_frames": 8,
+      "duration_s_at_24fps": 0.333333,
+      "csv": "timelines/message_content_selector.csv"
+    },
+    "controls_marker_prompt": {
+      "sprite_id": 2498,
+      "root_position": {
+        "x": 150,
+        "y": 105
+      },
+      "declared_frames": 85,
+      "duration_s_at_24fps": 3.541667,
+      "csv": "timelines/controls_marker_prompt.csv"
+    },
+    "battle_progress_kalt": {
+      "sprite_id": 2550,
+      "root_position": {
+        "x": 11,
+        "y": 4
+      },
+      "declared_frames": 250,
+      "duration_s_at_24fps": 10.416667,
+      "csv": "timelines/battle_progress_kalt.csv"
+    },
+    "left_value_bar_kpb": {
+      "sprite_id": 2591,
+      "root_position": {
+        "x": 21,
+        "y": 366
+      },
+      "declared_frames": 100,
+      "duration_s_at_24fps": 4.166667,
+      "csv": "timelines/left_value_bar_kpb.csv"
+    },
+    "top_progress_bar_htbr": {
+      "sprite_id": 2609,
+      "root_position": {
+        "x": 2,
+        "y": 20
+      },
+      "declared_frames": 600,
+      "duration_s_at_24fps": 25.0,
+      "csv": "timelines/top_progress_bar_htbr.csv"
+    },
+    "ending_overlay": {
+      "sprite_id": 2524,
+      "root_position": {
+        "x": 0,
+        "y": 1
+      },
+      "declared_frames": 5,
+      "duration_s_at_24fps": 0.208333,
+      "csv": "timelines/ending_overlay.csv"
+    },
+    "battle_intro_and_result_bk": {
+      "sprite_id": 2531,
+      "root_position": {
+        "x": 0,
+        "y": 0
+      },
+      "declared_frames": 160,
+      "duration_s_at_24fps": 6.666667,
+      "csv": "timelines/battle_intro_and_result_bk.csv"
+    }
+  },
+  "message_states": [
+    {
+      "state": 1,
+      "asset_ids": [
+        2492,
+        2494,
+        2495
+      ],
+      "meaning": "操作説明＋PLAYER/技能クリック案内",
+      "trigger": "uwd初回再生",
+      "playback": "temporary/stta",
+      "confidence": "confirmed"
+    },
+    {
+      "state": 2,
+      "asset_ids": [
+        2499,
+        2501
+      ],
+      "meaning": "敵陣攻撃不可",
+      "trigger": "sttmc=2",
+      "playback": "temporary/stta",
+      "confidence": "confirmed"
+    },
+    {
+      "state": 3,
+      "asset_ids": [
+        2499,
+        2503
+      ],
+      "meaning": "味方減少・退避警告",
+      "trigger": "sttmc=3",
+      "playback": "temporary/stta",
+      "confidence": "confirmed"
+    },
+    {
+      "state": 4,
+      "asset_ids": [
+        2499,
+        2505
+      ],
+      "meaning": "退避警告",
+      "trigger": "sttmc=4",
+      "playback": "temporary/stta",
+      "confidence": "confirmed"
+    },
+    {
+      "state": 5,
+      "asset_ids": [
+        2499,
+        2509,
+        171,
+        173,
+        176,
+        178
+      ],
+      "meaning": "終了確認",
+      "trigger": "exit button sets sttmc=5",
+      "playback": "temporary then input hold",
+      "confidence": "confirmed"
+    },
+    {
+      "state": 6,
+      "asset_ids": [
+        2499,
+        2511
+      ],
+      "meaning": "自陣陥落",
+      "trigger": "sttmc=6; gotoAndStop(sttb)",
+      "playback": "terminal hold",
+      "confidence": "confirmed"
+    },
+    {
+      "state": 7,
+      "asset_ids": [
+        2499,
+        2513
+      ],
+      "meaning": "敵陣陥落",
+      "trigger": "sttmc=7; gotoAndStop(sttb)",
+      "playback": "terminal hold",
+      "confidence": "confirmed"
+    },
+    {
+      "state": 8,
+      "asset_ids": [
+        2499,
+        2515,
+        2518,
+        2520
+      ],
+      "meaning": "優勢勝ち＋終了全画面演出",
+      "trigger": "直接設定箇所未発見",
+      "playback": "terminal/ending",
+      "confidence": "probable"
+    }
+  ],
+  "buttons": {
+    "2507": {
+      "button_id": 2507,
+      "records": [
+        {
+          "state_flags": 1,
+          "up": true,
+          "over": false,
+          "down": false,
+          "hit_test": false,
+          "character_id": 172,
+          "depth": 1,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        },
+        {
+          "state_flags": 14,
+          "up": false,
+          "over": true,
+          "down": true,
+          "hit_test": true,
+          "character_id": 174,
+          "depth": 1,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      "actions": [
+        {
+          "condition_flags": 4,
+          "push_values": [
+            "sttc",
+            1,
+            "_parent",
+            "gotoAndPlay"
+          ]
+        }
+      ]
+    },
+    "2508": {
+      "button_id": 2508,
+      "records": [
+        {
+          "state_flags": 1,
+          "up": true,
+          "over": false,
+          "down": false,
+          "hit_test": false,
+          "character_id": 177,
+          "depth": 1,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        },
+        {
+          "state_flags": 14,
+          "up": false,
+          "over": true,
+          "down": true,
+          "hit_test": true,
+          "character_id": 179,
+          "depth": 1,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      "actions": [
+        {
+          "condition_flags": 8,
+          "push_values": [
+            "_root",
+            "a",
+            "m200",
+            "edrsn",
+            1,
+            "_root",
+            "a",
+            "m200",
+            "gtm",
+            1,
+            "_root",
+            "a",
+            "m200",
+            "gtm",
+            1,
+            "sttc",
+            1,
+            "_parent",
+            "gotoAndPlay"
+          ]
+        }
+      ]
+    },
+    "2602": {
+      "button_id": 2602,
+      "records": [
+        {
+          "state_flags": 1,
+          "up": true,
+          "over": false,
+          "down": false,
+          "hit_test": false,
+          "character_id": 2599,
+          "depth": 1,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        },
+        {
+          "state_flags": 14,
+          "up": false,
+          "over": true,
+          "down": true,
+          "hit_test": true,
+          "character_id": 2601,
+          "depth": 1,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      "actions": [
+        {
+          "condition_flags": 8,
+          "push_values": [
+            "sttmc",
+            5
+          ]
+        }
+      ]
+    }
+  },
+  "asset_paths_by_bitmap_id": {
+    "2553": [
+      {
+        "reference_path": "01_top_hud/battle_balance/2553_battle_balance_strip.png",
+        "runtime_key": "top_hud.battle_balance.battle_balance_strip"
+      }
+    ],
+    "2559": [
+      {
+        "reference_path": "01_top_hud/timer/2559_timer_panel.png",
+        "runtime_key": "top_hud.timer.timer_panel"
+      }
+    ],
+    "2582": [
+      {
+        "reference_path": "01_top_hud/player_force/2582_player_force_gauge.png",
+        "runtime_key": "top_hud.player_force.player_force_gauge"
+      }
+    ],
+    "2565": [
+      {
+        "reference_path": "01_top_hud/player_force/2565_alert_icon.png",
+        "runtime_key": "top_hud.enemy_force.alert_icon"
+      },
+      {
+        "reference_path": "01_top_hud/enemy_force/2565_alert_icon.png",
+        "runtime_key": "top_hud.enemy_force.alert_icon"
+      }
+    ],
+    "2562": [
+      {
+        "reference_path": "01_top_hud/enemy_force/2562_enemy_force_gauge.png",
+        "runtime_key": "top_hud.enemy_force.enemy_force_gauge"
+      }
+    ],
+    "2571": [
+      {
+        "reference_path": "02_bottom_character_status/2571_character_status_panel.png",
+        "runtime_key": "bottom_character_status.panel.character_status_panel"
+      }
+    ],
+    "2577": [
+      {
+        "reference_path": "02_bottom_character_status/allegiance_selector/2577_friendly_icon.png",
+        "runtime_key": "bottom_character_status.allegiance_selector.friendly_icon"
+      }
+    ],
+    "2579": [
+      {
+        "reference_path": "02_bottom_character_status/allegiance_selector/2579_enemy_icon.png",
+        "runtime_key": "bottom_character_status.allegiance_selector.enemy_icon"
+      }
+    ],
+    "2492": [
+      {
+        "reference_path": "03_battle_messages/controls/2492_controls_help.png",
+        "runtime_key": "battle_messages.controls.controls_help"
+      }
+    ],
+    "2494": [
+      {
+        "reference_path": "03_battle_messages/controls/2494_player_marker.png",
+        "runtime_key": "battle_messages.controls.player_marker"
+      }
+    ],
+    "2495": [
+      {
+        "reference_path": "03_battle_messages/controls/2495_skill_click_prompt.png",
+        "runtime_key": "battle_messages.controls.skill_click_prompt"
+      }
+    ],
+    "2499": [
+      {
+        "reference_path": "03_battle_messages/warnings/2499_message_background.png",
+        "runtime_key": "battle_messages.battle_end.message_background"
+      },
+      {
+        "reference_path": "03_battle_messages/exit_confirmation/2499_message_background.png",
+        "runtime_key": "battle_messages.battle_end.message_background"
+      },
+      {
+        "reference_path": "03_battle_messages/battle_end/2499_message_background.png",
+        "runtime_key": "battle_messages.battle_end.message_background"
+      }
+    ],
+    "2501": [
+      {
+        "reference_path": "03_battle_messages/warnings/2501_enemy_base_attack_blocked.png",
+        "runtime_key": "battle_messages.warnings.enemy_base_attack_blocked"
+      }
+    ],
+    "2503": [
+      {
+        "reference_path": "03_battle_messages/warnings/2503_low_allies_retreat_warning.png",
+        "runtime_key": "battle_messages.warnings.low_allies_retreat_warning"
+      }
+    ],
+    "2505": [
+      {
+        "reference_path": "03_battle_messages/warnings/2505_retreat_warning.png",
+        "runtime_key": "battle_messages.warnings.retreat_warning"
+      }
+    ],
+    "2509": [
+      {
+        "reference_path": "03_battle_messages/exit_confirmation/2509_exit_confirmation_text.png",
+        "runtime_key": "battle_messages.exit_confirmation.exit_confirmation_text"
+      }
+    ],
+    "171": [
+      {
+        "reference_path": "03_battle_messages/exit_confirmation/171_no_normal.png",
+        "runtime_key": "battle_messages.exit_confirmation.no_normal"
+      }
+    ],
+    "173": [
+      {
+        "reference_path": "03_battle_messages/exit_confirmation/173_no_hover.png",
+        "runtime_key": "battle_messages.exit_confirmation.no_hover"
+      }
+    ],
+    "176": [
+      {
+        "reference_path": "03_battle_messages/exit_confirmation/176_yes_normal.png",
+        "runtime_key": "battle_messages.exit_confirmation.yes_normal"
+      }
+    ],
+    "178": [
+      {
+        "reference_path": "03_battle_messages/exit_confirmation/178_yes_hover.png",
+        "runtime_key": "battle_messages.exit_confirmation.yes_hover"
+      }
+    ],
+    "2511": [
+      {
+        "reference_path": "03_battle_messages/battle_end/2511_player_base_fallen.png",
+        "runtime_key": "battle_messages.battle_end.player_base_fallen"
+      }
+    ],
+    "2513": [
+      {
+        "reference_path": "03_battle_messages/battle_end/2513_enemy_base_fallen.png",
+        "runtime_key": "battle_messages.battle_end.enemy_base_fallen"
+      }
+    ],
+    "2515": [
+      {
+        "reference_path": "03_battle_messages/battle_end/2515_advantage_victory.png",
+        "runtime_key": "battle_messages.battle_end.advantage_victory"
+      }
+    ],
+    "2518": [
+      {
+        "reference_path": "03_battle_messages/battle_end/2518_battle_end_overlay.png",
+        "runtime_key": "battle_messages.battle_end.battle_end_overlay"
+      }
+    ],
+    "2520": [
+      {
+        "reference_path": "03_battle_messages/battle_end/2520_battle_end_whistle.png",
+        "runtime_key": "battle_messages.battle_end.battle_end_whistle"
+      }
+    ],
+    "2532": [
+      {
+        "reference_path": "04_battle_progress/2532_no_enemy_base_attack_warning.png",
+        "runtime_key": "battle_progress.rules.no_enemy_base_attack_warning"
+      }
+    ],
+    "2535": [
+      {
+        "reference_path": "04_battle_progress/2535_mode_notice_variant_a.png",
+        "runtime_key": "battle_progress.mode_notice.mode_notice_variant_a"
+      }
+    ],
+    "2537": [
+      {
+        "reference_path": "04_battle_progress/2537_mode_notice_variant_b.png",
+        "runtime_key": "battle_progress.mode_notice.mode_notice_variant_b"
+      }
+    ],
+    "2540": [
+      {
+        "reference_path": "04_battle_progress/2540_win_streak_panel.png",
+        "runtime_key": "battle_progress.counter_panels.win_streak_panel"
+      }
+    ],
+    "2545": [
+      {
+        "reference_path": "04_battle_progress/2545_growth_remaining_panel.png",
+        "runtime_key": "battle_progress.counter_panels.growth_remaining_panel"
+      }
+    ],
+    "2598": [
+      {
+        "reference_path": "05_screen_controls/exit_button/2598_exit_button_normal.png",
+        "runtime_key": "screen_controls.exit_button.exit_button_normal"
+      }
+    ],
+    "2600": [
+      {
+        "reference_path": "05_screen_controls/exit_button/2600_exit_button_hover.png",
+        "runtime_key": "screen_controls.exit_button.exit_button_hover"
+      }
+    ],
+    "2471": [
+      {
+        "reference_path": "06_battle_intro_optional/versus_frames/2471_versus_frame_large.png",
+        "runtime_key": "battle_intro_optional.versus_frames.versus_frame_large"
+      }
+    ],
+    "2475": [
+      {
+        "reference_path": "06_battle_intro_optional/versus_frames/2475_versus_frame_small.png",
+        "runtime_key": "battle_intro_optional.versus_frames.versus_frame_small"
+      }
+    ],
+    "2478": [
+      {
+        "reference_path": "06_battle_intro_optional/decorations/2478_intro_decoration_a.png",
+        "runtime_key": "battle_intro_optional.decorations.intro_decoration_a"
+      }
+    ],
+    "2481": [
+      {
+        "reference_path": "06_battle_intro_optional/decorations/2481_intro_decoration_b.png",
+        "runtime_key": "battle_intro_optional.decorations.intro_decoration_b"
+      }
+    ],
+    "2484": [
+      {
+        "reference_path": "06_battle_intro_optional/decorations/2484_intro_figure_a.png",
+        "runtime_key": "battle_intro_optional.decorations.intro_figure_a"
+      }
+    ],
+    "2487": [
+      {
+        "reference_path": "06_battle_intro_optional/decorations/2487_intro_figure_b.png",
+        "runtime_key": "battle_intro_optional.decorations.intro_figure_b"
+      }
+    ]
+  },
+  "key_corrections_to_current_implementation": [
+    "ma/eaは生存兵数の常時戦力ゲージではない。cma/ceaへ動的文字列を渡して再生する左右別イベント通知欄（討ち取り・離脱・陣地攻撃・療所等）。",
+    "cma/ceaはmessageが現在のcmと異なる時だけcmを書換えgotoAndPlay(2)。同文の連続通知は再始動しない。異なる文が再生中に来るとframe2から再始動する。",
+    "操作説明は開始後6秒固定ではない。uwd初回タイムライン全体約4.46秒で、下から進入・保持・退場する。",
+    "PLAYER/技能クリック案内はREADY状態への常時連動ではなく、初回操作説明内の2498で5f遅延後にfadeする。",
+    "警告state2/3/4は同じ一時表示シーケンス。陣地陥落state6/7はsttbへ即時ジャンプして停止保持。",
+    "右ステータスはActionScript d/atckが選んだ攻撃・接触対象を更新する。任意pointer選択は本家挙動とは別拡張。",
+    "終了確認YESは単なる閉じるではなくedrsn=1を設定しgtmを必要なら1へ戻す。アプリでは既存終了フローへの明示的変換が必要。"
+  ],
+  "unresolved": [
+    {
+      "id": "left_status_update",
+      "reason": "mnm/mhp/mpw/mdf/kpbの初期化とタイムラインは確認したが更新呼出し元をframe DoActionから確定できない。"
+    },
+    {
+      "id": "htbr_driver",
+      "reason": "600段階morphとroot配置は確認したが、外部gotoAndStop値の書込元は未特定。timer/progress用途は候補に留める。"
+    },
+    {
+      "id": "message_state8_trigger",
+      "reason": "state8構造は確定したがsttmc=8の直接ActionScript設定箇所を発見できない。"
+    },
+    {
+      "id": "ami",
+      "reason": "Sprite2552は空Sprite2551を持つだけで可視内容なし。実装不要候補。"
+    }
+  ],
+  "dynamic_event_notices": {
+    "text_field": {
+      "variable": "cm",
+      "font_id": 35,
+      "font_height_px": 11,
+      "color_rgba": [
+        255,
+        255,
+        255,
+        255
+      ]
+    },
+    "player_side_cma": [
+      "{name} が戦線離脱！",
+      "★{name}の堅陣発動！",
+      "★自陣が攻略されています！",
+      "★自陣が攻撃されています！",
+      "{name}の療所効果！",
+      "{name} 一時退避！"
+    ],
+    "enemy_side_cea": [
+      "★{name}の堅陣発動！",
+      "★{name} が敵陣を攻略！",
+      "★{name} が敵陣を攻撃！",
+      "{name} 討ち取ったり！"
+    ],
+    "retrigger_rule": "if current cm != message: cm=message; gotoAndPlay(2). Same consecutive text does not restart."
+  }
+}

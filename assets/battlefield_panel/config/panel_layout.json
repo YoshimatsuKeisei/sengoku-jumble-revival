@@ -1,0 +1,107 @@
+{
+  "coordinate_space": {
+    "width": 380,
+    "height": 380,
+    "origin": "top-left"
+  },
+  "active_battle_root_frame": 14,
+  "panels": [
+    {
+      "id": "battle_balance",
+      "asset": "top_hud.battle_balance.battle_balance_strip",
+      "x": 0,
+      "y": 0,
+      "dynamic_fields": [
+        "mb",
+        "mm",
+        "em",
+        "eb"
+      ]
+    },
+    {
+      "id": "timer",
+      "asset": "top_hud.timer.timer_panel",
+      "x": 318,
+      "y": 2,
+      "dynamic_fields": [
+        "tm"
+      ]
+    },
+    {
+      "id": "player_force",
+      "asset": "top_hud.player_force.player_force_gauge",
+      "x": -2,
+      "y": 30,
+      "transition_source": "sprite 2587 / instance ma / 45 frames"
+    },
+    {
+      "id": "enemy_force",
+      "asset": "top_hud.enemy_force.enemy_force_gauge",
+      "x": 186,
+      "y": 30,
+      "transition_source": "sprite 2570 / instance ea / 45 frames"
+    },
+    {
+      "id": "bottom_character_status",
+      "asset": "bottom_character_status.panel.character_status_panel",
+      "x": -2,
+      "y": 340,
+      "dynamic_fields": [
+        "mnm",
+        "mhp",
+        "mpw",
+        "mdf",
+        "tnm",
+        "thp",
+        "tpw",
+        "tdf",
+        "tmp",
+        "ts"
+      ]
+    },
+    {
+      "id": "allegiance_selector",
+      "assets": [
+        "bottom_character_status.allegiance_selector.friendly_icon",
+        "bottom_character_status.allegiance_selector.enemy_icon"
+      ],
+      "x": 173,
+      "y": 344,
+      "source": "sprite 2581 / instance trm / frame 1-2"
+    },
+    {
+      "id": "exit_button",
+      "assets": [
+        "screen_controls.exit_button.exit_button_normal",
+        "screen_controls.exit_button.exit_button_hover"
+      ],
+      "x": 343,
+      "y": 343,
+      "source": "DefineButton2 2602 inside sprite 2603 / instance uwd"
+    },
+    {
+      "id": "message_system",
+      "folder": "03_battle_messages",
+      "root_instance": "uwd",
+      "root_x": 343,
+      "root_y": 343,
+      "source": "sprite 2603 -> sprite 2526",
+      "note": "親タイムラインが下部パネルをスライド表示する。各メッセージの固定絶対座標ではなく親アニメーションを基準にする。"
+    },
+    {
+      "id": "battle_progress",
+      "folder": "04_battle_progress",
+      "root_instance": "kalt",
+      "root_x": 11,
+      "root_y": 4,
+      "source": "sprite 2550",
+      "labels": {
+        "frame_166": "e",
+        "frame_167": "k",
+        "frame_247": "sch"
+      }
+    }
+  ],
+  "asset_reference_format": "atlas_manifest.json内のlogical_asset_id",
+  "runtime_asset_root": "assets/battlefield_panel"
+}

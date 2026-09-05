@@ -1,0 +1,90 @@
+{
+  "grid": {
+    "cell_size_world": 36,
+    "gx_min": 7,
+    "gx_max": 22,
+    "gy_min": 5,
+    "gy_max": 28,
+    "columns": 16,
+    "rows": 24
+  },
+  "world_anchor_bounds": {
+    "x_min": 252,
+    "x_max": 792,
+    "y_min": 180,
+    "y_max": 1008
+  },
+  "snap": {
+    "gx": "round(pointerWorldX / 36)",
+    "gy": "round(pointerWorldY / 36)",
+    "world_x": "gx * 36",
+    "world_y": "gy * 36"
+  },
+  "accept_drop_when": [
+    "grid coordinate is inside the inclusive bounds",
+    "target occupancy is empty or belongs to the dragged soldier",
+    "target is not a fixed-obstacle cell"
+  ],
+  "on_rejected_drop": "restore the soldier to its drag-start cell",
+  "soldier_overlap": "forbidden",
+  "fixed_blockers_confirmed": [
+    {
+      "source_instance": "s1",
+      "cells": [
+        {
+          "gx": 15,
+          "gy_from": 14,
+          "gy_to": 17
+        }
+      ]
+    },
+    {
+      "source_instance": "s2",
+      "cells": [
+        {
+          "gx": 18,
+          "gy_from": 21,
+          "gy_to": 24
+        }
+      ]
+    },
+    {
+      "source_instance": "s3",
+      "cells": [
+        {
+          "gx": 18,
+          "gy_from": 8,
+          "gy_to": 11
+        }
+      ]
+    }
+  ],
+  "fixed_blocker_note": "The SWF occupancy array is authoritative. Also block cells intersecting reused fixed fence/base collision geometry; do not infer walkability from color alone.",
+  "normal_camera_pan": {
+    "center_x_min": 240,
+    "center_x_max": 733,
+    "center_y_min": 270,
+    "center_y_max": 934,
+    "speed_world_per_tick": 7,
+    "edge_bands_stage": {
+      "left": 40,
+      "right": 340,
+      "top": 40,
+      "bottom": 300
+    }
+  },
+  "view_toggle": {
+    "normal_scale": 1.0,
+    "overview_scale": 0.36,
+    "overview_center": [
+      600,
+      625
+    ],
+    "swf_button_label": "視野変更"
+  },
+  "drag_visual": {
+    "character_state": "standing/idle frame from the existing sprite system",
+    "leader_flag": "follow roster slot 0 at world y - 22",
+    "z_order": "sort soldiers by world y while preserving UI above all soldiers"
+  }
+}

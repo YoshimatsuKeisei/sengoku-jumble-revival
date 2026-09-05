@@ -1,0 +1,30 @@
+﻿unit_type,action_code,action_name,confidence,character_action_frame_range,character_action_internal_label,caster_effects,projectile_effects,hit_effects
+ashigaru,1,槍撃,confirmed,41-48,ma,,,
+ashigaru,21,槍術,confirmed,,,fr_muso,,
+archer,2,弓矢,confirmed,41-48,ma,,archer_teppou_attack2_projectile,
+archer,3,遠射,confirmed,41-48,ma,,archer_teppou_attack2_projectile,
+archer,15,火矢,confirmed,41-48,ma,,archer_teppou_attack2_projectile,fr_fire
+archer,16,焙烙,confirmed,41-48,ma,,archer_teppou_attack2_projectile,fr_exp
+admiral,14,号令,confirmed,33-40,a,as_gri,,fr_kb
+admiral,22,豪傑,confirmed,,,as_gri;fr_muso,,fr_kb
+admiral,24,治癒,confirmed,33-40,a,as_kob,,fr_kai
+admiral,28,奮迅,probable,41-48,,as_gri;fr_oni,,fr_kb
+mosa,11,旋風,confirmed,,,,,
+mosa,23,無双,confirmed,,,fr_muso,,
+mosa,25,鬼神,confirmed,,,fr_oni,,
+strategist,6,火遊,confirmed,41-48,ma,strategist_attack2_large_flame,,fr_fire
+strategist,7,火攻,confirmed,41-48,ma,strategist_attack2_large_flame,,fr_fire
+strategist,8,火計,confirmed,41-48,ma,strategist_attack2_large_flame,,fr_fire
+strategist,9,業火,confirmed,41-48,ma,strategist_attack2_large_flame,,fr_fire
+strategist,10,炎術,confirmed,41-48,ma,strategist_attack2_large_flame,,fr_fire
+strategist,18,妖術,confirmed,33-40 then runtime 41-48,a then ma,fr_kr1,,fr_kex;as_kr2
+strategist,19,虚報,confirmed,33-40 then runtime 41-48,a then ma,fr_kr1,,as_kr2
+strategist,24,治癒,confirmed,33-40,a,as_kob,,fr_kai
+teppou,4,射撃,confirmed,41-48,,,archer_teppou_attack2_projectile,
+teppou,5,狙撃,confirmed,41-48,,,archer_teppou_attack2_projectile,
+teppou,17,砲撃,confirmed,41-48,,,archer_teppou_attack2_projectile,fr_exp
+ninja,12,忍術,confirmed,runtime 41-48,,,,fr_exp
+ninja,13,影走,confirmed,,,,,
+ninja,20,幻術,confirmed,,,,,
+ninja,27,結界,confirmed,,,as_kob;as_ttgk;as_ettgk,,fr_kai;fr_kb;as_sztt;as_esztt
+cavalry,26,騎突,confirmed,41-48,,fr_kiba,,

@@ -1,0 +1,201 @@
+{
+  "frames": {
+    "overview_grid": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 380,
+        "h": 380
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 380,
+        "h": 380
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 380,
+        "h": 380
+      },
+      "bitmap_id": 2658,
+      "source_file": "2658.png",
+      "source_sha256": "e340d956c7758e9cbf9116062111dd57d750600cc313f00f134438ae04e0be08"
+    },
+    "bottom_toolbar": {
+      "frame": {
+        "x": 384,
+        "y": 2,
+        "w": 382,
+        "h": 44
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 382,
+        "h": 44
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 382,
+        "h": 44
+      },
+      "bitmap_id": 3034,
+      "source_file": "3034.png",
+      "source_sha256": "1d790237e0aa68891f8dc5ac36427952b2776d294f25b72e0a21cdba894af69a"
+    },
+    "view_normal": {
+      "frame": {
+        "x": 768,
+        "y": 2,
+        "w": 36,
+        "h": 36
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 36,
+        "h": 36
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 36,
+        "h": 36
+      },
+      "bitmap_id": 3036,
+      "source_file": "3036.png",
+      "source_sha256": "3d4b153bb26d57692a3df7fe0a5efa6c625f6d09107463d4d5a830ec80322f36"
+    },
+    "view_over_down": {
+      "frame": {
+        "x": 806,
+        "y": 2,
+        "w": 36,
+        "h": 36
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 36,
+        "h": 36
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 36,
+        "h": 36
+      },
+      "bitmap_id": 3038,
+      "source_file": "3038.png",
+      "source_sha256": "b3531eb638361392d2240bf98b1d1ae424f18ee0d2ea824a4c9a7e8d30fa5ccd"
+    },
+    "cancel_normal": {
+      "frame": {
+        "x": 844,
+        "y": 2,
+        "w": 36,
+        "h": 36
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 36,
+        "h": 36
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 36,
+        "h": 36
+      },
+      "bitmap_id": 3041,
+      "source_file": "3041.png",
+      "source_sha256": "a120df9efc6b984897fcf1bf44f2857c44143cdff0961b1ed5b8566c55cb4b6e"
+    },
+    "cancel_over_down": {
+      "frame": {
+        "x": 882,
+        "y": 2,
+        "w": 36,
+        "h": 36
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 36,
+        "h": 36
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 36,
+        "h": 36
+      },
+      "bitmap_id": 3043,
+      "source_file": "3043.png",
+      "source_sha256": "53a8cf924c7af13fc414e4fbcda795468729ccf84896f1a54ecdc105ada23e8b"
+    },
+    "confirm_normal": {
+      "frame": {
+        "x": 920,
+        "y": 2,
+        "w": 36,
+        "h": 36
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 36,
+        "h": 36
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 36,
+        "h": 36
+      },
+      "bitmap_id": 3046,
+      "source_file": "3046.png",
+      "source_sha256": "13d096168b34c8691a7d52f680e45550aa32230287ee22604d653cf728ac4a00"
+    },
+    "confirm_over_down": {
+      "frame": {
+        "x": 958,
+        "y": 2,
+        "w": 36,
+        "h": 36
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 36,
+        "h": 36
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 36,
+        "h": 36
+      },
+      "bitmap_id": 3048,
+      "source_file": "3048.png",
+      "source_sha256": "4931e7f474d3908db03659f318ef5e361c4c2ac8aee456ae5bfe4a41bb884922"
+    }
+  },
+  "meta": {
+    "image": "formation_ui_atlas.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 1024,
+      "h": 512
+    },
+    "scale": "1",
+    "padding": 2,
+    "rotation": false,
+    "trim": false,
+    "source_pixels_modified": false
+  }
+}

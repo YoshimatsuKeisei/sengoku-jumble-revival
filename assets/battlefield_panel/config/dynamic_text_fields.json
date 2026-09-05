@@ -1,0 +1,186 @@
+{
+  "rendering_rule": "これらはPNGではない。アプリ側のText/CSS/Canvasで実行時に描画する。座標は380x380のSWFステージ基準。",
+  "fields": [
+    {
+      "id": 2555,
+      "variable": "mb",
+      "initial": "30",
+      "x": 36,
+      "y": 8,
+      "area": "top_hud",
+      "meaning": "PLAYER側陣地／兵数系カウンター1"
+    },
+    {
+      "id": 2556,
+      "variable": "mm",
+      "initial": "30",
+      "x": 72,
+      "y": 8,
+      "area": "top_hud",
+      "meaning": "PLAYER側陣地／兵数系カウンター2"
+    },
+    {
+      "id": 2557,
+      "variable": "em",
+      "initial": "30",
+      "x": 133,
+      "y": 8,
+      "area": "top_hud",
+      "meaning": "ENEMY側陣地／兵数系カウンター1"
+    },
+    {
+      "id": 2558,
+      "variable": "eb",
+      "initial": "30",
+      "x": 170,
+      "y": 8,
+      "area": "top_hud",
+      "meaning": "ENEMY側陣地／兵数系カウンター2"
+    },
+    {
+      "id": 2561,
+      "variable": "tm",
+      "initial": "3:00",
+      "x": 345,
+      "y": 8,
+      "area": "top_hud",
+      "meaning": "残り時間"
+    },
+    {
+      "id": 2573,
+      "variable": "mnm",
+      "initial": "--",
+      "x": 3.8,
+      "y": 347,
+      "area": "bottom_character_status",
+      "meaning": "左側キャラクター名"
+    },
+    {
+      "id": 2574,
+      "variable": "mhp",
+      "initial": "0/0",
+      "x": 99.5,
+      "y": 347,
+      "area": "bottom_character_status",
+      "meaning": "左側HP"
+    },
+    {
+      "id": 2575,
+      "variable": "mpw",
+      "initial": "0",
+      "x": 99.5,
+      "y": 364,
+      "area": "bottom_character_status",
+      "meaning": "左側攻撃値"
+    },
+    {
+      "id": 2576,
+      "variable": "mdf",
+      "initial": "0",
+      "x": 142.5,
+      "y": 364,
+      "area": "bottom_character_status",
+      "meaning": "左側防御値"
+    },
+    {
+      "id": 2592,
+      "variable": "tnm",
+      "initial": "--",
+      "x": 191,
+      "y": 347,
+      "area": "bottom_character_status",
+      "meaning": "右側キャラクター名"
+    },
+    {
+      "id": 2593,
+      "variable": "thp",
+      "initial": "0/0",
+      "x": 283,
+      "y": 347,
+      "area": "bottom_character_status",
+      "meaning": "右側HP"
+    },
+    {
+      "id": 2594,
+      "variable": "tdf",
+      "initial": "0",
+      "x": 238,
+      "y": 364,
+      "area": "bottom_character_status",
+      "meaning": "右側防御値"
+    },
+    {
+      "id": 2595,
+      "variable": "tpw",
+      "initial": "0",
+      "x": 193,
+      "y": 364,
+      "area": "bottom_character_status",
+      "meaning": "右側攻撃値"
+    },
+    {
+      "id": 2596,
+      "variable": "tmp",
+      "initial": "0",
+      "x": 283.75,
+      "y": 364,
+      "area": "bottom_character_status",
+      "meaning": "右側能力値（SWF変数tmp）"
+    },
+    {
+      "id": 2597,
+      "variable": "ts",
+      "initial": "0",
+      "x": 327.9,
+      "y": 364,
+      "area": "bottom_character_status",
+      "meaning": "右側能力値（SWF変数ts）"
+    },
+    {
+      "id": 2542,
+      "variable": "n2",
+      "initial": "0",
+      "x": 22,
+      "y": 7,
+      "area": "battle_progress",
+      "meaning": "勝ち抜き人数・影文字層"
+    },
+    {
+      "id": 2543,
+      "variable": "n1",
+      "initial": "0",
+      "x": 21,
+      "y": 6,
+      "area": "battle_progress",
+      "meaning": "勝ち抜き人数・表文字層"
+    },
+    {
+      "id": 2547,
+      "variable": "n2",
+      "initial": "0",
+      "x": 99,
+      "y": 7,
+      "area": "battle_progress",
+      "meaning": "成長までの残り人数・影文字層"
+    },
+    {
+      "id": 2548,
+      "variable": "n1",
+      "initial": "0",
+      "x": 98,
+      "y": 6,
+      "area": "battle_progress",
+      "meaning": "成長までの残り人数・表文字層"
+    }
+  ],
+  "dynamic_message_templates_from_avm1": [
+    "{name} が戦線離脱！",
+    "{name} 討ち取ったり！",
+    "{name} が敵陣を攻略！",
+    "{name} が敵陣を攻撃！",
+    "★自陣が攻略されています！",
+    "★自陣が攻撃されています！",
+    "{name}の療所効果！"
+  ],
+  "message_note": "『〇〇が討ち取られた！』等は名前を実行時挿入するため、個別の完成PNGを探しても存在しない。背景には2499を使用する。"
+}

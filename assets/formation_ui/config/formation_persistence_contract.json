@@ -1,0 +1,24 @@
+{
+  "coordinate_space": "Sprite2656/BattleScene battlefield world coordinates, using the soldier foot anchor",
+  "why_no_conversion": "Formation Sprite2656 and battle Sprite2456 use the same root transform and world coordinate convention.",
+  "state_shape": {
+    "version": 1,
+    "soldiers": [
+      {
+        "soldierId": "stable existing id",
+        "rosterIndex": "0..29 fallback",
+        "gridX": "7..22",
+        "gridY": "5..28",
+        "worldX": "gridX*36",
+        "worldY": "gridY*36"
+      }
+    ]
+  },
+  "screen_entry": "clone committed state into a working state; if absent, derive from current BattleScene initial positions and snap/collision-resolve once",
+  "confirm": "validate 30 unique legal cells, then atomically replace committed state",
+  "cancel": "discard working edits and restore the screen-entry snapshot; outgoing navigation remains unconnected",
+  "battle_scene": "before creating player Soldier views/entities, resolve by soldierId then rosterIndex and use worldX/worldY as the initial foot-anchor position",
+  "roster_changes": "keep matching soldierIds, fill new/missing members into the nearest free legal cell deterministically",
+  "storage": "use the existing game-session/store object. Do not add localStorage unless the project already persists the same player data there.",
+  "swf_reference": "sv serializes each of 30 x/36 and y/36 values into fmdat; jksv additionally supports SharedObject slots, which are outside this scope."
+}

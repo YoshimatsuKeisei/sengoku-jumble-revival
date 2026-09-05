@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>兵種・方向別 スプライト確認</title>
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+<main>
+  <h1>兵種・方向別 スプライト確認</h1>
+  <p class="note">正式パス: assets/characters/{兵種}/accepted/{方向}/{フレーム名}.png</p>
+
+  <section class="panel">
+    <h2>確認対象</h2>
+    <div class="controls">
+      <label>兵種フォルダ
+        <input id="unit" list="unitList" value="teppou" spellcheck="false">
+        <datalist id="unitList"><option value="teppou"></datalist>
+      </label>
+      <label>方向
+        <select id="direction"></select>
+      </label>
+      <label>表示元
+        <select id="assetView">
+          <option value="accepted">accepted</option>
+          <option value="candidate">candidate</option>
+          <option value="compare">accepted / candidate 比較</option>
+        </select>
+      </label>
+      <button id="loadSet" type="button">読み込む</button>
+    </div>
+    <p id="basePath" class="path"></p>
+    <p class="note">candidate がある方向だけ表示元を切り替えられます。アニメーションとフィールドは accepted を基準にします。</p>
+  </section>
+
+  <section class="panel">
+    <h2>静止比較</h2>
+    <div class="controls">
+      <label>倍率
+        <select id="compareScale"><option value="1">1x</option><option value="2">2x</option><option value="4">4x</option></select>
+      </label>
+      <label>背景
+        <select id="compareBg"><option value="checker">checker</option><option value="white">white</option><option value="gray">gray</option><option value="black">black</option></select>
+      </label>
+    </div>
+    <div id="compareViewer" class="viewer" data-bg="checker"><div id="compare" class="compare"></div></div>
+  </section>
+
+  <section class="panel">
+    <h2>アニメーション確認</h2>
+    <div class="controls">
+      <button id="play" type="button">再生</button>
+      <button id="stop" type="button">停止</button>
+      <label>モード<select id="mode"></select></label>
+      <span id="customControls" class="controls" hidden>
+        <label>Frame A<select id="customA"></select></label>
+        <label>Frame B<select id="customB"></select></label>
+      </span>
+      <label>速度
+        <select id="speed"><option value="100">100ms</option><option value="150">150ms</option><option value="180" selected>180ms</option><option value="200">200ms</option><option value="250">250ms</option></select>
+      </label>
+      <label>倍率
+        <select id="animScale"><option value="1">1x</option><option value="2">2x</option><option value="4">4x</option></select>
+      </label>
+      <label>背景
+        <select id="animBg"><option value="checker">checker</option><option value="white">white</option><option value="gray">gray</option><option value="black">black</option></select>
+      </label>
+    </div>
+    <div id="animViewer" class="viewer" data-bg="checker">
+      <div class="animation"><img id="animSprite" class="sprite" alt="アニメーションフレーム"></div>
+    </div>
+    <p id="status" class="status" aria-live="polite"></p>
+  </section>
+
+  <section class="panel">
+    <h2>8方向・簡易フィールド移動確認</h2>
+    <p class="note">矢印キー／WASDまたは方向ボタンで移動します。Qキーを押している間は膝立ち、無入力時はwalk_02で静止します。</p>
+    <div class="controls">
+      <label>歩行コマ速度
+        <select id="fieldFrameMs"><option value="100">100ms</option><option value="150">150ms</option><option value="180" selected>180ms</option><option value="200">200ms</option><option value="250">250ms</option></select>
+      </label>
+      <label>移動速度
+        <select id="fieldMoveSpeed"><option value="80">ゆっくり</option><option value="130" selected>標準</option><option value="200">速い</option></select>
+      </label>
+      <label>表示サイズ
+        <select id="fieldSpriteSize"><option value="128">小</option><option value="192" selected>中</option><option value="256">大</option></select>
+      </label>
+      <label>フィールド
+        <select id="fieldGround"><option value="grass">grass</option><option value="grid">grid</option><option value="dark">dark</option></select>
+      </label>
+      <button id="fieldReset" type="button">中央に戻す</button>
+    </div>
+    <p id="fieldAssets" class="path">8方向の画像を確認しています…</p>
+    <div class="field-layout">
+      <div id="field" class="field" data-ground="grass" tabindex="0" aria-label="8方向移動確認フィールド">
+        <img id="fieldSprite" alt="フィールド移動スプライト">
+      </div>
+      <div>
+        <div id="dpad" class="dpad" aria-label="方向パッド"></div>
+        <p class="field-help">同時押しで斜め移動<br>中央ボタンで停止</p>
+      </div>
+    </div>
+    <p id="fieldStatus" class="status" aria-live="polite"></p>
+  </section>
+</main>
+
+<script src="sprite-config.js"></script>
+<script src="preview.js"></script>
+</body>
+</html>

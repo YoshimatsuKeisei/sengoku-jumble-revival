@@ -1,0 +1,159 @@
+{
+  "meta": {
+    "image": "intro_atlas.png",
+    "size": {
+      "w": 256,
+      "h": 512
+    },
+    "format": "RGBA8888",
+    "scale": 1,
+    "padding": 2,
+    "edge_extrusion": 0,
+    "allow_rotation": false,
+    "trimmed": false,
+    "pixel_art": true,
+    "load_policy": "戦闘開始演出を表示する場合だけ読み込み。常駐HUDには不要"
+  },
+  "frames": {
+    "bitmap_2471": {
+      "frame": {
+        "x": 131,
+        "y": 212,
+        "w": 78,
+        "h": 69
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 78,
+        "h": 69
+      },
+      "sourceSize": {
+        "w": 78,
+        "h": 69
+      },
+      "bitmap_id": 2471,
+      "source_sha256": "2c92c663ad19eb5c3c71239f0c3ffa400f4b3eb2f28380a196ab3214228b07f5"
+    },
+    "bitmap_2475": {
+      "frame": {
+        "x": 67,
+        "y": 450,
+        "w": 66,
+        "h": 56
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 66,
+        "h": 56
+      },
+      "sourceSize": {
+        "w": 66,
+        "h": 56
+      },
+      "bitmap_id": 2475,
+      "source_sha256": "a81756a1c9e2e168d9860eddd86e2c265ed6d232c578637cf38b16e1791bedb1"
+    },
+    "bitmap_2478": {
+      "frame": {
+        "x": 67,
+        "y": 267,
+        "w": 54,
+        "h": 179
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 54,
+        "h": 179
+      },
+      "sourceSize": {
+        "w": 54,
+        "h": 179
+      },
+      "bitmap_id": 2478,
+      "source_sha256": "7cc70626a4a2bdf98263a022d925d4771842e7f1022f4a628316e12d753c78cd"
+    },
+    "bitmap_2481": {
+      "frame": {
+        "x": 2,
+        "y": 267,
+        "w": 61,
+        "h": 192
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 61,
+        "h": 192
+      },
+      "sourceSize": {
+        "w": 61,
+        "h": 192
+      },
+      "bitmap_id": 2481,
+      "source_sha256": "9c210b0fb63ad9e4a1c5d98b72ce9df79a957911477b3ac782f138986b8e4a83"
+    },
+    "bitmap_2484": {
+      "frame": {
+        "x": 131,
+        "y": 2,
+        "w": 100,
+        "h": 206
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 206
+      },
+      "sourceSize": {
+        "w": 100,
+        "h": 206
+      },
+      "bitmap_id": 2484,
+      "source_sha256": "a54c4e4e09440220f9ae232aad982e5146bdba2af850f056c93807d58873d87a"
+    },
+    "bitmap_2487": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 125,
+        "h": 261
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 125,
+        "h": 261
+      },
+      "sourceSize": {
+        "w": 125,
+        "h": 261
+      },
+      "bitmap_id": 2487,
+      "source_sha256": "dce00ee41fff93820f5e83d29fcb00babdbb5c3fe332e35967e4dea88531cac4"
+    }
+  },
+  "aliases": {
+    "battle_intro_optional.decorations.intro_decoration_a": "bitmap_2478",
+    "battle_intro_optional.decorations.intro_decoration_b": "bitmap_2481",
+    "battle_intro_optional.decorations.intro_figure_a": "bitmap_2484",
+    "battle_intro_optional.decorations.intro_figure_b": "bitmap_2487",
+    "battle_intro_optional.versus_frames.versus_frame_large": "bitmap_2471",
+    "battle_intro_optional.versus_frames.versus_frame_small": "bitmap_2475"
+  }
+}

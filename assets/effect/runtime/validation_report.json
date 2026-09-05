@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "errors": [],
+  "source_bitmap_ids": 141,
+  "atlas_pages": 3,
+  "atlas_regions": 141,
+  "atlas_regions_pixel_identical": 141,
+  "logical_effect_sequences": 33,
+  "runtime_enabled_sequences": 24,
+  "preserved_unresolved_sequences": 9,
+  "action_codes_covered": 28,
+  "unit_action_entries": 29,
+  "zip_crc": "ok",
+  "zip_entries": 10
+}

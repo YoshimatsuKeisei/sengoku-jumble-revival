@@ -1,0 +1,31 @@
+{
+  "scene_definitions": 3591,
+  "timeline_csv_count": 10,
+  "ui_element_count": 20,
+  "root_layout_rows": 22,
+  "button_ids_parsed": [
+    2507,
+    2508,
+    2602
+  ],
+  "preview_pngs": [
+    {
+      "path": "previews/active_ui_layout_preview.png",
+      "bytes": 41359
+    },
+    {
+      "path": "previews/kalt_timeline.png",
+      "bytes": 10047
+    },
+    {
+      "path": "previews/ma_ea_timeline.png",
+      "bytes": 5020
+    },
+    {
+      "path": "previews/uwd_timeline.png",
+      "bytes": 7397
+    }
+  ],
+  "source_art_modified": false,
+  "final_zip_crc_check": "performed after archive creation; see command output / final handoff"
+}

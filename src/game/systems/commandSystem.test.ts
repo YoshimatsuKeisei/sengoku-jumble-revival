@@ -1,0 +1,112 @@
+import { describe, expect, it } from "vitest";
+import { BATTLEFIELD_CONFIG, COMMAND_CONFIG, RECOVERY_CONFIG } from "../config";
+import { createSoldier } from "../entities/Soldier";
+import { updateAiTargets } from "./aiSystem";
+import {
+  issueAdvanceCommand,
+  issueRallyCommand,
+  issueDefendCommand,
+  updateTemporaryOrder,
+} from "./commandSystem";
+import { updateRecoveryStates } from "./recoverySystem";
+
+function setup() {
+  const player = createSoldier("player-0", "player", "player", 100, 500);
+  const near = createSoldier("player-1", "player", "ai", 140, 500, "defend");
+  const far = createSoldier("player-2", "player", "ai", 400, 500, "wait");
+  const enemy = createSoldier("enemy-0", "enemy", "ai", 120, 500);
+  return { player, near, far, enemy, soldiers: [player, near, far, enemy] };
+}
+
+describe("temporary command system", () => {
+  it("ADVANCE only affects living NORMAL allied AI inside its radius", () => {
+    const { player, near, far, enemy, soldiers } = setup();
+    const targets = issueAdvanceCommand(player, soldiers, 100);
+    expect(targets).toEqual([near]);
+    expect(near.temporaryOrder?.type).toBe("ADVANCE");
+    expect(far.temporaryOrder).toBeNull();
+    expect(enemy.temporaryOrder).toBeNull();
+    expect(player.temporaryOrder).toBeNull();
+  });
+
+  it("DEFEND_ORDER only affects allies inside its radius", () => {
+    const { player, near, far, enemy, soldiers } = setup();
+    issueDefendCommand(player, soldiers, 0);
+    expect(near.temporaryOrder?.type).toBe("DEFEND_ORDER");
+    expect(far.temporaryOrder).toBeNull();
+    expect(enemy.temporaryOrder).toBeNull();
+  });
+
+  it("RALLY affects every living NORMAL allied AI and excludes recovery states", () => {
+    const { player, near, far, soldiers } = setup();
+    const retreating = createSoldier("p3", "player", "ai", 0, 0);
+    const healing = createSoldier("p4", "player", "ai", 0, 0);
+    const rejoining = createSoldier("p5", "player", "ai", 0, 0);
+    const dead = createSoldier("p6", "player", "ai", 0, 0);
+    retreating.state = "EMERGENCY_RETREAT";
+    healing.state = "HEALING";
+    rejoining.state = "REJOINING";
+    dead.isDead = true;
+    const targets = issueRallyCommand(player, [...soldiers, retreating, healing, rejoining, dead], 0);
+    expect(targets).toEqual([near, far]);
+    expect(retreating.temporaryOrder).toBeNull();
+    expect(healing.temporaryOrder).toBeNull();
+    expect(rejoining.temporaryOrder).toBeNull();
+    expect(dead.temporaryOrder).toBeNull();
+  });
+
+  it("ADVANCE moves toward the enemy side without changing strategy", () => {
+    const { player, near, soldiers } = setup();
+    issueAdvanceCommand(player, soldiers, 0);
+    updateTemporaryOrder(near, player, 100);
+    expect(near.moveTargetX).toBe(BATTLEFIELD_CONFIG.enemyHomeX);
+    expect(near.strategy).toBe("defend");
+  });
+
+  it("DEFEND_ORDER gathers around the player instead of advancing", () => {
+    const { player, near, soldiers } = setup();
+    issueDefendCommand(player, soldiers, 0);
+    updateTemporaryOrder(near, player, 100);
+    expect(Math.hypot((near.moveTargetX ?? 0) - player.x, (near.moveTargetY ?? 0) - player.y)).toBeCloseTo(62.5);
+  });
+
+  it("expires and resumes the unchanged strategy", () => {
+    const { player, near, soldiers } = setup();
+    issueAdvanceCommand(player, soldiers, 0);
+    updateTemporaryOrder(near, player, COMMAND_CONFIG.commandDurationMs);
+    expect(near.temporaryOrder).toBeNull();
+    expect(near.strategy).toBe("defend");
+  });
+
+  it("recovery cancels an active command when HP becomes dangerous", () => {
+    const { player, near, soldiers } = setup();
+    issueAdvanceCommand(player, soldiers, 0);
+    near.hp = near.maxHp * RECOVERY_CONFIG.dangerHpRatio;
+    updateRecoveryStates(soldiers, 0);
+    expect(near.state).toBe("EMERGENCY_RETREAT");
+    expect(near.temporaryOrder).toBeNull();
+  });
+
+  it("prevents strategy AI from overwriting an active command destination", () => {
+    const { player, near, soldiers } = setup();
+    issueAdvanceCommand(player, soldiers, 0);
+    updateTemporaryOrder(near, player, 100);
+    const destination = [near.moveTargetX, near.moveTargetY];
+    updateAiTargets(soldiers);
+    expect([near.moveTargetX, near.moveTargetY]).toEqual(destination);
+    expect(near.targetId).toBeNull();
+  });
+
+  it("RALLY follows the player's current position and completes in the rally ring", () => {
+    const { player, far, soldiers } = setup();
+    issueRallyCommand(player, soldiers, 0);
+    player.x = 200;
+    player.y = 300;
+    updateTemporaryOrder(far, player, 100);
+    expect(Math.hypot((far.moveTargetX ?? 0) - player.x, (far.moveTargetY ?? 0) - player.y)).toBeCloseTo(62.5);
+    far.x = player.x + 50;
+    far.y = player.y;
+    updateTemporaryOrder(far, player, 200);
+    expect(far.temporaryOrder).toBeNull();
+  });
+});

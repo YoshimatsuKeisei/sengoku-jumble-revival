@@ -1,0 +1,386 @@
+{
+  "format_version": 1,
+  "asset_root": "assets/battlefield_panel",
+  "source_reference_bundle": "sengoku_jumble_play_ui.zip",
+  "rendering": {
+    "image_smoothing_enabled": false,
+    "css_image_rendering": "pixelated",
+    "coordinates": "整数px推奨",
+    "rotation": false,
+    "trim": false,
+    "padding_px": 2
+  },
+  "atlases": {
+    "hud": {
+      "image": "atlas/hud_atlas.png",
+      "data": "atlas/hud_atlas.json",
+      "width": 512,
+      "height": 128,
+      "unique_frames": 10,
+      "logical_aliases": 11,
+      "load_policy": "戦闘画面へ入る直前に読み込み、その戦闘中は保持",
+      "png_bytes": 35186,
+      "png_sha256": "c05db78a3da88463acbcc2068d7a969fc7c9ac71efd27ff52ded5ef4864e64b7"
+    },
+    "messages": {
+      "image": "atlas/messages_atlas.png",
+      "data": "atlas/messages_atlas.json",
+      "width": 1024,
+      "height": 512,
+      "unique_frames": 22,
+      "logical_aliases": 24,
+      "load_policy": "戦闘画面へ入る直前に読み込み、その戦闘中は保持",
+      "png_bytes": 165227,
+      "png_sha256": "062e2f77ac89600f6d29c7e0498290e57c39bb54b7bef3a93c63cee6577ae261"
+    },
+    "intro": {
+      "image": "atlas/intro_atlas.png",
+      "data": "atlas/intro_atlas.json",
+      "width": 256,
+      "height": 512,
+      "unique_frames": 6,
+      "logical_aliases": 6,
+      "load_policy": "戦闘開始演出を表示する場合だけ読み込み。常駐HUDには不要",
+      "png_bytes": 76922,
+      "png_sha256": "19b9d968de99270bcefc609318f3b69e79db2d399e8e365b119c9847e5467e62"
+    }
+  },
+  "assets": {
+    "battle_intro_optional.decorations.intro_decoration_a": {
+      "atlas": "intro",
+      "frame": "bitmap_2478",
+      "bitmap_id": 2478,
+      "purpose": "戦闘開始演出の装飾A",
+      "source_path_in_reference_bundle": "06_battle_intro_optional/decorations/2478_intro_decoration_a.png",
+      "source_path_in_categorized": "misc_non_character/2478.png"
+    },
+    "battle_intro_optional.decorations.intro_decoration_b": {
+      "atlas": "intro",
+      "frame": "bitmap_2481",
+      "bitmap_id": 2481,
+      "purpose": "戦闘開始演出の装飾B",
+      "source_path_in_reference_bundle": "06_battle_intro_optional/decorations/2481_intro_decoration_b.png",
+      "source_path_in_categorized": "misc_non_character/2481.png"
+    },
+    "battle_intro_optional.decorations.intro_figure_a": {
+      "atlas": "intro",
+      "frame": "bitmap_2484",
+      "bitmap_id": 2484,
+      "purpose": "戦闘開始演出の人物・旗装飾A",
+      "source_path_in_reference_bundle": "06_battle_intro_optional/decorations/2484_intro_figure_a.png",
+      "source_path_in_categorized": "ui_panels_backgrounds/2484.png"
+    },
+    "battle_intro_optional.decorations.intro_figure_b": {
+      "atlas": "intro",
+      "frame": "bitmap_2487",
+      "bitmap_id": 2487,
+      "purpose": "戦闘開始演出の人物・旗装飾B",
+      "source_path_in_reference_bundle": "06_battle_intro_optional/decorations/2487_intro_figure_b.png",
+      "source_path_in_categorized": "ui_panels_backgrounds/2487.png"
+    },
+    "battle_intro_optional.versus_frames.versus_frame_large": {
+      "atlas": "intro",
+      "frame": "bitmap_2471",
+      "bitmap_id": 2471,
+      "purpose": "戦闘開始演出のVSフレーム（大）",
+      "source_path_in_reference_bundle": "06_battle_intro_optional/versus_frames/2471_versus_frame_large.png",
+      "source_path_in_categorized": "ui_buttons_labels/2471.png"
+    },
+    "battle_intro_optional.versus_frames.versus_frame_small": {
+      "atlas": "intro",
+      "frame": "bitmap_2475",
+      "bitmap_id": 2475,
+      "purpose": "戦闘開始演出のVSフレーム（小）",
+      "source_path_in_reference_bundle": "06_battle_intro_optional/versus_frames/2475_versus_frame_small.png",
+      "source_path_in_categorized": "ui_buttons_labels/2475.png"
+    },
+    "battle_messages.battle_end.advantage_victory": {
+      "atlas": "messages",
+      "frame": "bitmap_2515",
+      "bitmap_id": 2515,
+      "purpose": "優勢勝ちメッセージ",
+      "source_path_in_reference_bundle": "03_battle_messages/battle_end/2515_advantage_victory.png",
+      "source_path_in_categorized": "ui_buttons_labels/2515.png"
+    },
+    "battle_messages.battle_end.battle_end_overlay": {
+      "atlas": "messages",
+      "frame": "bitmap_2518",
+      "bitmap_id": 2518,
+      "purpose": "戦闘終了時の橙色ドット背景",
+      "source_path_in_reference_bundle": "03_battle_messages/battle_end/2518_battle_end_overlay.png",
+      "source_path_in_categorized": "ui_panels_backgrounds/2518.png"
+    },
+    "battle_messages.battle_end.battle_end_whistle": {
+      "atlas": "messages",
+      "frame": "bitmap_2520",
+      "bitmap_id": 2520,
+      "purpose": "『それまで!!』終了演出",
+      "source_path_in_reference_bundle": "03_battle_messages/battle_end/2520_battle_end_whistle.png",
+      "source_path_in_categorized": "ui_panels_backgrounds/2520.png"
+    },
+    "battle_messages.battle_end.enemy_base_fallen": {
+      "atlas": "messages",
+      "frame": "bitmap_2513",
+      "bitmap_id": 2513,
+      "purpose": "敵陣陥落メッセージ",
+      "source_path_in_reference_bundle": "03_battle_messages/battle_end/2513_enemy_base_fallen.png",
+      "source_path_in_categorized": "ui_buttons_labels/2513.png"
+    },
+    "battle_messages.battle_end.message_background": {
+      "atlas": "messages",
+      "frame": "bitmap_2499",
+      "bitmap_id": 2499,
+      "purpose": "戦闘終了通知の背景（warningsと同一原画をフォルダ内へ複製）",
+      "source_path_in_reference_bundle": "03_battle_messages/battle_end/2499_message_background.png",
+      "source_path_in_categorized": "ui_buttons_labels/2499.png"
+    },
+    "battle_messages.battle_end.player_base_fallen": {
+      "atlas": "messages",
+      "frame": "bitmap_2511",
+      "bitmap_id": 2511,
+      "purpose": "自陣陥落メッセージ",
+      "source_path_in_reference_bundle": "03_battle_messages/battle_end/2511_player_base_fallen.png",
+      "source_path_in_categorized": "ui_buttons_labels/2511.png"
+    },
+    "battle_messages.controls.controls_help": {
+      "atlas": "messages",
+      "frame": "bitmap_2492",
+      "bitmap_id": 2492,
+      "purpose": "キーボード／マウス操作説明",
+      "source_path_in_reference_bundle": "03_battle_messages/controls/2492_controls_help.png",
+      "source_path_in_categorized": "ui_buttons_labels/2492.png"
+    },
+    "battle_messages.controls.player_marker": {
+      "atlas": "messages",
+      "frame": "bitmap_2494",
+      "bitmap_id": 2494,
+      "purpose": "PLAYERマーカー",
+      "source_path_in_reference_bundle": "03_battle_messages/controls/2494_player_marker.png",
+      "source_path_in_categorized": "icons_small_parts/2494.png"
+    },
+    "battle_messages.controls.skill_click_prompt": {
+      "atlas": "messages",
+      "frame": "bitmap_2495",
+      "bitmap_id": 2495,
+      "purpose": "技能発動のクリック案内",
+      "source_path_in_reference_bundle": "03_battle_messages/controls/2495_skill_click_prompt.png",
+      "source_path_in_categorized": "ui_buttons_labels/2495.png"
+    },
+    "battle_messages.exit_confirmation.exit_confirmation_text": {
+      "atlas": "messages",
+      "frame": "bitmap_2509",
+      "bitmap_id": 2509,
+      "purpose": "『本当に終了しますか？』確認文",
+      "source_path_in_reference_bundle": "03_battle_messages/exit_confirmation/2509_exit_confirmation_text.png",
+      "source_path_in_categorized": "ui_buttons_labels/2509.png"
+    },
+    "battle_messages.exit_confirmation.message_background": {
+      "atlas": "messages",
+      "frame": "bitmap_2499",
+      "bitmap_id": 2499,
+      "purpose": "終了確認の背景（warningsと同一原画をフォルダ内へ複製）",
+      "source_path_in_reference_bundle": "03_battle_messages/exit_confirmation/2499_message_background.png",
+      "source_path_in_categorized": "ui_buttons_labels/2499.png"
+    },
+    "battle_messages.exit_confirmation.no_hover": {
+      "atlas": "messages",
+      "frame": "bitmap_173",
+      "bitmap_id": 173,
+      "purpose": "NOボタンhover/pressed状態",
+      "source_path_in_reference_bundle": "03_battle_messages/exit_confirmation/173_no_hover.png",
+      "source_path_in_categorized": "ui_buttons_labels/173.png"
+    },
+    "battle_messages.exit_confirmation.no_normal": {
+      "atlas": "messages",
+      "frame": "bitmap_171",
+      "bitmap_id": 171,
+      "purpose": "NOボタン通常状態",
+      "source_path_in_reference_bundle": "03_battle_messages/exit_confirmation/171_no_normal.png",
+      "source_path_in_categorized": "ui_buttons_labels/171.png"
+    },
+    "battle_messages.exit_confirmation.yes_hover": {
+      "atlas": "messages",
+      "frame": "bitmap_178",
+      "bitmap_id": 178,
+      "purpose": "YESボタンhover/pressed状態",
+      "source_path_in_reference_bundle": "03_battle_messages/exit_confirmation/178_yes_hover.png",
+      "source_path_in_categorized": "ui_buttons_labels/178.png"
+    },
+    "battle_messages.exit_confirmation.yes_normal": {
+      "atlas": "messages",
+      "frame": "bitmap_176",
+      "bitmap_id": 176,
+      "purpose": "YESボタン通常状態",
+      "source_path_in_reference_bundle": "03_battle_messages/exit_confirmation/176_yes_normal.png",
+      "source_path_in_categorized": "ui_buttons_labels/176.png"
+    },
+    "battle_messages.warnings.enemy_base_attack_blocked": {
+      "atlas": "messages",
+      "frame": "bitmap_2501",
+      "bitmap_id": 2501,
+      "purpose": "PLAYERが敵陣を攻撃できない旨の警告",
+      "source_path_in_reference_bundle": "03_battle_messages/warnings/2501_enemy_base_attack_blocked.png",
+      "source_path_in_categorized": "ui_buttons_labels/2501.png"
+    },
+    "battle_messages.warnings.low_allies_retreat_warning": {
+      "atlas": "messages",
+      "frame": "bitmap_2503",
+      "bitmap_id": 2503,
+      "purpose": "味方が3人未満になった際の退避警告",
+      "source_path_in_reference_bundle": "03_battle_messages/warnings/2503_low_allies_retreat_warning.png",
+      "source_path_in_categorized": "ui_buttons_labels/2503.png"
+    },
+    "battle_messages.warnings.message_background": {
+      "atlas": "messages",
+      "frame": "bitmap_2499",
+      "bitmap_id": 2499,
+      "purpose": "通知・警告メッセージ共通背景",
+      "source_path_in_reference_bundle": "03_battle_messages/warnings/2499_message_background.png",
+      "source_path_in_categorized": "ui_buttons_labels/2499.png"
+    },
+    "battle_messages.warnings.retreat_warning": {
+      "atlas": "messages",
+      "frame": "bitmap_2505",
+      "bitmap_id": 2505,
+      "purpose": "自陣への退避警告",
+      "source_path_in_reference_bundle": "03_battle_messages/warnings/2505_retreat_warning.png",
+      "source_path_in_categorized": "ui_buttons_labels/2505.png"
+    },
+    "battle_progress.counter_panels.growth_remaining_panel": {
+      "atlas": "messages",
+      "frame": "bitmap_2545",
+      "bitmap_id": 2545,
+      "purpose": "成長までの残り人数カウンター背景",
+      "source_path_in_reference_bundle": "04_battle_progress/2545_growth_remaining_panel.png",
+      "source_path_in_categorized": "ui_buttons_labels/2545.png"
+    },
+    "battle_progress.counter_panels.win_streak_panel": {
+      "atlas": "messages",
+      "frame": "bitmap_2540",
+      "bitmap_id": 2540,
+      "purpose": "勝ち抜き人数の動的カウンター背景",
+      "source_path_in_reference_bundle": "04_battle_progress/2540_win_streak_panel.png",
+      "source_path_in_categorized": "ui_buttons_labels/2540.png"
+    },
+    "battle_progress.mode_notice.mode_notice_variant_a": {
+      "atlas": "messages",
+      "frame": "bitmap_2535",
+      "bitmap_id": 2535,
+      "purpose": "戦闘モード案内の第1表示",
+      "source_path_in_reference_bundle": "04_battle_progress/2535_mode_notice_variant_a.png",
+      "source_path_in_categorized": "ui_panels_backgrounds/2535.png"
+    },
+    "battle_progress.mode_notice.mode_notice_variant_b": {
+      "atlas": "messages",
+      "frame": "bitmap_2537",
+      "bitmap_id": 2537,
+      "purpose": "戦闘モード案内の第2表示",
+      "source_path_in_reference_bundle": "04_battle_progress/2537_mode_notice_variant_b.png",
+      "source_path_in_categorized": "ui_panels_backgrounds/2537.png"
+    },
+    "battle_progress.rules.no_enemy_base_attack_warning": {
+      "atlas": "messages",
+      "frame": "bitmap_2532",
+      "bitmap_id": 2532,
+      "purpose": "敵陣を一度も攻撃しない場合の敗戦条件説明",
+      "source_path_in_reference_bundle": "04_battle_progress/2532_no_enemy_base_attack_warning.png",
+      "source_path_in_categorized": "ui_buttons_labels/2532.png"
+    },
+    "bottom_character_status.allegiance_selector.enemy_icon": {
+      "atlas": "hud",
+      "frame": "bitmap_2579",
+      "bitmap_id": 2579,
+      "purpose": "敵軍を示す『敵』アイコン",
+      "source_path_in_reference_bundle": "02_bottom_character_status/allegiance_selector/2579_enemy_icon.png",
+      "source_path_in_categorized": "icons_small_parts/2579.png"
+    },
+    "bottom_character_status.allegiance_selector.friendly_icon": {
+      "atlas": "hud",
+      "frame": "bitmap_2577",
+      "bitmap_id": 2577,
+      "purpose": "味方／自軍を示す『自』アイコン",
+      "source_path_in_reference_bundle": "02_bottom_character_status/allegiance_selector/2577_friendly_icon.png",
+      "source_path_in_categorized": "icons_small_parts/2577.png"
+    },
+    "bottom_character_status.panel.character_status_panel": {
+      "atlas": "hud",
+      "frame": "bitmap_2571",
+      "bitmap_id": 2571,
+      "purpose": "接触・選択キャラクターの左右ステータス背景",
+      "source_path_in_reference_bundle": "02_bottom_character_status/2571_character_status_panel.png",
+      "source_path_in_categorized": "ui_buttons_labels/2571.png"
+    },
+    "screen_controls.exit_button.exit_button_hover": {
+      "atlas": "hud",
+      "frame": "bitmap_2600",
+      "bitmap_id": 2600,
+      "purpose": "画面右下の終了ボタンhover/pressed状態",
+      "source_path_in_reference_bundle": "05_screen_controls/exit_button/2600_exit_button_hover.png",
+      "source_path_in_categorized": "icons_small_parts/2600.png"
+    },
+    "screen_controls.exit_button.exit_button_normal": {
+      "atlas": "hud",
+      "frame": "bitmap_2598",
+      "bitmap_id": 2598,
+      "purpose": "画面右下の終了ボタン通常状態",
+      "source_path_in_reference_bundle": "05_screen_controls/exit_button/2598_exit_button_normal.png",
+      "source_path_in_categorized": "icons_small_parts/2598.png"
+    },
+    "top_hud.battle_balance.battle_balance_strip": {
+      "atlas": "hud",
+      "frame": "bitmap_2553",
+      "bitmap_id": 2553,
+      "purpose": "陣地・兵数の左右対比ストリップ",
+      "source_path_in_reference_bundle": "01_top_hud/battle_balance/2553_battle_balance_strip.png",
+      "source_path_in_categorized": "ui_buttons_labels/2553.png"
+    },
+    "top_hud.enemy_force.alert_icon": {
+      "atlas": "hud",
+      "frame": "bitmap_2565",
+      "bitmap_id": 2565,
+      "purpose": "ENEMY側ゲージで使われる警告アイコン（PLAYER側と同一原画）",
+      "source_path_in_reference_bundle": "01_top_hud/enemy_force/2565_alert_icon.png",
+      "source_path_in_categorized": "icons_small_parts/2565.png"
+    },
+    "top_hud.enemy_force.enemy_force_gauge": {
+      "atlas": "hud",
+      "frame": "bitmap_2562",
+      "bitmap_id": 2562,
+      "purpose": "ENEMY側の兵力ゲージ画像",
+      "source_path_in_reference_bundle": "01_top_hud/enemy_force/2562_enemy_force_gauge.png",
+      "source_path_in_categorized": "ui_buttons_labels/2562.png"
+    },
+    "top_hud.player_force.alert_icon": {
+      "atlas": "hud",
+      "frame": "bitmap_2565",
+      "bitmap_id": 2565,
+      "purpose": "PLAYER側ゲージで使われる警告アイコン（ENEMY側と同一原画）",
+      "source_path_in_reference_bundle": "01_top_hud/player_force/2565_alert_icon.png",
+      "source_path_in_categorized": "icons_small_parts/2565.png"
+    },
+    "top_hud.player_force.player_force_gauge": {
+      "atlas": "hud",
+      "frame": "bitmap_2582",
+      "bitmap_id": 2582,
+      "purpose": "PLAYER側の兵力ゲージ画像",
+      "source_path_in_reference_bundle": "01_top_hud/player_force/2582_player_force_gauge.png",
+      "source_path_in_categorized": "ui_buttons_labels/2582.png"
+    },
+    "top_hud.timer.timer_panel": {
+      "atlas": "hud",
+      "frame": "bitmap_2559",
+      "bitmap_id": 2559,
+      "purpose": "残り時間表示の背景",
+      "source_path_in_reference_bundle": "01_top_hud/timer/2559_timer_panel.png",
+      "source_path_in_categorized": "ui_buttons_labels/2559.png"
+    }
+  },
+  "missing_from_source_archive": [
+    {
+      "bitmap_id": 2463,
+      "swf_reference": "bitmap 2463 -> shape 2464 -> sprite 2465 -> sprite 2531 (bk) -> root frame 13",
+      "purpose": "戦闘開始演出の背景",
+      "handling": "今回の入力categorized.zipに無いため未収録。他の抽出物から混入していない。"
+    }
+  ]
+}

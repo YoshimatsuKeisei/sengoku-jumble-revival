@@ -1,0 +1,117 @@
+Date : 2026-08-30 00:47:34
+Directory : c:\Users\jingc\Documents\戦国じゃんぶる
+Total : 74 files,  8079 codes, 16 comments, 551 blanks, all 8646 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| TypeScript         |         66 |      6,222 |         16 |        539 |      6,777 |
+| JSON               |          2 |      1,698 |          0 |          2 |      1,700 |
+| JavaScript         |          1 |        104 |          0 |          5 |        109 |
+| HTML               |          2 |         25 |          0 |          2 |         27 |
+| JSON with Comments |          1 |         16 |          0 |          1 |         17 |
+| PostCSS            |          2 |         14 |          0 |          2 |         16 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                  | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                     |         74 |      8,079 |         16 |        551 |      8,646 |
+| . (Files)                                                                             |          4 |      1,726 |          0 |          4 |      1,730 |
+| dist                                                                                  |          3 |        118 |          0 |          7 |        125 |
+| dist (Files)                                                                          |          1 |         13 |          0 |          1 |         14 |
+| dist\assets                                                                           |          2 |        105 |          0 |          6 |        111 |
+| src                                                                                   |         67 |      6,235 |         16 |        540 |      6,791 |
+| src (Files)                                                                           |          2 |         30 |          0 |          4 |         34 |
+| src\game                                                                              |         65 |      6,205 |         16 |        536 |      6,757 |
+| src\game (Files)                                                                      |          3 |        843 |         12 |         60 |        915 |
+| src\game\entities                                                                     |          1 |         74 |          0 |          2 |         76 |
+| src\game\factories                                                                    |          1 |         76 |          0 |          4 |         80 |
+| src\game\rendering                                                                    |          1 |         13 |          0 |          2 |         15 |
+| src\game\stats                                                                        |          4 |         64 |          0 |         12 |         76 |
+| src\game\systems                                                                      |         53 |      5,027 |          4 |        452 |      5,483 |
+| src\game\ui                                                                           |          2 |        108 |          0 |          4 |        112 |
++---------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                              | language           | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| c:\Users\jingc\Documents\戦国じゃんぶる\dist\assets\index-vPGQ26JI.css                       | PostCSS            |          1 |          0 |          1 |          2 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\dist\assets\index-zcRoXfDO.js                        | JavaScript         |        104 |          0 |          5 |        109 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\dist\index.html                                      | HTML               |         13 |          0 |          1 |         14 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\index.html                                           | HTML               |         12 |          0 |          1 |         13 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\package-lock.json                                    | JSON               |      1,679 |          0 |          1 |      1,680 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\package.json                                         | JSON               |         19 |          0 |          1 |         20 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\BattleScene.ts                              | TypeScript         |        489 |          0 |         17 |        506 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\config.ts                                   | TypeScript         |        218 |         11 |         28 |        257 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\entities\Soldier.ts                         | TypeScript         |         74 |          0 |          2 |         76 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\factories\createArmy.ts                     | TypeScript         |         76 |          0 |          4 |         80 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\rendering\crossFenceRenderer.ts             | TypeScript         |         13 |          0 |          2 |         15 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\stats\archerStats.ts                        | TypeScript         |         12 |          0 |          2 |         14 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\stats\ashigaruStats.ts                      | TypeScript         |         12 |          0 |          2 |         14 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\stats\cavalryStats.ts                       | TypeScript         |         11 |          0 |          1 |         12 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\stats\soldierStats.ts                       | TypeScript         |         29 |          0 |          7 |         36 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\aiSystem.ts                         | TypeScript         |        144 |          0 |         19 |        163 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\armySetupSystem.ts                  | TypeScript         |         37 |          0 |          2 |         39 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\arrowAttackSystem.ts                | TypeScript         |        126 |          0 |          3 |        129 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\attackRuntime.ts                    | TypeScript         |         13 |          0 |          3 |         16 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\attackSystem.test.ts                | TypeScript         |        223 |          0 |         23 |        246 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\attackSystem.ts                     | TypeScript         |        116 |          1 |         13 |        130 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\baseSystem.test.ts                  | TypeScript         |        157 |          0 |         20 |        177 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\baseSystem.ts                       | TypeScript         |         69 |          0 |         10 |         79 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\battlefieldGeometry.ts              | TypeScript         |         84 |          0 |         16 |        100 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\bombardmentEffectSystem.ts          | TypeScript         |          6 |          0 |          1 |          7 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\cameraSystem.ts                     | TypeScript         |         61 |          0 |         10 |         71 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\cavalryChargeSystem.ts              | TypeScript         |         62 |          0 |          2 |         64 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\combatSystem.ts                     | TypeScript         |         37 |          1 |          4 |         42 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\combatTargetSystem.ts               | TypeScript         |         13 |          0 |          2 |         15 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\commandSystem.test.ts               | TypeScript         |        102 |          0 |         11 |        113 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\commandSystem.ts                    | TypeScript         |         89 |          1 |         13 |        103 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\damageComponentSystem.ts            | TypeScript         |         14 |          0 |          5 |         19 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\defenseSystem.ts                    | TypeScript         |         20 |          0 |          3 |         23 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\engagementPositioningSystem.test.ts | TypeScript         |        192 |          0 |         23 |        215 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\engagementPositioningSystem.ts      | TypeScript         |         90 |          0 |         11 |        101 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\gunAttackSystem.ts                  | TypeScript         |        111 |          0 |          2 |        113 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\movementSystem.ts                   | TypeScript         |        272 |          0 |         19 |        291 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\normalCombatSystem.ts               | TypeScript         |         34 |          1 |          5 |         40 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\obstacleAvoidance.test.ts           | TypeScript         |        103 |          0 |         15 |        118 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase3dCombat.test.ts               | TypeScript         |        149 |          0 |         20 |        169 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase3eBattlefield.test.ts          | TypeScript         |        146 |          0 |         15 |        161 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase3fFidelity.test.ts             | TypeScript         |        156 |          0 |         16 |        172 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase3gFixes.test.ts                | TypeScript         |        223 |          0 |         23 |        246 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase3hIntegration.test.ts          | TypeScript         |        146 |          0 |         14 |        160 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase3jPlayerControl.test.ts        | TypeScript         |         86 |          0 |          2 |         88 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase4a1GunBehavior.test.ts         | TypeScript         |         52 |          0 |          3 |         55 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase4aGunLoadout.test.ts           | TypeScript         |         89 |          0 |          3 |         92 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase4bBombardment.test.ts          | TypeScript         |        104 |          0 |          3 |        107 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase4c1TargetStrategy.test.ts      | TypeScript         |         62 |          0 |          2 |         64 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase4cCavalry.test.ts              | TypeScript         |         92 |          0 |          2 |         94 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase4d1Archer.test.ts              | TypeScript         |         69 |          0 |          3 |         72 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase4d2ArcherArea.test.ts          | TypeScript         |        103 |          0 |          3 |        106 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\phase4eAshigaru.test.ts             | TypeScript         |         91 |          0 |          3 |         94 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\playerControlSystem.ts              | TypeScript         |         15 |          0 |          2 |         17 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\reactionSystem.test.ts              | TypeScript         |        217 |          0 |         22 |        239 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\reactionSystem.ts                   | TypeScript         |         65 |          0 |          6 |         71 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\recoverySystem.test.ts              | TypeScript         |         90 |          0 |          9 |         99 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\recoverySystem.ts                   | TypeScript         |        214 |          0 |         16 |        230 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\skillCooldownSystem.ts              | TypeScript         |          6 |          0 |          1 |          7 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\soldierInspectorSystem.ts           | TypeScript         |         33 |          0 |          3 |         36 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\spearAttackSystem.ts                | TypeScript         |         90 |          0 |          3 |         93 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\specialAbilitySystem.test.ts        | TypeScript         |         42 |          0 |          2 |         44 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\specialAbilitySystem.ts             | TypeScript         |         82 |          0 |          2 |         84 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\specialAttackSystem.ts              | TypeScript         |        170 |          0 |         12 |        182 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\strategyEngagement.test.ts          | TypeScript         |        110 |          0 |         13 |        123 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\systems.test.ts                     | TypeScript         |         80 |          0 |         10 |         90 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\unitLoadoutSystem.ts                | TypeScript         |         57 |          0 |          2 |         59 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\systems\victorySystem.ts                    | TypeScript         |         13 |          0 |          2 |         15 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\types.ts                                    | TypeScript         |        136 |          1 |         15 |        152 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\ui\armySetupPanel.ts                        | TypeScript         |         49 |          0 |          2 |         51 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\game\ui\playerLoadoutPanel.ts                    | TypeScript         |         59 |          0 |          2 |         61 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\main.ts                                          | TypeScript         |         17 |          0 |          3 |         20 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\src\style.css                                        | PostCSS            |         13 |          0 |          1 |         14 |
+| c:\Users\jingc\Documents\戦国じゃんぶる\tsconfig.json                                        | JSON with Comments |         16 |          0 |          1 |         17 |
+| Total                                                                                 |                    |      8,079 |         16 |        551 |      8,646 |
++---------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

@@ -1,0 +1,248 @@
+{
+  "frames": {
+    "intro_background": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 380,
+        "h": 380
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 380,
+        "h": 380
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 380,
+        "h": 380
+      },
+      "bitmap_id": 2463,
+      "source_file": "2463.png",
+      "source_sha256": "265ce6f41cf31aaa073a6f0735f3f36b7183baf743bc08b75afc44e033666beb"
+    },
+    "silhouette_mounted_b": {
+      "frame": {
+        "x": 384,
+        "y": 2,
+        "w": 125,
+        "h": 261
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 125,
+        "h": 261
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 125,
+        "h": 261
+      },
+      "bitmap_id": 2487,
+      "source_file": "2487.png",
+      "source_sha256": "dce00ee41fff93820f5e83d29fcb00babdbb5c3fe332e35967e4dea88531cac4"
+    },
+    "silhouette_mounted_a": {
+      "frame": {
+        "x": 511,
+        "y": 2,
+        "w": 100,
+        "h": 206
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 100,
+        "h": 206
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 100,
+        "h": 206
+      },
+      "bitmap_id": 2484,
+      "source_file": "2484.png",
+      "source_sha256": "a54c4e4e09440220f9ae232aad982e5146bdba2af850f056c93807d58873d87a"
+    },
+    "silhouette_banner_small": {
+      "frame": {
+        "x": 613,
+        "y": 2,
+        "w": 61,
+        "h": 192
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 61,
+        "h": 192
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 61,
+        "h": 192
+      },
+      "bitmap_id": 2481,
+      "source_file": "2481.png",
+      "source_sha256": "9c210b0fb63ad9e4a1c5d98b72ce9df79a957911477b3ac782f138986b8e4a83"
+    },
+    "silhouette_spear": {
+      "frame": {
+        "x": 676,
+        "y": 2,
+        "w": 54,
+        "h": 179
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 54,
+        "h": 179
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 54,
+        "h": 179
+      },
+      "bitmap_id": 2478,
+      "source_file": "2478.png",
+      "source_sha256": "7cc70626a4a2bdf98263a022d925d4771842e7f1022f4a628316e12d753c78cd"
+    },
+    "vs_glow": {
+      "frame": {
+        "x": 732,
+        "y": 2,
+        "w": 78,
+        "h": 69
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 78,
+        "h": 69
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 78,
+        "h": 69
+      },
+      "bitmap_id": 2471,
+      "source_file": "2471.png",
+      "source_sha256": "2c92c663ad19eb5c3c71239f0c3ffa400f4b3eb2f28380a196ab3214228b07f5"
+    },
+    "vs_main": {
+      "frame": {
+        "x": 812,
+        "y": 2,
+        "w": 66,
+        "h": 56
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 66,
+        "h": 56
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 66,
+        "h": 56
+      },
+      "bitmap_id": 2475,
+      "source_file": "2475.png",
+      "source_sha256": "a81756a1c9e2e168d9860eddd86e2c265ed6d232c578637cf38b16e1791bedb1"
+    },
+    "intro_control_strip": {
+      "frame": {
+        "x": 2,
+        "y": 384,
+        "w": 382,
+        "h": 41
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 382,
+        "h": 41
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 382,
+        "h": 41
+      },
+      "bitmap_id": 2492,
+      "source_file": "2492.png",
+      "source_sha256": "5988bd609ad22eb6ada1cb3d3e4be1105c5a6aaf813db38be56c518f69959a23"
+    },
+    "intro_player_badge": {
+      "frame": {
+        "x": 386,
+        "y": 384,
+        "w": 48,
+        "h": 20
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 48,
+        "h": 20
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 48,
+        "h": 20
+      },
+      "bitmap_id": 2494,
+      "source_file": "2494.png",
+      "source_sha256": "17768658486d663059727ceed7cc581df2f4d4e94de64c2320c94824acd7587d"
+    },
+    "intro_skill_hint": {
+      "frame": {
+        "x": 436,
+        "y": 384,
+        "w": 90,
+        "h": 18
+      },
+      "rotated": false,
+      "trimmed": false,
+      "sourceSize": {
+        "w": 90,
+        "h": 18
+      },
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 90,
+        "h": 18
+      },
+      "bitmap_id": 2495,
+      "source_file": "2495.png",
+      "source_sha256": "d1aad51d4828e705b60d315f59332b95ba3f8048e73af13941af56cfd03ba41b"
+    }
+  },
+  "meta": {
+    "app": "SWF traced no-trim atlas builder",
+    "image": "battle_intro_atlas.png",
+    "format": "RGBA8888",
+    "scale": "1",
+    "size": {
+      "w": 1024,
+      "h": 512
+    },
+    "padding": 2,
+    "rotation": false,
+    "trim": false,
+    "source_pixels_modified": false
+  }
+}

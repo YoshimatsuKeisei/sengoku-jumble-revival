@@ -1,0 +1,21 @@
+﻿id,what,when,where,frames,motion,disappear,confidence
+active_hud,戦闘中HUD全体,root frame 14 (gmain) の間,380x380 stage全体,rootがframe14に停止している間,なし（子MovieClipのみ独自動作）,root frame16で一括remove,confirmed
+top_counts,mb/mm/em/eb人数・陣地系4数値＋背景2553,active HUD開始時,"背景(0,0)、文字x=36/72/133/170,y=8",active HUD中常駐,なし,root frame16,confirmed
+timer,残り時間tm＋背景2559,active HUD開始時。初期値3:00,"背景(318,2)、文字(345,8)",active HUD中常駐,文字のみ更新,root frame16,confirmed
+ma,PLAYER側の動的イベント通知帯2582＋警告2565＋Text cm,ActionScript cma(message) が前回cmとの差を検知しgotoAndPlay(2),"root(-1,30)。左外からstage x=-2へ。Text nominal(23,37), bounds(21,35)-(187.95,50)",visible frame2-45 = 44f = 1.833s,frame3-6で右へ進入、白フラッシュ解除、frame6-45保持,frame45後frame1へループし_visible=false; stop(),confirmed
+ea,ENEMY側の動的イベント通知帯2562＋警告2565＋Text cm,ActionScript cea(message) が前回cmとの差を検知しgotoAndPlay(2),"root(186,30)。右外からstage x=186へ。Text nominal(197,37), bounds(195,35)-(361.95,50)",visible frame2-45 = 44f = 1.833s,frame3-6で左へ進入、白フラッシュ解除、frame6-45保持,frame45後frame1へループし_visible=false; stop(),confirmed
+bottom_status,左右キャラクターステータス背景2571と動的文字,active HUD開始時,"背景(-2,340)、文字y=347/364",active HUD中常駐,文字・値・trm・kpbだけ更新,root frame16,confirmed
+target_status,右側target欄 tnm/thp/tpw/tdf/tmp/ts と所属trm,攻撃/接触処理のActionScript関数d・atckで対象を取得,"右半分。trm(173,344)",次の対象更新まで保持,trm.gotoAndStop(target.e): 1=自/味方、2=敵,HUD終了。個別clear処理は未確認,confirmed
+left_status,左側mnm/mhp/mpw/mdfとkpb,初期化は確認。更新元は解析済みframe scriptだけでは未確定,"左半分。kpb root(21,366)",active HUD中常駐,kpbは100段階の位置変化を持つ,root frame16,probable
+initial_help,操作説明2492＋PLAYER/技能クリック案内2494/2495,active HUD配置直後、uwdの初回再生,"説明最終stage(-2,340)、案内原点(150,105)",uwd frame2-108=107f=4.458s。案内は親2498 frame6-84=79f=3.292s,下から10fで進入、約3.54s保持、9fで下へ退場。案内はfade in/out,uwd frame108でgotoAndStop(1)、exit buttonへ戻る,confirmed
+temporary_message,警告 state2/3/4,sttmc設定後uwd.gotoAndPlay('stta'),"最終stage(-2,340)",同じ107fシーケンス,下から進入→保持→下へ退場,frame108でexit buttonへ戻る,confirmed
+terminal_message,陣地陥落 state6/7,sttmc設定後uwd.gotoAndStop('sttb'),"stage(-2,340)",frame13に停止するため外部遷移まで無期限,進入アニメを飛ばし完成位置へ即表示,root/result遷移で除去,confirmed
+exit_button,終了ボタン2598/2600,uwd frame1,"stage(343,343), 34x36",他メッセージ非表示中,hover/down画像切替,"clickでsttmc=5, stta再生。確認後sttcで復帰",confirmed
+exit_confirm,終了確認2509、YES/NOボタン,exit button click,"panel(-2,340)、YES(201,350)、NO(269,350)",ユーザー操作までframe13相当で保持する設計,uwd共通進入後に保持,NO/YESともsttcで退場。YESはedrsn=1等を設定,confirmed
+progress_warning,敵陣攻撃不可のルール注意2532,root frame13でkalt配置直後,"kalt root(11,4)",frame1-166=6.917s,12f fade-in、frame13-152保持、13f fade-out,frame166 remove+stop,confirmed
+mode_notice,モード別注意2535/2537,kalt.gotoAndPlay('k')等でframe167系列へ,"stage(11,31)",frame167-244 ≈3.25s,fade-in→保持→fade-out,frame244 removeし条件分岐,confirmed
+win_counter,勝ち抜き人数2540＋n1/n2,kalt frame246,"kalt(-13,-6)+root(11,4)=stage(-2,-2)",frame246でstop、別指示まで保持,ActionScript tiky/atckが数値更新,gotoAndPlay('sch')等の次状態,confirmed
+growth_counter,成長まで残り人数2545＋n1/n2,sgyomd==2分岐でkalt label sch(frame247)へ,"stage(-2,-2.4)",frame249でstop、別指示まで保持,数値のみ更新,親HUD終了/別状態,confirmed
+htbr,上端の非Bitmap 600段階バー,root frame14で配置。外部gotoAndStop元は未特定,"stage(2,20), 約200x4",spriteは600 frame、frame1 stop,morph ratioで2区間変化,root frame16,possible
+ending_overlay,state8の全画面終了演出2518/2520,message selector state8（直接呼出箇所は未発見）,"stage原点ほぼ(0,1)",5f、frame5 stop,笛画像が4fで約0.079x→1xへ急拡大,親/root result遷移,probable
+battle_intro_result,戦闘開始/結果トランジション Sprite2531 (bk),root frame13でintro配置、root frame15でresult側へ再配置,"stage(0,0)",intro frame1-96=4.0sでstop。result label maku frame97-160=64f=2.667s,複数morph・人物/装飾fade・下部説明panel進入。result側はframe105以降overlayをcolor-transform,introはroot frame14移行、resultはframe160でActionScript分岐,confirmed

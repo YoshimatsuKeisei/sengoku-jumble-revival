@@ -1,0 +1,7666 @@
+{
+  "cells": [
+    {
+      "cell_id": "x0y0",
+      "grid_x": 0,
+      "grid_y": 0,
+      "stage_x": 3,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 4,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y0",
+      "grid_x": 1,
+      "grid_y": 0,
+      "stage_x": 25,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 26,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y0",
+      "grid_x": 2,
+      "grid_y": 0,
+      "stage_x": 47,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 48,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y0",
+      "grid_x": 3,
+      "grid_y": 0,
+      "stage_x": 69,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 70,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y0",
+      "grid_x": 4,
+      "grid_y": 0,
+      "stage_x": 91,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 92,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y0",
+      "grid_x": 5,
+      "grid_y": 0,
+      "stage_x": 113,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 114,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y0",
+      "grid_x": 11,
+      "grid_y": 0,
+      "stage_x": 245,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 246,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y0",
+      "grid_x": 12,
+      "grid_y": 0,
+      "stage_x": 267,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 268,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 5,
+      "type": "military_school",
+      "icon": "cell_military_school",
+      "bottom_label": "location_label_military_school",
+      "description": "「軍師」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 6,
+        "leader": "本願寺顕如",
+        "opponent_army": "一向一揆",
+        "formation_id": 122,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x13y0",
+      "grid_x": 13,
+      "grid_y": 0,
+      "stage_x": 289,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 290,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y0",
+      "grid_x": 14,
+      "grid_y": 0,
+      "stage_x": 311,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 312,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y0",
+      "grid_x": 15,
+      "grid_y": 0,
+      "stage_x": 333,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 334,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 6,
+        "leader": "前田慶次郎",
+        "opponent_army": "前田慶次郎",
+        "formation_id": 118,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x16y0",
+      "grid_x": 16,
+      "grid_y": 0,
+      "stage_x": 355,
+      "stage_y": 3,
+      "hit_area": {
+        "x": 356,
+        "y": 3,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 6,
+      "type": "samurai_residence",
+      "icon": "cell_samurai_residence",
+      "bottom_label": "location_label_samurai_residence",
+      "description": "「武将」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 6,
+        "leader": "上杉景勝",
+        "opponent_army": "上杉景勝軍",
+        "formation_id": 114,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x0y1",
+      "grid_x": 0,
+      "grid_y": 1,
+      "stage_x": 3,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 4,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y1",
+      "grid_x": 1,
+      "grid_y": 1,
+      "stage_x": 25,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 26,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 6,
+      "type": "samurai_residence",
+      "icon": "cell_samurai_residence",
+      "bottom_label": "location_label_samurai_residence",
+      "description": "「武将」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "毛利輝元",
+        "opponent_army": "毛利輝元軍",
+        "formation_id": 115,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x2y1",
+      "grid_x": 2,
+      "grid_y": 1,
+      "stage_x": 47,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 48,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y1",
+      "grid_x": 3,
+      "grid_y": 1,
+      "stage_x": 69,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 70,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y1",
+      "grid_x": 4,
+      "grid_y": 1,
+      "stage_x": 91,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 92,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "愚連隊",
+        "formation_id": null,
+        "formation_random_range": [
+          17,
+          21
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y1",
+      "grid_x": 5,
+      "grid_y": 1,
+      "stage_x": 113,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 114,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x10y1",
+      "grid_x": 10,
+      "grid_y": 1,
+      "stage_x": 223,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 224,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y1",
+      "grid_x": 11,
+      "grid_y": 1,
+      "stage_x": 245,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 246,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 6,
+      "type": "samurai_residence",
+      "icon": "cell_samurai_residence",
+      "bottom_label": "location_label_samurai_residence",
+      "description": "「武将」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "浪人衆",
+        "formation_id": null,
+        "formation_random_range": [
+          12,
+          16
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y1",
+      "grid_x": 12,
+      "grid_y": 1,
+      "stage_x": 267,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 268,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y1",
+      "grid_x": 13,
+      "grid_y": 1,
+      "stage_x": 289,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 290,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y1",
+      "grid_x": 14,
+      "grid_y": 1,
+      "stage_x": 311,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 312,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 7,
+      "type": "enemy_castle",
+      "icon": "enemy_castle_gray",
+      "bottom_label": "location_label_enemy_castle",
+      "description": "攻略目標の敵城です。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 6,
+        "leader": "柴田勝家",
+        "opponent_army": "柴田勝家軍",
+        "formation_id": 125,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x15y1",
+      "grid_x": 15,
+      "grid_y": 1,
+      "stage_x": 333,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 334,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y1",
+      "grid_x": 16,
+      "grid_y": 1,
+      "stage_x": 355,
+      "stage_y": 25,
+      "hit_area": {
+        "x": 356,
+        "y": 25,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x0y2",
+      "grid_x": 0,
+      "grid_y": 2,
+      "stage_x": 3,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 4,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y2",
+      "grid_x": 1,
+      "grid_y": 2,
+      "stage_x": 25,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 26,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y2",
+      "grid_x": 2,
+      "grid_y": 2,
+      "stage_x": 47,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 48,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y2",
+      "grid_x": 3,
+      "grid_y": 2,
+      "stage_x": 69,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 70,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 7,
+      "type": "enemy_castle",
+      "icon": "enemy_castle_gray",
+      "bottom_label": "location_label_enemy_castle",
+      "description": "攻略目標の敵城です。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 8,
+        "leader": "羽柴秀吉",
+        "opponent_army": "羽柴秀吉軍",
+        "formation_id": 127,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x4y2",
+      "grid_x": 4,
+      "grid_y": 2,
+      "stage_x": 91,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 92,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y2",
+      "grid_x": 5,
+      "grid_y": 2,
+      "stage_x": 113,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 114,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x6y2",
+      "grid_x": 6,
+      "grid_y": 2,
+      "stage_x": 135,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 136,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x9y2",
+      "grid_x": 9,
+      "grid_y": 2,
+      "stage_x": 201,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 202,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "愚連隊",
+        "formation_id": null,
+        "formation_random_range": [
+          17,
+          21
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x10y2",
+      "grid_x": 10,
+      "grid_y": 2,
+      "stage_x": 223,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 224,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y2",
+      "grid_x": 11,
+      "grid_y": 2,
+      "stage_x": 245,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 246,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y2",
+      "grid_x": 12,
+      "grid_y": 2,
+      "stage_x": 267,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 268,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y2",
+      "grid_x": 13,
+      "grid_y": 2,
+      "stage_x": 289,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 290,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y2",
+      "grid_x": 14,
+      "grid_y": 2,
+      "stage_x": 311,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 312,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y2",
+      "grid_x": 15,
+      "grid_y": 2,
+      "stage_x": 333,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 334,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y2",
+      "grid_x": 16,
+      "grid_y": 2,
+      "stage_x": 355,
+      "stage_y": 47,
+      "hit_area": {
+        "x": 356,
+        "y": 47,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x0y3",
+      "grid_x": 0,
+      "grid_y": 3,
+      "stage_x": 3,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 4,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y3",
+      "grid_x": 1,
+      "grid_y": 3,
+      "stage_x": 25,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 26,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y3",
+      "grid_x": 2,
+      "grid_y": 3,
+      "stage_x": 47,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 48,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y3",
+      "grid_x": 3,
+      "grid_y": 3,
+      "stage_x": 69,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 70,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y3",
+      "grid_x": 4,
+      "grid_y": 3,
+      "stage_x": 91,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 92,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y3",
+      "grid_x": 5,
+      "grid_y": 3,
+      "stage_x": 113,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 114,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 2,
+      "type": "gunsmith",
+      "icon": "cell_gunsmith",
+      "bottom_label": "location_label_gunsmith",
+      "description": "「鉄砲」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "稲富祐直",
+        "opponent_army": "稲富流砲術隊",
+        "formation_id": 107,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x6y3",
+      "grid_x": 6,
+      "grid_y": 3,
+      "stage_x": 135,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 136,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x7y3",
+      "grid_x": 7,
+      "grid_y": 3,
+      "stage_x": 157,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 158,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 5,
+      "type": "military_school",
+      "icon": "cell_military_school",
+      "bottom_label": "location_label_military_school",
+      "description": "「軍師」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": null,
+        "opponent_army_source_behavior": "retains_previous_value",
+        "recommended_app_fallback": "敵軍団",
+        "formation_id": 38,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x8y3",
+      "grid_x": 8,
+      "grid_y": 3,
+      "stage_x": 179,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 180,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x9y3",
+      "grid_x": 9,
+      "grid_y": 3,
+      "stage_x": 201,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 202,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x10y3",
+      "grid_x": 10,
+      "grid_y": 3,
+      "stage_x": 223,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 224,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y3",
+      "grid_x": 11,
+      "grid_y": 3,
+      "stage_x": 245,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 246,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y3",
+      "grid_x": 12,
+      "grid_y": 3,
+      "stage_x": 267,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 268,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y3",
+      "grid_x": 13,
+      "grid_y": 3,
+      "stage_x": 289,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 290,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y3",
+      "grid_x": 14,
+      "grid_y": 3,
+      "stage_x": 311,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 312,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y3",
+      "grid_x": 15,
+      "grid_y": 3,
+      "stage_x": 333,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 334,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 5,
+      "type": "military_school",
+      "icon": "cell_military_school",
+      "bottom_label": "location_label_military_school",
+      "description": "「軍師」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "姉小路頼綱",
+        "opponent_army": "姉小路頼綱軍",
+        "formation_id": 99,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x16y3",
+      "grid_x": 16,
+      "grid_y": 3,
+      "stage_x": 355,
+      "stage_y": 69,
+      "hit_area": {
+        "x": 356,
+        "y": 69,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x0y4",
+      "grid_x": 0,
+      "grid_y": 4,
+      "stage_x": 3,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 4,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "宮本武蔵",
+        "opponent_army": "宮本武蔵",
+        "formation_id": 119,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x1y4",
+      "grid_x": 1,
+      "grid_y": 4,
+      "stage_x": 25,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 26,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y4",
+      "grid_x": 2,
+      "grid_y": 4,
+      "stage_x": 47,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 48,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y4",
+      "grid_x": 3,
+      "grid_y": 4,
+      "stage_x": 69,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 70,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y4",
+      "grid_x": 4,
+      "grid_y": 4,
+      "stage_x": 91,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 92,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y4",
+      "grid_x": 5,
+      "grid_y": 4,
+      "stage_x": 113,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 114,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x6y4",
+      "grid_x": 6,
+      "grid_y": 4,
+      "stage_x": 135,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 136,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x7y4",
+      "grid_x": 7,
+      "grid_y": 4,
+      "stage_x": 157,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 158,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x8y4",
+      "grid_x": 8,
+      "grid_y": 4,
+      "stage_x": 179,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 180,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x9y4",
+      "grid_x": 9,
+      "grid_y": 4,
+      "stage_x": 201,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 202,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x10y4",
+      "grid_x": 10,
+      "grid_y": 4,
+      "stage_x": 223,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 224,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y4",
+      "grid_x": 11,
+      "grid_y": 4,
+      "stage_x": 245,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 246,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 2,
+      "type": "gunsmith",
+      "icon": "cell_gunsmith",
+      "bottom_label": "location_label_gunsmith",
+      "description": "「鉄砲」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "国友藤兵衛",
+        "opponent_army": "国友鉄砲隊",
+        "formation_id": 98,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x12y4",
+      "grid_x": 12,
+      "grid_y": 4,
+      "stage_x": 267,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 268,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y4",
+      "grid_x": 13,
+      "grid_y": 4,
+      "stage_x": 289,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 290,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y4",
+      "grid_x": 14,
+      "grid_y": 4,
+      "stage_x": 311,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 312,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y4",
+      "grid_x": 15,
+      "grid_y": 4,
+      "stage_x": 333,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 334,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y4",
+      "grid_x": 16,
+      "grid_y": 4,
+      "stage_x": 355,
+      "stage_y": 91,
+      "hit_area": {
+        "x": 356,
+        "y": 91,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x0y5",
+      "grid_x": 0,
+      "grid_y": 5,
+      "stage_x": 3,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 4,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y5",
+      "grid_x": 1,
+      "grid_y": 5,
+      "stage_x": 25,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 26,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 5,
+      "type": "military_school",
+      "icon": "cell_military_school",
+      "bottom_label": "location_label_military_school",
+      "description": "「軍師」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "宇喜多秀家",
+        "opponent_army": "宇喜多秀家軍",
+        "formation_id": 112,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x2y5",
+      "grid_x": 2,
+      "grid_y": 5,
+      "stage_x": 47,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 48,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y5",
+      "grid_x": 3,
+      "grid_y": 5,
+      "stage_x": 69,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 70,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y5",
+      "grid_x": 4,
+      "grid_y": 5,
+      "stage_x": 91,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 92,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "愚連隊",
+        "formation_id": null,
+        "formation_random_range": [
+          17,
+          21
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y5",
+      "grid_x": 5,
+      "grid_y": 5,
+      "stage_x": 113,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 114,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x6y5",
+      "grid_x": 6,
+      "grid_y": 5,
+      "stage_x": 135,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 136,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x7y5",
+      "grid_x": 7,
+      "grid_y": 5,
+      "stage_x": 157,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 158,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x8y5",
+      "grid_x": 8,
+      "grid_y": 5,
+      "stage_x": 179,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 180,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x10y5",
+      "grid_x": 10,
+      "grid_y": 5,
+      "stage_x": 223,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 224,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y5",
+      "grid_x": 11,
+      "grid_y": 5,
+      "stage_x": 245,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 246,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y5",
+      "grid_x": 12,
+      "grid_y": 5,
+      "stage_x": 267,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 268,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y5",
+      "grid_x": 13,
+      "grid_y": 5,
+      "stage_x": 289,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 290,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "愚連隊",
+        "formation_id": null,
+        "formation_random_range": [
+          17,
+          21
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y5",
+      "grid_x": 14,
+      "grid_y": 5,
+      "stage_x": 311,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 312,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y5",
+      "grid_x": 15,
+      "grid_y": 5,
+      "stage_x": 333,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 334,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y5",
+      "grid_x": 16,
+      "grid_y": 5,
+      "stage_x": 355,
+      "stage_y": 113,
+      "hit_area": {
+        "x": 356,
+        "y": 113,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 3,
+      "type": "ninja_village",
+      "icon": "cell_ninja_village",
+      "bottom_label": "location_label_ninja_village",
+      "description": "「忍者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "猿飛佐助",
+        "opponent_army": "透波衆",
+        "formation_id": 121,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x0y6",
+      "grid_x": 0,
+      "grid_y": 6,
+      "stage_x": 3,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 4,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y6",
+      "grid_x": 1,
+      "grid_y": 6,
+      "stage_x": 25,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 26,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y6",
+      "grid_x": 2,
+      "grid_y": 6,
+      "stage_x": 47,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 48,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y6",
+      "grid_x": 3,
+      "grid_y": 6,
+      "stage_x": 69,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 70,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y6",
+      "grid_x": 4,
+      "grid_y": 6,
+      "stage_x": 91,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 92,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y6",
+      "grid_x": 5,
+      "grid_y": 6,
+      "stage_x": 113,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 114,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x6y6",
+      "grid_x": 6,
+      "grid_y": 6,
+      "stage_x": 135,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 136,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x7y6",
+      "grid_x": 7,
+      "grid_y": 6,
+      "stage_x": 157,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 158,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x10y6",
+      "grid_x": 10,
+      "grid_y": 6,
+      "stage_x": 223,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 224,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 6,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y6",
+      "grid_x": 11,
+      "grid_y": 6,
+      "stage_x": 245,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 246,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y6",
+      "grid_x": 12,
+      "grid_y": 6,
+      "stage_x": 267,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 268,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y6",
+      "grid_x": 13,
+      "grid_y": 6,
+      "stage_x": 289,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 290,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y6",
+      "grid_x": 14,
+      "grid_y": 6,
+      "stage_x": 311,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 312,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y6",
+      "grid_x": 15,
+      "grid_y": 6,
+      "stage_x": 333,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 334,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y6",
+      "grid_x": 16,
+      "grid_y": 6,
+      "stage_x": 355,
+      "stage_y": 135,
+      "hit_area": {
+        "x": 356,
+        "y": 135,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 5,
+      "type": "military_school",
+      "icon": "cell_military_school",
+      "bottom_label": "location_label_military_school",
+      "description": "「軍師」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "真田昌幸",
+        "opponent_army": "真田昌幸軍",
+        "formation_id": 116,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x1y7",
+      "grid_x": 1,
+      "grid_y": 7,
+      "stage_x": 25,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 26,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y7",
+      "grid_x": 2,
+      "grid_y": 7,
+      "stage_x": 47,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 48,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y7",
+      "grid_x": 3,
+      "grid_y": 7,
+      "stage_x": 69,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 70,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y7",
+      "grid_x": 4,
+      "grid_y": 7,
+      "stage_x": 91,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 92,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y7",
+      "grid_x": 5,
+      "grid_y": 7,
+      "stage_x": 113,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 114,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x6y7",
+      "grid_x": 6,
+      "grid_y": 7,
+      "stage_x": 135,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 136,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 7,
+      "type": "enemy_castle",
+      "icon": "enemy_castle_gray",
+      "bottom_label": "location_label_enemy_castle",
+      "description": "攻略目標の敵城です。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "明智光秀",
+        "opponent_army": "明智光秀軍",
+        "formation_id": 124,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x7y7",
+      "grid_x": 7,
+      "grid_y": 7,
+      "stage_x": 157,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 158,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x8y7",
+      "grid_x": 8,
+      "grid_y": 7,
+      "stage_x": 179,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 180,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 6,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x9y7",
+      "grid_x": 9,
+      "grid_y": 7,
+      "stage_x": 201,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 202,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 7,
+      "type": "enemy_castle",
+      "icon": "enemy_castle_gray",
+      "bottom_label": "location_label_enemy_castle",
+      "description": "攻略目標の敵城です。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 9,
+        "leader": "織田信長",
+        "opponent_army": "織田信長軍",
+        "formation_id": 128,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x10y7",
+      "grid_x": 10,
+      "grid_y": 7,
+      "stage_x": 223,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 224,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 6,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y7",
+      "grid_x": 11,
+      "grid_y": 7,
+      "stage_x": 245,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 246,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y7",
+      "grid_x": 12,
+      "grid_y": 7,
+      "stage_x": 267,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 268,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 6,
+      "type": "samurai_residence",
+      "icon": "cell_samurai_residence",
+      "bottom_label": "location_label_samurai_residence",
+      "description": "「武将」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "浪人衆",
+        "formation_id": null,
+        "formation_random_range": [
+          12,
+          16
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y7",
+      "grid_x": 13,
+      "grid_y": 7,
+      "stage_x": 289,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 290,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y7",
+      "grid_x": 14,
+      "grid_y": 7,
+      "stage_x": 311,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 312,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y7",
+      "grid_x": 15,
+      "grid_y": 7,
+      "stage_x": 333,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 334,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y7",
+      "grid_x": 16,
+      "grid_y": 7,
+      "stage_x": 355,
+      "stage_y": 157,
+      "hit_area": {
+        "x": 356,
+        "y": 157,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y8",
+      "grid_x": 2,
+      "grid_y": 8,
+      "stage_x": 47,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 48,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y8",
+      "grid_x": 3,
+      "grid_y": 8,
+      "stage_x": 69,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 70,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 7,
+      "type": "enemy_castle",
+      "icon": "enemy_castle_gray",
+      "bottom_label": "location_label_enemy_castle",
+      "description": "攻略目標の敵城です。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "丹羽長秀",
+        "opponent_army": "丹羽長秀軍",
+        "formation_id": 123,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x4y8",
+      "grid_x": 4,
+      "grid_y": 8,
+      "stage_x": 91,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 92,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y8",
+      "grid_x": 5,
+      "grid_y": 8,
+      "stage_x": 113,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 114,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 5,
+      "type": "military_school",
+      "icon": "cell_military_school",
+      "bottom_label": "location_label_military_school",
+      "description": "「軍師」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "足利義昭",
+        "opponent_army": "足利義昭軍",
+        "formation_id": 113,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x6y8",
+      "grid_x": 6,
+      "grid_y": 8,
+      "stage_x": 135,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 136,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x7y8",
+      "grid_x": 7,
+      "grid_y": 8,
+      "stage_x": 157,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 158,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x8y8",
+      "grid_x": 8,
+      "grid_y": 8,
+      "stage_x": 179,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 180,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 6,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x9y8",
+      "grid_x": 9,
+      "grid_y": 8,
+      "stage_x": 201,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 202,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 7,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x10y8",
+      "grid_x": 10,
+      "grid_y": 8,
+      "stage_x": 223,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 224,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 6,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y8",
+      "grid_x": 11,
+      "grid_y": 8,
+      "stage_x": 245,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 246,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y8",
+      "grid_x": 12,
+      "grid_y": 8,
+      "stage_x": 267,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 268,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y8",
+      "grid_x": 13,
+      "grid_y": 8,
+      "stage_x": 289,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 290,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y8",
+      "grid_x": 14,
+      "grid_y": 8,
+      "stage_x": 311,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 312,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y8",
+      "grid_x": 15,
+      "grid_y": 8,
+      "stage_x": 333,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 334,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y8",
+      "grid_x": 16,
+      "grid_y": 8,
+      "stage_x": 355,
+      "stage_y": 179,
+      "hit_area": {
+        "x": 356,
+        "y": 179,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 6,
+      "type": "samurai_residence",
+      "icon": "cell_samurai_residence",
+      "bottom_label": "location_label_samurai_residence",
+      "description": "「武将」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "武田勝頼",
+        "opponent_army": "武田勝頼軍",
+        "formation_id": 110,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x2y9",
+      "grid_x": 2,
+      "grid_y": 9,
+      "stage_x": 47,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 48,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "千宗易",
+        "opponent_army": "堺衆",
+        "formation_id": 120,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x3y9",
+      "grid_x": 3,
+      "grid_y": 9,
+      "stage_x": 69,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 70,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y9",
+      "grid_x": 4,
+      "grid_y": 9,
+      "stage_x": 91,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 92,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y9",
+      "grid_x": 5,
+      "grid_y": 9,
+      "stage_x": 113,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 114,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x6y9",
+      "grid_x": 6,
+      "grid_y": 9,
+      "stage_x": 135,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 136,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x7y9",
+      "grid_x": 7,
+      "grid_y": 9,
+      "stage_x": 157,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 158,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x8y9",
+      "grid_x": 8,
+      "grid_y": 9,
+      "stage_x": 179,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 180,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x9y9",
+      "grid_x": 9,
+      "grid_y": 9,
+      "stage_x": 201,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 202,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x10y9",
+      "grid_x": 10,
+      "grid_y": 9,
+      "stage_x": 223,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 224,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y9",
+      "grid_x": 11,
+      "grid_y": 9,
+      "stage_x": 245,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 246,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y9",
+      "grid_x": 12,
+      "grid_y": 9,
+      "stage_x": 267,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 268,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y9",
+      "grid_x": 13,
+      "grid_y": 9,
+      "stage_x": 289,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 290,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y9",
+      "grid_x": 14,
+      "grid_y": 9,
+      "stage_x": 311,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 312,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y9",
+      "grid_x": 15,
+      "grid_y": 9,
+      "stage_x": 333,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 334,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y9",
+      "grid_x": 16,
+      "grid_y": 9,
+      "stage_x": 355,
+      "stage_y": 201,
+      "hit_area": {
+        "x": 356,
+        "y": 201,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x0y10",
+      "grid_x": 0,
+      "grid_y": 10,
+      "stage_x": 3,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 4,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y10",
+      "grid_x": 1,
+      "grid_y": 10,
+      "stage_x": 25,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 26,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y10",
+      "grid_x": 2,
+      "grid_y": 10,
+      "stage_x": 47,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 48,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y10",
+      "grid_x": 3,
+      "grid_y": 10,
+      "stage_x": 69,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 70,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y10",
+      "grid_x": 4,
+      "grid_y": 10,
+      "stage_x": 91,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 92,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 6,
+      "type": "samurai_residence",
+      "icon": "cell_samurai_residence",
+      "bottom_label": "location_label_samurai_residence",
+      "description": "「武将」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "筒井順慶",
+        "opponent_army": "筒井順慶軍",
+        "formation_id": 100,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x5y10",
+      "grid_x": 5,
+      "grid_y": 10,
+      "stage_x": 113,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 114,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x6y10",
+      "grid_x": 6,
+      "grid_y": 10,
+      "stage_x": 135,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 136,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 3,
+      "type": "ninja_village",
+      "icon": "cell_ninja_village",
+      "bottom_label": "location_label_ninja_village",
+      "description": "「忍者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "百地丹波",
+        "opponent_army": "伊賀百地忍軍",
+        "formation_id": 104,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x7y10",
+      "grid_x": 7,
+      "grid_y": 10,
+      "stage_x": 157,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 158,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x8y10",
+      "grid_x": 8,
+      "grid_y": 10,
+      "stage_x": 179,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 180,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "training_ground",
+      "icon": "training_gate",
+      "bottom_label": "location_label_special",
+      "description": "兵キャラをレベルアップ！",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "training_ground_forced",
+      "hover": {
+        "level": 10,
+        "leader": "修行場",
+        "opponent_army": "修行場",
+        "formation_id": 24
+      },
+      "always_movable": true,
+      "on_press": "open_training_panel"
+    },
+    {
+      "cell_id": "x9y10",
+      "grid_x": 9,
+      "grid_y": 10,
+      "stage_x": 201,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 202,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x10y10",
+      "grid_x": 10,
+      "grid_y": 10,
+      "stage_x": 223,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 224,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 6,
+      "type": "samurai_residence",
+      "icon": "cell_samurai_residence",
+      "bottom_label": "location_label_samurai_residence",
+      "description": "「武将」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "浪人衆",
+        "formation_id": null,
+        "formation_random_range": [
+          12,
+          16
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y10",
+      "grid_x": 11,
+      "grid_y": 10,
+      "stage_x": 245,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 246,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "愚連隊",
+        "formation_id": null,
+        "formation_random_range": [
+          17,
+          21
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y10",
+      "grid_x": 12,
+      "grid_y": 10,
+      "stage_x": 267,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 268,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 5,
+      "type": "military_school",
+      "icon": "cell_military_school",
+      "bottom_label": "location_label_military_school",
+      "description": "「軍師」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": null,
+        "opponent_army_source_behavior": "retains_previous_value",
+        "recommended_app_fallback": "敵軍団",
+        "formation_id": 38,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x13y10",
+      "grid_x": 13,
+      "grid_y": 10,
+      "stage_x": 289,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 290,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y10",
+      "grid_x": 14,
+      "grid_y": 10,
+      "stage_x": 311,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 312,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y10",
+      "grid_x": 15,
+      "grid_y": 10,
+      "stage_x": 333,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 334,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y10",
+      "grid_x": 16,
+      "grid_y": 10,
+      "stage_x": 355,
+      "stage_y": 223,
+      "hit_area": {
+        "x": 356,
+        "y": 223,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "愚連隊",
+        "formation_id": null,
+        "formation_random_range": [
+          17,
+          21
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x0y11",
+      "grid_x": 0,
+      "grid_y": 11,
+      "stage_x": 3,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 4,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y11",
+      "grid_x": 1,
+      "grid_y": 11,
+      "stage_x": 25,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 26,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y11",
+      "grid_x": 2,
+      "grid_y": 11,
+      "stage_x": 47,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 48,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y11",
+      "grid_x": 3,
+      "grid_y": 11,
+      "stage_x": 69,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 70,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y11",
+      "grid_x": 4,
+      "grid_y": 11,
+      "stage_x": 91,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 92,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y11",
+      "grid_x": 5,
+      "grid_y": 11,
+      "stage_x": 113,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 114,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x6y11",
+      "grid_x": 6,
+      "grid_y": 11,
+      "stage_x": 135,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 136,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 3,
+      "type": "ninja_village",
+      "icon": "cell_ninja_village",
+      "bottom_label": "location_label_ninja_village",
+      "description": "「忍者」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 2,
+        "leader": "藤林長門",
+        "opponent_army": "伊賀藤林忍軍",
+        "formation_id": 103,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x7y11",
+      "grid_x": 7,
+      "grid_y": 11,
+      "stage_x": 157,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 158,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x8y11",
+      "grid_x": 8,
+      "grid_y": 11,
+      "stage_x": 179,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 180,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x9y11",
+      "grid_x": 9,
+      "grid_y": 11,
+      "stage_x": 201,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 202,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x10y11",
+      "grid_x": 10,
+      "grid_y": 11,
+      "stage_x": 223,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 224,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y11",
+      "grid_x": 11,
+      "grid_y": 11,
+      "stage_x": 245,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 246,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y11",
+      "grid_x": 12,
+      "grid_y": 11,
+      "stage_x": 267,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 268,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y11",
+      "grid_x": 13,
+      "grid_y": 11,
+      "stage_x": 289,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 290,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y11",
+      "grid_x": 14,
+      "grid_y": 11,
+      "stage_x": 311,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 312,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y11",
+      "grid_x": 15,
+      "grid_y": 11,
+      "stage_x": 333,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 334,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y11",
+      "grid_x": 16,
+      "grid_y": 11,
+      "stage_x": 355,
+      "stage_y": 245,
+      "hit_area": {
+        "x": 356,
+        "y": 245,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x0y12",
+      "grid_x": 0,
+      "grid_y": 12,
+      "stage_x": 3,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 4,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 6,
+      "type": "samurai_residence",
+      "icon": "cell_samurai_residence",
+      "bottom_label": "location_label_samurai_residence",
+      "description": "「武将」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "浪人衆",
+        "formation_id": null,
+        "formation_random_range": [
+          12,
+          16
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y12",
+      "grid_x": 1,
+      "grid_y": 12,
+      "stage_x": 25,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 26,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y12",
+      "grid_x": 2,
+      "grid_y": 12,
+      "stage_x": 47,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 48,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y12",
+      "grid_x": 3,
+      "grid_y": 12,
+      "stage_x": 69,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 70,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y12",
+      "grid_x": 4,
+      "grid_y": 12,
+      "stage_x": 91,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 92,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 5,
+      "type": "military_school",
+      "icon": "cell_military_school",
+      "bottom_label": "location_label_military_school",
+      "description": "「軍師」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 5,
+        "leader": "松永久秀",
+        "opponent_army": "松永久秀軍",
+        "formation_id": 102,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x5y12",
+      "grid_x": 5,
+      "grid_y": 12,
+      "stage_x": 113,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 114,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x6y12",
+      "grid_x": 6,
+      "grid_y": 12,
+      "stage_x": 135,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 136,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x7y12",
+      "grid_x": 7,
+      "grid_y": 12,
+      "stage_x": 157,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 158,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x8y12",
+      "grid_x": 8,
+      "grid_y": 12,
+      "stage_x": 179,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 180,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 5,
+      "type": "military_school",
+      "icon": "cell_military_school",
+      "bottom_label": "location_label_military_school",
+      "description": "「軍師」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": null,
+        "opponent_army_source_behavior": "retains_previous_value",
+        "recommended_app_fallback": "敵軍団",
+        "formation_id": 38,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x9y12",
+      "grid_x": 9,
+      "grid_y": 12,
+      "stage_x": 201,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 202,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y12",
+      "grid_x": 11,
+      "grid_y": 12,
+      "stage_x": 245,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 246,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y12",
+      "grid_x": 12,
+      "grid_y": 12,
+      "stage_x": 267,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 268,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y12",
+      "grid_x": 13,
+      "grid_y": 12,
+      "stage_x": 289,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 290,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y12",
+      "grid_x": 14,
+      "grid_y": 12,
+      "stage_x": 311,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 312,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y12",
+      "grid_x": 15,
+      "grid_y": 12,
+      "stage_x": 333,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 334,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y12",
+      "grid_x": 16,
+      "grid_y": 12,
+      "stage_x": 355,
+      "stage_y": 267,
+      "hit_area": {
+        "x": 356,
+        "y": 267,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 7,
+      "type": "enemy_castle",
+      "icon": "enemy_castle_gray",
+      "bottom_label": "location_label_enemy_castle",
+      "description": "攻略目標の敵城です。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "滝川一益",
+        "opponent_army": "滝川一益軍",
+        "formation_id": 117,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x0y13",
+      "grid_x": 0,
+      "grid_y": 13,
+      "stage_x": 3,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 4,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 2,
+      "type": "gunsmith",
+      "icon": "cell_gunsmith",
+      "bottom_label": "location_label_gunsmith",
+      "description": "「鉄砲」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 6,
+        "leader": "雑賀孫一",
+        "opponent_army": "雑賀衆",
+        "formation_id": 106,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x1y13",
+      "grid_x": 1,
+      "grid_y": 13,
+      "stage_x": 25,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 26,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y13",
+      "grid_x": 2,
+      "grid_y": 13,
+      "stage_x": 47,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 48,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y13",
+      "grid_x": 3,
+      "grid_y": 13,
+      "stage_x": 69,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 70,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y13",
+      "grid_x": 4,
+      "grid_y": 13,
+      "stage_x": 91,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 92,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y13",
+      "grid_x": 5,
+      "grid_y": 13,
+      "stage_x": 113,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 114,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x6y13",
+      "grid_x": 6,
+      "grid_y": 13,
+      "stage_x": 135,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 136,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x7y13",
+      "grid_x": 7,
+      "grid_y": 13,
+      "stage_x": 157,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 158,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x8y13",
+      "grid_x": 8,
+      "grid_y": 13,
+      "stage_x": 179,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 180,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x10y13",
+      "grid_x": 10,
+      "grid_y": 13,
+      "stage_x": 223,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 224,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y13",
+      "grid_x": 11,
+      "grid_y": 13,
+      "stage_x": 245,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 246,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y13",
+      "grid_x": 12,
+      "grid_y": 13,
+      "stage_x": 267,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 268,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y13",
+      "grid_x": 13,
+      "grid_y": 13,
+      "stage_x": 289,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 290,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 7,
+      "type": "enemy_castle",
+      "icon": "enemy_castle_gray",
+      "bottom_label": "location_label_enemy_castle",
+      "description": "攻略目標の敵城です。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 7,
+        "leader": "徳川家康",
+        "opponent_army": "徳川家康軍",
+        "formation_id": 126,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x14y13",
+      "grid_x": 14,
+      "grid_y": 13,
+      "stage_x": 311,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 312,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 3,
+      "type": "ninja_village",
+      "icon": "cell_ninja_village",
+      "bottom_label": "location_label_ninja_village",
+      "description": "「忍者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "服部半蔵",
+        "opponent_army": "服部半蔵軍",
+        "formation_id": 108,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x15y13",
+      "grid_x": 15,
+      "grid_y": 13,
+      "stage_x": 333,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 334,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y13",
+      "grid_x": 16,
+      "grid_y": 13,
+      "stage_x": 355,
+      "stage_y": 289,
+      "hit_area": {
+        "x": 356,
+        "y": 289,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x0y14",
+      "grid_x": 0,
+      "grid_y": 14,
+      "stage_x": 3,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 4,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y14",
+      "grid_x": 1,
+      "grid_y": 14,
+      "stage_x": 25,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 26,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y14",
+      "grid_x": 2,
+      "grid_y": 14,
+      "stage_x": 47,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 48,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y14",
+      "grid_x": 3,
+      "grid_y": 14,
+      "stage_x": 69,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 70,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y14",
+      "grid_x": 4,
+      "grid_y": 14,
+      "stage_x": 91,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 92,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 2,
+        "leader": "",
+        "opponent_army": "愚連隊",
+        "formation_id": null,
+        "formation_random_range": [
+          17,
+          21
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y14",
+      "grid_x": 5,
+      "grid_y": 14,
+      "stage_x": 113,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 114,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x6y14",
+      "grid_x": 6,
+      "grid_y": 14,
+      "stage_x": 135,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 136,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x7y14",
+      "grid_x": 7,
+      "grid_y": 14,
+      "stage_x": 157,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 158,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 6,
+      "type": "samurai_residence",
+      "icon": "cell_samurai_residence",
+      "bottom_label": "location_label_samurai_residence",
+      "description": "「武将」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "浪人衆",
+        "formation_id": null,
+        "formation_random_range": [
+          12,
+          16
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x8y14",
+      "grid_x": 8,
+      "grid_y": 14,
+      "stage_x": 179,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 180,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x11y14",
+      "grid_x": 11,
+      "grid_y": 14,
+      "stage_x": 245,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 246,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x12y14",
+      "grid_x": 12,
+      "grid_y": 14,
+      "stage_x": 267,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 268,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y14",
+      "grid_x": 13,
+      "grid_y": 14,
+      "stage_x": 289,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 290,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "愚連隊",
+        "formation_id": null,
+        "formation_random_range": [
+          17,
+          21
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y14",
+      "grid_x": 14,
+      "grid_y": 14,
+      "stage_x": 311,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 312,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 5,
+      "type": "military_school",
+      "icon": "cell_military_school",
+      "bottom_label": "location_label_military_school",
+      "description": "「軍師」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 4,
+        "leader": "本多正信",
+        "opponent_army": "本多正信軍",
+        "formation_id": 109,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x15y14",
+      "grid_x": 15,
+      "grid_y": 14,
+      "stage_x": 333,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 334,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y14",
+      "grid_x": 16,
+      "grid_y": 14,
+      "stage_x": 355,
+      "stage_y": 311,
+      "hit_area": {
+        "x": 356,
+        "y": 311,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x0y15",
+      "grid_x": 0,
+      "grid_y": 15,
+      "stage_x": 3,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 4,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "",
+        "opponent_army": "愚連隊",
+        "formation_id": null,
+        "formation_random_range": [
+          17,
+          21
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y15",
+      "grid_x": 1,
+      "grid_y": 15,
+      "stage_x": 25,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 26,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y15",
+      "grid_x": 2,
+      "grid_y": 15,
+      "stage_x": 47,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 48,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x3y15",
+      "grid_x": 3,
+      "grid_y": 15,
+      "stage_x": 69,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 70,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x4y15",
+      "grid_x": 4,
+      "grid_y": 15,
+      "stage_x": 91,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 92,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x5y15",
+      "grid_x": 5,
+      "grid_y": 15,
+      "stage_x": 113,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 114,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x7y15",
+      "grid_x": 7,
+      "grid_y": 15,
+      "stage_x": 157,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 158,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x8y15",
+      "grid_x": 8,
+      "grid_y": 15,
+      "stage_x": 179,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 180,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x9y15",
+      "grid_x": 9,
+      "grid_y": 15,
+      "stage_x": 201,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 202,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 4,
+      "type": "downtown",
+      "icon": "cell_downtown",
+      "bottom_label": "location_label_downtown",
+      "description": "「猛者」を登用できます。",
+      "movable_from_default_8_14": true,
+      "movable_basis_from_default_8_14": "within_plus_minus_3_rectangle",
+      "hover": {
+        "level": 2,
+        "leader": "九鬼嘉隆",
+        "opponent_army": "九鬼水軍",
+        "formation_id": 101,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x12y15",
+      "grid_x": 12,
+      "grid_y": 15,
+      "stage_x": 267,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 268,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x13y15",
+      "grid_x": 13,
+      "grid_y": 15,
+      "stage_x": 289,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 290,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x14y15",
+      "grid_x": 14,
+      "grid_y": 15,
+      "stage_x": 311,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 312,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y15",
+      "grid_x": 15,
+      "grid_y": 15,
+      "stage_x": 333,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 334,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y15",
+      "grid_x": 16,
+      "grid_y": 15,
+      "stage_x": 355,
+      "stage_y": 333,
+      "hit_area": {
+        "x": 356,
+        "y": 333,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 6,
+      "type": "samurai_residence",
+      "icon": "cell_samurai_residence",
+      "bottom_label": "location_label_samurai_residence",
+      "description": "「武将」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 3,
+        "leader": "北条氏政",
+        "opponent_army": "北条氏政軍",
+        "formation_id": 111,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x0y16",
+      "grid_x": 0,
+      "grid_y": 16,
+      "stage_x": 3,
+      "stage_y": 355,
+      "hit_area": {
+        "x": 4,
+        "y": 355,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x1y16",
+      "grid_x": 1,
+      "grid_y": 16,
+      "stage_x": 25,
+      "stage_y": 355,
+      "hit_area": {
+        "x": 26,
+        "y": 355,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x2y16",
+      "grid_x": 2,
+      "grid_y": 16,
+      "stage_x": 47,
+      "stage_y": 355,
+      "hit_area": {
+        "x": 48,
+        "y": 355,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x15y16",
+      "grid_x": 15,
+      "grid_y": 16,
+      "stage_x": 333,
+      "stage_y": 355,
+      "hit_area": {
+        "x": 334,
+        "y": 355,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 1,
+      "type": "plain",
+      "icon": "cell_plain",
+      "bottom_label": "location_label_plain",
+      "description": "「足軽」「弓兵」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 1,
+        "leader": "",
+        "opponent_army": "織田家・雑軍",
+        "formation_id": null,
+        "formation_random_range": [
+          1,
+          38
+        ],
+        "formation_basis": "random"
+      }
+    },
+    {
+      "cell_id": "x16y16",
+      "grid_x": 16,
+      "grid_y": 16,
+      "stage_x": 355,
+      "stage_y": 355,
+      "hit_area": {
+        "x": 356,
+        "y": 355,
+        "w": 21,
+        "h": 21
+      },
+      "type_code": 3,
+      "type": "ninja_village",
+      "icon": "cell_ninja_village",
+      "bottom_label": "location_label_ninja_village",
+      "description": "「忍者」を登用できます。",
+      "movable_from_default_8_14": false,
+      "movable_basis_from_default_8_14": "not_reachable",
+      "hover": {
+        "level": 6,
+        "leader": "風魔小太郎",
+        "opponent_army": "風魔忍軍",
+        "formation_id": 105,
+        "formation_basis": "fixed"
+      }
+    },
+    {
+      "cell_id": "x8y8_special_locked",
+      "aliases_cell": "x8y8",
+      "display_condition": "clrmap contains X#9#7X",
+      "display_state": "special_marker_a_or_b",
+      "bottom_label": "location_label_special",
+      "description": "全兵種を登用できます。",
+      "hover": {
+        "level": 10,
+        "leader": "裏戦国",
+        "opponent_army": "裏戦国",
+        "formation_id": 129
+      }
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "stage": {
+    "width": 380,
+    "height": 380,
+    "fps": 24
+  },
+  "root_frame": 17,
+  "entry_guard": {
+    "variable": "gmnwst",
+    "required_value": 331
+  },
+  "scene": {
+    "sprite_id": 2656,
+    "root_depth": 3,
+    "instance_name": "a",
+    "authoring_placement": {
+      "x": -101.65,
+      "y": -185.95,
+      "scale": 0.5
+    },
+    "runtime_normal_camera": {
+      "scale": 1.0,
+      "center_world": {
+        "x": 400,
+        "y": 575
+      },
+      "origin_stage": {
+        "x": -210,
+        "y": -385
+      }
+    },
+    "runtime_overview_camera": {
+      "scale": 0.36,
+      "center_world": {
+        "x": 600,
+        "y": 625
+      },
+      "origin_stage": {
+        "x": -26,
+        "y": -35
+      }
+    },
+    "transform_formula": "stage = (world - cameraCenter) * scale + (190,190)"
+  },
+  "layers_back_to_front": [
+    {
+      "depth": 20,
+      "symbol_id": 2640,
+      "role": "formation terrain composite"
+    },
+    {
+      "depth": 21,
+      "symbol_id": 2643,
+      "position": [
+        218,
+        665
+      ],
+      "role": "formation scenery"
+    },
+    {
+      "depth": 23,
+      "symbol_id": 2646,
+      "position": [
+        222.1,
+        666
+      ],
+      "role": "gate/post"
+    },
+    {
+      "depth": 25,
+      "symbol_id": 2646,
+      "position": [
+        222.1,
+        421
+      ],
+      "role": "gate/post"
+    },
+    {
+      "depth": 27,
+      "symbol_id": 2643,
+      "position": [
+        218.1,
+        518
+      ],
+      "role": "formation scenery"
+    },
+    {
+      "depth": 29,
+      "symbol_id": 232,
+      "position": [
+        56,
+        429
+      ],
+      "role": "upper horizontal fence"
+    },
+    {
+      "depth": 31,
+      "symbol_id": 232,
+      "position": [
+        56,
+        771
+      ],
+      "role": "lower horizontal fence"
+    },
+    {
+      "depth": 33,
+      "symbol_id": 2650,
+      "position": [
+        222,
+        526
+      ],
+      "role": "posts/fences"
+    },
+    {
+      "depth": 39,
+      "symbol_id": 2650,
+      "name": "s1",
+      "position": [
+        565,
+        526
+      ],
+      "role": "blocking fence"
+    },
+    {
+      "depth": 45,
+      "symbol_id": 2650,
+      "name": "s2",
+      "position": [
+        665,
+        786
+      ],
+      "role": "blocking fence"
+    },
+    {
+      "depth": 51,
+      "symbol_id": 2650,
+      "name": "s3",
+      "position": [
+        665,
+        306
+      ],
+      "role": "blocking fence"
+    },
+    {
+      "depth": 57,
+      "symbol_id": 2455,
+      "name": "m",
+      "role": "soldier template, duplicated to m0..m29"
+    },
+    {
+      "depth": 73,
+      "symbol_id": 2455,
+      "name": "m200",
+      "role": "formation controller"
+    },
+    {
+      "depth": 91,
+      "symbol_id": 2653,
+      "position": [
+        177,
+        504.5
+      ],
+      "role": "crossed fence"
+    },
+    {
+      "depth": 93,
+      "symbol_id": 2653,
+      "position": [
+        177,
+        671.5
+      ],
+      "role": "crossed fence"
+    },
+    {
+      "depth": 95,
+      "symbol_id": 2655,
+      "alpha": 0.3984375,
+      "role": "blocked-area overlay"
+    },
+    {
+      "depth": 97,
+      "symbol_id": 2653,
+      "name": "flg",
+      "role": "leader flag, follows m0 at y-22"
+    }
+  ],
+  "root_overlays": [
+    {
+      "depth": 103,
+      "symbol_id": 2660,
+      "name": "am",
+      "role": "overview grid; frame1 hidden, frame2 bitmap2658"
+    },
+    {
+      "depth": 105,
+      "symbol_id": 2662,
+      "name": "wk",
+      "role": "135px circular view cursor, hidden offstage normally"
+    },
+    {
+      "depth": 109,
+      "symbol_id": 2693,
+      "name": "jkhz",
+      "role": "formation slot drawer; deferred"
+    },
+    {
+      "depth": 111,
+      "symbol_id": 3033,
+      "name": "stw",
+      "role": "soldier detail/list; deferred"
+    },
+    {
+      "depth": 301,
+      "symbol_id": 3146,
+      "name": "wd",
+      "position": [
+        -2,
+        337
+      ],
+      "role": "bottom toolbar"
+    },
+    {
+      "depth": 324,
+      "symbol_id": 3157,
+      "name": "skds",
+      "role": "save-result modal; deferred"
+    }
+  ]
+}

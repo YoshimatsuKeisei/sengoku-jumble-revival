@@ -1,0 +1,167 @@
+{
+  "coordinate_system": {
+    "name": "bitmap_226_local",
+    "width": 1736,
+    "height": 885,
+    "bitmap_226_swf_origin": [
+      53,
+      149
+    ],
+    "note": "player_base.png, enemy_base.png, and battlefield_overlay_clean.png share this full-canvas origin"
+  },
+  "main_battle_symbol": 2456,
+  "source_chains": {
+    "embedded_parts": [
+      2456,
+      227,
+      226
+    ],
+    "upper_fence": [
+      2456,
+      232,
+      231,
+      230
+    ]
+  },
+  "embedded_component_masks": {
+    "player": [
+      {
+        "bbox": [
+          0,
+          284,
+          189,
+          625
+        ],
+        "pixels": 7939
+      },
+      {
+        "bbox": [
+          148,
+          303,
+          164,
+          354
+        ],
+        "pixels": 480
+      }
+    ],
+    "enemy": [
+      {
+        "bbox": [
+          1547,
+          283,
+          1736,
+          624
+        ],
+        "pixels": 7939
+      },
+      {
+        "bbox": [
+          1572,
+          302,
+          1588,
+          353
+        ],
+        "pixels": 480
+      }
+    ]
+  },
+  "cropped_outputs": {
+    "player_base_cropped.png": {
+      "offset": [
+        0,
+        225
+      ],
+      "bbox": [
+        0,
+        225,
+        189,
+        625
+      ]
+    },
+    "enemy_base_cropped.png": {
+      "offset": [
+        1547,
+        224
+      ],
+      "bbox": [
+        1547,
+        224,
+        1736,
+        624
+      ]
+    },
+    "226_player_base_embedded_component.png": {
+      "offset": [
+        0,
+        284
+      ],
+      "bbox": [
+        0,
+        284,
+        189,
+        625
+      ]
+    },
+    "226_enemy_base_embedded_component.png": {
+      "offset": [
+        1547,
+        283
+      ],
+      "bbox": [
+        1547,
+        283,
+        1736,
+        624
+      ]
+    }
+  },
+  "placements": [
+    {
+      "role": "terrain_and_embedded_base_parts",
+      "depth": 2,
+      "symbol_chain": "2456 -> shape 227 -> bitmap 226",
+      "source_size": "1736x885",
+      "swf_x": 53,
+      "swf_y": 149,
+      "overlay_local_x": 0,
+      "overlay_local_y": 0,
+      "transform": "identity"
+    },
+    {
+      "role": "enemy_base_top_fence",
+      "depth": 5,
+      "symbol_chain": "2456 -> sprite 232 -> shape 231 -> bitmap 230",
+      "source_size": "184x61",
+      "swf_x": 1606,
+      "swf_y": 372,
+      "overlay_local_x": 1553,
+      "overlay_local_y": 223,
+      "transform": "horizontal mirror (PlaceObject a=-1)"
+    },
+    {
+      "role": "player_base_top_fence",
+      "depth": 7,
+      "symbol_chain": "2456 -> sprite 232 -> shape 231 -> bitmap 230",
+      "source_size": "184x61",
+      "swf_x": 51,
+      "swf_y": 373,
+      "overlay_local_x": -2,
+      "overlay_local_y": 224,
+      "transform": "identity"
+    }
+  ],
+  "not_used_in_main_battle": {
+    "2637": "formation/demo ground patch",
+    "2638": "formation/demo terrain fleck A",
+    "2639": "formation/demo terrain fleck B",
+    "2641": "formation/demo vertical terrain piece",
+    "2644": "formation/demo post",
+    "2647": "formation/demo tall pole",
+    "2651": "formation/demo crossed fence"
+  },
+  "validation": {
+    "pixel_exact_recomposition": true,
+    "definition_chain_verified_from_swf": true,
+    "new_pixels_drawn": false
+  }
+}
