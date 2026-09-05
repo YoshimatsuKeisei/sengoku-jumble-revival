@@ -36,6 +36,10 @@ export function getBaseDamageCoreRect(base: Pick<BattleBase, "x" | "y" | "width"
   };
 }
 
+export function getBaseAttackSurfaceRect(base: Pick<BattleBase, "x" | "y" | "width" | "height" | "team">): Rect {
+  return getBaseDamageCoreRect(base);
+}
+
 function getBaseGateRect(base: BattleBase, gate: BaseGate): Rect {
   return { ...BATTLEFIELD_BASE_GATE_WORLD_RECTS[base.team][gate] };
 }

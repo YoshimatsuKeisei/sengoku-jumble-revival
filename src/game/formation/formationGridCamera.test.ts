@@ -41,7 +41,7 @@ describe("formation 36px grid and occupancy", () => {
     expect(canDropFormationSoldier(soldiers, "a", 12, 10)).toBe(true);
     expect(canDropFormationSoldier(soldiers, "a", 23, 10)).toBe(false);
     expect(canDropFormationSoldier(soldiers, "a", 11, 10)).toBe(false);
-    expect(getFormationFixedObstacleCells().get("18:10")).toBe("player-vanguard");
+    expect(getFormationFixedObstacleCells().get("18:10")).toBe("s3");
     expect(canDropFormationSoldier(soldiers, "a", 18, 10)).toBe(false);
   });
 

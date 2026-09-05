@@ -1,0 +1,448 @@
+{
+  "enemy_detail": {
+    "field_variables": {
+      "name": "nm",
+      "unit_type": "heishu",
+      "action_type": "wazashu",
+      "hp": "lhp",
+      "skill": "lkp",
+      "speed": "lsp",
+      "attack": "lpw",
+      "defense": "ldf",
+      "stipend_or_rank_display": "rkd",
+      "growth_label_asset": "bitmap_2709"
+    },
+    "unit_type_movieclip": {
+      "variable": "heishu",
+      "sprite_id": 2889,
+      "frame_map": [
+        {
+          "frame": 1,
+          "bitmap_id": 2873,
+          "label": "足軽"
+        },
+        {
+          "frame": 2,
+          "bitmap_id": 2875,
+          "label": "弓兵"
+        },
+        {
+          "frame": 3,
+          "bitmap_id": 2877,
+          "label": "武将"
+        },
+        {
+          "frame": 4,
+          "bitmap_id": 2879,
+          "label": "猛者"
+        },
+        {
+          "frame": 5,
+          "bitmap_id": 2881,
+          "label": "軍師"
+        },
+        {
+          "frame": 6,
+          "bitmap_id": 2883,
+          "label": "鉄砲"
+        },
+        {
+          "frame": 7,
+          "bitmap_id": 2885,
+          "label": "忍者"
+        },
+        {
+          "frame": 8,
+          "bitmap_id": 2887,
+          "label": "騎馬"
+        }
+      ]
+    },
+    "action_type_movieclip": {
+      "variable": "wazashu",
+      "sprite_id": 2946,
+      "frame_map": [
+        {
+          "frame": 1,
+          "bitmap_id": 2890,
+          "label": "槍撃"
+        },
+        {
+          "frame": 2,
+          "bitmap_id": 2892,
+          "label": "弓矢"
+        },
+        {
+          "frame": 3,
+          "bitmap_id": 2894,
+          "label": "速射"
+        },
+        {
+          "frame": 4,
+          "bitmap_id": 2896,
+          "label": "射撃"
+        },
+        {
+          "frame": 5,
+          "bitmap_id": 2898,
+          "label": "狙撃"
+        },
+        {
+          "frame": 6,
+          "bitmap_id": 2900,
+          "label": "火遁"
+        },
+        {
+          "frame": 7,
+          "bitmap_id": 2902,
+          "label": "火攻"
+        },
+        {
+          "frame": 8,
+          "bitmap_id": 2904,
+          "label": "火計"
+        },
+        {
+          "frame": 9,
+          "bitmap_id": 2906,
+          "label": "業火"
+        },
+        {
+          "frame": 10,
+          "bitmap_id": 2908,
+          "label": "焚討"
+        },
+        {
+          "frame": 11,
+          "bitmap_id": 2910,
+          "label": "旋風"
+        },
+        {
+          "frame": 12,
+          "bitmap_id": 2912,
+          "label": "忍術"
+        },
+        {
+          "frame": 13,
+          "bitmap_id": 2914,
+          "label": "影走"
+        },
+        {
+          "frame": 14,
+          "bitmap_id": 2916,
+          "label": "号令"
+        },
+        {
+          "frame": 15,
+          "bitmap_id": 2918,
+          "label": "火矢"
+        },
+        {
+          "frame": 16,
+          "bitmap_id": 2920,
+          "label": "焙烙"
+        },
+        {
+          "frame": 17,
+          "bitmap_id": 2922,
+          "label": "砲撃"
+        },
+        {
+          "frame": 18,
+          "bitmap_id": 2924,
+          "label": "焼討?",
+          "confidence": "uncertain"
+        },
+        {
+          "frame": 19,
+          "bitmap_id": 2926,
+          "label": "虚報"
+        },
+        {
+          "frame": 20,
+          "bitmap_id": 2928,
+          "label": "幻術"
+        },
+        {
+          "frame": 21,
+          "bitmap_id": 2930,
+          "label": "不明（〜術）",
+          "confidence": "uncertain"
+        },
+        {
+          "frame": 22,
+          "bitmap_id": 2932,
+          "label": "不明（〜縛/〜繋）",
+          "confidence": "uncertain"
+        },
+        {
+          "frame": 23,
+          "bitmap_id": 2934,
+          "label": "無双"
+        },
+        {
+          "frame": 24,
+          "bitmap_id": 2936,
+          "label": "治療"
+        },
+        {
+          "frame": 25,
+          "bitmap_id": 2938,
+          "label": "鬼神"
+        },
+        {
+          "frame": 26,
+          "bitmap_id": 2940,
+          "label": "崩突?",
+          "confidence": "uncertain"
+        },
+        {
+          "frame": 27,
+          "bitmap_id": 2942,
+          "label": "結界"
+        },
+        {
+          "frame": 28,
+          "bitmap_id": 2944,
+          "label": "撤退?",
+          "confidence": "uncertain"
+        }
+      ],
+      "implementation_note": "Use frame number / bitmap id as the source of truth if enum naming is uncertain."
+    },
+    "actions_grid": {
+      "slots": [
+        {
+          "slot": "t1",
+          "label": "突撃",
+          "sprite_id": 2729,
+          "x": 27.0,
+          "y": 156.0
+        },
+        {
+          "slot": "t2",
+          "label": "守備",
+          "sprite_id": 2737,
+          "x": 82.0,
+          "y": 156.0
+        },
+        {
+          "slot": "t3",
+          "label": "迎撃",
+          "sprite_id": 2745,
+          "x": 136.0,
+          "y": 156.0
+        },
+        {
+          "slot": "t4",
+          "label": "乱戦",
+          "sprite_id": 2753,
+          "x": 191.05,
+          "y": 156.0
+        },
+        {
+          "slot": "t5",
+          "label": "待機",
+          "sprite_id": 2761,
+          "x": 245.05,
+          "y": 156.0
+        },
+        {
+          "slot": "t6",
+          "label": "??",
+          "sprite_id": 2764,
+          "x": 300.05,
+          "y": 156.0,
+          "note": "unknown/future slot from SWF"
+        }
+      ],
+      "state_policy": "slots have multiple visual states; use the highlighted/gold variant for the active value and dark variant for inactive values"
+    },
+    "special_abilities_grid": {
+      "slots": [
+        {
+          "slot": "t7",
+          "label": "突進",
+          "sprite_id": 2769,
+          "x": 27.0,
+          "y": 215.0
+        },
+        {
+          "slot": "t8",
+          "label": "攻略",
+          "sprite_id": 2774,
+          "x": 82.0,
+          "y": 215.0
+        },
+        {
+          "slot": "t10",
+          "label": "将力",
+          "sprite_id": 2779,
+          "x": 136.0,
+          "y": 215.0
+        },
+        {
+          "slot": "t21",
+          "label": "連発",
+          "sprite_id": 2839,
+          "x": 191.1,
+          "y": 215.0
+        },
+        {
+          "slot": "t11",
+          "label": "鉄壁",
+          "sprite_id": 2784,
+          "x": 245.1,
+          "y": 215.0
+        },
+        {
+          "slot": "t19",
+          "label": "見切",
+          "sprite_id": 2789,
+          "x": 300.1,
+          "y": 215.0
+        },
+        {
+          "slot": "t9",
+          "label": "討取",
+          "sprite_id": 2799,
+          "x": 27.0,
+          "y": 242.0
+        },
+        {
+          "slot": "t13",
+          "label": "奮起",
+          "sprite_id": 2804,
+          "x": 82.0,
+          "y": 242.0
+        },
+        {
+          "slot": "t15",
+          "label": "鼓舞",
+          "sprite_id": 2809,
+          "x": 136.0,
+          "y": 242.0
+        },
+        {
+          "slot": "t20",
+          "label": "回復",
+          "sprite_id": 2814,
+          "x": 191.05,
+          "y": 242.0
+        },
+        {
+          "slot": "t14",
+          "label": "治療",
+          "sprite_id": 2819,
+          "x": 245.05,
+          "y": 242.0
+        },
+        {
+          "slot": "t16",
+          "label": "療所",
+          "sprite_id": 2824,
+          "x": 300.05,
+          "y": 242.0
+        },
+        {
+          "slot": "t17",
+          "label": "仕掛",
+          "sprite_id": 2829,
+          "x": 27.0,
+          "y": 269.0
+        },
+        {
+          "slot": "t18",
+          "label": "堅陣",
+          "sprite_id": 2834,
+          "x": 82.0,
+          "y": 269.0
+        },
+        {
+          "slot": "t12",
+          "label": "母衣",
+          "sprite_id": 2794,
+          "x": 136.0,
+          "y": 269.0
+        },
+        {
+          "slot": "t22",
+          "label": "逃足",
+          "sprite_id": 2844,
+          "x": 191.05,
+          "y": 269.0
+        },
+        {
+          "slot": "t30",
+          "label": "extra_special_slot",
+          "sprite_id": 2957,
+          "x": 245.05,
+          "y": 269.0,
+          "frame_map": [
+            {
+              "frame": 1,
+              "bitmap_id": 2947,
+              "label": "??"
+            },
+            {
+              "frame": 2,
+              "bitmap_id": 2949,
+              "label": "猛退"
+            },
+            {
+              "frame": 3,
+              "bitmap_id": 2951,
+              "label": "陣頭"
+            },
+            {
+              "frame": 4,
+              "bitmap_id": 2953,
+              "label": "火遁"
+            },
+            {
+              "frame": 5,
+              "bitmap_id": 2955,
+              "label": "双狩"
+            }
+          ]
+        },
+        {
+          "slot": "t31",
+          "label": "extra_special_slot",
+          "sprite_id": 2957,
+          "x": 300.1,
+          "y": 269.0,
+          "frame_map": [
+            {
+              "frame": 1,
+              "bitmap_id": 2947,
+              "label": "??"
+            },
+            {
+              "frame": 2,
+              "bitmap_id": 2949,
+              "label": "猛退"
+            },
+            {
+              "frame": 3,
+              "bitmap_id": 2951,
+              "label": "陣頭"
+            },
+            {
+              "frame": 4,
+              "bitmap_id": 2953,
+              "label": "火遁"
+            },
+            {
+              "frame": 5,
+              "bitmap_id": 2955,
+              "label": "双狩"
+            }
+          ]
+        }
+      ],
+      "slot_count": 18,
+      "note": "Original SWF enemy_detail shows 18 visible special slots: t7..t22 plus t30,t31."
+    }
+  }
+}

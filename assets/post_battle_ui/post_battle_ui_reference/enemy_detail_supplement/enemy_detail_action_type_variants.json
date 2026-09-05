@@ -1,0 +1,142 @@
+[
+  {
+    "frame": 1,
+    "bitmap_id": 2890,
+    "label": "槍撃"
+  },
+  {
+    "frame": 2,
+    "bitmap_id": 2892,
+    "label": "弓矢"
+  },
+  {
+    "frame": 3,
+    "bitmap_id": 2894,
+    "label": "速射"
+  },
+  {
+    "frame": 4,
+    "bitmap_id": 2896,
+    "label": "射撃"
+  },
+  {
+    "frame": 5,
+    "bitmap_id": 2898,
+    "label": "狙撃"
+  },
+  {
+    "frame": 6,
+    "bitmap_id": 2900,
+    "label": "火遁"
+  },
+  {
+    "frame": 7,
+    "bitmap_id": 2902,
+    "label": "火攻"
+  },
+  {
+    "frame": 8,
+    "bitmap_id": 2904,
+    "label": "火計"
+  },
+  {
+    "frame": 9,
+    "bitmap_id": 2906,
+    "label": "業火"
+  },
+  {
+    "frame": 10,
+    "bitmap_id": 2908,
+    "label": "焚討"
+  },
+  {
+    "frame": 11,
+    "bitmap_id": 2910,
+    "label": "旋風"
+  },
+  {
+    "frame": 12,
+    "bitmap_id": 2912,
+    "label": "忍術"
+  },
+  {
+    "frame": 13,
+    "bitmap_id": 2914,
+    "label": "影走"
+  },
+  {
+    "frame": 14,
+    "bitmap_id": 2916,
+    "label": "号令"
+  },
+  {
+    "frame": 15,
+    "bitmap_id": 2918,
+    "label": "火矢"
+  },
+  {
+    "frame": 16,
+    "bitmap_id": 2920,
+    "label": "焙烙"
+  },
+  {
+    "frame": 17,
+    "bitmap_id": 2922,
+    "label": "砲撃"
+  },
+  {
+    "frame": 18,
+    "bitmap_id": 2924,
+    "label": "焼討?"
+  },
+  {
+    "frame": 19,
+    "bitmap_id": 2926,
+    "label": "虚報"
+  },
+  {
+    "frame": 20,
+    "bitmap_id": 2928,
+    "label": "幻術"
+  },
+  {
+    "frame": 21,
+    "bitmap_id": 2930,
+    "label": "不明（〜術）"
+  },
+  {
+    "frame": 22,
+    "bitmap_id": 2932,
+    "label": "不明（〜縛/〜繋）"
+  },
+  {
+    "frame": 23,
+    "bitmap_id": 2934,
+    "label": "無双"
+  },
+  {
+    "frame": 24,
+    "bitmap_id": 2936,
+    "label": "治療"
+  },
+  {
+    "frame": 25,
+    "bitmap_id": 2938,
+    "label": "鬼神"
+  },
+  {
+    "frame": 26,
+    "bitmap_id": 2940,
+    "label": "崩突?"
+  },
+  {
+    "frame": 27,
+    "bitmap_id": 2942,
+    "label": "結界"
+  },
+  {
+    "frame": 28,
+    "bitmap_id": 2944,
+    "label": "撤退?"
+  }
+]

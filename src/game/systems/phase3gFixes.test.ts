@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BASE_CONFIG, BATTLEFIELD_CONFIG, BATTLE_OBSTACLES, COMBAT_TIMING_CONFIG, PLAYER_MOUSE_DEAD_ZONE } from "../config";
+import { BASE_CONFIG, BATTLEFIELD_CONFIG, BATTLE_OBSTACLES, COMBAT_TIMING_CONFIG, PLAYER_MOUSE_DEAD_ZONE, SOLDIER_RADIUS } from "../config";
 import { createSoldier } from "../entities/Soldier";
 import type { SoldierBaseStats } from "../types";
 import { startSoldierAttack, updateAttackStates } from "./attackSystem";
@@ -151,7 +151,7 @@ describe("Phase 3G team-aware base collision", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "enemy");
     const core = getBaseDamageCoreRect(base);
-    const attacker = createSoldier("a", "player", "ai", core.x - BASE_CONFIG.attackRange, base.y);
+    const attacker = createSoldier("a", "player", "ai", core.x - SOLDIER_RADIUS, base.y);
     expect(canAttackEnemyBase(attacker, base)).toBe(true);
     resolveBaseAccessCollisions([attacker], bases);
     expect(isPointInsideRect(attacker, getBaseRect(base))).toBe(false);

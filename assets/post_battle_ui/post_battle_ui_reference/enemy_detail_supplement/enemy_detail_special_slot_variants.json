@@ -1,0 +1,320 @@
+[
+  {
+    "slot_name": "t7",
+    "sprite_id": 2769,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2765,
+        "label": "突進"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2767,
+        "label": "突進"
+      }
+    ]
+  },
+  {
+    "slot_name": "t8",
+    "sprite_id": 2774,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2770,
+        "label": "攻略"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2772,
+        "label": "攻略"
+      }
+    ]
+  },
+  {
+    "slot_name": "t10",
+    "sprite_id": 2779,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2775,
+        "label": "将力"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2777,
+        "label": "将力"
+      }
+    ]
+  },
+  {
+    "slot_name": "t11",
+    "sprite_id": 2784,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2780,
+        "label": "鉄壁"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2782,
+        "label": "鉄壁"
+      }
+    ]
+  },
+  {
+    "slot_name": "t19",
+    "sprite_id": 2789,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2785,
+        "label": "見切"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2787,
+        "label": "見切"
+      }
+    ]
+  },
+  {
+    "slot_name": "t12",
+    "sprite_id": 2794,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2790,
+        "label": "母衣"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2792,
+        "label": "母衣"
+      }
+    ]
+  },
+  {
+    "slot_name": "t9",
+    "sprite_id": 2799,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2795,
+        "label": "討取"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2797,
+        "label": "討取"
+      }
+    ]
+  },
+  {
+    "slot_name": "t13",
+    "sprite_id": 2804,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2800,
+        "label": "奮起"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2802,
+        "label": "奮起"
+      }
+    ]
+  },
+  {
+    "slot_name": "t15",
+    "sprite_id": 2809,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2805,
+        "label": "鼓舞"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2807,
+        "label": "鼓舞"
+      }
+    ]
+  },
+  {
+    "slot_name": "t20",
+    "sprite_id": 2814,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2810,
+        "label": "回復"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2812,
+        "label": "回復"
+      }
+    ]
+  },
+  {
+    "slot_name": "t14",
+    "sprite_id": 2819,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2815,
+        "label": "治療"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2817,
+        "label": "治療"
+      }
+    ]
+  },
+  {
+    "slot_name": "t16",
+    "sprite_id": 2824,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2820,
+        "label": "療所"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2822,
+        "label": "療所"
+      }
+    ]
+  },
+  {
+    "slot_name": "t17",
+    "sprite_id": 2829,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2825,
+        "label": "仕掛"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2827,
+        "label": "仕掛"
+      }
+    ]
+  },
+  {
+    "slot_name": "t18",
+    "sprite_id": 2834,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2830,
+        "label": "堅陣"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2832,
+        "label": "堅陣"
+      }
+    ]
+  },
+  {
+    "slot_name": "t21",
+    "sprite_id": 2839,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2835,
+        "label": "連発"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2837,
+        "label": "連発"
+      }
+    ]
+  },
+  {
+    "slot_name": "t22",
+    "sprite_id": 2844,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2840,
+        "label": "逃足"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2842,
+        "label": "逃足"
+      }
+    ]
+  },
+  {
+    "slot_name": "t30",
+    "sprite_id": 2957,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2947,
+        "label": "??"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2949,
+        "label": "猛退"
+      },
+      {
+        "frame": 3,
+        "bitmap_id": 2951,
+        "label": "陣頭"
+      },
+      {
+        "frame": 4,
+        "bitmap_id": 2953,
+        "label": "火遁"
+      },
+      {
+        "frame": 5,
+        "bitmap_id": 2955,
+        "label": "双狩"
+      }
+    ]
+  },
+  {
+    "slot_name": "t31",
+    "sprite_id": 2957,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2947,
+        "label": "??"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2949,
+        "label": "猛退"
+      },
+      {
+        "frame": 3,
+        "bitmap_id": 2951,
+        "label": "陣頭"
+      },
+      {
+        "frame": 4,
+        "bitmap_id": 2953,
+        "label": "火遁"
+      },
+      {
+        "frame": 5,
+        "bitmap_id": 2955,
+        "label": "双狩"
+      }
+    ]
+  }
+]

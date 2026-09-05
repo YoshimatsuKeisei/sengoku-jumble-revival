@@ -1,14 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { BASE_CONFIG, COMBAT_TIMING_CONFIG, MOSA_CONFIG, SPECIAL_ATTACK_CONFIG } from "../config";
+import { BASE_CONTACT_CONFIG, MOSA_CONFIG, SPECIAL_ATTACK_CONFIG } from "../config";
+import { battlefieldSourceDistanceToWorldX } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import { createArmy } from "../factories/createArmy";
 import { createMosaStats } from "../stats/mosaStats";
 import type { SoldierLoadout } from "../types";
-import { updateAttackStates } from "./attackSystem";
 import { createDefaultTeamArmySetup, getArmySetupTotal, isValidTeamArmySetup } from "./armySetupSystem";
-import { BASE_ATTACK_BOUNCE_DISTANCE } from "./baseAttackBounceSystem";
-import { createBattleBases, getBaseForTeam } from "./baseSystem";
-import { CAVALRY_CHARGE_KNOCKBACK } from "./cavalryChargeSystem";
+import { BASE_ATTACK_BOUNCE_DISTANCE, getBaseAttackBounceDistance } from "./baseAttackBounceSystem";
 import { executeMosaAttack, findMosaTargets, getMosaKnockback, getMosaRadius } from "./mosaAttackSystem";
 import { formatSoldierInspector } from "./soldierInspectorSystem";
 import { isTechniqueCompatibleWithUnitType, makePlayerDebugPreset, TECHNIQUE_DEFINITIONS, UNIT_DEFINITIONS, UNIT_TYPE_LABELS } from "./unitLoadoutSystem";
@@ -16,12 +14,6 @@ import { isTechniqueCompatibleWithUnitType, makePlayerDebugPreset, TECHNIQUE_DEF
 const mosa = (technique: "MOSA_SENPUU" | "MOSA_MUSOU" | "MOSA_KIJIN", abilities: SoldierLoadout["specialAbilities"] = []): SoldierLoadout => ({
   unitType: "MOSA", technique, stats: { maxHp: 98, skill: 90, foot: 3, combat: 108, defense: 90 }, specialAbilities: abilities,
 });
-function baseAttack(controller: "ai" | "player" = "ai") {
-  const bases = createBattleBases(); const base = getBaseForTeam(bases, "enemy");
-  const attacker = createSoldier("a", "player", controller, base.x - base.width / 2 - BASE_CONFIG.attackRange, base.y, "charge");
-  return { bases, base, attacker };
-}
-
 describe("Phase 4I mosa and base bounce", () => {
   it("defines three compatible techniques, labels and a six-unit cap", () => {
     for (const technique of ["MOSA_SENPUU", "MOSA_MUSOU", "MOSA_KIJIN"] as const)
@@ -74,30 +66,16 @@ describe("Phase 4I mosa and base bounce", () => {
     expect(formatSoldierInspector(army[0])).toContain("兵種：猛者"); expect(formatSoldierInspector(army[0])).toContain("駒種：旋風");
   });
 
-  it("bounces every successful non-lethal base attack by the cavalry charge distance", () => {
-    expect(BASE_ATTACK_BOUNCE_DISTANCE).toBe(CAVALRY_CHARGE_KNOCKBACK);
-    for (const controller of ["ai", "player"] as const) {
-      const { bases, base, attacker } = baseAttack(controller); const x = attacker.x;
-      updateAttackStates([attacker], bases, 0); updateAttackStates([attacker], bases, COMBAT_TIMING_CONFIG.attackWindupMs, false, () => 1);
-      expect(base.hp).toBe(base.maxHp - 1); expect(attacker.x).toBe(x - BASE_ATTACK_BOUNCE_DISTANCE);
-      updateAttackStates([attacker], bases, COMBAT_TIMING_CONFIG.attackWindupMs + 1, false, () => 1);
-      expect(base.hp).toBe(base.maxHp - 1);
-    }
-  });
-
-  it("preserves SIEGE damage and bounces even when FORTIFY prevents damage", () => {
-    const siege = baseAttack(); siege.attacker.specialAbilities = ["SIEGE"];
-    updateAttackStates([siege.attacker], siege.bases, 0); updateAttackStates([siege.attacker], siege.bases, COMBAT_TIMING_CONFIG.attackWindupMs, false, () => 1);
-    expect(siege.base.hp).toBe(siege.base.maxHp - 2);
-    const guarded = baseAttack(); const defender = createSoldier("d", "enemy", "ai", 500, 100); defender.specialAbilities = ["FORTIFY"]; const x = guarded.attacker.x;
-    updateAttackStates([guarded.attacker, defender], guarded.bases, 0); updateAttackStates([guarded.attacker, defender], guarded.bases, COMBAT_TIMING_CONFIG.attackWindupMs, false, () => 0);
-    expect(guarded.base.hp).toBe(guarded.base.maxHp); expect(guarded.attacker.x).toBe(x - BASE_ATTACK_BOUNCE_DISTANCE);
-  });
-
-  it("prioritizes base destruction and skips bounce", () => {
-    const { bases, base, attacker } = baseAttack(); base.hp = 1; const x = attacker.x;
-    updateAttackStates([attacker], bases, 0);
-    expect(updateAttackStates([attacker], bases, COMBAT_TIMING_CONFIG.attackWindupMs, false, () => 1)).toBe("enemy");
-    expect(base.hp).toBe(0); expect(attacker.x).toBe(x);
+  it("uses a dedicated source-scaled base bounce instead of cavalry knockback", () => {
+    expect(BASE_ATTACK_BOUNCE_DISTANCE).toBe(
+      battlefieldSourceDistanceToWorldX(BASE_CONTACT_CONFIG.baseBounceSourceDistance),
+    );
+    const defender = createSoldier("d", "enemy", "ai", 500, 100);
+    defender.specialAbilities = ["FORTIFY"];
+    expect(getBaseAttackBounceDistance([defender])).toBe(
+      battlefieldSourceDistanceToWorldX(
+        BASE_CONTACT_CONFIG.baseBounceSourceDistance + BASE_CONTACT_CONFIG.fortifyBounceSourceDistance,
+      ),
+    );
   });
 });

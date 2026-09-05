@@ -1,0 +1,42 @@
+[
+  {
+    "frame": 1,
+    "bitmap_id": 2873,
+    "label": "足軽"
+  },
+  {
+    "frame": 2,
+    "bitmap_id": 2875,
+    "label": "弓兵"
+  },
+  {
+    "frame": 3,
+    "bitmap_id": 2877,
+    "label": "武将"
+  },
+  {
+    "frame": 4,
+    "bitmap_id": 2879,
+    "label": "猛者"
+  },
+  {
+    "frame": 5,
+    "bitmap_id": 2881,
+    "label": "軍師"
+  },
+  {
+    "frame": 6,
+    "bitmap_id": 2883,
+    "label": "鉄砲"
+  },
+  {
+    "frame": 7,
+    "bitmap_id": 2885,
+    "label": "忍者"
+  },
+  {
+    "frame": 8,
+    "bitmap_id": 2887,
+    "label": "騎馬"
+  }
+]

@@ -1,0 +1,4893 @@
+{
+  "3010": {
+    "id": 3010,
+    "type": "shape",
+    "bounds": {
+      "xmin": 0.0,
+      "xmax": 380.0,
+      "ymin": 0.0,
+      "ymax": 380.0
+    },
+    "bitmap_fills": [
+      {
+        "kind": 65,
+        "bitmap_id": 2528,
+        "matrix": {
+          "a": 20.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 20.0,
+          "tx": 0.0,
+          "ty": 0.0
+        }
+      }
+    ]
+  },
+  "3015": {
+    "id": 3015,
+    "type": "sprite",
+    "declared_frames": 1,
+    "labels": [],
+    "frames": [
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3012,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -12.0,
+            "ty": -6.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 3,
+          "move": false,
+          "character_id": 3013,
+          "matrix": {
+            "a": 0.9999847412109375,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -1.0,
+            "ty": 2.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 4,
+          "move": false,
+          "character_id": 3014,
+          "matrix": {
+            "a": 0.9999847412109375,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 61.0,
+            "ty": 2.0
+          }
+        }
+      ]
+    ]
+  },
+  "3016": {
+    "id": 3016,
+    "type": "sprite",
+    "declared_frames": 1,
+    "labels": [],
+    "frames": [
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": -2.0
+          },
+          "name": "r1"
+        },
+        {
+          "op": "place",
+          "depth": 6,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 25.3
+          },
+          "name": "r2"
+        },
+        {
+          "op": "place",
+          "depth": 11,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 52.6
+          },
+          "name": "r3"
+        },
+        {
+          "op": "place",
+          "depth": 16,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 79.9
+          },
+          "name": "r4"
+        },
+        {
+          "op": "place",
+          "depth": 21,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 107.2
+          },
+          "name": "r5"
+        },
+        {
+          "op": "place",
+          "depth": 26,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 134.5
+          },
+          "name": "r6"
+        },
+        {
+          "op": "place",
+          "depth": 31,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 161.8
+          },
+          "name": "r7"
+        },
+        {
+          "op": "place",
+          "depth": 36,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 189.1
+          },
+          "name": "r8"
+        },
+        {
+          "op": "place",
+          "depth": 41,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 216.4
+          },
+          "name": "r9"
+        },
+        {
+          "op": "place",
+          "depth": 46,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 243.7
+          },
+          "name": "r10"
+        },
+        {
+          "op": "place",
+          "depth": 51,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 271.0
+          },
+          "name": "r11"
+        },
+        {
+          "op": "place",
+          "depth": 56,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 298.3
+          },
+          "name": "r12"
+        },
+        {
+          "op": "place",
+          "depth": 61,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 325.6
+          },
+          "name": "r13"
+        },
+        {
+          "op": "place",
+          "depth": 66,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 352.9
+          },
+          "name": "r14"
+        },
+        {
+          "op": "place",
+          "depth": 71,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 380.2
+          },
+          "name": "r15"
+        },
+        {
+          "op": "place",
+          "depth": 76,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 407.5
+          },
+          "name": "r16"
+        },
+        {
+          "op": "place",
+          "depth": 81,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 434.8
+          },
+          "name": "r17"
+        },
+        {
+          "op": "place",
+          "depth": 86,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 462.1
+          },
+          "name": "r18"
+        },
+        {
+          "op": "place",
+          "depth": 91,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 489.4
+          },
+          "name": "r19"
+        },
+        {
+          "op": "place",
+          "depth": 96,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 516.7
+          },
+          "name": "r20"
+        },
+        {
+          "op": "place",
+          "depth": 101,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 544.0
+          },
+          "name": "r21"
+        },
+        {
+          "op": "place",
+          "depth": 106,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 571.3
+          },
+          "name": "r22"
+        },
+        {
+          "op": "place",
+          "depth": 111,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 598.6
+          },
+          "name": "r23"
+        },
+        {
+          "op": "place",
+          "depth": 116,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 625.9
+          },
+          "name": "r24"
+        },
+        {
+          "op": "place",
+          "depth": 121,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 653.2
+          },
+          "name": "r25"
+        },
+        {
+          "op": "place",
+          "depth": 126,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 680.5
+          },
+          "name": "r26"
+        },
+        {
+          "op": "place",
+          "depth": 131,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 707.8
+          },
+          "name": "r27"
+        },
+        {
+          "op": "place",
+          "depth": 136,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 735.1
+          },
+          "name": "r28"
+        },
+        {
+          "op": "place",
+          "depth": 141,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 762.4
+          },
+          "name": "r29"
+        },
+        {
+          "op": "place",
+          "depth": 146,
+          "move": false,
+          "character_id": 3015,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -6.0,
+            "ty": 789.7
+          },
+          "name": "r30"
+        }
+      ]
+    ]
+  },
+  "3020": {
+    "id": 3020,
+    "type": "sprite",
+    "declared_frames": 1,
+    "labels": [],
+    "frames": [
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3019,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        }
+      ]
+    ]
+  },
+  "3163": {
+    "id": 3163,
+    "type": "sprite",
+    "declared_frames": 1,
+    "labels": [],
+    "frames": [
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3162,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        }
+      ]
+    ]
+  },
+  "3190": {
+    "id": 3190,
+    "type": "sprite",
+    "declared_frames": 2,
+    "labels": [],
+    "frames": [
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3189,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 212.25,
+            "ty": 0.0
+          }
+        }
+      ]
+    ]
+  },
+  "3193": {
+    "id": 3193,
+    "type": "sprite",
+    "declared_frames": 1,
+    "labels": [],
+    "frames": [
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3192,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        }
+      ]
+    ]
+  },
+  "3215": {
+    "id": 3215,
+    "type": "sprite",
+    "declared_frames": 6,
+    "labels": [
+      {
+        "frame": 5,
+        "label": "tkwn"
+      }
+    ],
+    "frames": [
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3195,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 2,
+          "move": false,
+          "character_id": 3196,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.001190185546875,
+            "tx": 55.5,
+            "ty": -2.2
+          }
+        },
+        {
+          "op": "place",
+          "depth": 3,
+          "move": false,
+          "character_id": 3199,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 207.0,
+            "ty": 4.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 6,
+          "move": false,
+          "character_id": 3200,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.001190185546875,
+            "tx": 54.5,
+            "ty": -3.2
+          }
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "remove",
+          "depth": 2
+        },
+        {
+          "op": "remove",
+          "depth": 3
+        },
+        {
+          "op": "remove",
+          "depth": 6
+        },
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3205,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 3.0
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 3,
+          "move": false,
+          "character_id": 3206,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 210.0,
+            "ty": 4.0
+          },
+          "ratio": 1
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "remove",
+          "depth": 3
+        },
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3207,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 95.0,
+            "ty": 8.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 2,
+          "move": false,
+          "character_id": 22,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0008392333984375,
+            "tx": 211.5,
+            "ty": -3.0
+          },
+          "ratio": 2
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 2
+        },
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "character_id": 3208,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 54.0,
+            "ty": 8.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 2,
+          "move": false,
+          "character_id": 3209,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 177.0,
+            "ty": 4.0
+          },
+          "ratio": 3
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3211,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 2,
+          "move": true,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 200.0,
+            "ty": 4.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 5,
+          "move": false,
+          "character_id": 3212,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 74.8,
+            "ty": -2.15
+          },
+          "ratio": 4
+        },
+        {
+          "op": "place",
+          "depth": 6,
+          "move": false,
+          "character_id": 3213,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 73.8,
+            "ty": -3.15
+          },
+          "ratio": 4
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "remove",
+          "depth": 5
+        },
+        {
+          "op": "remove",
+          "depth": 6
+        },
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3214,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 12.0,
+            "ty": 8.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 2,
+          "move": true,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 196.0,
+            "ty": 4.0
+          }
+        }
+      ]
+    ]
+  },
+  "3216": {
+    "id": 3216,
+    "type": "sprite",
+    "declared_frames": 222,
+    "labels": [],
+    "frames": [
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3163,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.0
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.0625
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.125
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.1875
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.25
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.3125
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.375
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.4375
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.5
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.5625
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.625
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.6875
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.75
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.8125
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.875
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.9375
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": true,
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 1.0
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          }
+        },
+        {
+          "op": "place",
+          "depth": 3,
+          "move": false,
+          "character_id": 3164,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 79.85,
+            "ty": 98.7
+          }
+        },
+        {
+          "op": "place",
+          "depth": 4,
+          "move": false,
+          "character_id": 3166,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -47.95,
+            "ty": 72.8
+          },
+          "ratio": 16
+        },
+        {
+          "op": "place",
+          "depth": 5,
+          "move": false,
+          "character_id": 3164,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 215.1,
+            "ty": 98.7
+          }
+        },
+        {
+          "op": "place",
+          "depth": 6,
+          "move": false,
+          "character_id": 3167,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 87.3,
+            "ty": 72.8
+          },
+          "ratio": 16
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "op": "remove",
+          "depth": 4
+        },
+        {
+          "op": "remove",
+          "depth": 5
+        },
+        {
+          "op": "remove",
+          "depth": 6
+        },
+        {
+          "op": "place",
+          "depth": 3,
+          "move": true,
+          "character_id": 3168,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 79.85,
+            "ty": 151.75
+          }
+        },
+        {
+          "op": "place",
+          "depth": 4,
+          "move": false,
+          "character_id": 3164,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 79.85,
+            "ty": 98.7
+          }
+        },
+        {
+          "op": "place",
+          "depth": 5,
+          "move": false,
+          "character_id": 3169,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -47.95,
+            "ty": 72.8
+          },
+          "ratio": 28
+        },
+        {
+          "op": "place",
+          "depth": 6,
+          "move": false,
+          "character_id": 3170,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -47.95,
+            "ty": 125.55
+          },
+          "ratio": 28
+        },
+        {
+          "op": "place",
+          "depth": 7,
+          "move": false,
+          "character_id": 3168,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 215.1,
+            "ty": 151.75
+          }
+        },
+        {
+          "op": "place",
+          "depth": 8,
+          "move": false,
+          "character_id": 3164,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 215.1,
+            "ty": 98.7
+          }
+        },
+        {
+          "op": "place",
+          "depth": 9,
+          "move": false,
+          "character_id": 3171,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 87.3,
+            "ty": 72.8
+          },
+          "ratio": 28
+        },
+        {
+          "op": "place",
+          "depth": 10,
+          "move": false,
+          "character_id": 3172,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 87.3,
+            "ty": 125.55
+          },
+          "ratio": 28
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "op": "remove",
+          "depth": 4
+        },
+        {
+          "op": "remove",
+          "depth": 5
+        },
+        {
+          "op": "remove",
+          "depth": 6
+        },
+        {
+          "op": "remove",
+          "depth": 7
+        },
+        {
+          "op": "remove",
+          "depth": 9
+        },
+        {
+          "op": "remove",
+          "depth": 10
+        },
+        {
+          "op": "place",
+          "depth": 4,
+          "move": false,
+          "character_id": 3173,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.001190185546875,
+            "tx": -48.0,
+            "ty": 187.0
+          },
+          "ratio": 41
+        },
+        {
+          "op": "place",
+          "depth": 5,
+          "move": false,
+          "character_id": 3164,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 79.85,
+            "ty": 98.7
+          }
+        },
+        {
+          "op": "place",
+          "depth": 6,
+          "move": false,
+          "character_id": 3174,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -47.95,
+            "ty": 72.8
+          },
+          "ratio": 41
+        },
+        {
+          "op": "place",
+          "depth": 7,
+          "move": false,
+          "character_id": 3175,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -47.95,
+            "ty": 125.55
+          },
+          "ratio": 41
+        },
+        {
+          "op": "place",
+          "depth": 8,
+          "move": true,
+          "character_id": 3168,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 215.1,
+            "ty": 151.75
+          }
+        },
+        {
+          "op": "place",
+          "depth": 9,
+          "move": false,
+          "character_id": 3176,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.001190185546875,
+            "tx": 87.25,
+            "ty": 187.0
+          },
+          "ratio": 41
+        },
+        {
+          "op": "place",
+          "depth": 10,
+          "move": false,
+          "character_id": 3164,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 215.1,
+            "ty": 98.7
+          }
+        },
+        {
+          "op": "place",
+          "depth": 11,
+          "move": false,
+          "character_id": 3177,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 87.3,
+            "ty": 72.8
+          },
+          "ratio": 41
+        },
+        {
+          "op": "place",
+          "depth": 12,
+          "move": false,
+          "character_id": 3178,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 87.3,
+            "ty": 125.55
+          },
+          "ratio": 41
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "op": "remove",
+          "depth": 3
+        },
+        {
+          "op": "remove",
+          "depth": 4
+        },
+        {
+          "op": "remove",
+          "depth": 5
+        },
+        {
+          "op": "remove",
+          "depth": 6
+        },
+        {
+          "op": "remove",
+          "depth": 7
+        },
+        {
+          "op": "remove",
+          "depth": 8
+        },
+        {
+          "op": "remove",
+          "depth": 9
+        },
+        {
+          "op": "remove",
+          "depth": 11
+        },
+        {
+          "op": "remove",
+          "depth": 12
+        },
+        {
+          "op": "place",
+          "depth": 3,
+          "move": false,
+          "character_id": 3179,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -47.0,
+            "ty": 240.0
+          },
+          "ratio": 54
+        },
+        {
+          "op": "place",
+          "depth": 4,
+          "move": false,
+          "character_id": 3168,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 79.85,
+            "ty": 151.75
+          }
+        },
+        {
+          "op": "place",
+          "depth": 5,
+          "move": false,
+          "character_id": 3180,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.001190185546875,
+            "tx": -48.0,
+            "ty": 187.0
+          },
+          "ratio": 54
+        },
+        {
+          "op": "place",
+          "depth": 6,
+          "move": false,
+          "character_id": 3164,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 79.85,
+            "ty": 98.7
+          }
+        },
+        {
+          "op": "place",
+          "depth": 7,
+          "move": false,
+          "character_id": 3181,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -47.95,
+            "ty": 72.8
+          },
+          "ratio": 54
+        },
+        {
+          "op": "place",
+          "depth": 8,
+          "move": false,
+          "character_id": 3182,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -47.95,
+            "ty": 125.55
+          },
+          "ratio": 54
+        },
+        {
+          "op": "place",
+          "depth": 9,
+          "move": false,
+          "character_id": 3183,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 88.25,
+            "ty": 240.0
+          },
+          "ratio": 54
+        },
+        {
+          "op": "place",
+          "depth": 10,
+          "move": true,
+          "character_id": 3168,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 215.1,
+            "ty": 151.75
+          }
+        },
+        {
+          "op": "place",
+          "depth": 11,
+          "move": false,
+          "character_id": 3184,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.001190185546875,
+            "tx": 87.25,
+            "ty": 187.0
+          },
+          "ratio": 54
+        },
+        {
+          "op": "place",
+          "depth": 12,
+          "move": false,
+          "character_id": 3164,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 215.1,
+            "ty": 98.7
+          }
+        },
+        {
+          "op": "place",
+          "depth": 13,
+          "move": false,
+          "character_id": 3185,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 87.3,
+            "ty": 72.8
+          },
+          "ratio": 54
+        },
+        {
+          "op": "place",
+          "depth": 14,
+          "move": false,
+          "character_id": 3186,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 87.3,
+            "ty": 125.55
+          },
+          "ratio": 54
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "op": "place",
+          "depth": 15,
+          "move": false,
+          "character_id": 3190,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 1.0,
+            "ty": -2.0
+          },
+          "ratio": 66,
+          "name": "wn"
+        },
+        {
+          "op": "place",
+          "depth": 17,
+          "move": false,
+          "character_id": 3193,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 301.0
+          },
+          "ratio": 66
+        },
+        {
+          "op": "place",
+          "depth": 19,
+          "move": false,
+          "character_id": 3215,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 11.0,
+            "ty": 306.0
+          },
+          "ratio": 66,
+          "name": "kekka"
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "op": "remove",
+          "depth": 15
+        },
+        {
+          "op": "remove",
+          "depth": 17
+        },
+        {
+          "op": "remove",
+          "depth": 19
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 3
+        },
+        {
+          "op": "remove",
+          "depth": 4
+        },
+        {
+          "op": "remove",
+          "depth": 5
+        },
+        {
+          "op": "remove",
+          "depth": 6
+        },
+        {
+          "op": "remove",
+          "depth": 7
+        },
+        {
+          "op": "remove",
+          "depth": 8
+        },
+        {
+          "op": "remove",
+          "depth": 9
+        },
+        {
+          "op": "remove",
+          "depth": 10
+        },
+        {
+          "op": "remove",
+          "depth": 11
+        },
+        {
+          "op": "remove",
+          "depth": 12
+        },
+        {
+          "op": "remove",
+          "depth": 13
+        },
+        {
+          "op": "remove",
+          "depth": 14
+        }
+      ],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ]
+  },
+  "3255": {
+    "id": 3255,
+    "type": "sprite",
+    "declared_frames": 11,
+    "labels": [
+      {
+        "frame": 10,
+        "label": "e"
+      }
+    ],
+    "frames": [
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3248,
+          "matrix": {
+            "a": 0.999847412109375,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -72.0,
+            "ty": -3.0
+          },
+          "name": "al"
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3251,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "ratio": 1
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3248,
+          "matrix": {
+            "a": 0.999847412109375,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -72.0,
+            "ty": -3.0
+          },
+          "ratio": 2,
+          "name": "al"
+        }
+      ],
+      [],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3254,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "ratio": 4
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3248,
+          "matrix": {
+            "a": 0.999847412109375,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -72.0,
+            "ty": -3.0
+          },
+          "ratio": 5,
+          "name": "al"
+        }
+      ],
+      [],
+      [],
+      [],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3248,
+          "matrix": {
+            "a": 0.999847412109375,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -72.0,
+            "ty": -3.0
+          },
+          "ratio": 10,
+          "name": "al"
+        }
+      ]
+    ]
+  },
+  "3312": {
+    "id": 3312,
+    "type": "sprite",
+    "declared_frames": 16,
+    "labels": [
+      {
+        "frame": 2,
+        "label": "st01"
+      },
+      {
+        "frame": 3,
+        "label": "st02"
+      },
+      {
+        "frame": 4,
+        "label": "st03"
+      },
+      {
+        "frame": 6,
+        "label": "rlst"
+      },
+      {
+        "frame": 8,
+        "label": "elst"
+      },
+      {
+        "frame": 9,
+        "label": "mlst"
+      },
+      {
+        "frame": 10,
+        "label": "hchg"
+      },
+      {
+        "frame": 11,
+        "label": "hchg2"
+      }
+    ],
+    "frames": [
+      [],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 2697,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 2,
+          "move": false,
+          "character_id": 2708,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 132.0,
+            "ty": 75.0
+          },
+          "ratio": 1,
+          "name": "st1"
+        },
+        {
+          "op": "place",
+          "depth": 4,
+          "move": false,
+          "character_id": 2708,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 210.05,
+            "ty": 75.0
+          },
+          "ratio": 1,
+          "name": "st2"
+        },
+        {
+          "op": "place",
+          "depth": 6,
+          "move": false,
+          "character_id": 2708,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 288.05,
+            "ty": 75.0
+          },
+          "ratio": 1,
+          "name": "st3"
+        },
+        {
+          "op": "place",
+          "depth": 8,
+          "move": false,
+          "character_id": 2708,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 132.0,
+            "ty": 100.0
+          },
+          "ratio": 1,
+          "name": "st4"
+        },
+        {
+          "op": "place",
+          "depth": 10,
+          "move": false,
+          "character_id": 2708,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 210.05,
+            "ty": 100.0
+          },
+          "ratio": 1,
+          "name": "st5"
+        },
+        {
+          "op": "place",
+          "depth": 18,
+          "move": false,
+          "character_id": 2713,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 289.0,
+            "ty": 98.0
+          },
+          "ratio": 1,
+          "name": "seicho"
+        },
+        {
+          "op": "place",
+          "depth": 22,
+          "move": false,
+          "character_id": 3217,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 23,
+          "move": false,
+          "character_id": 3218,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 160.2,
+            "ty": 74.0
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 24,
+          "move": false,
+          "character_id": 3219,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 238.25,
+            "ty": 74.0
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 25,
+          "move": false,
+          "character_id": 3220,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 316.25,
+            "ty": 74.7
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 26,
+          "move": false,
+          "character_id": 3221,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 160.2,
+            "ty": 99.0
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 27,
+          "move": false,
+          "character_id": 3222,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 238.25,
+            "ty": 99.0
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 28,
+          "move": false,
+          "character_id": 2729,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 27.0,
+            "ty": 156.0
+          },
+          "ratio": 1,
+          "name": "t1"
+        },
+        {
+          "op": "place",
+          "depth": 31,
+          "move": false,
+          "character_id": 2737,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 82.0,
+            "ty": 156.0
+          },
+          "ratio": 1,
+          "name": "t2"
+        },
+        {
+          "op": "place",
+          "depth": 34,
+          "move": false,
+          "character_id": 2745,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 136.0,
+            "ty": 156.0
+          },
+          "ratio": 1,
+          "name": "t3"
+        },
+        {
+          "op": "place",
+          "depth": 37,
+          "move": false,
+          "character_id": 2753,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 191.05,
+            "ty": 156.0
+          },
+          "ratio": 1,
+          "name": "t4"
+        },
+        {
+          "op": "place",
+          "depth": 40,
+          "move": false,
+          "character_id": 2761,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 245.05,
+            "ty": 156.0
+          },
+          "ratio": 1,
+          "name": "t5"
+        },
+        {
+          "op": "place",
+          "depth": 43,
+          "move": false,
+          "character_id": 2764,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 300.05,
+            "ty": 156.0
+          },
+          "ratio": 1,
+          "name": "t6"
+        },
+        {
+          "op": "place",
+          "depth": 45,
+          "move": false,
+          "character_id": 2769,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 27.0,
+            "ty": 215.0
+          },
+          "ratio": 1,
+          "name": "t7"
+        },
+        {
+          "op": "place",
+          "depth": 47,
+          "move": false,
+          "character_id": 2774,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 82.0,
+            "ty": 215.0
+          },
+          "ratio": 1,
+          "name": "t8"
+        },
+        {
+          "op": "place",
+          "depth": 49,
+          "move": false,
+          "character_id": 2779,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 136.0,
+            "ty": 215.0
+          },
+          "ratio": 1,
+          "name": "t10"
+        },
+        {
+          "op": "place",
+          "depth": 51,
+          "move": false,
+          "character_id": 2784,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 245.1,
+            "ty": 215.0
+          },
+          "ratio": 1,
+          "name": "t11"
+        },
+        {
+          "op": "place",
+          "depth": 53,
+          "move": false,
+          "character_id": 2789,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 300.1,
+            "ty": 215.0
+          },
+          "ratio": 1,
+          "name": "t19"
+        },
+        {
+          "op": "place",
+          "depth": 55,
+          "move": false,
+          "character_id": 2794,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 136.0,
+            "ty": 269.0
+          },
+          "ratio": 1,
+          "name": "t12"
+        },
+        {
+          "op": "place",
+          "depth": 57,
+          "move": false,
+          "character_id": 2799,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 27.0,
+            "ty": 242.0
+          },
+          "ratio": 1,
+          "name": "t9"
+        },
+        {
+          "op": "place",
+          "depth": 59,
+          "move": false,
+          "character_id": 2804,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 82.0,
+            "ty": 242.0
+          },
+          "ratio": 1,
+          "name": "t13"
+        },
+        {
+          "op": "place",
+          "depth": 61,
+          "move": false,
+          "character_id": 2809,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 136.0,
+            "ty": 242.0
+          },
+          "ratio": 1,
+          "name": "t15"
+        },
+        {
+          "op": "place",
+          "depth": 63,
+          "move": false,
+          "character_id": 2814,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 191.05,
+            "ty": 242.0
+          },
+          "ratio": 1,
+          "name": "t20"
+        },
+        {
+          "op": "place",
+          "depth": 65,
+          "move": false,
+          "character_id": 2819,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 245.05,
+            "ty": 242.0
+          },
+          "ratio": 1,
+          "name": "t14"
+        },
+        {
+          "op": "place",
+          "depth": 67,
+          "move": false,
+          "character_id": 2824,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 300.05,
+            "ty": 242.0
+          },
+          "ratio": 1,
+          "name": "t16"
+        },
+        {
+          "op": "place",
+          "depth": 69,
+          "move": false,
+          "character_id": 2829,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 27.0,
+            "ty": 269.0
+          },
+          "ratio": 1,
+          "name": "t17"
+        },
+        {
+          "op": "place",
+          "depth": 71,
+          "move": false,
+          "character_id": 2834,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 82.0,
+            "ty": 269.0
+          },
+          "ratio": 1,
+          "name": "t18"
+        },
+        {
+          "op": "place",
+          "depth": 73,
+          "move": false,
+          "character_id": 2839,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 191.1,
+            "ty": 215.0
+          },
+          "ratio": 1,
+          "name": "t21"
+        },
+        {
+          "op": "place",
+          "depth": 75,
+          "move": false,
+          "character_id": 2844,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 191.05,
+            "ty": 269.0
+          },
+          "ratio": 1,
+          "name": "t22"
+        },
+        {
+          "op": "place",
+          "depth": 77,
+          "move": false,
+          "character_id": 3223,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 134.0,
+            "ty": 21.25
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 78,
+          "move": false,
+          "character_id": 2867,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 16.0,
+            "ty": 337.0
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 80,
+          "move": false,
+          "character_id": 2872,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 336.1,
+            "ty": 337.0
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 82,
+          "move": false,
+          "character_id": 2889,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 177.0,
+            "ty": 45.0
+          },
+          "ratio": 1,
+          "name": "heishu"
+        },
+        {
+          "op": "place",
+          "depth": 84,
+          "move": false,
+          "character_id": 2946,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 297.0,
+            "ty": 45.0
+          },
+          "ratio": 1,
+          "name": "wazashu"
+        },
+        {
+          "op": "place",
+          "depth": 86,
+          "move": false,
+          "character_id": 3226,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 100.0,
+            "ty": 337.0
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 89,
+          "move": false,
+          "character_id": 3229,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 195.0,
+            "ty": 337.0
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 92,
+          "move": false,
+          "character_id": 2957,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 245.05,
+            "ty": 269.0
+          },
+          "ratio": 1,
+          "name": "t30"
+        },
+        {
+          "op": "place",
+          "depth": 94,
+          "move": false,
+          "character_id": 2957,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 300.1,
+            "ty": 269.0
+          },
+          "ratio": 1,
+          "name": "t31"
+        },
+        {
+          "op": "place",
+          "depth": 96,
+          "move": false,
+          "character_id": 2973,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "clip_depth": 101
+        },
+        {
+          "op": "place",
+          "depth": 97,
+          "move": false,
+          "character_id": 2974,
+          "matrix": {
+            "a": 4.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 4.0,
+            "tx": 75.0,
+            "ty": 103.0
+          },
+          "ratio": 1,
+          "name": "ch"
+        },
+        {
+          "op": "place",
+          "depth": 104,
+          "move": false,
+          "character_id": 3230,
+          "matrix": {
+            "a": 0.9994964599609375,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 283.2,
+            "ty": 16.0
+          },
+          "ratio": 1
+        },
+        {
+          "op": "place",
+          "depth": 105,
+          "move": false,
+          "character_id": 2977,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 41.0,
+            "ty": 96.0
+          },
+          "ratio": 1,
+          "name": "palt"
+        },
+        {
+          "op": "place",
+          "depth": 107,
+          "move": false,
+          "character_id": 2988,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.05,
+            "ty": 0.0
+          },
+          "ratio": 1,
+          "name": "blk"
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 23
+        },
+        {
+          "op": "remove",
+          "depth": 24
+        },
+        {
+          "op": "remove",
+          "depth": 25
+        },
+        {
+          "op": "remove",
+          "depth": 26
+        },
+        {
+          "op": "remove",
+          "depth": 27
+        },
+        {
+          "op": "remove",
+          "depth": 77
+        },
+        {
+          "op": "remove",
+          "depth": 86
+        },
+        {
+          "op": "remove",
+          "depth": 89
+        },
+        {
+          "op": "remove",
+          "depth": 96
+        },
+        {
+          "op": "remove",
+          "depth": 97
+        },
+        {
+          "op": "place",
+          "depth": 12,
+          "move": false,
+          "character_id": 3233,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 100.0,
+            "ty": 337.0
+          },
+          "ratio": 2
+        },
+        {
+          "op": "place",
+          "depth": 15,
+          "move": false,
+          "character_id": 3236,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 195.0,
+            "ty": 337.0
+          },
+          "ratio": 2
+        },
+        {
+          "op": "place",
+          "depth": 22,
+          "move": true,
+          "character_id": 3237
+        },
+        {
+          "op": "place",
+          "depth": 23,
+          "move": false,
+          "character_id": 3238,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 160.2,
+            "ty": 74.0
+          },
+          "ratio": 2
+        },
+        {
+          "op": "place",
+          "depth": 24,
+          "move": false,
+          "character_id": 3239,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 238.25,
+            "ty": 74.0
+          },
+          "ratio": 2
+        },
+        {
+          "op": "place",
+          "depth": 25,
+          "move": false,
+          "character_id": 3240,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 316.25,
+            "ty": 74.7
+          },
+          "ratio": 2
+        },
+        {
+          "op": "place",
+          "depth": 26,
+          "move": false,
+          "character_id": 3241,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 160.2,
+            "ty": 99.0
+          },
+          "ratio": 2
+        },
+        {
+          "op": "place",
+          "depth": 27,
+          "move": false,
+          "character_id": 3242,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 238.25,
+            "ty": 99.0
+          },
+          "ratio": 2
+        },
+        {
+          "op": "place",
+          "depth": 77,
+          "move": false,
+          "character_id": 3243,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 134.0,
+            "ty": 21.25
+          },
+          "ratio": 2
+        },
+        {
+          "op": "place",
+          "depth": 96,
+          "move": false,
+          "character_id": 2973,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "clip_depth": 101
+        },
+        {
+          "op": "place",
+          "depth": 97,
+          "move": false,
+          "character_id": 2974,
+          "matrix": {
+            "a": 4.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 4.0,
+            "tx": 75.0,
+            "ty": 103.0
+          },
+          "ratio": 2,
+          "name": "ch"
+        },
+        {
+          "op": "place",
+          "depth": 102,
+          "move": false,
+          "character_id": 3255,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 100.0,
+            "ty": 302.0
+          },
+          "ratio": 2,
+          "name": "gbt"
+        },
+        {
+          "op": "place",
+          "depth": 163,
+          "move": false,
+          "character_id": 3266,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 554.0,
+            "ty": 166.0
+          },
+          "ratio": 2,
+          "name": "hkk"
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 12
+        },
+        {
+          "op": "remove",
+          "depth": 15
+        },
+        {
+          "op": "remove",
+          "depth": 23
+        },
+        {
+          "op": "remove",
+          "depth": 24
+        },
+        {
+          "op": "remove",
+          "depth": 25
+        },
+        {
+          "op": "remove",
+          "depth": 26
+        },
+        {
+          "op": "remove",
+          "depth": 27
+        },
+        {
+          "op": "remove",
+          "depth": 77
+        },
+        {
+          "op": "remove",
+          "depth": 96
+        },
+        {
+          "op": "remove",
+          "depth": 97
+        },
+        {
+          "op": "place",
+          "depth": 12,
+          "move": false,
+          "character_id": 3267,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 100.0,
+            "ty": 337.0
+          },
+          "ratio": 3
+        },
+        {
+          "op": "place",
+          "depth": 15,
+          "move": false,
+          "character_id": 3270,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 195.0,
+            "ty": 337.0
+          },
+          "ratio": 3
+        },
+        {
+          "op": "place",
+          "depth": 22,
+          "move": true,
+          "character_id": 3271
+        },
+        {
+          "op": "place",
+          "depth": 23,
+          "move": false,
+          "character_id": 3272,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 160.2,
+            "ty": 74.0
+          },
+          "ratio": 3
+        },
+        {
+          "op": "place",
+          "depth": 24,
+          "move": false,
+          "character_id": 3273,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 238.25,
+            "ty": 74.0
+          },
+          "ratio": 3
+        },
+        {
+          "op": "place",
+          "depth": 25,
+          "move": false,
+          "character_id": 3274,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 316.25,
+            "ty": 74.7
+          },
+          "ratio": 3
+        },
+        {
+          "op": "place",
+          "depth": 26,
+          "move": false,
+          "character_id": 3275,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 160.2,
+            "ty": 99.0
+          },
+          "ratio": 3
+        },
+        {
+          "op": "place",
+          "depth": 27,
+          "move": false,
+          "character_id": 3276,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": 238.25,
+            "ty": 99.0
+          },
+          "ratio": 3
+        },
+        {
+          "op": "place",
+          "depth": 77,
+          "move": false,
+          "character_id": 3277,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 134.0,
+            "ty": 21.25
+          },
+          "ratio": 3
+        },
+        {
+          "op": "place",
+          "depth": 96,
+          "move": false,
+          "character_id": 2973,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "clip_depth": 101
+        },
+        {
+          "op": "place",
+          "depth": 97,
+          "move": false,
+          "character_id": 2974,
+          "matrix": {
+            "a": 4.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 4.0,
+            "tx": 75.0,
+            "ty": 103.0
+          },
+          "ratio": 3,
+          "name": "ch"
+        },
+        {
+          "op": "place",
+          "depth": 233,
+          "move": false,
+          "character_id": 3282,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 252.0,
+            "ty": 128.0
+          },
+          "ratio": 3
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "remove",
+          "depth": 2
+        },
+        {
+          "op": "remove",
+          "depth": 4
+        },
+        {
+          "op": "remove",
+          "depth": 6
+        },
+        {
+          "op": "remove",
+          "depth": 8
+        },
+        {
+          "op": "remove",
+          "depth": 10
+        },
+        {
+          "op": "remove",
+          "depth": 12
+        },
+        {
+          "op": "remove",
+          "depth": 15
+        },
+        {
+          "op": "remove",
+          "depth": 18
+        },
+        {
+          "op": "remove",
+          "depth": 22
+        },
+        {
+          "op": "remove",
+          "depth": 23
+        },
+        {
+          "op": "remove",
+          "depth": 24
+        },
+        {
+          "op": "remove",
+          "depth": 25
+        },
+        {
+          "op": "remove",
+          "depth": 26
+        },
+        {
+          "op": "remove",
+          "depth": 27
+        },
+        {
+          "op": "remove",
+          "depth": 28
+        },
+        {
+          "op": "remove",
+          "depth": 31
+        },
+        {
+          "op": "remove",
+          "depth": 34
+        },
+        {
+          "op": "remove",
+          "depth": 37
+        },
+        {
+          "op": "remove",
+          "depth": 40
+        },
+        {
+          "op": "remove",
+          "depth": 43
+        },
+        {
+          "op": "remove",
+          "depth": 45
+        },
+        {
+          "op": "remove",
+          "depth": 47
+        },
+        {
+          "op": "remove",
+          "depth": 49
+        },
+        {
+          "op": "remove",
+          "depth": 51
+        },
+        {
+          "op": "remove",
+          "depth": 53
+        },
+        {
+          "op": "remove",
+          "depth": 55
+        },
+        {
+          "op": "remove",
+          "depth": 57
+        },
+        {
+          "op": "remove",
+          "depth": 59
+        },
+        {
+          "op": "remove",
+          "depth": 61
+        },
+        {
+          "op": "remove",
+          "depth": 63
+        },
+        {
+          "op": "remove",
+          "depth": 65
+        },
+        {
+          "op": "remove",
+          "depth": 67
+        },
+        {
+          "op": "remove",
+          "depth": 69
+        },
+        {
+          "op": "remove",
+          "depth": 71
+        },
+        {
+          "op": "remove",
+          "depth": 73
+        },
+        {
+          "op": "remove",
+          "depth": 75
+        },
+        {
+          "op": "remove",
+          "depth": 77
+        },
+        {
+          "op": "remove",
+          "depth": 78
+        },
+        {
+          "op": "remove",
+          "depth": 80
+        },
+        {
+          "op": "remove",
+          "depth": 82
+        },
+        {
+          "op": "remove",
+          "depth": 84
+        },
+        {
+          "op": "remove",
+          "depth": 92
+        },
+        {
+          "op": "remove",
+          "depth": 94
+        },
+        {
+          "op": "remove",
+          "depth": 96
+        },
+        {
+          "op": "remove",
+          "depth": 97
+        },
+        {
+          "op": "remove",
+          "depth": 102
+        },
+        {
+          "op": "remove",
+          "depth": 104
+        },
+        {
+          "op": "remove",
+          "depth": 105
+        },
+        {
+          "op": "remove",
+          "depth": 107
+        },
+        {
+          "op": "remove",
+          "depth": 233
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3016,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 23.0,
+            "ty": 48.0
+          },
+          "ratio": 5,
+          "name": "ln"
+        },
+        {
+          "op": "place",
+          "depth": 149,
+          "move": false,
+          "character_id": 3284,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 150,
+          "move": false,
+          "character_id": 2695,
+          "matrix": {
+            "a": 0.847930908203125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 0.1160736083984375,
+            "tx": 0.0,
+            "ty": 303.0
+          },
+          "ratio": 5,
+          "name": "nt2"
+        },
+        {
+          "op": "place",
+          "depth": 152,
+          "move": false,
+          "character_id": 2695,
+          "matrix": {
+            "a": 0.847930908203125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 0.0995025634765625,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "ratio": 5,
+          "name": "nt3"
+        },
+        {
+          "op": "place",
+          "depth": 154,
+          "move": false,
+          "character_id": 3226,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 147.0,
+            "ty": 310.0
+          },
+          "ratio": 5
+        },
+        {
+          "op": "place",
+          "depth": 160,
+          "move": false,
+          "character_id": 24,
+          "matrix": {
+            "a": 0.7501068115234375,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 0.684234619140625,
+            "tx": 75.7,
+            "ty": 42.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 161,
+          "move": false,
+          "character_id": 3020,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 360.0,
+            "ty": 43.0
+          },
+          "ratio": 5,
+          "name": "sldr"
+        },
+        {
+          "op": "place",
+          "depth": 233,
+          "move": false,
+          "character_id": 3285,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 80.0,
+            "ty": 1.0
+          },
+          "ratio": 5
+        },
+        {
+          "op": "place",
+          "depth": 235,
+          "move": false,
+          "character_id": 3286,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 108.0,
+            "ty": 1.0
+          },
+          "ratio": 5
+        },
+        {
+          "op": "place",
+          "depth": 237,
+          "move": false,
+          "character_id": 3027,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 148.0,
+            "ty": 1.0
+          },
+          "ratio": 5
+        },
+        {
+          "op": "place",
+          "depth": 239,
+          "move": false,
+          "character_id": 3028,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 183.0,
+            "ty": 1.0
+          },
+          "ratio": 5
+        },
+        {
+          "op": "place",
+          "depth": 241,
+          "move": false,
+          "character_id": 3029,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 218.0,
+            "ty": 1.0
+          },
+          "ratio": 5
+        },
+        {
+          "op": "place",
+          "depth": 243,
+          "move": false,
+          "character_id": 3030,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 253.0,
+            "ty": 1.0
+          },
+          "ratio": 5
+        },
+        {
+          "op": "place",
+          "depth": 245,
+          "move": false,
+          "character_id": 3031,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 287.0,
+            "ty": 1.0
+          },
+          "ratio": 5
+        },
+        {
+          "op": "place",
+          "depth": 247,
+          "move": false,
+          "character_id": 3032,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 322.0,
+            "ty": 1.0
+          },
+          "ratio": 5
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "remove",
+          "depth": 149
+        },
+        {
+          "op": "remove",
+          "depth": 150
+        },
+        {
+          "op": "remove",
+          "depth": 152
+        },
+        {
+          "op": "remove",
+          "depth": 154
+        },
+        {
+          "op": "remove",
+          "depth": 161
+        },
+        {
+          "op": "remove",
+          "depth": 233
+        },
+        {
+          "op": "remove",
+          "depth": 235
+        },
+        {
+          "op": "remove",
+          "depth": 237
+        },
+        {
+          "op": "remove",
+          "depth": 239
+        },
+        {
+          "op": "remove",
+          "depth": 241
+        },
+        {
+          "op": "remove",
+          "depth": 243
+        },
+        {
+          "op": "remove",
+          "depth": 245
+        },
+        {
+          "op": "remove",
+          "depth": 247
+        }
+      ],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3016,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 23.0,
+            "ty": 48.0
+          },
+          "ratio": 7,
+          "name": "ln"
+        },
+        {
+          "op": "place",
+          "depth": 149,
+          "move": false,
+          "character_id": 3288,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 152,
+          "move": false,
+          "character_id": 2695,
+          "matrix": {
+            "a": 0.847930908203125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 0.1160736083984375,
+            "tx": 0.0,
+            "ty": 303.0
+          },
+          "ratio": 7,
+          "name": "nt2"
+        },
+        {
+          "op": "place",
+          "depth": 154,
+          "move": false,
+          "character_id": 2695,
+          "matrix": {
+            "a": 0.847930908203125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 0.0995025634765625,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "ratio": 7,
+          "name": "nt3"
+        },
+        {
+          "op": "place",
+          "depth": 157,
+          "move": false,
+          "character_id": 3233,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 147.0,
+            "ty": 310.0
+          },
+          "ratio": 7
+        },
+        {
+          "op": "place",
+          "depth": 161,
+          "move": false,
+          "character_id": 3020,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 360.0,
+            "ty": 43.0
+          },
+          "ratio": 7,
+          "name": "sldr"
+        },
+        {
+          "op": "place",
+          "depth": 233,
+          "move": false,
+          "character_id": 3026,
+          "matrix": {
+            "a": 1.00018310546875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 165.0,
+            "ty": 1.0
+          },
+          "ratio": 7
+        },
+        {
+          "op": "place",
+          "depth": 235,
+          "move": false,
+          "character_id": 3027,
+          "matrix": {
+            "a": 1.00018310546875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 207.0,
+            "ty": 1.0
+          },
+          "ratio": 7
+        },
+        {
+          "op": "place",
+          "depth": 237,
+          "move": false,
+          "character_id": 3028,
+          "matrix": {
+            "a": 1.00018310546875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 250.0,
+            "ty": 1.0
+          },
+          "ratio": 7
+        },
+        {
+          "op": "place",
+          "depth": 239,
+          "move": false,
+          "character_id": 3029,
+          "matrix": {
+            "a": 1.00018310546875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 292.0,
+            "ty": 1.0
+          },
+          "ratio": 7
+        },
+        {
+          "op": "place",
+          "depth": 241,
+          "move": false,
+          "character_id": 3030,
+          "matrix": {
+            "a": 1.00018310546875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 332.0,
+            "ty": 1.0
+          },
+          "ratio": 7
+        },
+        {
+          "op": "place",
+          "depth": 243,
+          "move": false,
+          "character_id": 3031,
+          "matrix": {
+            "a": 1.00018310546875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 84.0,
+            "ty": 1.0
+          },
+          "ratio": 7
+        },
+        {
+          "op": "place",
+          "depth": 245,
+          "move": false,
+          "character_id": 3032,
+          "matrix": {
+            "a": 1.00018310546875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 126.0,
+            "ty": 1.0
+          },
+          "ratio": 7
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 154
+        },
+        {
+          "op": "place",
+          "depth": 149,
+          "move": true,
+          "character_id": 3290
+        },
+        {
+          "op": "place",
+          "depth": 150,
+          "move": false,
+          "character_id": 2695,
+          "matrix": {
+            "a": 0.847930908203125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 0.0995025634765625,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "ratio": 8,
+          "name": "nt3"
+        },
+        {
+          "op": "place",
+          "depth": 152,
+          "move": true,
+          "matrix": {
+            "a": 0.847930908203125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 0.1160888671875,
+            "tx": 0.0,
+            "ty": 303.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 154,
+          "move": false,
+          "character_id": 3291,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 100.0,
+            "ty": 310.0
+          },
+          "ratio": 8
+        },
+        {
+          "op": "place",
+          "depth": 157,
+          "move": true,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 195.0,
+            "ty": 310.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 233,
+          "move": true,
+          "matrix": {
+            "a": 0.99981689453125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 165.0,
+            "ty": 1.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 235,
+          "move": true,
+          "matrix": {
+            "a": 0.99981689453125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 207.0,
+            "ty": 1.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 237,
+          "move": true,
+          "matrix": {
+            "a": 0.99981689453125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 250.0,
+            "ty": 1.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 239,
+          "move": true,
+          "matrix": {
+            "a": 0.99981689453125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 292.0,
+            "ty": 1.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 241,
+          "move": true,
+          "matrix": {
+            "a": 0.99981689453125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 332.0,
+            "ty": 1.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 243,
+          "move": true,
+          "matrix": {
+            "a": 0.99981689453125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 84.0,
+            "ty": 1.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 245,
+          "move": true,
+          "matrix": {
+            "a": 0.99981689453125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 126.0,
+            "ty": 1.0
+          }
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "remove",
+          "depth": 149
+        },
+        {
+          "op": "remove",
+          "depth": 150
+        },
+        {
+          "op": "remove",
+          "depth": 152
+        },
+        {
+          "op": "remove",
+          "depth": 154
+        },
+        {
+          "op": "remove",
+          "depth": 157
+        },
+        {
+          "op": "remove",
+          "depth": 160
+        },
+        {
+          "op": "remove",
+          "depth": 161
+        },
+        {
+          "op": "remove",
+          "depth": 233
+        },
+        {
+          "op": "remove",
+          "depth": 235
+        },
+        {
+          "op": "remove",
+          "depth": 237
+        },
+        {
+          "op": "remove",
+          "depth": 239
+        },
+        {
+          "op": "remove",
+          "depth": 241
+        },
+        {
+          "op": "remove",
+          "depth": 243
+        },
+        {
+          "op": "remove",
+          "depth": 245
+        },
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 3255,
+          "matrix": {
+            "a": 1.000152587890625,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 100.1,
+            "ty": 346.0
+          },
+          "ratio": 9,
+          "name": "gbtls"
+        },
+        {
+          "op": "place",
+          "depth": 3,
+          "move": false,
+          "character_id": 3292,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 229.15,
+            "ty": -53.1
+          },
+          "ratio": 9
+        },
+        {
+          "op": "place",
+          "depth": 5,
+          "move": false,
+          "character_id": 3267,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 100.0,
+            "ty": 311.0
+          },
+          "ratio": 9
+        },
+        {
+          "op": "place",
+          "depth": 8,
+          "move": false,
+          "character_id": 3293,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 195.0,
+            "ty": 311.0
+          },
+          "ratio": 9
+        },
+        {
+          "op": "place",
+          "depth": 11,
+          "move": false,
+          "character_id": 3296,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 100.0,
+            "ty": 276.0
+          },
+          "ratio": 9
+        },
+        {
+          "op": "place",
+          "depth": 14,
+          "move": false,
+          "character_id": 2889,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 84.9,
+            "ty": 46.0
+          },
+          "ratio": 9,
+          "name": "shhk1"
+        },
+        {
+          "op": "place",
+          "depth": 16,
+          "move": false,
+          "character_id": 2889,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 240.0,
+            "ty": 46.0
+          },
+          "ratio": 9,
+          "name": "shhk2"
+        },
+        {
+          "op": "place",
+          "depth": 18,
+          "move": false,
+          "character_id": 3297,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -2.0,
+            "ty": 78.85
+          },
+          "ratio": 9
+        },
+        {
+          "op": "place",
+          "depth": 19,
+          "move": false,
+          "character_id": 3298,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 153.3,
+            "ty": 78.85
+          },
+          "ratio": 9
+        },
+        {
+          "op": "place",
+          "depth": 23,
+          "move": false,
+          "character_id": 3302,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 24,
+          "move": false,
+          "character_id": 3303,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          },
+          "clip_depth": 33
+        },
+        {
+          "op": "place",
+          "depth": 25,
+          "move": false,
+          "character_id": 2974,
+          "matrix": {
+            "a": 4.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 4.0,
+            "tx": 114.0,
+            "ty": 182.0
+          },
+          "ratio": 9,
+          "name": "ch"
+        },
+        {
+          "op": "place",
+          "depth": 29,
+          "move": false,
+          "character_id": 2974,
+          "matrix": {
+            "a": 4.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 4.0,
+            "tx": 269.0,
+            "ty": 182.0
+          },
+          "ratio": 9,
+          "name": "ch2"
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 3
+        },
+        {
+          "op": "remove",
+          "depth": 8
+        },
+        {
+          "op": "remove",
+          "depth": 11
+        },
+        {
+          "op": "remove",
+          "depth": 14
+        },
+        {
+          "op": "remove",
+          "depth": 16
+        },
+        {
+          "op": "remove",
+          "depth": 18
+        },
+        {
+          "op": "remove",
+          "depth": 19
+        },
+        {
+          "op": "remove",
+          "depth": 23
+        },
+        {
+          "op": "remove",
+          "depth": 24
+        },
+        {
+          "op": "remove",
+          "depth": 25
+        },
+        {
+          "op": "remove",
+          "depth": 29
+        },
+        {
+          "op": "place",
+          "depth": 8,
+          "move": false,
+          "character_id": 3304,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 195.0,
+            "ty": 311.0
+          },
+          "ratio": 10
+        },
+        {
+          "op": "place",
+          "depth": 11,
+          "move": false,
+          "character_id": 3305,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 100.0,
+            "ty": 276.0
+          },
+          "ratio": 10
+        },
+        {
+          "op": "place",
+          "depth": 14,
+          "move": false,
+          "character_id": 3306,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 196.0,
+            "ty": 312.0
+          },
+          "color_transform": {
+            "mult": {
+              "r": 1.0,
+              "g": 1.0,
+              "b": 1.0,
+              "a": 0.80078125
+            },
+            "add": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 0
+            }
+          },
+          "ratio": 10,
+          "name": "bnon"
+        },
+        {
+          "op": "place",
+          "depth": 17,
+          "move": false,
+          "character_id": 3311,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 190.0,
+            "ty": 150.0
+          },
+          "ratio": 10
+        }
+      ],
+      [
+        {
+          "op": "remove",
+          "depth": 1
+        },
+        {
+          "op": "remove",
+          "depth": 5
+        },
+        {
+          "op": "remove",
+          "depth": 8
+        },
+        {
+          "op": "remove",
+          "depth": 11
+        },
+        {
+          "op": "remove",
+          "depth": 14
+        },
+        {
+          "op": "remove",
+          "depth": 17
+        },
+        {
+          "op": "remove",
+          "depth": 163
+        }
+      ],
+      [],
+      [],
+      [],
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 2695,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -36.05,
+            "ty": -22.0
+          },
+          "ratio": 15,
+          "name": "nt"
+        },
+        {
+          "op": "place",
+          "depth": 3,
+          "move": false,
+          "character_id": 3017,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        }
+      ]
+    ]
+  }
+}

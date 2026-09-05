@@ -1,9 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { BASE_CONFIG, COMBAT_TIMING_CONFIG, NORMAL_ATTACK_DAMAGE, RECOVERY_CONFIG } from "../config";
+import { COMBAT_TIMING_CONFIG, NORMAL_ATTACK_DAMAGE, RECOVERY_CONFIG } from "../config";
 import { createSoldier } from "../entities/Soldier";
 import type { Soldier } from "../types";
-import { getBattleResult } from "./victorySystem";
-import { createBattleBases, getBaseForTeam } from "./baseSystem";
+import { createBattleBases } from "./baseSystem";
 import {
   canStartSoldierAttack,
   startSoldierAttack,
@@ -21,13 +20,6 @@ function duel(controller: "ai" | "player" = "ai") {
   target.stats.defense = 0;
   startSoldierAttack(attacker, target, 0);
   return { attacker, target, soldiers: [attacker, target], bases };
-}
-
-function baseAttackSetup(controller: "ai" | "player" = "ai") {
-  const bases = createBattleBases();
-  const base = getBaseForTeam(bases, "enemy");
-  const attacker = createSoldier("attacker", "player", controller, base.x - base.width / 2 - BASE_CONFIG.attackRange, base.y, "charge");
-  return { attacker, base, bases };
 }
 
 describe("attack state machine", () => {
@@ -158,40 +150,14 @@ describe("attack state machine", () => {
     expect(attacker.strategy).toBe("wait");
   });
 
-  it("starts a base attack without immediate base damage or Combat Target", () => {
-    const { attacker, base, bases } = baseAttackSetup();
+  it("does not treat a nearby enemy base as a normal attack target", () => {
+    const bases = createBattleBases();
+    const enemyBase = bases.find((base) => base.team === "enemy")!;
+    const attacker = createSoldier("attacker", "player", "ai", enemyBase.x - enemyBase.width / 2, enemyBase.y, "charge");
     updateAttackStates([attacker], bases, 0);
-    expect(attacker.combatActionState).toBe("ATTACK_WINDUP");
-    expect(attacker.attackTargetKind).toBe("BASE");
-    expect(attacker.targetId).toBeNull();
-    expect(base.hp).toBe(base.maxHp);
-    expect(attacker.engagementStartedAt).toBeNull();
-  });
-
-  it("applies one base hit at windup completion", () => {
-    const { attacker, base, bases } = baseAttackSetup();
-    updateAttackStates([attacker], bases, 0);
-    updateAttackStates([attacker], bases, COMBAT_TIMING_CONFIG.attackWindupMs);
-    updateAttackStates([attacker], bases, COMBAT_TIMING_CONFIG.attackWindupMs + 1);
-    expect(base.hp).toBe(base.maxHp - BASE_CONFIG.damagePerHit);
-  });
-
-  it("misses a base hit if the attacker leaves range", () => {
-    const { attacker, base, bases } = baseAttackSetup();
-    updateAttackStates([attacker], bases, 0);
-    attacker.y += 100;
-    updateAttackStates([attacker], bases, COMBAT_TIMING_CONFIG.attackWindupMs);
-    expect(base.hp).toBe(base.maxHp);
-    expect(attacker.combatActionState).toBe("ATTACK_RECOVERY");
-  });
-
-  it("destroys a base at hit timing and immediately produces a result", () => {
-    const { attacker, base, bases } = baseAttackSetup();
-    const livingEnemy = createSoldier("enemy", "enemy", "ai", 900, 300);
-    base.hp = BASE_CONFIG.damagePerHit;
-    updateAttackStates([attacker, livingEnemy], bases, 0);
-    expect(updateAttackStates([attacker, livingEnemy], bases, COMBAT_TIMING_CONFIG.attackWindupMs)).toBe("enemy");
-    expect(getBattleResult([attacker, livingEnemy], bases)).toBe("VICTORY");
+    expect(attacker.combatActionState).toBe("IDLE");
+    expect(attacker.attackTargetKind).toBeNull();
+    expect(enemyBase.hp).toBe(enemyBase.maxHp);
   });
 
   it("does not resolve a reserved hit after battle end", () => {

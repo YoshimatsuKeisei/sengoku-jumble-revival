@@ -2,7 +2,6 @@ import { BATTLEFIELD_CONFIG, OBSTACLE_AVOIDANCE_CONFIG, SOLDIER_RADIUS } from ".
 import type { AvoidanceSide, BattleBase, BattleObstacle, Soldier } from "../types";
 import { getSoldierMoveSpeed } from "../stats/soldierStats";
 import { clearEngagement, distanceBetween } from "./aiSystem";
-import { canAttackEnemyBase, getEnemyBase } from "./baseSystem";
 import { getPreferredApproachPoint } from "./engagementPositioningSystem";
 import { calculateRetreatMoveSpeed } from "./specialAbilitySystem";
 import { findGunTarget, getGunMovementDecision } from "./gunAttackSystem";
@@ -139,6 +138,8 @@ function moveBy(
   currentTime: number,
   applyAvoidance: boolean,
 ): void {
+  const previousX = soldier.x;
+  const previousY = soldier.y;
   const desired = normalize(dx, dy);
   const direction = applyAvoidance ? resolveMovementDirection(soldier, desired, obstacles, currentTime) : desired;
   if (direction.x !== 0 || direction.y !== 0) {
@@ -148,6 +149,8 @@ function moveBy(
   const baseSpeed = getSoldierMoveSpeed(soldier);
   const speed = soldier.state === "EMERGENCY_RETREAT" ? calculateRetreatMoveSpeed(baseSpeed, soldier) : baseSpeed;
   applyMovementDistance(soldier, direction, speed * deltaSeconds, obstacles);
+  soldier.velocityX = soldier.x - previousX;
+  soldier.velocityY = soldier.y - previousY;
 }
 
 function applyMovementDistance(
@@ -173,11 +176,17 @@ export function applyForcedMovement(
   distance: number,
   obstacles: readonly BattleObstacle[] = [],
 ): void {
+  const previousX = soldier.x;
+  const previousY = soldier.y;
   applyMovementDistance(soldier, normalize(dx, dy), Math.max(0, distance), obstacles);
+  soldier.velocityX = soldier.x - previousX;
+  soldier.velocityY = soldier.y - previousY;
 }
 
 export function movePlayer(soldier: Soldier, dx: number, dy: number, deltaSeconds: number,
   obstacles: readonly BattleObstacle[] = [], allowDuringWindup = false): void {
+  soldier.velocityX = 0;
+  soldier.velocityY = 0;
   if (!soldier.isDead && soldier.reactionState === "NONE"
     && (soldier.state === "NORMAL" || soldier.state === "EMERGENCY_RETREAT")
     && (soldier.combatActionState === "IDLE" || allowDuringWindup)) {
@@ -193,6 +202,10 @@ export function moveAiSoldiers(
   bases: readonly BattleBase[] = [],
 ): void {
   for (const soldier of soldiers) {
+    if (soldier.controller === "ai" || soldier.state !== "NORMAL") {
+      soldier.velocityX = 0;
+      soldier.velocityY = 0;
+    }
     if (soldier.targetId) {
       const selected = soldiers.find((candidate) => candidate.id === soldier.targetId);
       if (!isValidCombatTarget(soldier, selected)) clearStaleCombatTarget(soldier);
@@ -236,13 +249,15 @@ export function moveAiSoldiers(
     }
     if (target && !chasingRetreatWindup && distanceBetween(soldier, target) <= soldier.attackRange) continue;
     if (!target && (soldier.moveTargetX === null || soldier.moveTargetY === null)) continue;
+    const predictiveDefendDestination = target && soldier.strategy === "defend"
+      && soldier.strategyObjectiveKind === "SEEK_COMBAT"
+      ? { x: soldier.strategyObjectiveX, y: soldier.strategyObjectiveY }
+      : null;
     const destination = target
-      ? target.state === "EMERGENCY_RETREAT" ? target : getPreferredApproachPoint(soldier, target, soldiers, obstacles) ?? target
+      ? predictiveDefendDestination
+        ?? (target.state === "EMERGENCY_RETREAT" ? target : getPreferredApproachPoint(soldier, target, soldiers, obstacles) ?? target)
       : { x: soldier.moveTargetX!, y: soldier.moveTargetY! };
-    if (!target && bases.length > 0 && canAttackEnemyBase(soldier, getEnemyBase(bases, soldier.team))) continue;
-    const objectiveBase = !target ? bases.find((base) => base.team !== soldier.team
-      && Math.abs(base.x - destination.x) < 0.01 && Math.abs(base.y - destination.y) < 0.01) : undefined;
-    const stopDistance = target ? 2 : objectiveBase ? 0 : 4;
+    const stopDistance = target ? 2 : 4;
     if (distanceBetween(soldier, destination) <= stopDistance) continue;
     moveBy(soldier, destination.x - soldier.x, destination.y - soldier.y, deltaSeconds, obstacles, currentTime, true);
   }

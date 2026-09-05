@@ -1,7 +1,10 @@
-import { REACTION_CONFIG } from "../config";
+import { REACTION_CONFIG, STRATEGY_AI_CONFIG } from "../config";
+import type { RandomSource } from "../stats/soldierStats";
 import type { BattleObstacle, Soldier } from "../types";
 import { cancelAttack } from "./attackRuntime";
 import { applyForcedMovement } from "./movementSystem";
+import { startEngagement } from "./aiSystem";
+import { hasSpecialAbility } from "./specialAbilitySystem";
 
 function fallbackDirection(attacker: Soldier, target: Soldier): { x: number; y: number } {
   let hash = 0;
@@ -23,8 +26,14 @@ export function startHitReaction(
   attacker: Soldier,
   currentTime: number,
   knockbackDistance: number = REACTION_CONFIG.knockbackDistance,
+  random: RandomSource = Math.random,
 ): void {
   if (target.isDead) { clearReaction(target); return; }
+  const canRetaliate = target.strategy === "wait" || target.strategy === "charge";
+  const rushIgnoresRetarget = target.strategy === "charge"
+    && hasSpecialAbility(target, "RUSH")
+    && random() < STRATEGY_AI_CONFIG.rushRetargetIgnoreChance;
+  if (canRetaliate && !rushIgnoresRetarget) startEngagement(target, attacker, currentTime);
   cancelAttack(target);
   let dx = target.x - attacker.x;
   let dy = target.y - attacker.y;

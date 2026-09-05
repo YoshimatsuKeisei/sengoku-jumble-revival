@@ -1,0 +1,529 @@
+{
+  "sprite_3266": {
+    "id": 3266,
+    "type": "sprite",
+    "declared_frames": 1,
+    "labels": [],
+    "frames": [
+      [
+        {
+          "op": "place",
+          "depth": 1,
+          "move": false,
+          "character_id": 2695,
+          "matrix": {
+            "a": 0.847930908203125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 0.9000396728515625,
+            "tx": -554.95,
+            "ty": -166.0
+          },
+          "name": "nt2"
+        },
+        {
+          "op": "place",
+          "depth": 4,
+          "move": false,
+          "character_id": 3256,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 5,
+          "move": false,
+          "character_id": 3257,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": -435.05,
+            "ty": -91.9
+          }
+        },
+        {
+          "op": "place",
+          "depth": 6,
+          "move": false,
+          "character_id": 3258,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": -357.0,
+            "ty": -91.9
+          }
+        },
+        {
+          "op": "place",
+          "depth": 7,
+          "move": false,
+          "character_id": 3259,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": -279.0,
+            "ty": -91.9
+          }
+        },
+        {
+          "op": "place",
+          "depth": 8,
+          "move": false,
+          "character_id": 3260,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": -435.05,
+            "ty": -66.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 9,
+          "move": false,
+          "character_id": 3261,
+          "matrix": {
+            "a": 0.999053955078125,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": -357.0,
+            "ty": -66.0
+          }
+        },
+        {
+          "op": "place",
+          "depth": 10,
+          "move": false,
+          "character_id": 2729,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -527.0,
+            "ty": 19.0
+          },
+          "name": "t1"
+        },
+        {
+          "op": "place",
+          "depth": 13,
+          "move": false,
+          "character_id": 2737,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -472.0,
+            "ty": 19.0
+          },
+          "name": "t2"
+        },
+        {
+          "op": "place",
+          "depth": 16,
+          "move": false,
+          "character_id": 2745,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -418.0,
+            "ty": 19.0
+          },
+          "name": "t3"
+        },
+        {
+          "op": "place",
+          "depth": 19,
+          "move": false,
+          "character_id": 2753,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -362.95,
+            "ty": 19.0
+          },
+          "name": "t4"
+        },
+        {
+          "op": "place",
+          "depth": 22,
+          "move": false,
+          "character_id": 2761,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -308.95,
+            "ty": 19.0
+          },
+          "name": "t5"
+        },
+        {
+          "op": "place",
+          "depth": 25,
+          "move": false,
+          "character_id": 2764,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -253.95,
+            "ty": 19.0
+          },
+          "name": "t6"
+        },
+        {
+          "op": "place",
+          "depth": 27,
+          "move": false,
+          "character_id": 2769,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -527.0,
+            "ty": 132.0
+          },
+          "name": "t7"
+        },
+        {
+          "op": "place",
+          "depth": 29,
+          "move": false,
+          "character_id": 2774,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -472.0,
+            "ty": 132.0
+          },
+          "name": "t8"
+        },
+        {
+          "op": "place",
+          "depth": 31,
+          "move": false,
+          "character_id": 2779,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -418.0,
+            "ty": 132.0
+          },
+          "name": "t10"
+        },
+        {
+          "op": "place",
+          "depth": 33,
+          "move": false,
+          "character_id": 2784,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -308.9,
+            "ty": 132.0
+          },
+          "name": "t11"
+        },
+        {
+          "op": "place",
+          "depth": 35,
+          "move": false,
+          "character_id": 2789,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -253.9,
+            "ty": 132.0
+          },
+          "name": "t19"
+        },
+        {
+          "op": "place",
+          "depth": 37,
+          "move": false,
+          "character_id": 2794,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -418.0,
+            "ty": 180.0
+          },
+          "name": "t12"
+        },
+        {
+          "op": "place",
+          "depth": 39,
+          "move": false,
+          "character_id": 2799,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -527.0,
+            "ty": 156.0
+          },
+          "name": "t9"
+        },
+        {
+          "op": "place",
+          "depth": 41,
+          "move": false,
+          "character_id": 2804,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -472.0,
+            "ty": 156.0
+          },
+          "name": "t13"
+        },
+        {
+          "op": "place",
+          "depth": 43,
+          "move": false,
+          "character_id": 2809,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -418.0,
+            "ty": 156.0
+          },
+          "name": "t15"
+        },
+        {
+          "op": "place",
+          "depth": 45,
+          "move": false,
+          "character_id": 2814,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -362.95,
+            "ty": 156.0
+          },
+          "name": "t20"
+        },
+        {
+          "op": "place",
+          "depth": 47,
+          "move": false,
+          "character_id": 2819,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -308.95,
+            "ty": 156.0
+          },
+          "name": "t14"
+        },
+        {
+          "op": "place",
+          "depth": 49,
+          "move": false,
+          "character_id": 2824,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -253.95,
+            "ty": 156.0
+          },
+          "name": "t16"
+        },
+        {
+          "op": "place",
+          "depth": 51,
+          "move": false,
+          "character_id": 2829,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -527.0,
+            "ty": 180.0
+          },
+          "name": "t17"
+        },
+        {
+          "op": "place",
+          "depth": 53,
+          "move": false,
+          "character_id": 2834,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -472.0,
+            "ty": 180.0
+          },
+          "name": "t18"
+        },
+        {
+          "op": "place",
+          "depth": 55,
+          "move": false,
+          "character_id": 2839,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -362.9,
+            "ty": 132.0
+          },
+          "name": "t21"
+        },
+        {
+          "op": "place",
+          "depth": 57,
+          "move": false,
+          "character_id": 2844,
+          "matrix": {
+            "a": 1.000213623046875,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -362.95,
+            "ty": 180.0
+          },
+          "name": "t22"
+        },
+        {
+          "op": "place",
+          "depth": 59,
+          "move": false,
+          "character_id": 2889,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -436.0,
+            "ty": -121.0
+          },
+          "name": "heishu"
+        },
+        {
+          "op": "place",
+          "depth": 61,
+          "move": false,
+          "character_id": 2946,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -316.0,
+            "ty": -121.0
+          },
+          "name": "wazashu"
+        },
+        {
+          "op": "place",
+          "depth": 63,
+          "move": false,
+          "character_id": 2957,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -308.95,
+            "ty": 180.0
+          },
+          "name": "t30"
+        },
+        {
+          "op": "place",
+          "depth": 65,
+          "move": false,
+          "character_id": 2957,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": -253.9,
+            "ty": 180.0
+          },
+          "name": "t31"
+        },
+        {
+          "op": "place",
+          "depth": 67,
+          "move": false,
+          "character_id": 3262,
+          "matrix": {
+            "a": 0.9994964599609375,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0020599365234375,
+            "tx": -345.85,
+            "ty": -149.2
+          }
+        },
+        {
+          "op": "place",
+          "depth": 69,
+          "move": false,
+          "character_id": 3265,
+          "matrix": {
+            "a": 1.0,
+            "b": 0.0,
+            "c": 0.0,
+            "d": 1.0,
+            "tx": 0.0,
+            "ty": 0.0
+          }
+        }
+      ]
+    ]
+  }
+}

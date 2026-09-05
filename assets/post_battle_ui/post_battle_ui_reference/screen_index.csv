@@ -1,0 +1,5 @@
+﻿screen,root_frame,movieclip_id,sprite_frame,frame_label,root_y,buttons
+battle_result,20,3216,,,0,result_next
+merit_list,21,3312,6,rlst,30,to_enemy_recruit
+enemy_list,21,3312,8,elst,30,do_not_recruit
+enemy_detail,21,3312,3,st02,0,"previous_enemy,recruit_this_soldier,do_not_recruit,back_to_enemy_list,next_enemy"

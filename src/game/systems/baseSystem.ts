@@ -3,7 +3,7 @@ import { BATTLEFIELD_BASE_WORLD_RECTS } from "../battlefieldLayout";
 import type { BattleBase, Soldier, Team } from "../types";
 import {
   distanceToRect,
-  getBaseDamageCoreRect,
+  getBaseAttackSurfaceRect,
   getBaseRect,
   isPointInsideRect,
   isPointWithinBaseGateSpan,
@@ -39,14 +39,15 @@ export function getEnemyBase(bases: readonly BattleBase[], team: Team): BattleBa
 }
 
 export function distanceToBaseEdge(soldier: Soldier, base: BattleBase): number {
-  return distanceToRect(soldier, getBaseDamageCoreRect(base));
+  return distanceToRect(soldier, getBaseAttackSurfaceRect(base));
 }
 
+/** Read-only proximity helper retained for callers/tests; damage is resolved only by baseContactSystem. */
 export function canAttackEnemyBase(soldier: Soldier, enemyBase: BattleBase): boolean {
-  if (soldier.isDead || soldier.team === enemyBase.team || soldier.state !== "NORMAL" || soldier.targetId) return false;
+  if (soldier.isDead || soldier.team === enemyBase.team || soldier.state !== "NORMAL") return false;
   if (enemyBase.isDestroyed || enemyBase.hp <= 0) return false;
   if (soldier.temporaryOrder?.type === "DEFEND_ORDER" || soldier.temporaryOrder?.type === "RALLY") return false;
-  return distanceToBaseEdge(soldier, enemyBase) <= BASE_CONFIG.attackRange;
+  return distanceToBaseEdge(soldier, enemyBase) <= SOLDIER_RADIUS;
 }
 
 export function damageBase(base: BattleBase, damage: number = BASE_CONFIG.damagePerHit): void {

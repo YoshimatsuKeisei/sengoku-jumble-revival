@@ -1,0 +1,69 @@
+{
+  "PostBattleSnapshot": {
+    "battleResult": {
+      "type": "BattleResult",
+      "source": "existing BattleScene result",
+      "real": true
+    },
+    "playerRemaining": {
+      "type": "number",
+      "source": "alive PLAYER Soldier count",
+      "real": true
+    },
+    "enemyRemaining": {
+      "type": "number",
+      "source": "alive ENEMY Soldier count",
+      "real": true
+    },
+    "playerBaseHp": {
+      "type": "number|null",
+      "source": "existing PLAYER BattleBase",
+      "real": true
+    },
+    "enemyBaseHp": {
+      "type": "number|null",
+      "source": "existing ENEMY BattleBase",
+      "real": true
+    },
+    "playerRoster": {
+      "type": "readonly SoldierSnapshot[]",
+      "source": "existing Soldier values copied before BattleScene teardown",
+      "real": true
+    },
+    "enemyRoster": {
+      "type": "readonly SoldierSnapshot[]",
+      "source": "existing enemy Soldier values copied before teardown",
+      "real": true
+    },
+    "selectedAreaId": {
+      "type": "string|null",
+      "source": "existing map-to-battle route",
+      "real": true
+    },
+    "resultMetrics": {
+      "type": "ResultMetrics|null",
+      "source": "no trusted current-game adapter",
+      "real": false,
+      "placeholder": "render --"
+    },
+    "meritCounters": {
+      "type": "readonly MeritCounters[]|null",
+      "source": "only if already tracked by game",
+      "real": false,
+      "placeholder": "render -- per unavailable cell"
+    },
+    "recruitmentCandidates": {
+      "type": "readonly SoldierSnapshot[]|null",
+      "source": "eligibility rules not connected",
+      "real": false,
+      "placeholder": "display enemyRoster as non-persistent preview rows, clearly internal to UI model"
+    }
+  },
+  "rules": [
+    "Create one immutable snapshot at BattleScene completion.",
+    "Do not query destroyed Soldier objects from later screens.",
+    "Never convert enemyRoster display rows into recruitment eligibility.",
+    "Do not write money, stipend, roster, progression, AI, damage, HP, or BattleResult.",
+    "Unknown numeric cells use null and render as --; never fabricate zero."
+  ]
+}

@@ -1,0 +1,906 @@
+{
+  "format": "sengoku-jumble-post-battle-ui-v1",
+  "coordinate_space": {
+    "width": 380,
+    "height": 380,
+    "origin": "stage_top_left"
+  },
+  "swf": {
+    "file": "sgjbgm.swf",
+    "fps": 24,
+    "root_result_frame": 20,
+    "root_character_hub_frame": 21
+  },
+  "routing": {
+    "requested_primary_flow": [
+      "BattleScene",
+      "battle_result",
+      "merit_list",
+      "enemy_list",
+      "enemy_detail"
+    ],
+    "swf_observation": {
+      "victory_next": "root label chrsl / gmnwst 14, then merit list rlst",
+      "defeat_button": "returns toward map instead of recruitment sequence"
+    },
+    "implementation_policy": "Follow the requested full flow. Keep the SWF defeat-route difference documented and isolated in one route policy."
+  },
+  "screens": {
+    "battle_result": {
+      "source": {
+        "root_frame": 20,
+        "movieclip_id": 3216,
+        "instance": "kend",
+        "x": 31,
+        "y": 22
+      },
+      "background": "common_castle_background",
+      "panel": {
+        "asset": "battle_result_panel",
+        "x": 31,
+        "y": 22,
+        "width": 319,
+        "height": 297
+      },
+      "reveal_timeline": [
+        {
+          "frame": 1,
+          "time_ms": 0,
+          "event": "panel_fade_start",
+          "alpha": 0
+        },
+        {
+          "frame": 17,
+          "time_ms": 667,
+          "event": "panel_full_and_base_row",
+          "alpha": 1
+        },
+        {
+          "frame": 29,
+          "time_ms": 1167,
+          "event": "soldier_row"
+        },
+        {
+          "frame": 42,
+          "time_ms": 1708,
+          "event": "retreat_row"
+        },
+        {
+          "frame": 55,
+          "time_ms": 2250,
+          "event": "totals_row"
+        },
+        {
+          "frame": 67,
+          "time_ms": 2750,
+          "event": "winner_badge_footer_and_button",
+          "hold": true
+        }
+      ],
+      "dynamic_text_anchors": {
+        "player_base": [
+          111,
+          121
+        ],
+        "enemy_base": [
+          246,
+          121
+        ],
+        "player_soldiers": [
+          111,
+          174
+        ],
+        "enemy_soldiers": [
+          246,
+          174
+        ],
+        "player_retreats": [
+          111,
+          226
+        ],
+        "enemy_retreats": [
+          246,
+          226
+        ],
+        "player_total": [
+          111,
+          277
+        ],
+        "enemy_total": [
+          246,
+          277
+        ],
+        "money": [
+          117,
+          342
+        ]
+      },
+      "score_reference": {
+        "swf_expression": "playerTotal = mcp*5 + mmb*3 + eth; enemyTotal = ecp*5 + emb*3 + mth",
+        "status": "confirmed_expression_but_input_semantics_not_mapped_to_current_game",
+        "implementation": "do_not_enable; display null values as -- until an explicit adapter exists"
+      },
+      "buttons": [
+        "result_next"
+      ]
+    },
+    "merit_list": {
+      "source": {
+        "root_frame": 21,
+        "movieclip_id": 3312,
+        "frame": 6,
+        "label": "rlst",
+        "root_y": 30
+      },
+      "background": "common_castle_background",
+      "header": {
+        "asset": "merit_list_header",
+        "x": -1,
+        "y": -2
+      },
+      "footer": {
+        "asset": "list_footer_panel",
+        "x": -1,
+        "y": 332
+      },
+      "list": {
+        "x": 17,
+        "y": 76,
+        "row_height": 27.3,
+        "allocated_rows": 30,
+        "viewport_height": 257,
+        "visible_rows": 10
+      },
+      "columns": [
+        "name",
+        "battle_win",
+        "battle_loss",
+        "retreat",
+        "kills",
+        "soldier_attack",
+        "base_attack",
+        "defense",
+        "recovery"
+      ],
+      "scrollbar": {
+        "thumb_asset": "list_scroll_thumb",
+        "x": 360,
+        "y": 73,
+        "width": 14,
+        "height": 27
+      },
+      "sort": {
+        "swf_function": "lst(sortIndex)",
+        "indices": {
+          "reverse": 0,
+          "battle_win": 1,
+          "battle_loss": 2,
+          "retreat": 3,
+          "kills": 4,
+          "soldier_attack": 5,
+          "base_attack": 6,
+          "defense": 7,
+          "recovery": 8
+        }
+      },
+      "row_click_swf_target": "st01 own-soldier detail (outside requested four-screen flow)",
+      "buttons": [
+        "to_enemy_recruit"
+      ]
+    },
+    "enemy_list": {
+      "source": {
+        "root_frame": 21,
+        "movieclip_id": 3312,
+        "frame": 8,
+        "label": "elst",
+        "root_y": 30
+      },
+      "background": "common_castle_background",
+      "header": {
+        "asset": "enemy_list_header",
+        "x": -1,
+        "y": -2
+      },
+      "footer": {
+        "asset": "list_footer_panel",
+        "x": -1,
+        "y": 332
+      },
+      "list": {
+        "x": 17,
+        "y": 76,
+        "row_height": 27.3,
+        "allocated_rows": 30,
+        "viewport_height": 257,
+        "visible_rows": 10
+      },
+      "columns": [
+        "name",
+        "unit_type",
+        "action_type",
+        "hp",
+        "skill",
+        "attack",
+        "defense",
+        "speed"
+      ],
+      "scrollbar": {
+        "thumb_asset": "list_scroll_thumb",
+        "x": 360,
+        "y": 73,
+        "width": 14,
+        "height": 27
+      },
+      "sort": {
+        "swf_function": "lst(sortIndex)",
+        "indices": {
+          "reverse": 0,
+          "hp": 1,
+          "skill": 2,
+          "attack": 3,
+          "defense": 4,
+          "speed": 5,
+          "unit_type": 6,
+          "action_type": 7,
+          "cost": 8
+        }
+      },
+      "row_click": {
+        "swf_target": "st02",
+        "implementation_target": "enemy_detail(selectedIndex)"
+      },
+      "buttons": [
+        "do_not_recruit"
+      ]
+    },
+    "enemy_detail": {
+      "source": {
+        "root_frame": 21,
+        "movieclip_id": 3312,
+        "frame": 3,
+        "label": "st02",
+        "root_y": 0
+      },
+      "panel": {
+        "asset": "soldier_detail_panel",
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 380
+      },
+      "portrait_anchor": {
+        "x": 75,
+        "y": 103,
+        "swf_scale": 4,
+        "implementation": "reuse existing character sprite renderer"
+      },
+      "fields": {
+        "name": [
+          134,
+          21
+        ],
+        "unit_type": [
+          177,
+          45
+        ],
+        "action_type": [
+          297,
+          45
+        ],
+        "hp": [
+          132,
+          75
+        ],
+        "skill": [
+          210.05,
+          75
+        ],
+        "speed": [
+          288.05,
+          75
+        ],
+        "attack": [
+          132,
+          100
+        ],
+        "defense": [
+          210.05,
+          100
+        ],
+        "growth": [
+          289,
+          98
+        ]
+      },
+      "actions_grid": {
+        "slots": [
+          {
+            "slot": "t1",
+            "label": "突撃",
+            "sprite_id": 2729,
+            "x": 27.0,
+            "y": 156.0
+          },
+          {
+            "slot": "t2",
+            "label": "守備",
+            "sprite_id": 2737,
+            "x": 82.0,
+            "y": 156.0
+          },
+          {
+            "slot": "t3",
+            "label": "迎撃",
+            "sprite_id": 2745,
+            "x": 136.0,
+            "y": 156.0
+          },
+          {
+            "slot": "t4",
+            "label": "乱戦",
+            "sprite_id": 2753,
+            "x": 191.05,
+            "y": 156.0
+          },
+          {
+            "slot": "t5",
+            "label": "待機",
+            "sprite_id": 2761,
+            "x": 245.05,
+            "y": 156.0
+          },
+          {
+            "slot": "t6",
+            "label": "??",
+            "sprite_id": 2764,
+            "x": 300.05,
+            "y": 156.0,
+            "note": "unknown/future slot from SWF"
+          }
+        ],
+        "state_policy": "slots have multiple visual states; use the highlighted/gold variant for the active value and dark variant for inactive values"
+      },
+      "special_abilities_grid": {
+        "slots": [
+          {
+            "slot": "t7",
+            "label": "突進",
+            "sprite_id": 2769,
+            "x": 27.0,
+            "y": 215.0
+          },
+          {
+            "slot": "t8",
+            "label": "攻略",
+            "sprite_id": 2774,
+            "x": 82.0,
+            "y": 215.0
+          },
+          {
+            "slot": "t10",
+            "label": "将力",
+            "sprite_id": 2779,
+            "x": 136.0,
+            "y": 215.0
+          },
+          {
+            "slot": "t21",
+            "label": "連発",
+            "sprite_id": 2839,
+            "x": 191.1,
+            "y": 215.0
+          },
+          {
+            "slot": "t11",
+            "label": "鉄壁",
+            "sprite_id": 2784,
+            "x": 245.1,
+            "y": 215.0
+          },
+          {
+            "slot": "t19",
+            "label": "見切",
+            "sprite_id": 2789,
+            "x": 300.1,
+            "y": 215.0
+          },
+          {
+            "slot": "t9",
+            "label": "討取",
+            "sprite_id": 2799,
+            "x": 27.0,
+            "y": 242.0
+          },
+          {
+            "slot": "t13",
+            "label": "奮起",
+            "sprite_id": 2804,
+            "x": 82.0,
+            "y": 242.0
+          },
+          {
+            "slot": "t15",
+            "label": "鼓舞",
+            "sprite_id": 2809,
+            "x": 136.0,
+            "y": 242.0
+          },
+          {
+            "slot": "t20",
+            "label": "回復",
+            "sprite_id": 2814,
+            "x": 191.05,
+            "y": 242.0
+          },
+          {
+            "slot": "t14",
+            "label": "治療",
+            "sprite_id": 2819,
+            "x": 245.05,
+            "y": 242.0
+          },
+          {
+            "slot": "t16",
+            "label": "療所",
+            "sprite_id": 2824,
+            "x": 300.05,
+            "y": 242.0
+          },
+          {
+            "slot": "t17",
+            "label": "仕掛",
+            "sprite_id": 2829,
+            "x": 27.0,
+            "y": 269.0
+          },
+          {
+            "slot": "t18",
+            "label": "堅陣",
+            "sprite_id": 2834,
+            "x": 82.0,
+            "y": 269.0
+          },
+          {
+            "slot": "t12",
+            "label": "母衣",
+            "sprite_id": 2794,
+            "x": 136.0,
+            "y": 269.0
+          },
+          {
+            "slot": "t22",
+            "label": "逃足",
+            "sprite_id": 2844,
+            "x": 191.05,
+            "y": 269.0
+          },
+          {
+            "slot": "t30",
+            "label": "extra_special_slot",
+            "sprite_id": 2957,
+            "x": 245.05,
+            "y": 269.0,
+            "frame_map": [
+              {
+                "frame": 1,
+                "bitmap_id": 2947,
+                "label": "??"
+              },
+              {
+                "frame": 2,
+                "bitmap_id": 2949,
+                "label": "猛退"
+              },
+              {
+                "frame": 3,
+                "bitmap_id": 2951,
+                "label": "陣頭"
+              },
+              {
+                "frame": 4,
+                "bitmap_id": 2953,
+                "label": "火遁"
+              },
+              {
+                "frame": 5,
+                "bitmap_id": 2955,
+                "label": "双狩"
+              }
+            ]
+          },
+          {
+            "slot": "t31",
+            "label": "extra_special_slot",
+            "sprite_id": 2957,
+            "x": 300.1,
+            "y": 269.0,
+            "frame_map": [
+              {
+                "frame": 1,
+                "bitmap_id": 2947,
+                "label": "??"
+              },
+              {
+                "frame": 2,
+                "bitmap_id": 2949,
+                "label": "猛退"
+              },
+              {
+                "frame": 3,
+                "bitmap_id": 2951,
+                "label": "陣頭"
+              },
+              {
+                "frame": 4,
+                "bitmap_id": 2953,
+                "label": "火遁"
+              },
+              {
+                "frame": 5,
+                "bitmap_id": 2955,
+                "label": "双狩"
+              }
+            ]
+          }
+        ],
+        "slot_count": 18,
+        "note": "Original SWF enemy_detail shows 18 visible special slots: t7..t22 plus t30,t31."
+      },
+      "recruit_condition_message": {
+        "asset": "recruit_condition_message_panel",
+        "x": 28,
+        "y": 299
+      },
+      "buttons": [
+        "previous_enemy",
+        "recruit_this_soldier",
+        "do_not_recruit",
+        "back_to_enemy_list",
+        "next_enemy"
+      ],
+      "index_boundary_behavior": "unresolved_in_extracted_DoAction; clamp and keep button visible/no-op at ends rather than invent wrapping",
+      "field_variables": {
+        "name": "nm",
+        "unit_type": "heishu",
+        "action_type": "wazashu",
+        "hp": "lhp",
+        "skill": "lkp",
+        "speed": "lsp",
+        "attack": "lpw",
+        "defense": "ldf",
+        "stipend_or_rank_display": "rkd",
+        "growth_label_asset": "bitmap_2709"
+      },
+      "unit_type_movieclip": {
+        "variable": "heishu",
+        "sprite_id": 2889,
+        "frame_map": [
+          {
+            "frame": 1,
+            "bitmap_id": 2873,
+            "label": "足軽"
+          },
+          {
+            "frame": 2,
+            "bitmap_id": 2875,
+            "label": "弓兵"
+          },
+          {
+            "frame": 3,
+            "bitmap_id": 2877,
+            "label": "武将"
+          },
+          {
+            "frame": 4,
+            "bitmap_id": 2879,
+            "label": "猛者"
+          },
+          {
+            "frame": 5,
+            "bitmap_id": 2881,
+            "label": "軍師"
+          },
+          {
+            "frame": 6,
+            "bitmap_id": 2883,
+            "label": "鉄砲"
+          },
+          {
+            "frame": 7,
+            "bitmap_id": 2885,
+            "label": "忍者"
+          },
+          {
+            "frame": 8,
+            "bitmap_id": 2887,
+            "label": "騎馬"
+          }
+        ]
+      },
+      "action_type_movieclip": {
+        "variable": "wazashu",
+        "sprite_id": 2946,
+        "frame_map": [
+          {
+            "frame": 1,
+            "bitmap_id": 2890,
+            "label": "槍撃"
+          },
+          {
+            "frame": 2,
+            "bitmap_id": 2892,
+            "label": "弓矢"
+          },
+          {
+            "frame": 3,
+            "bitmap_id": 2894,
+            "label": "速射"
+          },
+          {
+            "frame": 4,
+            "bitmap_id": 2896,
+            "label": "射撃"
+          },
+          {
+            "frame": 5,
+            "bitmap_id": 2898,
+            "label": "狙撃"
+          },
+          {
+            "frame": 6,
+            "bitmap_id": 2900,
+            "label": "火遁"
+          },
+          {
+            "frame": 7,
+            "bitmap_id": 2902,
+            "label": "火攻"
+          },
+          {
+            "frame": 8,
+            "bitmap_id": 2904,
+            "label": "火計"
+          },
+          {
+            "frame": 9,
+            "bitmap_id": 2906,
+            "label": "業火"
+          },
+          {
+            "frame": 10,
+            "bitmap_id": 2908,
+            "label": "焚討"
+          },
+          {
+            "frame": 11,
+            "bitmap_id": 2910,
+            "label": "旋風"
+          },
+          {
+            "frame": 12,
+            "bitmap_id": 2912,
+            "label": "忍術"
+          },
+          {
+            "frame": 13,
+            "bitmap_id": 2914,
+            "label": "影走"
+          },
+          {
+            "frame": 14,
+            "bitmap_id": 2916,
+            "label": "号令"
+          },
+          {
+            "frame": 15,
+            "bitmap_id": 2918,
+            "label": "火矢"
+          },
+          {
+            "frame": 16,
+            "bitmap_id": 2920,
+            "label": "焙烙"
+          },
+          {
+            "frame": 17,
+            "bitmap_id": 2922,
+            "label": "砲撃"
+          },
+          {
+            "frame": 18,
+            "bitmap_id": 2924,
+            "label": "焼討?",
+            "confidence": "uncertain"
+          },
+          {
+            "frame": 19,
+            "bitmap_id": 2926,
+            "label": "虚報"
+          },
+          {
+            "frame": 20,
+            "bitmap_id": 2928,
+            "label": "幻術"
+          },
+          {
+            "frame": 21,
+            "bitmap_id": 2930,
+            "label": "不明（〜術）",
+            "confidence": "uncertain"
+          },
+          {
+            "frame": 22,
+            "bitmap_id": 2932,
+            "label": "不明（〜縛/〜繋）",
+            "confidence": "uncertain"
+          },
+          {
+            "frame": 23,
+            "bitmap_id": 2934,
+            "label": "無双"
+          },
+          {
+            "frame": 24,
+            "bitmap_id": 2936,
+            "label": "治療"
+          },
+          {
+            "frame": 25,
+            "bitmap_id": 2938,
+            "label": "鬼神"
+          },
+          {
+            "frame": 26,
+            "bitmap_id": 2940,
+            "label": "崩突?",
+            "confidence": "uncertain"
+          },
+          {
+            "frame": 27,
+            "bitmap_id": 2942,
+            "label": "結界"
+          },
+          {
+            "frame": 28,
+            "bitmap_id": 2944,
+            "label": "撤退?",
+            "confidence": "uncertain"
+          }
+        ],
+        "implementation_note": "Use frame number / bitmap id as the source of truth if enum naming is uncertain."
+      },
+      "supplementary_reference": "post_battle_ui_reference/enemy_detail_supplement/"
+    }
+  },
+  "buttons": {
+    "result_next": {
+      "swf_button_id": 3199,
+      "x": 249,
+      "y": 332,
+      "width": 85,
+      "height": 28,
+      "up": 2853,
+      "over": 2857,
+      "down": 2857,
+      "label": 3197,
+      "label_offset": [
+        25,
+        6
+      ],
+      "swf_action": "root.gmnwst=14; root.gotoAndStop('chrsl')"
+    },
+    "to_enemy_recruit": {
+      "swf_button_id": 3226,
+      "x": 147,
+      "y": 340,
+      "width": 85,
+      "height": 28,
+      "up": 2853,
+      "over": 2857,
+      "down": 2857,
+      "label": 3224,
+      "label_offset": [
+        7,
+        6
+      ],
+      "target": "enemy_list"
+    },
+    "do_not_recruit": {
+      "swf_button_id": 3233,
+      "x": 100,
+      "y": 337,
+      "width": 85,
+      "height": 28,
+      "up": 2853,
+      "over": 2857,
+      "down": 2857,
+      "label": 3231,
+      "label_offset": [
+        8,
+        6
+      ],
+      "swf_target": "hchg2",
+      "implementation": "disabled_pending_recruitment_rules"
+    },
+    "back_to_enemy_list": {
+      "swf_button_id": 3236,
+      "x": 195,
+      "y": 337,
+      "width": 85,
+      "height": 28,
+      "up": 2853,
+      "over": 2857,
+      "down": 2857,
+      "label": 3234,
+      "label_offset": [
+        7,
+        6
+      ],
+      "target": "enemy_list"
+    },
+    "recruit_this_soldier": {
+      "swf_button_id": 3251,
+      "x": 100,
+      "y": 302,
+      "width": 180,
+      "height": 28,
+      "up": 2846,
+      "over": 2850,
+      "down": 2850,
+      "label": 3249,
+      "label_offset": [
+        35.5,
+        6
+      ],
+      "implementation": "disabled_pending_recruitment_rules_and_persistence"
+    },
+    "previous_enemy": {
+      "swf_button_id": 2867,
+      "x": 16,
+      "y": 337,
+      "width": 28,
+      "height": 28,
+      "up": 2863,
+      "over": 2865,
+      "down": 2865,
+      "swf_call": "ch.nx(0)",
+      "target": "previous_index"
+    },
+    "next_enemy": {
+      "swf_button_id": 2872,
+      "x": 336.1,
+      "y": 337,
+      "width": 28,
+      "height": 28,
+      "up": 2868,
+      "over": 2870,
+      "down": 2870,
+      "swf_call": "ch.nx(1)",
+      "target": "next_index"
+    }
+  },
+  "confirmed_recruitment_messages_from_sprite_3255": [
+    "Location restricts recruitable unit types.",
+    "Named/famous soldiers cannot be recruited.",
+    "Recruitment requires money equal to stipend.",
+    "Per-unit simultaneous recruitment limits exist.",
+    "A total stipend cap exists.",
+    "Cavalry can only be recruited when actually defeated."
+  ],
+  "disabled_until_domain_rules_exist": [
+    "score calculation adapter",
+    "money award mutation",
+    "merit aggregation",
+    "recruitment eligibility decision",
+    "stipend payment",
+    "army roster mutation",
+    "replacement/army-capacity flow hchg and hchg2"
+  ],
+  "analysis_updates": [
+    {
+      "date": "2026-09-06",
+      "summary": "Direct SWF re-analysis confirmed enemy_detail frame/variables and discovered 18 special slots."
+    }
+  ]
+}

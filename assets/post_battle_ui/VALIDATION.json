@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "errors": [],
+  "source_bitmap_count": 132,
+  "atlas_size": [
+    1024,
+    2048
+  ],
+  "atlas_pixel_match": true,
+  "png_count": 138,
+  "required_runtime_files": [
+    "assets/post_battle_ui/atlas/post_battle_ui_atlas.png",
+    "assets/post_battle_ui/config/atlas_manifest.json",
+    "assets/post_battle_ui/config/post_battle_ui_manifest.json"
+  ],
+  "archive_note": "The finalized ZIP is CRC-tested after this internal file is written; the final hash is emitted to the sibling .validation.json file.",
+  "revised_package": {
+    "enemy_detail_supplement_integrated": true,
+    "new_runtime_file": "assets/post_battle_ui/config/enemy_detail_mapping.json",
+    "new_reference_folder": "post_battle_ui_reference/enemy_detail_supplement",
+    "notable_fixes": [
+      "enemy_detail field variable names documented",
+      "special ability grid expanded/documented to 18 slots",
+      "unit type and action type movieclip frame maps added"
+    ]
+  }
+}

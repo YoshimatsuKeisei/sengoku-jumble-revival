@@ -1,0 +1,143 @@
+[
+  {
+    "slot_name": "t1",
+    "sprite_id": 2729,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2722,
+        "label": "突撃"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2724,
+        "label": "突撃"
+      },
+      {
+        "frame": 3,
+        "bitmap_id": 2726,
+        "label": "突撃"
+      },
+      {
+        "frame": 4,
+        "bitmap_id": 2728,
+        "label": "(shape-only/unknown state)"
+      }
+    ]
+  },
+  {
+    "slot_name": "t2",
+    "sprite_id": 2737,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2730,
+        "label": "守備"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2732,
+        "label": "守備"
+      },
+      {
+        "frame": 3,
+        "bitmap_id": 2734,
+        "label": "守備"
+      },
+      {
+        "frame": 4,
+        "bitmap_id": 2736,
+        "label": "(shape-only/unknown state)"
+      }
+    ]
+  },
+  {
+    "slot_name": "t3",
+    "sprite_id": 2745,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2738,
+        "label": "迎撃"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2740,
+        "label": "迎撃"
+      },
+      {
+        "frame": 3,
+        "bitmap_id": 2742,
+        "label": "迎撃"
+      },
+      {
+        "frame": 4,
+        "bitmap_id": 2744,
+        "label": "(shape-only/unknown state)"
+      }
+    ]
+  },
+  {
+    "slot_name": "t4",
+    "sprite_id": 2753,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2746,
+        "label": "乱戦"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2748,
+        "label": "乱戦"
+      },
+      {
+        "frame": 3,
+        "bitmap_id": 2750,
+        "label": "乱戦"
+      },
+      {
+        "frame": 4,
+        "bitmap_id": 2752,
+        "label": "(shape-only/unknown state)"
+      }
+    ]
+  },
+  {
+    "slot_name": "t5",
+    "sprite_id": 2761,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2754,
+        "label": "待機"
+      },
+      {
+        "frame": 2,
+        "bitmap_id": 2756,
+        "label": "待機"
+      },
+      {
+        "frame": 3,
+        "bitmap_id": 2758,
+        "label": "待機"
+      },
+      {
+        "frame": 4,
+        "bitmap_id": 2760,
+        "label": "(shape-only/unknown state)"
+      }
+    ]
+  },
+  {
+    "slot_name": "t6",
+    "sprite_id": 2764,
+    "frames": [
+      {
+        "frame": 1,
+        "bitmap_id": 2762,
+        "label": "??"
+      }
+    ]
+  }
+]

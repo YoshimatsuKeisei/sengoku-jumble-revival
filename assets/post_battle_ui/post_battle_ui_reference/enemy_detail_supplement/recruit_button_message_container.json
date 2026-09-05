@@ -1,0 +1,142 @@
+{
+  "sprite_3255_labels": [
+    {
+      "frame": 10,
+      "label": "e"
+    }
+  ],
+  "frames": [
+    [
+      {
+        "op": "place",
+        "depth": 1,
+        "move": false,
+        "character_id": 3248,
+        "matrix": {
+          "a": 0.999847412109375,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": -72.0,
+          "ty": -3.0
+        },
+        "name": "al"
+      }
+    ],
+    [
+      {
+        "op": "remove",
+        "depth": 1
+      },
+      {
+        "op": "place",
+        "depth": 1,
+        "move": false,
+        "character_id": 3251,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "ratio": 1
+      }
+    ],
+    [
+      {
+        "op": "remove",
+        "depth": 1
+      },
+      {
+        "op": "place",
+        "depth": 1,
+        "move": false,
+        "character_id": 3248,
+        "matrix": {
+          "a": 0.999847412109375,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": -72.0,
+          "ty": -3.0
+        },
+        "ratio": 2,
+        "name": "al"
+      }
+    ],
+    [],
+    [
+      {
+        "op": "remove",
+        "depth": 1
+      },
+      {
+        "op": "place",
+        "depth": 1,
+        "move": false,
+        "character_id": 3254,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "ratio": 4
+      }
+    ],
+    [
+      {
+        "op": "remove",
+        "depth": 1
+      },
+      {
+        "op": "place",
+        "depth": 1,
+        "move": false,
+        "character_id": 3248,
+        "matrix": {
+          "a": 0.999847412109375,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": -72.0,
+          "ty": -3.0
+        },
+        "ratio": 5,
+        "name": "al"
+      }
+    ],
+    [],
+    [],
+    [],
+    [
+      {
+        "op": "remove",
+        "depth": 1
+      }
+    ],
+    [
+      {
+        "op": "place",
+        "depth": 1,
+        "move": false,
+        "character_id": 3248,
+        "matrix": {
+          "a": 0.999847412109375,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": -72.0,
+          "ty": -3.0
+        },
+        "ratio": 10,
+        "name": "al"
+      }
+    ]
+  ],
+  "note": "button_recruit_this_soldier toggles hidden recruit/replace dialog content; frame labels only include e at frame 10"
+}

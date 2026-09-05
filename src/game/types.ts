@@ -16,10 +16,10 @@ export interface TemporaryOrder {
   sourceY: number;
 }
 
-export type StrategyObjectiveKind = "ENEMY_SIDE" | "ANCHOR" | "INTERCEPT_POINT" | "SEEK_COMBAT";
+export type StrategyObjectiveKind = "ENEMY_SIDE" | "ANCHOR" | "INTERCEPT_POINT" | "SEEK_COMBAT" | "RANDOM_ROAM";
 export type AvoidanceSide = "LEFT" | "RIGHT";
 export type CombatActionState = "IDLE" | "ATTACK_WINDUP" | "ATTACK_RECOVERY";
-export type AttackTargetKind = "SOLDIER" | "BASE";
+export type AttackTargetKind = "SOLDIER";
 export type ReactionState = "NONE" | "HIT_STUN";
 export type ConfusionClearReason =
   | "PLAYER_COMMAND"
@@ -99,6 +99,9 @@ export interface Soldier {
   engagementStartedAt: number | null;
   engagementOriginX: number | null;
   engagementOriginY: number | null;
+  velocityX: number;
+  velocityY: number;
+  baseContactLockTicks: number;
 
   avoidanceSide: AvoidanceSide | null;
   avoidanceUntil: number;

@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { BASE_CONFIG, BATTLEFIELD_CONFIG, CAMERA_CONFIG, COMBAT_TIMING_CONFIG, MOVEMENT_SPEED_CONFIG, RECOVERY_CONFIG } from "../config";
+import { BASE_CONFIG, BATTLEFIELD_CONFIG, CAMERA_CONFIG, MOVEMENT_SPEED_CONFIG, RECOVERY_CONFIG, SOLDIER_RADIUS } from "../config";
 import { BATTLEFIELD_BASE_WORLD_RECTS } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import { calculateMoveSpeedFromFoot } from "../stats/soldierStats";
-import { updateAttackStates } from "./attackSystem";
+import { captureSoldierPositions, resolveBaseMovementContacts } from "./baseContactSystem";
 import { createBattleBases, distanceToBaseEdge, getBaseForTeam } from "./baseSystem";
 import {
   getBaseDamageCoreRect,
+  getBaseAttackSurfaceRect,
   getBaseGatePoint,
   getBaseHealingInteriorRect,
   getBaseRect,
@@ -82,19 +83,18 @@ describe("Phase 3E rectangular base geometry", () => {
     const enemy = createSoldier("enemy", "enemy", "ai", base.x, rect.y + 10);
     expect(isInsideFriendlyBaseHealingArea(ally, base)).toBe(true);
     expect(isInsideFriendlyBaseHealingArea(enemy, base)).toBe(false);
-    expect(distanceToBaseEdge(enemy, base)).toBeGreaterThan(BASE_CONFIG.attackRange);
+    expect(distanceToBaseEdge(enemy, base)).toBeGreaterThan(SOLDIER_RADIUS);
   });
 
-  it("allows base attacks only at the central core and rechecks at hit time", () => {
+  it("allows base damage only when movement crosses the central contact surface", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "enemy");
-    const attacker = createSoldier("a", "player", "ai", base.x - base.width / 2 - BASE_CONFIG.attackRange, base.y);
-    updateAttackStates([attacker], bases, 0);
-    expect(attacker.attackTargetKind).toBe("BASE");
-    expect(base.hp).toBe(base.maxHp);
-    attacker.y = base.y + base.height / 2;
-    updateAttackStates([attacker], bases, COMBAT_TIMING_CONFIG.attackWindupMs);
-    expect(base.hp).toBe(base.maxHp);
+    const surface = getBaseAttackSurfaceRect(base);
+    const attacker = createSoldier("a", "player", "ai", surface.x - SOLDIER_RADIUS - 1, base.y);
+    const previous = captureSoldierPositions([attacker]);
+    attacker.x = surface.x - SOLDIER_RADIUS + 1;
+    resolveBaseMovementContacts([attacker], bases, previous, 0, () => 0.99);
+    expect(base.hp).toBe(base.maxHp - 1);
   });
 });
 

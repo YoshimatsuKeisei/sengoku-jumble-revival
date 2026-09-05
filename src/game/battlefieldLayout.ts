@@ -31,6 +31,50 @@ export function battlefieldSourceRectToWorld(rect: BattlefieldRect): Battlefield
   };
 }
 
+export function battlefieldSourcePointToWorld(point: { x: number; y: number }): { x: number; y: number } {
+  return {
+    x: BATTLEFIELD_SOURCE_TO_WORLD.offsetX + point.x * BATTLEFIELD_SOURCE_TO_WORLD.scaleX,
+    y: BATTLEFIELD_SOURCE_TO_WORLD.offsetY + point.y * BATTLEFIELD_SOURCE_TO_WORLD.scaleY,
+  };
+}
+
+export function battlefieldWorldPointToSource(point: { x: number; y: number }): { x: number; y: number } {
+  return {
+    x: (point.x - BATTLEFIELD_SOURCE_TO_WORLD.offsetX) / BATTLEFIELD_SOURCE_TO_WORLD.scaleX,
+    y: (point.y - BATTLEFIELD_SOURCE_TO_WORLD.offsetY) / BATTLEFIELD_SOURCE_TO_WORLD.scaleY,
+  };
+}
+
+export function battlefieldSourceDistanceToWorldX(distance: number): number {
+  return distance * BATTLEFIELD_SOURCE_TO_WORLD.scaleX;
+}
+
+// Coordinates confirmed by the SWF strategy routines. They remain in source
+// space here and are transformed exactly once for the 2400x900 runtime world.
+export const BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY = {
+  chargeDestinationX: { player: 1600, enemy: BATTLEFIELD_SOURCE_SIZE.width - 1600 },
+  defendFrontLineX: { player: 434, enemy: 1445 },
+  interceptFrontLineX: { player: 834, enemy: 1045 },
+  meleeRoamRect: { x: 334, y: 359, width: 1211, height: 409 },
+  meleeArrivalManhattanDistance: 150,
+} as const;
+
+export const BATTLEFIELD_STRATEGY_WORLD_GEOMETRY = {
+  chargeDestinationX: {
+    player: battlefieldSourcePointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.chargeDestinationX.player, y: 0 }).x,
+    enemy: battlefieldSourcePointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.chargeDestinationX.enemy, y: 0 }).x,
+  },
+  defendFrontLineX: {
+    player: battlefieldSourcePointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.defendFrontLineX.player, y: 0 }).x,
+    enemy: battlefieldSourcePointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.defendFrontLineX.enemy, y: 0 }).x,
+  },
+  interceptFrontLineX: {
+    player: battlefieldSourcePointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.interceptFrontLineX.player, y: 0 }).x,
+    enemy: battlefieldSourcePointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.interceptFrontLineX.enemy, y: 0 }).x,
+  },
+  meleeRoamRect: battlefieldSourceRectToWorld(BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.meleeRoamRect),
+} as const;
+
 // Exact full-base crop bounds recorded by assets/bases/base_reconstruction_manifest.json.
 export const BATTLEFIELD_BASE_SOURCE_RECTS = {
   player: { x: 0, y: 225, width: 189, height: 400 },

@@ -1,0 +1,36 @@
+{
+  "sprite_3312_labels": [
+    {
+      "frame": 2,
+      "label": "st01"
+    },
+    {
+      "frame": 3,
+      "label": "st02"
+    },
+    {
+      "frame": 4,
+      "label": "st03"
+    },
+    {
+      "frame": 6,
+      "label": "rlst"
+    },
+    {
+      "frame": 8,
+      "label": "elst"
+    },
+    {
+      "frame": 9,
+      "label": "mlst"
+    },
+    {
+      "frame": 10,
+      "label": "hchg"
+    },
+    {
+      "frame": 11,
+      "label": "hchg2"
+    }
+  ]
+}

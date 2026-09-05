@@ -27,6 +27,10 @@ import {
 } from "./systems/baseSystem";
 import { updateAttackStates } from "./systems/attackSystem";
 import {
+  captureSoldierPositions,
+  resolveBaseMovementContacts,
+} from "./systems/baseContactSystem";
+import {
   issueAdvanceCommand,
   issueDefendCommand,
   issueRallyCommand,
@@ -132,6 +136,7 @@ import type {
   SelectedMapCell,
 } from "./map/mapTransitionState";
 import { resolveCommittedFormationForRoster } from "./formation/formationState";
+import { createPostBattleSnapshot } from "./postBattle/postBattleState";
 
 export class BattleScene extends Phaser.Scene {
   private selectedMapCell: SelectedMapCell | null = null;
@@ -386,6 +391,7 @@ export class BattleScene extends Phaser.Scene {
       updateAiTargets(this.soldiers, time);
       this.lastAiThinkAt = time;
     }
+    const movementStartPositions = captureSoldierPositions(this.soldiers);
     if (
       player &&
       time >= player.ninjaDashUntil &&
@@ -421,6 +427,12 @@ export class BattleScene extends Phaser.Scene {
       BATTLE_OBSTACLES,
       time,
       this.bases,
+    );
+    resolveBaseMovementContacts(
+      this.soldiers,
+      this.bases,
+      movementStartPositions,
+      time,
     );
     separateSoldiers(this.soldiers);
     resolveObstacleOverlaps(this.soldiers, BATTLE_OBSTACLES);
@@ -466,11 +478,18 @@ export class BattleScene extends Phaser.Scene {
     updateAttackStates(this.soldiers, this.bases, time, this.result !== null);
     this.result = getBattleResult(this.soldiers, this.bases);
     if (this.result) {
+      const snapshot = createPostBattleSnapshot(
+        this.result,
+        this.soldiers,
+        this.bases,
+        this.selectedMapCell,
+      );
       this.arrowProjectiles = [];
       this.strategistFireZones = [];
       this.clearSpearEffects();
       this.battleEffectRenderer?.destroy();
-      this.battlePanelUi?.showResult(this.result, this.bases);
+      this.scene.start("PostBattle", { snapshot });
+      return;
     }
     if (!this.result) updateNormalCombatContests(this.soldiers, time);
     this.draw();

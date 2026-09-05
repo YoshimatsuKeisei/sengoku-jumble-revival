@@ -1,4 +1,8 @@
-import { BATTLEFIELD_FIXED_FENCE_WORLD_RECTS, BATTLEFIELD_WORLD_SIZE } from "./battlefieldLayout";
+import {
+  BATTLEFIELD_FIXED_FENCE_WORLD_RECTS,
+  BATTLEFIELD_STRATEGY_WORLD_GEOMETRY,
+  BATTLEFIELD_WORLD_SIZE,
+} from "./battlefieldLayout";
 
 export const GAME_WIDTH = 1600;
 export const GAME_HEIGHT = 900;
@@ -10,17 +14,16 @@ export const BATTLEFIELD_CONFIG = {
   width: BATTLEFIELD_WORLD_SIZE.width,
   height: BATTLEFIELD_WORLD_SIZE.height,
   playerHomeX: 240,
-  playerInterceptX: 780,
+  playerInterceptX: BATTLEFIELD_STRATEGY_WORLD_GEOMETRY.interceptFrontLineX.player,
   centerX: 1200,
-  enemyInterceptX: 1620,
+  enemyInterceptX: BATTLEFIELD_STRATEGY_WORLD_GEOMETRY.interceptFrontLineX.enemy,
   enemyHomeX: 2160,
 } as const;
 
-// Temporary v1 base combat values; only base destruction as an instant result is confirmed.
+// Shared base geometry/state values. Contact timing and lock behavior live in BASE_CONTACT_CONFIG.
 export const BASE_CONFIG = {
   maxHp: 30,
   damagePerHit: 1,
-  attackRange: 28,
   damageCoreHeightRatio: 0.3,
   rejoinOffset: 45,
   frontSegmentDepth: 14,
@@ -54,13 +57,18 @@ export const CLOSE_COMBAT_POSITIONING_CONFIG = {
   debug: false,
 } as const;
 
-// Temporary v1 engagement tuning; exact original-game behavior is not yet confirmed.
-export const STRATEGY_ENGAGEMENT_CONFIG = {
-  charge: { detectionRange: 52, maxPursuitDistance: 90, maxEngagementMs: 2_500, returnRadius: 4 },
-  defend: { detectionRange: 180, maxPursuitDistance: 180, maxEngagementMs: 4_500, returnRadius: 4 },
-  intercept: { detectionRange: 190, maxPursuitDistance: 240, maxEngagementMs: 5_000, returnRadius: 4 },
-  melee: { detectionRange: 300, maxPursuitDistance: 520, maxEngagementMs: 8_000, returnRadius: 4 },
-  wait: { detectionRange: 105, maxPursuitDistance: 155, maxEngagementMs: 3_500, returnRadius: 4 },
+export const STRATEGY_AI_CONFIG = {
+  returnRadius: 4,
+  defendPredictionTicks: 30,
+  rushRetargetIgnoreChance: 0.7,
+} as const;
+
+export const BASE_CONTACT_CONFIG = {
+  lockLogicUpdates: 10,
+  fortifyAttempts: 2,
+  fortifySuccessChance: 0.5,
+  baseBounceSourceDistance: 10,
+  fortifyBounceSourceDistance: 2,
 } as const;
 
 // Temporary tuning values; the exact original-game values are not yet confirmed.
@@ -134,7 +142,6 @@ export const SPECIAL_ABILITY_CONFIG = {
   treatmentSearchRadius: 220, treatmentContactRadius: SOLDIER_RADIUS * 2 + 2, treatmentHealAmount: 5,
   fieldHospitalPerHolderChance: 0.05, fieldHospitalMaxChance: 0.60,
   trapPerHolderChance: 0.05, trapMaxChance: 0.60, trapDamage: 1,
-  fortifyPerHolderChance: 0.05, fortifyMaxChance: 0.60,
   horoArrowDefenseMultiplier: 1.5, fleetFootRetreatMultiplier: 1.5,
   debugPlayerSpecialAbilities: null as import("./types").CommonSpecialAbilityId[] | null,
   debugShowAbilities: false,

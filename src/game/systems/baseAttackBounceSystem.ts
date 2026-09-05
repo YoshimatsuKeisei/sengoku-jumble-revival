@@ -1,13 +1,28 @@
 import type { BattleBase, Soldier } from "../types";
 import { getTeamForwardSign } from "./battlefieldGeometry";
-import { CAVALRY_CHARGE_KNOCKBACK } from "./cavalryChargeSystem";
 import { applyForcedMovement } from "./movementSystem";
+import { BASE_CONTACT_CONFIG } from "../config";
+import { battlefieldSourceDistanceToWorldX } from "../battlefieldLayout";
+import { countTeamAbility } from "./specialAbilitySystem";
 
-export const BASE_ATTACK_BOUNCE_DISTANCE = CAVALRY_CHARGE_KNOCKBACK;
+export const BASE_ATTACK_BOUNCE_DISTANCE = battlefieldSourceDistanceToWorldX(BASE_CONTACT_CONFIG.baseBounceSourceDistance);
 
-export function applyBaseAttackBounce(attacker: Soldier, attackedBase: BattleBase): void {
+export function getBaseAttackBounceDistance(defendingSoldiers: readonly Soldier[]): number {
+  const fortifyHolders = countTeamAbility(defendingSoldiers, defendingSoldiers[0]?.team ?? "player", "FORTIFY");
+  return battlefieldSourceDistanceToWorldX(
+    BASE_CONTACT_CONFIG.baseBounceSourceDistance
+      + fortifyHolders * BASE_CONTACT_CONFIG.fortifyBounceSourceDistance,
+  );
+}
+
+export function applyBaseAttackBounce(
+  attacker: Soldier,
+  attackedBase: BattleBase,
+  defendingSoldiers: readonly Soldier[] = [],
+): void {
   const outwardX = getTeamForwardSign(attackedBase.team);
-  applyForcedMovement(attacker, outwardX, 0, BASE_ATTACK_BOUNCE_DISTANCE);
+  applyForcedMovement(attacker, outwardX, 0,
+    defendingSoldiers.length > 0 ? getBaseAttackBounceDistance(defendingSoldiers) : BASE_ATTACK_BOUNCE_DISTANCE);
   attacker.facingX = -outwardX;
   attacker.facingY = 0;
 }

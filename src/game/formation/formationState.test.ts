@@ -35,9 +35,25 @@ describe("formation working and committed state", () => {
     const working = createInitialFormationState(roster);
     const snapshot = cloneFormationState(working);
     const first = working.soldiers[0];
-    expect(moveFormationSoldier(working, first.soldierId, 18, 10)).toBe(false);
+    expect(moveFormationSoldier(working, first.soldierId, 15, 14)).toBe(false);
     expect(working.soldiers[0]).toEqual(snapshot.soldiers[0]);
     expect(cloneFormationState(snapshot)).toEqual(snapshot);
+  });
+
+  it("keeps committed positions unchanged until edited working positions are confirmed", () => {
+    const original = commitFormationState(createInitialFormationState(roster));
+    const working = cloneFormationState(original);
+    const first = working.soldiers[0];
+    const free = working.soldiers.every((soldier) => soldier.gridX !== 14 || soldier.gridY !== 7)
+      ? { x: 14, y: 7 }
+      : { x: 14, y: 8 };
+
+    expect(moveFormationSoldier(working, first.soldierId, free.x, free.y)).toBe(true);
+    expect(getCommittedFormationState()).toEqual(original);
+
+    const confirmed = commitFormationState(working);
+    expect(getCommittedFormationState()).toEqual(confirmed);
+    expect(confirmed).not.toEqual(original);
   });
 
   it("resolves roster changes by stable id before rosterIndex fallback", () => {

@@ -1,0 +1,590 @@
+{
+  "2867": {
+    "records": [
+      {
+        "state_flags": 1,
+        "up": true,
+        "over": false,
+        "down": false,
+        "hit_test": false,
+        "character_id": 2864,
+        "depth": 1,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "state_flags": 14,
+        "up": false,
+        "over": true,
+        "down": true,
+        "hit_test": true,
+        "character_id": 2866,
+        "depth": 1,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      }
+    ],
+    "actions": [
+      {
+        "condition_flags": 8,
+        "goto_labels": [],
+        "push_values": [
+          0.0,
+          1,
+          "ch",
+          "nx"
+        ]
+      }
+    ]
+  },
+  "2872": {
+    "records": [
+      {
+        "state_flags": 1,
+        "up": true,
+        "over": false,
+        "down": false,
+        "hit_test": false,
+        "character_id": 2869,
+        "depth": 1,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "state_flags": 14,
+        "up": false,
+        "over": true,
+        "down": true,
+        "hit_test": true,
+        "character_id": 2871,
+        "depth": 1,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      }
+    ],
+    "actions": [
+      {
+        "condition_flags": 8,
+        "goto_labels": [],
+        "push_values": [
+          1,
+          1,
+          "ch",
+          "nx"
+        ]
+      }
+    ]
+  },
+  "3233": {
+    "records": [
+      {
+        "state_flags": 1,
+        "up": true,
+        "over": false,
+        "down": false,
+        "hit_test": false,
+        "character_id": 2854,
+        "depth": 1,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "state_flags": 15,
+        "up": true,
+        "over": true,
+        "down": true,
+        "hit_test": true,
+        "character_id": 3232,
+        "depth": 2,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "state_flags": 14,
+        "up": false,
+        "over": true,
+        "down": true,
+        "hit_test": true,
+        "character_id": 2858,
+        "depth": 1,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      }
+    ],
+    "actions": [
+      {
+        "condition_flags": 8,
+        "goto_labels": [
+          "hchg2"
+        ],
+        "push_values": []
+      }
+    ]
+  },
+  "3236": {
+    "records": [
+      {
+        "state_flags": 1,
+        "up": true,
+        "over": false,
+        "down": false,
+        "hit_test": false,
+        "character_id": 2854,
+        "depth": 1,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "state_flags": 15,
+        "up": true,
+        "over": true,
+        "down": true,
+        "hit_test": true,
+        "character_id": 3235,
+        "depth": 2,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "state_flags": 14,
+        "up": false,
+        "over": true,
+        "down": true,
+        "hit_test": true,
+        "character_id": 2858,
+        "depth": 1,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      }
+    ],
+    "actions": [
+      {
+        "condition_flags": 8,
+        "goto_labels": [
+          "elst"
+        ],
+        "push_values": []
+      }
+    ]
+  },
+  "3251": {
+    "records": [
+      {
+        "state_flags": 1,
+        "up": true,
+        "over": false,
+        "down": false,
+        "hit_test": false,
+        "character_id": 2847,
+        "depth": 1,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "state_flags": 15,
+        "up": true,
+        "over": true,
+        "down": true,
+        "hit_test": true,
+        "character_id": 3250,
+        "depth": 2,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      },
+      {
+        "state_flags": 14,
+        "up": false,
+        "over": true,
+        "down": true,
+        "hit_test": true,
+        "character_id": 2851,
+        "depth": 1,
+        "matrix": {
+          "a": 1.0,
+          "b": 0.0,
+          "c": 0.0,
+          "d": 1.0,
+          "tx": 0.0,
+          "ty": 0.0
+        },
+        "color_transform": {
+          "mult": {
+            "r": 1.0,
+            "g": 1.0,
+            "b": 1.0,
+            "a": 1.0
+          },
+          "add": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        }
+      }
+    ],
+    "actions": [
+      {
+        "condition_flags": 8,
+        "goto_labels": [],
+        "push_values": [
+          "i",
+          0.0,
+          "i",
+          1,
+          "i",
+          23,
+          "_root",
+          "sng",
+          "t",
+          "i",
+          "_currentframe",
+          1,
+          "_root",
+          "sng",
+          "hkk",
+          "t",
+          "i",
+          "gotoAndStop",
+          "i",
+          "i",
+          "_root",
+          "sng",
+          "t30",
+          "_currentframe",
+          1,
+          "_root",
+          "sng",
+          "hkk",
+          "t30",
+          "gotoAndStop",
+          "_root",
+          "sng",
+          "t31",
+          "_currentframe",
+          1,
+          "_root",
+          "sng",
+          "hkk",
+          "t31",
+          "gotoAndStop",
+          "_root",
+          "sng",
+          "heishu",
+          "_currentframe",
+          1,
+          "_root",
+          "sng",
+          "hkk",
+          "heishu",
+          "gotoAndStop",
+          "_root",
+          "sng",
+          "wazashu",
+          "_currentframe",
+          1,
+          "_root",
+          "sng",
+          "hkk",
+          "wazashu",
+          "gotoAndStop",
+          "_root",
+          "sng",
+          "hkk",
+          "rkd",
+          "_root",
+          "sng",
+          "rkd",
+          "_root",
+          "sng",
+          "hkk",
+          "lhp",
+          "_root",
+          "sng",
+          "lhp",
+          "_root",
+          "sng",
+          "hkk",
+          "lkp",
+          "_root",
+          "sng",
+          "lkp",
+          "_root",
+          "sng",
+          "hkk",
+          "lsp",
+          "_root",
+          "sng",
+          "lsp",
+          "_root",
+          "sng",
+          "hkk",
+          "lpw",
+          "_root",
+          "sng",
+          "lpw",
+          "_root",
+          "sng",
+          "hkk",
+          "ldf",
+          "_root",
+          "sng",
+          "ldf",
+          "_root",
+          "eslct",
+          "_root",
+          "slu",
+          2,
+          1,
+          "_root",
+          "stchg",
+          "mlst",
+          1,
+          "_root",
+          "sng",
+          "gotoAndStop"
+        ]
+      }
+    ]
+  }
+}

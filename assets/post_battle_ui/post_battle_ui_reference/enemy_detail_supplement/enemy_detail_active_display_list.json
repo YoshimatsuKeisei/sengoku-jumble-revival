@@ -1,0 +1,1021 @@
+[
+  {
+    "depth": 1,
+    "meaning": null,
+    "character_id": 2697,
+    "character_type": "shape",
+    "instance_name": null,
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 0.0,
+      "ty": 0.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 2,
+    "meaning": "stat_hp_backplate",
+    "character_id": 2708,
+    "character_type": "sprite",
+    "instance_name": "st1",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 132.0,
+      "ty": 75.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 4,
+    "meaning": "stat_skill_backplate",
+    "character_id": 2708,
+    "character_type": "sprite",
+    "instance_name": "st2",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 210.05,
+      "ty": 75.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 6,
+    "meaning": "stat_speed_backplate",
+    "character_id": 2708,
+    "character_type": "sprite",
+    "instance_name": "st3",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 288.05,
+      "ty": 75.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 8,
+    "meaning": "stat_attack_backplate",
+    "character_id": 2708,
+    "character_type": "sprite",
+    "instance_name": "st4",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 132.0,
+      "ty": 100.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 10,
+    "meaning": "stat_defense_backplate",
+    "character_id": 2708,
+    "character_type": "sprite",
+    "instance_name": "st5",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 210.05,
+      "ty": 100.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 12,
+    "meaning": "button_do_not_recruit",
+    "character_id": 3233,
+    "character_type": "other",
+    "instance_name": null,
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 100.0,
+      "ty": 337.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 15,
+    "meaning": "button_back_to_enemy_list",
+    "character_id": 3236,
+    "character_type": "other",
+    "instance_name": null,
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 195.0,
+      "ty": 337.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 18,
+    "meaning": "growth_label",
+    "character_id": 2713,
+    "character_type": "sprite",
+    "instance_name": "seicho",
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 289.0,
+      "ty": 98.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 22,
+    "meaning": "detail_panel_art",
+    "character_id": 3237,
+    "character_type": "shape",
+    "instance_name": null,
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 0.0,
+      "ty": 0.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 23,
+    "meaning": "field_hp_text",
+    "character_id": 3238,
+    "character_type": "other",
+    "instance_name": null,
+    "matrix": {
+      "a": 0.999053955078125,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0020599365234375,
+      "tx": 160.2,
+      "ty": 74.0
+    },
+    "clip_depth": null,
+    "edit_text": {
+      "character_id": 3238,
+      "bounds": {
+        "xmin": -1.2,
+        "xmax": 41.95,
+        "ymin": -2.0,
+        "ymax": 25.25
+      },
+      "variable_name": "lhp",
+      "initial_text": "50",
+      "font_id": 2711,
+      "font_height_px": 16.0,
+      "font_class": null,
+      "color_rgba": [
+        206,
+        192,
+        169,
+        255
+      ],
+      "max_length": null,
+      "layout": {
+        "align": 1,
+        "left_margin": 0.0,
+        "right_margin": 0.0,
+        "indent": 0.0,
+        "leading": 2.0
+      },
+      "html": false
+    }
+  },
+  {
+    "depth": 24,
+    "meaning": "field_skill_text",
+    "character_id": 3239,
+    "character_type": "other",
+    "instance_name": null,
+    "matrix": {
+      "a": 0.999053955078125,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0020599365234375,
+      "tx": 238.25,
+      "ty": 74.0
+    },
+    "clip_depth": null,
+    "edit_text": {
+      "character_id": 3239,
+      "bounds": {
+        "xmin": -1.2,
+        "xmax": 41.95,
+        "ymin": -2.0,
+        "ymax": 25.25
+      },
+      "variable_name": "lkp",
+      "initial_text": "50",
+      "font_id": 2711,
+      "font_height_px": 16.0,
+      "font_class": null,
+      "color_rgba": [
+        206,
+        192,
+        169,
+        255
+      ],
+      "max_length": null,
+      "layout": {
+        "align": 1,
+        "left_margin": 0.0,
+        "right_margin": 0.0,
+        "indent": 0.0,
+        "leading": 2.0
+      },
+      "html": false
+    }
+  },
+  {
+    "depth": 25,
+    "meaning": "field_speed_text",
+    "character_id": 3240,
+    "character_type": "other",
+    "instance_name": null,
+    "matrix": {
+      "a": 0.999053955078125,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0020599365234375,
+      "tx": 316.25,
+      "ty": 74.7
+    },
+    "clip_depth": null,
+    "edit_text": {
+      "character_id": 3240,
+      "bounds": {
+        "xmin": -1.2,
+        "xmax": 41.95,
+        "ymin": -2.0,
+        "ymax": 25.25
+      },
+      "variable_name": "lsp",
+      "initial_text": "50",
+      "font_id": 2711,
+      "font_height_px": 16.0,
+      "font_class": null,
+      "color_rgba": [
+        206,
+        192,
+        169,
+        255
+      ],
+      "max_length": null,
+      "layout": {
+        "align": 1,
+        "left_margin": 0.0,
+        "right_margin": 0.0,
+        "indent": 0.0,
+        "leading": 2.0
+      },
+      "html": false
+    }
+  },
+  {
+    "depth": 26,
+    "meaning": "field_attack_text",
+    "character_id": 3241,
+    "character_type": "other",
+    "instance_name": null,
+    "matrix": {
+      "a": 0.999053955078125,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0020599365234375,
+      "tx": 160.2,
+      "ty": 99.0
+    },
+    "clip_depth": null,
+    "edit_text": {
+      "character_id": 3241,
+      "bounds": {
+        "xmin": -1.2,
+        "xmax": 41.95,
+        "ymin": -2.0,
+        "ymax": 25.25
+      },
+      "variable_name": "lpw",
+      "initial_text": "50",
+      "font_id": 2711,
+      "font_height_px": 16.0,
+      "font_class": null,
+      "color_rgba": [
+        206,
+        192,
+        169,
+        255
+      ],
+      "max_length": null,
+      "layout": {
+        "align": 1,
+        "left_margin": 0.0,
+        "right_margin": 0.0,
+        "indent": 0.0,
+        "leading": 2.0
+      },
+      "html": false
+    }
+  },
+  {
+    "depth": 27,
+    "meaning": "field_defense_text",
+    "character_id": 3242,
+    "character_type": "other",
+    "instance_name": null,
+    "matrix": {
+      "a": 0.999053955078125,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0020599365234375,
+      "tx": 238.25,
+      "ty": 99.0
+    },
+    "clip_depth": null,
+    "edit_text": {
+      "character_id": 3242,
+      "bounds": {
+        "xmin": -1.2,
+        "xmax": 41.95,
+        "ymin": -2.0,
+        "ymax": 25.25
+      },
+      "variable_name": "ldf",
+      "initial_text": "50",
+      "font_id": 2711,
+      "font_height_px": 16.0,
+      "font_class": null,
+      "color_rgba": [
+        206,
+        192,
+        169,
+        255
+      ],
+      "max_length": null,
+      "layout": {
+        "align": 1,
+        "left_margin": 0.0,
+        "right_margin": 0.0,
+        "indent": 0.0,
+        "leading": 2.0
+      },
+      "html": false
+    }
+  },
+  {
+    "depth": 28,
+    "meaning": "action_slot_1",
+    "character_id": 2729,
+    "character_type": "sprite",
+    "instance_name": "t1",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 27.0,
+      "ty": 156.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 31,
+    "meaning": "action_slot_2",
+    "character_id": 2737,
+    "character_type": "sprite",
+    "instance_name": "t2",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 82.0,
+      "ty": 156.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 34,
+    "meaning": "action_slot_3",
+    "character_id": 2745,
+    "character_type": "sprite",
+    "instance_name": "t3",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 136.0,
+      "ty": 156.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 37,
+    "meaning": "action_slot_4",
+    "character_id": 2753,
+    "character_type": "sprite",
+    "instance_name": "t4",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 191.05,
+      "ty": 156.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 40,
+    "meaning": "action_slot_5",
+    "character_id": 2761,
+    "character_type": "sprite",
+    "instance_name": "t5",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 245.05,
+      "ty": 156.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 43,
+    "meaning": "action_slot_6",
+    "character_id": 2764,
+    "character_type": "sprite",
+    "instance_name": "t6",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 300.05,
+      "ty": 156.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 45,
+    "meaning": "special_slot_1",
+    "character_id": 2769,
+    "character_type": "sprite",
+    "instance_name": "t7",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 27.0,
+      "ty": 215.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 47,
+    "meaning": "special_slot_2",
+    "character_id": 2774,
+    "character_type": "sprite",
+    "instance_name": "t8",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 82.0,
+      "ty": 215.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 49,
+    "meaning": "special_slot_3",
+    "character_id": 2779,
+    "character_type": "sprite",
+    "instance_name": "t10",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 136.0,
+      "ty": 215.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 51,
+    "meaning": "special_slot_4",
+    "character_id": 2784,
+    "character_type": "sprite",
+    "instance_name": "t11",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 245.1,
+      "ty": 215.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 53,
+    "meaning": "special_slot_5",
+    "character_id": 2789,
+    "character_type": "sprite",
+    "instance_name": "t19",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 300.1,
+      "ty": 215.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 55,
+    "meaning": "special_slot_6",
+    "character_id": 2794,
+    "character_type": "sprite",
+    "instance_name": "t12",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 136.0,
+      "ty": 269.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 57,
+    "meaning": "special_slot_7",
+    "character_id": 2799,
+    "character_type": "sprite",
+    "instance_name": "t9",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 27.0,
+      "ty": 242.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 59,
+    "meaning": "special_slot_8",
+    "character_id": 2804,
+    "character_type": "sprite",
+    "instance_name": "t13",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 82.0,
+      "ty": 242.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 61,
+    "meaning": "special_slot_9",
+    "character_id": 2809,
+    "character_type": "sprite",
+    "instance_name": "t15",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 136.0,
+      "ty": 242.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 63,
+    "meaning": "special_slot_10",
+    "character_id": 2814,
+    "character_type": "sprite",
+    "instance_name": "t20",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 191.05,
+      "ty": 242.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 65,
+    "meaning": "special_slot_11",
+    "character_id": 2819,
+    "character_type": "sprite",
+    "instance_name": "t14",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 245.05,
+      "ty": 242.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 67,
+    "meaning": "special_slot_12",
+    "character_id": 2824,
+    "character_type": "sprite",
+    "instance_name": "t16",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 300.05,
+      "ty": 242.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 69,
+    "meaning": "special_slot_13",
+    "character_id": 2829,
+    "character_type": "sprite",
+    "instance_name": "t17",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 27.0,
+      "ty": 269.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 71,
+    "meaning": "special_slot_14",
+    "character_id": 2834,
+    "character_type": "sprite",
+    "instance_name": "t18",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 82.0,
+      "ty": 269.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 73,
+    "meaning": "special_slot_15",
+    "character_id": 2839,
+    "character_type": "sprite",
+    "instance_name": "t21",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 191.1,
+      "ty": 215.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 75,
+    "meaning": "special_slot_16",
+    "character_id": 2844,
+    "character_type": "sprite",
+    "instance_name": "t22",
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 191.05,
+      "ty": 269.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 77,
+    "meaning": "field_name_text",
+    "character_id": 3243,
+    "character_type": "other",
+    "instance_name": null,
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 134.0,
+      "ty": 21.25
+    },
+    "clip_depth": null,
+    "edit_text": {
+      "character_id": 3243,
+      "bounds": {
+        "xmin": -2.0,
+        "xmax": 141.95,
+        "ymin": -2.0,
+        "ymax": 18.0
+      },
+      "variable_name": "nm",
+      "initial_text": "--",
+      "font_id": 2468,
+      "font_height_px": 16.0,
+      "font_class": null,
+      "color_rgba": [
+        206,
+        192,
+        169,
+        255
+      ],
+      "max_length": null,
+      "layout": {
+        "align": 0,
+        "left_margin": 0.0,
+        "right_margin": 0.0,
+        "indent": 0.0,
+        "leading": 2.0
+      },
+      "html": false
+    }
+  },
+  {
+    "depth": 78,
+    "meaning": "button_previous_enemy",
+    "character_id": 2867,
+    "character_type": "other",
+    "instance_name": null,
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 16.0,
+      "ty": 337.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 80,
+    "meaning": "button_next_enemy",
+    "character_id": 2872,
+    "character_type": "other",
+    "instance_name": null,
+    "matrix": {
+      "a": 1.000213623046875,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 336.1,
+      "ty": 337.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 82,
+    "meaning": "field_unit_type",
+    "character_id": 2889,
+    "character_type": "sprite",
+    "instance_name": "heishu",
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 177.0,
+      "ty": 45.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 84,
+    "meaning": "field_action_type",
+    "character_id": 2946,
+    "character_type": "sprite",
+    "instance_name": "wazashu",
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 297.0,
+      "ty": 45.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 92,
+    "meaning": "special_slot_17",
+    "character_id": 2957,
+    "character_type": "sprite",
+    "instance_name": "t30",
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 245.05,
+      "ty": 269.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 94,
+    "meaning": "special_slot_18",
+    "character_id": 2957,
+    "character_type": "sprite",
+    "instance_name": "t31",
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 300.1,
+      "ty": 269.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 96,
+    "meaning": "portrait_clip_mask",
+    "character_id": 2973,
+    "character_type": "shape",
+    "instance_name": null,
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 0.0,
+      "ty": 0.0
+    },
+    "clip_depth": 101
+  },
+  {
+    "depth": 97,
+    "meaning": "portrait_character_renderer",
+    "character_id": 2974,
+    "character_type": "sprite",
+    "instance_name": "ch",
+    "matrix": {
+      "a": 4.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 4.0,
+      "tx": 75.0,
+      "ty": 103.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 102,
+    "meaning": "button_recruit_this_soldier_with_message_container",
+    "character_id": 3255,
+    "character_type": "sprite",
+    "instance_name": "gbt",
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 100.0,
+      "ty": 302.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 104,
+    "meaning": "field_stipend_text",
+    "character_id": 3230,
+    "character_type": "other",
+    "instance_name": null,
+    "matrix": {
+      "a": 0.9994964599609375,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0020599365234375,
+      "tx": 283.2,
+      "ty": 16.0
+    },
+    "clip_depth": null,
+    "edit_text": {
+      "character_id": 3230,
+      "bounds": {
+        "xmin": -1.2,
+        "xmax": 74.85,
+        "ymin": -2.0,
+        "ymax": 25.25
+      },
+      "variable_name": "rkd",
+      "initial_text": "0",
+      "font_id": 2711,
+      "font_height_px": 16.0,
+      "font_class": null,
+      "color_rgba": [
+        206,
+        192,
+        169,
+        255
+      ],
+      "max_length": null,
+      "layout": {
+        "align": 1,
+        "left_margin": 0.0,
+        "right_margin": 0.0,
+        "indent": 0.0,
+        "leading": 2.0
+      },
+      "html": false
+    }
+  },
+  {
+    "depth": 105,
+    "meaning": "portrait_owner_badge",
+    "character_id": 2977,
+    "character_type": "sprite",
+    "instance_name": "palt",
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 41.0,
+      "ty": 96.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 107,
+    "meaning": "detail_panel_frame_and_gloss",
+    "character_id": 2988,
+    "character_type": "sprite",
+    "instance_name": "blk",
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 0.05,
+      "ty": 0.0
+    },
+    "clip_depth": null
+  },
+  {
+    "depth": 163,
+    "meaning": "hidden_recruit_replace_dialog",
+    "character_id": 3266,
+    "character_type": "sprite",
+    "instance_name": "hkk",
+    "matrix": {
+      "a": 1.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 1.0,
+      "tx": 554.0,
+      "ty": 166.0
+    },
+    "clip_depth": null
+  }
+]

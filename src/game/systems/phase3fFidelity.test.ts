@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BASE_CONFIG, BATTLEFIELD_CONFIG, BATTLE_OBSTACLES, CAMERA_CONFIG, PLAYER_MOUSE_DEAD_ZONE, RECOVERY_CONFIG } from "../config";
+import { BASE_CONFIG, BATTLEFIELD_CONFIG, BATTLE_OBSTACLES, CAMERA_CONFIG, PLAYER_MOUSE_DEAD_ZONE, RECOVERY_CONFIG, SOLDIER_RADIUS } from "../config";
 import { BATTLEFIELD_FIXED_FENCE_SOURCE_RECTS, battlefieldSourceRectToWorld } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import { canAttackEnemyBase, createBattleBases, getBaseForTeam } from "./baseSystem";
@@ -152,7 +152,7 @@ describe("Phase 3F base gates and healing route", () => {
       expect(canAttackEnemyBase(attacker, base)).toBe(false);
     }
     const core = getBaseDamageCoreRect(base);
-    const attacker = createSoldier("core", "player", "ai", core.x - BASE_CONFIG.attackRange, core.y + core.height / 2);
+    const attacker = createSoldier("core", "player", "ai", core.x - SOLDIER_RADIUS, core.y + core.height / 2);
     expect(canAttackEnemyBase(attacker, base)).toBe(true);
   });
 });

@@ -1,5 +1,4 @@
 import formationRulesJson from "../../../assets/formation_ui/config/formation_rules.json";
-import { BATTLE_OBSTACLES, SOLDIER_RADIUS } from "../config";
 
 interface FormationRules {
   grid: {
@@ -50,30 +49,13 @@ export function formationWorldToGrid(worldX: number, worldY: number): FormationG
   };
 }
 
-function circleIntersectsRect(
-  x: number,
-  y: number,
-  radius: number,
-  rect: { x: number; y: number; width: number; height: number },
-): boolean {
-  const closestX = Math.max(rect.x, Math.min(x, rect.x + rect.width));
-  const closestY = Math.max(rect.y, Math.min(y, rect.y + rect.height));
-  return Math.hypot(x - closestX, y - closestY) < radius;
-}
-
 export function getFormationFixedObstacleCells(): ReadonlyMap<string, string> {
   const occupied = new Map<string, string>();
-  // Formation now renders the clean battlefield overlay without a base or the
-  // separately reconstructed SWF fence fragments. Only colliders that have a
-  // matching visible fence in that overlay belong in this occupancy map.
-  const geometry = BATTLE_OBSTACLES;
-  for (let gridX = FORMATION_GRID.gx_min; gridX <= FORMATION_GRID.gx_max; gridX += 1) {
-    for (let gridY = FORMATION_GRID.gy_min; gridY <= FORMATION_GRID.gy_max; gridY += 1) {
-      const key = formationCellKey(gridX, gridY);
-      if (occupied.has(key)) continue;
-      const world = formationGridToWorld(gridX, gridY);
-      const obstacle = geometry.find((rect) => circleIntersectsRect(world.x, world.y, SOLDIER_RADIUS, rect));
-      if (obstacle) occupied.set(key, obstacle.id);
+  for (const blocker of rules.fixed_blockers_confirmed) {
+    for (const range of blocker.cells) {
+      for (let gridY = range.gy_from; gridY <= range.gy_to; gridY += 1) {
+        occupied.set(formationCellKey(range.gx, gridY), blocker.source_instance);
+      }
     }
   }
   return occupied;
