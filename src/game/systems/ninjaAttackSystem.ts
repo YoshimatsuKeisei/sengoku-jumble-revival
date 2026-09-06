@@ -1,6 +1,5 @@
-import { BATTLEFIELD_CONFIG, DEFENSE_CONFIG, NINJA_CONFIG, SOLDIER_RADIUS, SPECIAL_ABILITY_CONFIG } from "../config";
+import { BATTLEFIELD_CONFIG, DEFENSE_CONFIG, NINJA_CONFIG, SOLDIER_RADIUS } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
-import { randomIntInclusive } from "../stats/soldierStats";
 import type { BattleBase, BattleObstacle, Soldier, Team, UnitTechnique } from "../types";
 import { getBaseRect } from "./battlefieldGeometry";
 import { applyDamage } from "./combatSystem";
@@ -10,11 +9,12 @@ import { clearConfusion } from "./confusionSystem";
 import { issueNinjaBarrierCharge } from "./commandSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { startHitReaction } from "./reactionSystem";
-import { calculateSpecialCooldownMs } from "./skillCooldownSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
+import { beginTechniqueAction } from "./combatGaugeSystem";
+import { getTechniqueAreaCenter, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
-export type NinjaActivationSource = "NORMAL" | "DOUBLE_SPECIAL" | "BARRIER_FORCED" | "GENERAL_FORCED";
+export type NinjaActivationSource = "NORMAL" | "WAVE" | "BARRIER_FORCED" | "GENERAL_FORCED";
 export interface NinjaAttackEvent { kind: "NINJA"; attackerId: string; team: Team;
   technique: "NINJA_NINJUTSU" | "NINJA_SHADOW_RUN" | "NINJA_GENJUTSU" | "NINJA_BARRIER";
   fromX: number; fromY: number; x: number; y: number; facingX: number; facingY: number;
@@ -25,7 +25,7 @@ export function isNinjaTechnique(technique: UnitTechnique): technique is NinjaAt
     || technique === "NINJA_GENJUTSU" || technique === "NINJA_BARRIER";
 }
 export function getNinjaDashDistance(technique: UnitTechnique): number {
-  return technique === "NINJA_SHADOW_RUN" ? NINJA_CONFIG.shadowRunDashDistance : NINJA_CONFIG.ninjutsuDashDistance;
+  return isNinjaTechnique(technique) ? getTechniqueSelfAdvanceWorld(technique) : 0;
 }
 export function getNinjaKnockback(technique: UnitTechnique): number {
   return technique === "NINJA_SHADOW_RUN" ? NINJA_CONFIG.shadowRunKnockback : NINJA_CONFIG.ninjutsuKnockback;
@@ -34,11 +34,8 @@ function activeTarget(attacker: Soldier, target: Soldier): boolean {
   return isValidCombatTarget(attacker, target) && target.state !== "REJOINING";
 }
 export function isInsideNinjaForwardSector(attacker: Soldier, target: Soldier): boolean {
-  const dx = target.x - attacker.x; const dy = target.y - attacker.y; const distance = Math.hypot(dx, dy);
-  if (distance === 0 || distance > NINJA_CONFIG.attackRange) return false;
-  const length = Math.hypot(attacker.facingX, attacker.facingY) || 1;
-  const dot = (dx / distance) * attacker.facingX / length + (dy / distance) * attacker.facingY / length;
-  return dot >= Math.cos(NINJA_CONFIG.forwardHalfAngleDegrees * Math.PI / 180);
+  return isNinjaTechnique(attacker.technique)
+    && isPointInTechniqueRectangle(attacker.technique, getTechniqueAreaCenter(attacker.technique, attacker), target);
 }
 export function findNinjaTargets(attacker: Soldier, soldiers: readonly Soldier[]): Soldier[] {
   return soldiers.filter((target) => activeTarget(attacker, target) && isInsideNinjaForwardSector(attacker, target));
@@ -66,45 +63,43 @@ export function updateNinjaDashes(soldiers: Soldier[], currentTime: number): voi
   }
 }
 function primaryTarget(attacker: Soldier, soldiers: readonly Soldier[]): Soldier | null {
-  const candidates = soldiers.filter((target) => activeTarget(attacker, target)
-    && Math.hypot(target.x - attacker.x, target.y - attacker.y) <= NINJA_CONFIG.attackRange);
+  const candidates = soldiers.filter((target) => activeTarget(attacker, target));
   return candidates.find((target) => target.id === attacker.targetId)
     ?? candidates.sort((a, b) => Math.hypot(a.x - attacker.x, a.y - attacker.y) - Math.hypot(b.x - attacker.x, b.y - attacker.y))[0] ?? null;
 }
 function applyBarrierSupport(attacker: Soldier, soldiers: Soldier[], obstacles: readonly BattleObstacle[], bases: readonly BattleBase[],
   currentTime: number, random: RandomSource, centerX: number, centerY: number): { forcedEvents: NinjaAttackEvent[]; healResults: Array<{ targetId: string; amount: number }> } {
   const forcedEvents: NinjaAttackEvent[] = []; const healResults: Array<{ targetId: string; amount: number }> = [];
-  const allies = soldiers.filter((target) => target !== attacker && target.team === attacker.team && target.unitType === "NINJA"
+  const allies = soldiers.filter((target) => target !== attacker && target.team === attacker.team
     && !target.isDead && target.hp > 0 && target.state !== "HEALING"
-    && Math.hypot(target.x - centerX, target.y - centerY) <= NINJA_CONFIG.barrierSupportRadius);
-  for (const ally of allies) {
-    if (ally.technique !== "NINJA_BARRIER" && random() < NINJA_CONFIG.barrierAllyHealProc) {
-      const amount = randomIntInclusive(NINJA_CONFIG.barrierHealMin, NINJA_CONFIG.barrierHealMax, random);
-      const healed = Math.min(amount, ally.maxHp - ally.hp); ally.hp += healed; if (healed > 0) healResults.push({ targetId: ally.id, amount: healed });
+    && isPointInTechniqueRectangle("GENERAL_COMMAND", { x: centerX, y: centerY }, target));
+  if (random() < 0.85) {
+    for (const ally of allies) {
+      if (ally.hp >= ally.maxHp) continue;
+      const requested = 1 + Number(hasSpecialAbility(ally, "RECOVERY_BOOST"));
+      const healed = Math.min(requested, ally.maxHp - ally.hp); ally.hp += healed;
+      if (healed > 0) healResults.push({ targetId: ally.id, amount: healed });
     }
-    if (random() < NINJA_CONFIG.barrierForceSpecialProc) {
+    if (random() < 0.65 && attacker.hp < attacker.maxHp) {
+      const requested = 1 + Number(hasSpecialAbility(attacker, "RECOVERY_BOOST"));
+      const healed = Math.min(requested, attacker.maxHp - attacker.hp); attacker.hp += healed;
+      if (healed > 0) healResults.push({ targetId: attacker.id, amount: healed });
+    }
+  } else {
+    for (const ally of allies.filter((candidate) => candidate.unitType === "NINJA")) {
       clearConfusion(ally, "BARRIER_COMMAND");
-      const event = executeNinjaAttack(ally, soldiers, obstacles, bases, currentTime, random, "BARRIER_FORCED"); if (event) forcedEvents.push(event);
+      issueNinjaBarrierCharge(ally, attacker, currentTime);
     }
-    if (random() < NINJA_CONFIG.barrierChargeProc) issueNinjaBarrierCharge(ally, attacker, currentTime);
-  }
-  if (random() < NINJA_CONFIG.barrierSelfHealProc) {
-    const amount = randomIntInclusive(NINJA_CONFIG.barrierHealMin, NINJA_CONFIG.barrierHealMax, random);
-    const healed = Math.min(amount, attacker.maxHp - attacker.hp); attacker.hp += healed; if (healed > 0) healResults.push({ targetId: attacker.id, amount: healed });
   }
   return { forcedEvents, healResults };
 }
 export function executeNinjaAttack(attacker: Soldier, soldiers: Soldier[], obstacles: readonly BattleObstacle[], bases: readonly BattleBase[],
   currentTime: number, random: RandomSource = Math.random, source: NinjaActivationSource = "NORMAL"): NinjaAttackEvent | null {
   if (!isNinjaTechnique(attacker.technique)) return null;
-  const primary = primaryTarget(attacker, soldiers); if (!primary) return null;
-  if (source === "NORMAL") {
-    if (currentTime < attacker.specialReadyAt || attacker.reactionState !== "NONE" || attacker.combatActionState !== "IDLE") return null;
-    attacker.specialReadyAt = currentTime + calculateSpecialCooldownMs(attacker.stats.skill);
-    if (hasSpecialAbility(attacker, "DOUBLE_SPECIAL") && random() < SPECIAL_ABILITY_CONFIG.doubleSpecialChance)
-      attacker.pendingSecondSpecialAt = currentTime + SPECIAL_ABILITY_CONFIG.doubleSpecialDelayMs;
-  }
-  const dx = primary.x - attacker.x; const dy = primary.y - attacker.y; const length = Math.hypot(dx, dy) || 1;
+  if (source === "NORMAL" && !beginTechniqueAction(attacker, currentTime, random, true)) return null;
+  const primary = primaryTarget(attacker, soldiers);
+  const dx = primary ? primary.x - attacker.x : attacker.facingX; const dy = primary ? primary.y - attacker.y : attacker.facingY;
+  const length = Math.hypot(dx, dy) || 1;
   const facingX = dx / length; const facingY = dy / length; attacker.facingX = facingX; attacker.facingY = facingY; attacker.aimX = facingX; attacker.aimY = facingY;
   const targets = findNinjaTargets(attacker, soldiers); const victimIds: string[] = [];
   const bypass = attacker.technique === "NINJA_GENJUTSU" || attacker.technique === "NINJA_BARRIER";
@@ -112,7 +107,7 @@ export function executeNinjaAttack(attacker: Soldier, soldiers: Soldier[], obsta
     if (!bypass && isDamageGuarded(target, "SPECIAL_ATTACK", random)) {
       target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; continue;
     }
-    const might = !bypass && hasSpecialAbility(attacker, "MIGHT"); const damage = 1 + Number(might);
+    const damage = 1 + Number(hasSpecialAbility(attacker, "MIGHT"));
     applyDamage(target, damage); queueMoutaiOnDamage(target, damage); victimIds.push(target.id);
     target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
     if (bypass && !target.isDead) applyConfusion(target);
@@ -123,11 +118,19 @@ export function executeNinjaAttack(attacker: Soldier, soldiers: Soldier[], obsta
     }
   }
   const fromX = attacker.x; const fromY = attacker.y;
-  const safeDash = calculateSafeNinjaMovement(attacker, facingX, facingY, getNinjaDashDistance(attacker.technique), soldiers, obstacles, bases);
-  attacker.ninjaDashStartedAt = currentTime; attacker.ninjaDashStartX = attacker.x; attacker.ninjaDashStartY = attacker.y;
-  attacker.ninjaDashTargetX = attacker.x + facingX * safeDash; attacker.ninjaDashTargetY = attacker.y + facingY * safeDash;
-  attacker.ninjaDashUntil = currentTime + NINJA_CONFIG.dashDurationMs;
-  const support = attacker.technique === "NINJA_BARRIER" && source !== "BARRIER_FORCED"
+  let safeDash = 0;
+  if (source !== "WAVE") {
+    const full = getNinjaDashDistance(attacker.technique);
+    const edgeLimited = attacker.technique === "NINJA_SHADOW_RUN"
+      && (attacker.x + facingX * full < SOLDIER_RADIUS || attacker.x + facingX * full > BATTLEFIELD_CONFIG.width - SOLDIER_RADIUS
+        || attacker.y + facingY * full < SOLDIER_RADIUS || attacker.y + facingY * full > BATTLEFIELD_CONFIG.height - SOLDIER_RADIUS);
+    const requested = edgeLimited ? getTechniqueSelfAdvanceWorld(attacker.technique, true) : full;
+    safeDash = calculateSafeNinjaMovement(attacker, facingX, facingY, requested, soldiers, obstacles, bases);
+    attacker.ninjaDashStartedAt = currentTime; attacker.ninjaDashStartX = attacker.x; attacker.ninjaDashStartY = attacker.y;
+    attacker.ninjaDashTargetX = attacker.x + facingX * safeDash; attacker.ninjaDashTargetY = attacker.y + facingY * safeDash;
+    attacker.ninjaDashUntil = currentTime + NINJA_CONFIG.dashDurationMs;
+  }
+  const support = attacker.technique === "NINJA_BARRIER" && source !== "BARRIER_FORCED" && source !== "WAVE"
     ? applyBarrierSupport(attacker, soldiers, obstacles, bases, currentTime, random, attacker.ninjaDashTargetX, attacker.ninjaDashTargetY)
     : { forcedEvents: [], healResults: [] };
   return { kind: "NINJA", attackerId: attacker.id, team: attacker.team, technique: attacker.technique,

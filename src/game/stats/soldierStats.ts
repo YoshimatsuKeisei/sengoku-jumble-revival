@@ -21,9 +21,7 @@ export function createPrototypeStats(random: RandomSource = Math.random): Soldie
 }
 
 export function getEffectiveFoot(soldier: Pick<Soldier, "controller" | "stats">): number {
-  return soldier.controller === "player"
-    ? Math.max(soldier.stats.foot, MOVEMENT_SPEED_CONFIG.playerMinimumFoot)
-    : soldier.stats.foot;
+  return soldier.stats.foot;
 }
 
 export function calculateMoveSpeedFromFoot(foot: number): number {

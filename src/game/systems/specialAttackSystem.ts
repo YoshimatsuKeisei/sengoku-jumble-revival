@@ -3,7 +3,6 @@ import {
   DEFENSE_CONFIG,
   SOLDIER_RADIUS,
   SPECIAL_ATTACK_CONFIG,
-  SPECIAL_ABILITY_CONFIG,
 } from "../config";
 import type { BattleBase, BattleObstacle, Soldier, Team } from "../types";
 import { applyDamage } from "./combatSystem";
@@ -11,9 +10,7 @@ import { getBaseRect } from "./battlefieldGeometry";
 import { circleIntersectsObstacle } from "./movementSystem";
 import { startHitReaction } from "./reactionSystem";
 import type { RandomSource } from "../stats/soldierStats";
-import { hasSpecialAbility } from "./specialAbilitySystem";
 import { isDamageGuarded } from "./defenseSystem";
-import { calculateSpecialCooldownMs } from "./skillCooldownSystem";
 import { executeGunAttack, findGunTarget, getGunMovementDecision, isGunTechnique, type GunAttackEvent } from "./gunAttackSystem";
 import { executeCavalryCharge, queueMoutaiOnDamage, type CavalryChargeEvent } from "./cavalryChargeSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
@@ -23,6 +20,8 @@ import { executeNinjaAttack, isNinjaTechnique, type NinjaAttackEvent } from "./n
 import { executeGeneralAttack, isGeneralTechnique, type GeneralAttackEvent } from "./generalAttackSystem";
 import { executeStrategistAttack, isStrategistTechnique, type StrategistAttackEvent } from "./strategistAttackSystem";
 import { executeMosaAttack, isMosaTechnique, type MosaAttackEvent } from "./mosaAttackSystem";
+import { advanceCombatGauge, beginTechniqueAction, clearTechniqueActionIfComplete, hasTechniqueGauge } from "./combatGaugeSystem";
+import { swfLogicTicksToMs } from "./techniqueCombatProfiles";
 
 export interface AreaSpecialAttackEvent { kind: "AREA"; attackerId: string; team: Team; x: number; y: number }
 export type SpecialAttackEvent = AreaSpecialAttackEvent | GunAttackEvent | CavalryChargeEvent | ArrowLaunchEvent | SpearAttackEvent | NinjaAttackEvent | GeneralAttackEvent | StrategistAttackEvent | MosaAttackEvent;
@@ -59,9 +58,20 @@ export function findSpecialTargets(attacker: Soldier, soldiers: readonly Soldier
 }
 
 export function canUseSpecial(soldier: Soldier, currentTime: number): boolean {
-  if (soldier.isDead || soldier.hp <= 0 || !isSpecialReady(soldier, currentTime)) return false;
+  if (soldier.isDead || soldier.hp <= 0 || soldier.state !== "NORMAL") return false;
   if (soldier.reactionState !== "NONE" || soldier.combatActionState !== "IDLE") return false;
-  return soldier.state === "NORMAL" || (!soldier.isConfused && soldier.state === "EMERGENCY_RETREAT");
+  if (soldier.activeSpecialTechnique !== null || currentTime < soldier.specialLockUntil) return false;
+  return soldier.controller === "player" ? isSpecialReady(soldier, currentTime) : hasTechniqueGauge(soldier);
+}
+
+function hasBattleActivationContext(attacker: Soldier, soldiers: readonly Soldier[]): boolean {
+  if (attacker.technique === "GENERAL_COMMAND")
+    return soldiers.some((target) => target !== attacker && target.team === attacker.team && !target.isDead && target.hp > 0);
+  if (attacker.technique === "GENERAL_HEAL" || attacker.technique === "STRATEGIST_HEAL")
+    return soldiers.some((target) => target.team === attacker.team && !target.isDead && target.hp > 0 && target.hp < target.maxHp);
+  if (attacker.technique === "GENERAL_HEROIC" || attacker.technique === "NINJA_BARRIER")
+    return soldiers.some((target) => target !== attacker && !target.isDead && target.hp > 0);
+  return soldiers.some((target) => activeEnemy(attacker, target));
 }
 
 function pointInsideInflatedBase(x: number, y: number, base: BattleBase): boolean {
@@ -114,17 +124,13 @@ export function executeSpecialAttack(
   consumeCooldown = true,
   random: RandomSource = Math.random,
 ): AreaSpecialAttackEvent | null {
-  if (targets.length === 0 || (consumeCooldown && !canUseSpecial(attacker, currentTime))) return null;
-  if (consumeCooldown) {
-    attacker.specialReadyAt = currentTime + calculateSpecialCooldownMs(attacker.stats.skill);
-    if (hasSpecialAbility(attacker, "DOUBLE_SPECIAL") && random() < SPECIAL_ABILITY_CONFIG.doubleSpecialChance)
-      attacker.pendingSecondSpecialAt = currentTime + SPECIAL_ABILITY_CONFIG.doubleSpecialDelayMs;
-  }
+  if (targets.length === 0 || (consumeCooldown && !beginTechniqueAction(attacker, currentTime, random, true))) return null;
   for (const target of targets) {
     const direction = knockbackDirection(attacker, target);
     const canMove = specialKnockbackDestinationIsClear(target, attacker, direction.x, direction.y, soldiers, obstacles, bases);
     const guarded = isDamageGuarded(target, "SPECIAL_ATTACK", random);
-    if (!guarded) { applyDamage(target, SPECIAL_ATTACK_CONFIG.damage); queueMoutaiOnDamage(target, SPECIAL_ATTACK_CONFIG.damage); }
+    const damage = SPECIAL_ATTACK_CONFIG.damage + Number(attacker.specialAbilities.includes("MIGHT"));
+    if (!guarded) { applyDamage(target, damage); queueMoutaiOnDamage(target, damage); }
     target.combatFeedbackMarker = guarded ? "S" : "H";
     target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
     if (target.isDead) continue;
@@ -161,36 +167,44 @@ export function updateSpecialAttacks(
     if (event) events.push(event);
     return event !== null;
   };
+
+  const executeWave = (attacker: Soldier): SpecialAttackEvent | null => {
+    if (attacker.technique === "CAVALRY_CHARGE")
+      return executeCavalryCharge(attacker, soldiers, obstacles, bases, currentTime, random, { consumeCooldown: false, isWave: true });
+    if (isSpearTechnique(attacker.technique))
+      return executeSpearAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, true);
+    if (isNinjaTechnique(attacker.technique))
+      return executeNinjaAttack(attacker, soldiers, obstacles, bases, currentTime, random, "WAVE");
+    if (isGeneralTechnique(attacker.technique))
+      return executeGeneralAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, forceGeneralRecipient, true);
+    if (isStrategistTechnique(attacker.technique))
+      return executeStrategistAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, true);
+    if (isMosaTechnique(attacker.technique))
+      return executeMosaAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, true);
+    return null;
+  };
+
   for (const attacker of soldiers) {
+    advanceCombatGauge(attacker, currentTime);
     while (attacker.pendingMoutaiCharges > 0) {
       attacker.pendingMoutaiCharges -= 1;
       const reactive = executeCavalryCharge(attacker, soldiers, obstacles, bases, currentTime, random, { reactive: true, consumeCooldown: false });
       if (reactive) events.push(reactive);
     }
-    if (attacker.pendingSecondSpecialAt !== null && currentTime >= attacker.pendingSecondSpecialAt) {
-      attacker.pendingSecondSpecialAt = null;
-      const second = attacker.technique === "CAVALRY_CHARGE"
-        ? executeCavalryCharge(attacker, soldiers, obstacles, bases, currentTime, random, { consumeCooldown: false })
-        : isGunTechnique(attacker.technique)
-        ? (() => { const target = findGunTarget(attacker, soldiers); return target && getGunMovementDecision(attacker, target) !== "NORMAL_COMBAT" ? executeGunAttack(attacker, target, currentTime, random, false, soldiers) : null; })()
-        : isArrowTechnique(attacker.technique)
-        ? (() => { const target = findArrowTarget(attacker, soldiers); return target && getArrowMovementDecision(attacker, target) !== "NORMAL_COMBAT" ? executeArrowAttack(attacker, target, currentTime, random, false) : null; })()
-        : isSpearTechnique(attacker.technique)
-        ? executeSpearAttack(attacker, soldiers, obstacles, bases, currentTime, random, false)
-        : isNinjaTechnique(attacker.technique)
-        ? executeNinjaAttack(attacker, soldiers, obstacles, bases, currentTime, random, "DOUBLE_SPECIAL")
-        : isGeneralTechnique(attacker.technique)
-        ? executeGeneralAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, forceGeneralRecipient)
-        : isStrategistTechnique(attacker.technique)
-        ? executeStrategistAttack(attacker, soldiers, obstacles, bases, currentTime, random, false)
-        : isMosaTechnique(attacker.technique)
-        ? executeMosaAttack(attacker, soldiers, obstacles, bases, currentTime, random, false)
-        : executeSpecialAttack(attacker, findSpecialTargets(attacker, soldiers, attacker.state === "EMERGENCY_RETREAT"),
-          soldiers, obstacles, bases, currentTime, false, random);
-      if (second) events.push(second);
+    if (attacker.activeSpecialTechnique !== null && attacker.nextSpecialWaveAt !== null) {
+      let nextWaveAt = attacker.nextSpecialWaveAt;
+      while (attacker.specialWavesRemaining > 0 && currentTime >= nextWaveAt
+        && !attacker.isDead && attacker.state === "NORMAL" && attacker.reactionState === "NONE") {
+        attacker.specialWavesRemaining -= 1;
+        nextWaveAt += swfLogicTicksToMs(1);
+        attacker.nextSpecialWaveAt = attacker.specialWavesRemaining > 0 ? nextWaveAt : null;
+        const wave = executeWave(attacker);
+        if (wave) events.push(wave);
+      }
     }
+    clearTechniqueActionIfComplete(attacker, currentTime);
     if (!canUseSpecial(attacker, currentTime)) continue;
-    const retreating = attacker.state === "EMERGENCY_RETREAT";
+    if (!hasBattleActivationContext(attacker, soldiers)) continue;
     if (attacker.controller === "player" && !playerRequested) continue;
     const event = attacker.technique === "CAVALRY_CHARGE"
       ? executeCavalryCharge(attacker, soldiers, obstacles, bases, currentTime, random)
@@ -208,7 +222,7 @@ export function updateSpecialAttacks(
       ? executeStrategistAttack(attacker, soldiers, obstacles, bases, currentTime, random, true)
       : isMosaTechnique(attacker.technique)
       ? executeMosaAttack(attacker, soldiers, obstacles, bases, currentTime, random, true)
-      : executeSpecialAttack(attacker, findSpecialTargets(attacker, soldiers, retreating && attacker.controller !== "player"),
+      : executeSpecialAttack(attacker, findSpecialTargets(attacker, soldiers),
         soldiers, obstacles, bases, currentTime, true, random);
     if (event) events.push(event);
   }

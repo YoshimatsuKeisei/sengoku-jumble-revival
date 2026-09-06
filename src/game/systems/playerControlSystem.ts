@@ -6,7 +6,8 @@ export function canPlayerContinueManualPursuitDuringWindup(player: Soldier, sold
   return soldiers.find((soldier) => soldier.id === player.attackTargetId)?.state === "EMERGENCY_RETREAT";
 }
 export function canPlayerMoveInCurrentState(player: Soldier, soldiers: readonly Soldier[]): boolean {
-  if (player.isDead || player.isConfused || player.reactionState !== "NONE" || player.state === "HEALING" || player.state === "REJOINING") return false;
+  if (player.isDead || player.isConfused || player.reactionState !== "NONE" || player.activeSpecialTechnique !== null
+    || player.state === "HEALING" || player.state === "REJOINING") return false;
   return player.combatActionState === "IDLE" || canPlayerContinueManualPursuitDuringWindup(player, soldiers);
 }
 export function getSpecialGaugeProgress(player: Soldier, currentTime: number): number {

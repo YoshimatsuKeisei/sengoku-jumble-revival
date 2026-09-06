@@ -9,6 +9,7 @@ import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier, StrategyObjectiveKind, Team } from "../types";
 import { clearApproachRuntime } from "./engagementPositioningSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
+import { getNormalContactBounds } from "./techniqueCombatProfiles";
 
 export function distanceBetween(a: Pick<Soldier, "x" | "y">, b: Pick<Soldier, "x" | "y">): number {
   return Math.hypot(a.x - b.x, a.y - b.y);
@@ -93,7 +94,7 @@ function teamThreshold(team: Team, kind: "defend" | "intercept"): number {
 
 function updateDefenderPursuitObjective(defender: Soldier, target: Soldier): void {
   const enemyPassedDefender = (target.x - defender.x) * (defender.team === "player" ? 1 : -1) < 0;
-  const verticallySeparated = Math.abs(target.y - defender.y) > defender.attackRange;
+  const verticallySeparated = Math.abs(target.y - defender.y) > getNormalContactBounds().y;
   if (!enemyPassedDefender && !verticallySeparated) return;
   setStrategyObjective(
     defender,

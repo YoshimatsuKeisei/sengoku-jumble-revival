@@ -7,6 +7,7 @@ import { calculateRetreatMoveSpeed } from "./specialAbilitySystem";
 import { findGunTarget, getGunMovementDecision } from "./gunAttackSystem";
 import { findArrowTarget, getArrowMovementDecision } from "./arrowAttackSystem";
 import { clearStaleCombatTarget, isValidCombatTarget } from "./combatTargetSystem";
+import { getArrivalToleranceWorld, isWithinNormalContact } from "./techniqueCombatProfiles";
 
 export interface Direction { x: number; y: number }
 
@@ -218,7 +219,8 @@ export function moveAiSoldiers(
       && soldier.state === "NORMAL"
       && soldier.combatActionState === "ATTACK_WINDUP"
       && windupTarget?.state === "EMERGENCY_RETREAT";
-    if (soldier.isDead || currentTime < soldier.ninjaDashUntil || soldier.reactionState !== "NONE" || (soldier.combatActionState !== "IDLE" && !chasingRetreatWindup)
+    if (soldier.isDead || currentTime < soldier.ninjaDashUntil || soldier.activeSpecialTechnique !== null
+      || soldier.reactionState !== "NONE" || (soldier.combatActionState !== "IDLE" && !chasingRetreatWindup)
       || (!stateControlled && soldier.controller !== "ai") || soldier.state === "HEALING"
     ) continue;
     if (soldier.isConfused) {
@@ -247,7 +249,7 @@ export function moveAiSoldiers(
         continue;
       }
     }
-    if (target && !chasingRetreatWindup && distanceBetween(soldier, target) <= soldier.attackRange) continue;
+    if (target && !chasingRetreatWindup && isWithinNormalContact(soldier, target)) continue;
     if (!target && (soldier.moveTargetX === null || soldier.moveTargetY === null)) continue;
     const predictiveDefendDestination = target && soldier.strategy === "defend"
       && soldier.strategyObjectiveKind === "SEEK_COMBAT"
@@ -257,7 +259,9 @@ export function moveAiSoldiers(
       ? predictiveDefendDestination
         ?? (target.state === "EMERGENCY_RETREAT" ? target : getPreferredApproachPoint(soldier, target, soldiers, obstacles) ?? target)
       : { x: soldier.moveTargetX!, y: soldier.moveTargetY! };
-    const stopDistance = target ? 2 : 4;
+    // Engagements use their own SWF 24-unit spacing point. Applying the
+    // destination tolerance on top of that spacing would stop short of contact.
+    const stopDistance = target ? 2 : getArrivalToleranceWorld(soldier.stats.foot);
     if (distanceBetween(soldier, destination) <= stopDistance) continue;
     moveBy(soldier, destination.x - soldier.x, destination.y - soldier.y, deltaSeconds, obstacles, currentTime, true);
   }

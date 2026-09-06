@@ -1,4 +1,4 @@
-import { DEFENSE_CONFIG, MOSA_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
+import { DEFENSE_CONFIG, MOSA_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, BattleObstacle, Soldier, Team, UnitTechnique } from "../types";
 import { applyDamage } from "./combatSystem";
@@ -6,9 +6,10 @@ import { isValidCombatTarget } from "./combatTargetSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { startHitReaction } from "./reactionSystem";
 import { calculateSafeSpearKnockbackDistance } from "./spearAttackSystem";
-import { calculateSpecialCooldownMs } from "./skillCooldownSystem";
-import { hasSpecialAbility } from "./specialAbilitySystem";
 import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
+import { hasSpecialAbility } from "./specialAbilitySystem";
+import { beginTechniqueAction } from "./combatGaugeSystem";
+import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
 export type MosaTechnique = "MOSA_SENPUU" | "MOSA_MUSOU" | "MOSA_KIJIN";
 export interface MosaAttackEvent { kind: "MOSA"; attackerId: string; team: Team; technique: MosaTechnique;
@@ -17,8 +18,7 @@ export function isMosaTechnique(technique: UnitTechnique): technique is MosaTech
   return technique === "MOSA_SENPUU" || technique === "MOSA_MUSOU" || technique === "MOSA_KIJIN";
 }
 export function getMosaRadius(technique: MosaTechnique): number {
-  return technique === "MOSA_KIJIN" ? MOSA_CONFIG.kijinRadius
-    : technique === "MOSA_SENPUU" ? MOSA_CONFIG.senpuuRadius : MOSA_CONFIG.musouRadius;
+  return getTechniqueAreaWorld(technique).width / 2;
 }
 export function getMosaKnockback(technique: MosaTechnique): number {
   return technique === "MOSA_KIJIN" ? MOSA_CONFIG.kijinKnockback
@@ -29,30 +29,30 @@ function normalizedFacing(attacker: Soldier): { x: number; y: number } {
   return { x: attacker.facingX / length, y: attacker.facingY / length };
 }
 export function isInsideSenpuu(attacker: Soldier, target: Soldier): boolean {
-  const dx = target.x - attacker.x; const dy = target.y - attacker.y; const distance = Math.hypot(dx, dy);
-  if (distance === 0 || distance > MOSA_CONFIG.senpuuRadius) return false;
-  const facing = normalizedFacing(attacker);
-  return (dx / distance) * facing.x + (dy / distance) * facing.y >= Math.cos(MOSA_CONFIG.senpuuHalfAngleDegrees * Math.PI / 180);
+  return isPointInTechniqueRectangle("MOSA_SENPUU", getTechniqueAreaCenter("MOSA_SENPUU", attacker), target);
 }
 export function findMosaTargets(attacker: Soldier, soldiers: readonly Soldier[]): Soldier[] {
   if (!isMosaTechnique(attacker.technique)) return [];
-  const radius = getMosaRadius(attacker.technique);
   return soldiers.filter((target) => isValidCombatTarget(attacker, target) && target.state !== "REJOINING"
-    && Math.hypot(target.x - attacker.x, target.y - attacker.y) <= radius
-    && (attacker.technique !== "MOSA_SENPUU" || isInsideSenpuu(attacker, target)));
+    && isPointInTechniqueRectangle(attacker.technique, getTechniqueAreaCenter(attacker.technique, attacker), target));
 }
 export function executeMosaAttack(attacker: Soldier, soldiers: Soldier[], obstacles: readonly BattleObstacle[], bases: readonly BattleBase[],
-  currentTime: number, random: RandomSource = Math.random, consumeCooldown = true): MosaAttackEvent | null {
+  currentTime: number, random: RandomSource = Math.random, consumeCooldown = true, isWave = false): MosaAttackEvent | null {
   if (!isMosaTechnique(attacker.technique)) return null;
-  const targets = findMosaTargets(attacker, soldiers); if (!targets.length) return null;
-  const primary = targets.find((target) => target.id === attacker.targetId) ?? targets[0];
-  const pdx = primary.x - attacker.x; const pdy = primary.y - attacker.y; const pl = Math.hypot(pdx, pdy) || 1;
-  attacker.facingX = pdx / pl; attacker.facingY = pdy / pl; attacker.aimX = attacker.facingX; attacker.aimY = attacker.facingY;
-  if (consumeCooldown) {
-    attacker.specialReadyAt = currentTime + calculateSpecialCooldownMs(attacker.stats.skill);
-    if (hasSpecialAbility(attacker, "DOUBLE_SPECIAL") && random() < SPECIAL_ABILITY_CONFIG.doubleSpecialChance)
-      attacker.pendingSecondSpecialAt = currentTime + SPECIAL_ABILITY_CONFIG.doubleSpecialDelayMs;
+  if (consumeCooldown && !beginTechniqueAction(attacker, currentTime, random, true)) return null;
+  if (!isWave) {
+    const enemies = soldiers.filter((target) => isValidCombatTarget(attacker, target));
+    const primary = enemies.find((target) => target.id === attacker.targetId) ?? enemies[0];
+    if (primary) {
+      const pdx = primary.x - attacker.x; const pdy = primary.y - attacker.y; const pl = Math.hypot(pdx, pdy) || 1;
+      attacker.facingX = pdx / pl; attacker.facingY = pdy / pl; attacker.aimX = attacker.facingX; attacker.aimY = attacker.facingY;
+    }
+    const facing = normalizedFacing(attacker);
+    const safe = calculateSafeSpearKnockbackDistance(attacker, facing.x, facing.y,
+      getTechniqueSelfAdvanceWorld(attacker.technique), soldiers, obstacles, bases);
+    attacker.x += facing.x * safe; attacker.y += facing.y * safe;
   }
+  const targets = findMosaTargets(attacker, soldiers);
   const event: MosaAttackEvent = { kind: "MOSA", attackerId: attacker.id, team: attacker.team, technique: attacker.technique,
     x: attacker.x, y: attacker.y, facingX: attacker.facingX, facingY: attacker.facingY, radius: getMosaRadius(attacker.technique), hitIds: [], defendedIds: [] };
   for (const target of targets) {

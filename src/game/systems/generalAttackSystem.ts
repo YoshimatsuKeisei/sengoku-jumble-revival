@@ -1,4 +1,4 @@
-import { DEFENSE_CONFIG, GENERAL_CONFIG, SPECIAL_ABILITY_CONFIG, SPECIAL_ATTACK_CONFIG } from "../config";
+import { DEFENSE_CONFIG, GENERAL_CONFIG, SPECIAL_ATTACK_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, BattleObstacle, Soldier, Team, UnitTechnique } from "../types";
 import { applyDamage } from "./combatSystem";
@@ -6,11 +6,12 @@ import { clearConfusion } from "./confusionSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { calculateSafeNinjaMovement } from "./ninjaAttackSystem";
 import { startHitReaction } from "./reactionSystem";
-import { calculateSpecialCooldownMs } from "./skillCooldownSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
 import { clearEngagement } from "./aiSystem";
+import { beginTechniqueAction } from "./combatGaugeSystem";
+import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
 export type GeneralTechnique = "GENERAL_COMMAND" | "GENERAL_HEROIC" | "GENERAL_HEAL";
 export interface GeneralAttackEvent {
@@ -26,13 +27,13 @@ export function isGeneralTechnique(technique: UnitTechnique): technique is Gener
 export function findGeneralCommandRecipients(general: Soldier, soldiers: readonly Soldier[]): Soldier[] {
   return soldiers.filter((soldier) => soldier !== general && soldier.team === general.team && soldier.unitType !== "GENERAL"
     && !soldier.isDead && soldier.hp > 0 && soldier.state !== "HEALING"
-    && Math.hypot(soldier.x - general.x, soldier.y - general.y) <= GENERAL_CONFIG.commandRadius);
+    && isPointInTechniqueRectangle("GENERAL_COMMAND", getTechniqueAreaCenter("GENERAL_COMMAND", general), soldier));
 }
 
 export function findGeneralHealTargets(general: Soldier, soldiers: readonly Soldier[]): Soldier[] {
   return soldiers.filter((soldier) => soldier.team === general.team && !soldier.isDead && soldier.hp > 0
     && soldier.state !== "HEALING" && soldier.hp < soldier.maxHp
-    && Math.hypot(soldier.x - general.x, soldier.y - general.y) <= GENERAL_CONFIG.healRadius);
+    && isPointInTechniqueRectangle("GENERAL_HEAL", getTechniqueAreaCenter("GENERAL_HEAL", general), soldier));
 }
 
 export function canActivateGeneral(general: Soldier, soldiers: readonly Soldier[]): boolean {
@@ -40,25 +41,22 @@ export function canActivateGeneral(general: Soldier, soldiers: readonly Soldier[
   if (general.technique === "GENERAL_COMMAND") return findGeneralCommandRecipients(general, soldiers).length > 0;
   return general.technique === "GENERAL_HEROIC" && (findGeneralCommandRecipients(general, soldiers).length > 0
     || soldiers.some((enemy) => isValidCombatTarget(general, enemy)
-      && Math.hypot(enemy.x - general.x, enemy.y - general.y) <= GENERAL_CONFIG.heroicRadius));
+      && isPointInTechniqueRectangle("GENERAL_HEROIC", getTechniqueAreaCenter("GENERAL_HEROIC", general), enemy)));
 }
 
 export function executeGeneralAttack(
   general: Soldier, soldiers: Soldier[], obstacles: readonly BattleObstacle[], bases: readonly BattleBase[], currentTime: number,
-  random: RandomSource, consumeCooldown: boolean, forceSpecial: (recipient: Soldier) => boolean,
+  random: RandomSource, consumeCooldown: boolean, forceSpecial: (recipient: Soldier) => boolean, isWave = false,
 ): GeneralAttackEvent | null {
-  if (!isGeneralTechnique(general.technique) || !canActivateGeneral(general, soldiers)) return null;
-  if (consumeCooldown) {
-    general.specialReadyAt = currentTime + calculateSpecialCooldownMs(general.stats.skill);
-    if (hasSpecialAbility(general, "DOUBLE_SPECIAL") && random() < SPECIAL_ABILITY_CONFIG.doubleSpecialChance)
-      general.pendingSecondSpecialAt = currentTime + SPECIAL_ABILITY_CONFIG.doubleSpecialDelayMs;
-  }
+  if (!isGeneralTechnique(general.technique)) return null;
+  if (consumeCooldown && !beginTechniqueAction(general, currentTime, random, true)) return null;
   const event: GeneralAttackEvent = { kind: "GENERAL", attackerId: general.id, team: general.team, technique: general.technique,
-    x: general.x, y: general.y, commandRadius: GENERAL_CONFIG.commandRadius, recipientIds: [], forcedAttackerIds: [],
+    x: general.x, y: general.y, commandRadius: getTechniqueAreaWorld("GENERAL_COMMAND").width / 2, recipientIds: [], forcedAttackerIds: [],
     playerReadyIds: [], hitIds: [], defendedIds: [], healed: [] };
   if (general.technique === "GENERAL_HEAL") {
     for (const target of findGeneralHealTargets(general, soldiers)) {
-      const amount = Math.min(GENERAL_CONFIG.healAmount, target.maxHp - target.hp); target.hp += amount;
+      const requested = GENERAL_CONFIG.healAmount + Number(hasSpecialAbility(target, "RECOVERY_BOOST"));
+      const amount = Math.min(requested, target.maxHp - target.hp); target.hp += amount;
       if (amount > 0) event.healed.push({ targetId: target.id, amount });
     }
     return event;
@@ -68,10 +66,12 @@ export function executeGeneralAttack(
       .sort((a, b) => Math.hypot(a.x - general.x, a.y - general.y) - Math.hypot(b.x - general.x, b.y - general.y))[0];
     let dx = enemy ? enemy.x - general.x : general.facingX; let dy = enemy ? enemy.y - general.y : general.facingY;
     const length = Math.hypot(dx, dy) || 1; dx /= length; dy /= length;
-    const safe = calculateSafeNinjaMovement(general, dx, dy, GENERAL_CONFIG.heroicStepDistance, soldiers, obstacles, bases);
-    general.x += dx * safe; general.y += dy * safe; event.x = general.x; event.y = general.y;
+    if (!isWave) {
+      const safe = calculateSafeNinjaMovement(general, dx, dy, getTechniqueSelfAdvanceWorld("GENERAL_HEROIC"), soldiers, obstacles, bases);
+      general.x += dx * safe; general.y += dy * safe; event.x = general.x; event.y = general.y;
+    }
     for (const target of soldiers.filter((candidate) => isValidCombatTarget(general, candidate)
-      && Math.hypot(candidate.x - general.x, candidate.y - general.y) <= GENERAL_CONFIG.heroicRadius)) {
+      && isPointInTechniqueRectangle("GENERAL_HEROIC", getTechniqueAreaCenter("GENERAL_HEROIC", general), candidate))) {
       if (isDamageGuarded(target, "SPECIAL_ATTACK", random)) {
         target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
         event.defendedIds.push(target.id); continue;
@@ -82,6 +82,7 @@ export function executeGeneralAttack(
       if (!target.isDead) startHitReaction(target, general, currentTime, SPECIAL_ATTACK_CONFIG.knockbackDistance);
     }
   }
+  if (isWave) return event;
   for (const recipient of findGeneralCommandRecipients(general, soldiers)) {
     event.recipientIds.push(recipient.id);
     clearConfusion(recipient, "GENERAL_COMMAND");

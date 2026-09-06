@@ -1,5 +1,6 @@
 import { BATTLEFIELD_CONFIG, CLOSE_COMBAT_POSITIONING_CONFIG, SOLDIER_RADIUS } from "../config";
 import type { BattleObstacle, Soldier } from "../types";
+import { getApproachSpacingWorld } from "./techniqueCombatProfiles";
 
 export interface ApproachPoint { x: number; y: number }
 
@@ -20,7 +21,7 @@ function jitterFor(soldier: Soldier, target: Soldier): { angle: number; radius: 
 }
 
 function approachRadius(soldier: Soldier, target: Soldier): number {
-  return Math.max(1, soldier.attackRange - CLOSE_COMBAT_POSITIONING_CONFIG.approachMargin + jitterFor(soldier, target).radius);
+  return Math.max(1, getApproachSpacingWorld() - CLOSE_COMBAT_POSITIONING_CONFIG.approachMargin + jitterFor(soldier, target).radius);
 }
 
 export function computeApproachPoint(soldier: Soldier, target: Soldier, angle = soldier.preferredApproachAngle): ApproachPoint | null {

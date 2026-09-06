@@ -1,14 +1,15 @@
-import { ARCHER_CONFIG, DEFENSE_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
+import { ARCHER_CONFIG, DEFENSE_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier, Team, UnitTechnique } from "../types";
 import { applyDamage } from "./combatSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { startHitReaction } from "./reactionSystem";
-import { calculateSpecialCooldownMs } from "./skillCooldownSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
 import { applyRareDamageImmunity, totalDamageComponents, type DamageComponents } from "./damageComponentSystem";
+import { beginTechniqueAction } from "./combatGaugeSystem";
+import { getRangedHoldMarginWorld, getTechniqueRangeWorld, isPointInTechniqueRectangle, isWithinNormalContact } from "./techniqueCombatProfiles";
 
 export interface ArrowProjectileRuntime {
   shooterId: string; targetId: string; team: Team;
@@ -30,10 +31,7 @@ export function isArrowTechnique(technique: UnitTechnique): technique is ArrowPr
     || technique === "ARCHER_FIRE_ARROW" || technique === "ARCHER_HOROKU";
 }
 export function getArrowRange(technique: UnitTechnique): number | null {
-  return technique === "ARCHER_ARROW" ? ARCHER_CONFIG.arrowRange
-    : technique === "ARCHER_LONG_SHOT" ? ARCHER_CONFIG.longShotRange
-    : technique === "ARCHER_FIRE_ARROW" ? ARCHER_CONFIG.fireArrowRange
-    : technique === "ARCHER_HOROKU" ? ARCHER_CONFIG.horokuRange : null;
+  return isArrowTechnique(technique) ? getTechniqueRangeWorld(technique) : null;
 }
 export function calculateArrowDamage(attacker: Pick<Soldier, "specialAbilities">): number {
   return ARCHER_CONFIG.damage + Number(hasSpecialAbility(attacker, "MIGHT"));
@@ -43,13 +41,13 @@ export function getArrowMovementDecision(attacker: Soldier, target: Soldier): Ar
   const range = getArrowRange(attacker.technique);
   if (range === null) return "NORMAL_COMBAT";
   const distance = Math.hypot(target.x - attacker.x, target.y - attacker.y);
-  if (distance <= attacker.attackRange) return "NORMAL_COMBAT";
-  return distance <= range ? "HOLD_IN_RANGE" : "ADVANCE_TO_RANGE";
+  if (isWithinNormalContact(attacker, target)) return "NORMAL_COMBAT";
+  return distance < range - getRangedHoldMarginWorld() ? "HOLD_IN_RANGE" : "ADVANCE_TO_RANGE";
 }
 export function findArrowTarget(attacker: Soldier, soldiers: readonly Soldier[]): Soldier | null {
   const range = getArrowRange(attacker.technique); if (range === null) return null;
   const candidates = soldiers.filter((target) => isValidCombatTarget(attacker, target) && target.state !== "REJOINING"
-    && Math.hypot(target.x - attacker.x, target.y - attacker.y) <= range);
+    && Math.hypot(target.x - attacker.x, target.y - attacker.y) < range);
   return candidates.find((target) => target.id === attacker.targetId)
     ?? candidates.sort((a, b) => Math.hypot(a.x - attacker.x, a.y - attacker.y)
       - Math.hypot(b.x - attacker.x, b.y - attacker.y) || a.id.localeCompare(b.id))[0] ?? null;
@@ -58,13 +56,8 @@ export function executeArrowAttack(attacker: Soldier, target: Soldier, currentTi
   random: RandomSource = Math.random, consumeCooldown = true): ArrowLaunchEvent | null {
   const range = getArrowRange(attacker.technique);
   if (!isArrowTechnique(attacker.technique) || range === null || !isValidCombatTarget(attacker, target)
-    || target.state === "REJOINING" || Math.hypot(target.x - attacker.x, target.y - attacker.y) > range) return null;
-  if (consumeCooldown) {
-    if (currentTime < attacker.specialReadyAt || attacker.reactionState !== "NONE" || attacker.combatActionState !== "IDLE") return null;
-    attacker.specialReadyAt = currentTime + calculateSpecialCooldownMs(attacker.stats.skill);
-    if (hasSpecialAbility(attacker, "DOUBLE_SPECIAL") && random() < SPECIAL_ABILITY_CONFIG.doubleSpecialChance)
-      attacker.pendingSecondSpecialAt = currentTime + SPECIAL_ABILITY_CONFIG.doubleSpecialDelayMs;
-  }
+    || target.state === "REJOINING" || Math.hypot(target.x - attacker.x, target.y - attacker.y) >= range) return null;
+  if (consumeCooldown && !beginTechniqueAction(attacker, currentTime, random, true)) return null;
   const dx = target.x - attacker.x; const dy = target.y - attacker.y; const distance = Math.hypot(dx, dy);
   const length = distance || 1; attacker.aimX = dx / length; attacker.aimY = dy / length;
   attacker.facingX = attacker.aimX; attacker.facingY = attacker.aimY;
@@ -83,8 +76,7 @@ export function getArrowPrimaryComponents(attacker: Pick<Soldier, "technique" | 
   return { DIRECT_ARROW: direct };
 }
 export function getArrowSplashComponents(technique: UnitTechnique): DamageComponents | null {
-  return technique === "ARCHER_FIRE_ARROW" ? FIRE_ARROW_SPLASH_COMPONENTS
-    : technique === "ARCHER_HOROKU" ? HOROKU_SPLASH_COMPONENTS : null;
+  return technique === "ARCHER_HOROKU" ? HOROKU_SPLASH_COMPONENTS : null;
 }
 function damageVictim(victim: Soldier, attacker: Soldier, components: DamageComponents, currentTime: number,
   showMarker: boolean): { damage: number; fire: boolean; explosion: boolean } {
@@ -105,7 +97,7 @@ export function updateArrowProjectile(projectile: ArrowProjectileRuntime, soldie
   projectile.x = projectile.startX + (target.x - projectile.startX) * progress;
   projectile.y = projectile.startY + (target.y - projectile.startY) * progress;
   if (progress < 1) return { active: true, impact: null };
-  const defended = resolveArrowDefense(target, random) === "DEFENDED";
+  const defended = isDamageGuarded(target, "ARROW_ATTACK", random, shooter);
   const flameVictimIds: string[] = []; const brownSmokeVictimIds: string[] = [];
   if (defended) {
     target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
@@ -116,8 +108,8 @@ export function updateArrowProjectile(projectile: ArrowProjectileRuntime, soldie
     const splashComponents = getArrowSplashComponents(projectile.technique);
     if (splashComponents) for (const splash of soldiers) {
       if (splash === target || !isValidCombatTarget(shooter, splash) || splash.state === "REJOINING"
-        || Math.hypot(splash.x - target.x, splash.y - target.y) > ARCHER_CONFIG.areaImpactRadius) continue;
-      if (resolveArrowDefense(splash, random) === "DEFENDED") continue;
+        || !isPointInTechniqueRectangle(projectile.technique, target, splash)) continue;
+      if (isDamageGuarded(splash, "ARROW_ATTACK", random, shooter)) continue;
       const result = damageVictim(splash, shooter, splashComponents, currentTime, true);
       if (result.fire && projectile.technique === "ARCHER_FIRE_ARROW") flameVictimIds.push(splash.id);
       if (result.explosion && projectile.technique === "ARCHER_HOROKU") brownSmokeVictimIds.push(splash.id);

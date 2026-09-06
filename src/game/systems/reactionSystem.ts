@@ -35,6 +35,9 @@ export function startHitReaction(
     && random() < STRATEGY_AI_CONFIG.rushRetargetIgnoreChance;
   if (canRetaliate && !rushIgnoresRetarget) startEngagement(target, attacker, currentTime);
   cancelAttack(target);
+  target.activeSpecialTechnique = null;
+  target.specialWavesRemaining = 0;
+  target.nextSpecialWaveAt = null;
   let dx = target.x - attacker.x;
   let dy = target.y - attacker.y;
   const length = Math.hypot(dx, dy);

@@ -49,6 +49,10 @@ export function battlefieldSourceDistanceToWorldX(distance: number): number {
   return distance * BATTLEFIELD_SOURCE_TO_WORLD.scaleX;
 }
 
+export function battlefieldSourceDistanceToWorldY(distance: number): number {
+  return distance * BATTLEFIELD_SOURCE_TO_WORLD.scaleY;
+}
+
 // Coordinates confirmed by the SWF strategy routines. They remain in source
 // space here and are transformed exactly once for the 2400x900 runtime world.
 export const BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY = {

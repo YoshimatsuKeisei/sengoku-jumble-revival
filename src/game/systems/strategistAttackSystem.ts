@@ -1,13 +1,14 @@
-import { BATTLE_RANGE_UNIT_PX, STRATEGIST_CONFIG } from "../config";
+import { STRATEGIST_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, BattleObstacle, Soldier, Team, UnitTechnique } from "../types";
 import { applyConfusion } from "./confusionSystem";
 import { applyRareDamageImmunity, totalDamageComponents } from "./damageComponentSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { startHitReaction } from "./reactionSystem";
-import { calculateSpecialCooldownMs } from "./skillCooldownSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
-import { SPECIAL_ABILITY_CONFIG } from "../config";
+import { applyDamage } from "./combatSystem";
+import { beginTechniqueAction } from "./combatGaugeSystem";
+import { getTechniqueAreaCenter, getTechniqueAreaWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
 export type StrategistFireTechnique = keyof typeof STRATEGIST_CONFIG.fireDiameterUnits;
 export type StrategistTechnique = StrategistFireTechnique | "STRATEGIST_FALSE_REPORT" | "STRATEGIST_SORCERY" | "STRATEGIST_HEAL";
@@ -27,13 +28,14 @@ export function isStrategistFireTechnique(technique: UnitTechnique): technique i
   return technique in STRATEGIST_CONFIG.fireDiameterUnits;
 }
 export function getStrategistFireRadius(technique: StrategistFireTechnique): number {
-  return STRATEGIST_CONFIG.fireDiameterUnits[technique] * BATTLE_RANGE_UNIT_PX / 2;
+  return getTechniqueAreaWorld(technique).width / 2;
 }
 function activeEnemy(attacker: Soldier, target: Soldier): boolean {
   return isValidCombatTarget(attacker, target) && target.state !== "HEALING" && target.state !== "REJOINING";
 }
-function enemiesInRadius(attacker: Soldier, soldiers: readonly Soldier[], x: number, y: number, radius: number): Soldier[] {
-  return soldiers.filter((target) => activeEnemy(attacker, target) && Math.hypot(target.x - x, target.y - y) <= radius);
+function enemiesInRadius(attacker: Soldier, soldiers: readonly Soldier[], x: number, y: number, _radius: number): Soldier[] {
+  return soldiers.filter((target) => activeEnemy(attacker, target)
+    && isPointInTechniqueRectangle(attacker.technique, { x, y }, target));
 }
 function nearestEnemy(attacker: Soldier, soldiers: readonly Soldier[]): Soldier | null {
   return soldiers.filter((target) => activeEnemy(attacker, target))
@@ -44,12 +46,13 @@ export function getStrategistFirePlacement(attacker: Soldier, soldiers: readonly
   const radius = getStrategistFireRadius(attacker.technique); const target = nearestEnemy(attacker, soldiers);
   let dx = target ? target.x - attacker.x : attacker.facingX; let dy = target ? target.y - attacker.y : attacker.facingY;
   const length = Math.hypot(dx, dy) || 1; dx /= length; dy /= length;
-  const offset = 14 + radius * 0.5;
-  return { x: attacker.x + dx * offset, y: attacker.y + dy * offset, radius };
+  attacker.facingX = dx; attacker.facingY = dy;
+  return { ...getTechniqueAreaCenter(attacker.technique, attacker), radius };
 }
 export function findStrategistHealTargets(attacker: Soldier, soldiers: readonly Soldier[]): Soldier[] {
   return soldiers.filter((target) => target.team === attacker.team && !target.isDead && target.hp > 0 && target.state !== "HEALING"
-    && target.hp < target.maxHp && Math.hypot(target.x - attacker.x, target.y - attacker.y) <= STRATEGIST_CONFIG.healRadius);
+    && target.hp < target.maxHp
+    && isPointInTechniqueRectangle("STRATEGIST_HEAL", getTechniqueAreaCenter("STRATEGIST_HEAL", attacker), target));
 }
 export function canActivateStrategist(attacker: Soldier, soldiers: readonly Soldier[], currentTime: number): boolean {
   if (isStrategistFireTechnique(attacker.technique)) {
@@ -65,52 +68,55 @@ function applyNonLethalDamage(target: Soldier, amount: number): number {
   const applied = Math.min(Math.max(0, amount), Math.max(0, target.hp - 1)); target.hp -= applied; return applied;
 }
 export function updateStrategistFireZone(zone: StrategistFireZone, soldiers: Soldier[], currentTime: number): string[] {
-  if (currentTime >= zone.expiresAt) return [];
-  const owner = soldiers.find((soldier) => soldier.id === zone.ownerId); if (!owner || owner.isDead) return [];
-  const hitIds: string[] = [];
-  for (const target of soldiers) {
-    if (!activeEnemy(owner, target) || zone.damagedSoldierIds.has(target.id)
-      || Math.hypot(target.x - zone.x, target.y - zone.y) > zone.radius) continue;
-    zone.damagedSoldierIds.add(target.id);
-    const damage = totalDamageComponents(applyRareDamageImmunity(target, { FIRE: 1 }));
-    if (damage <= 0) continue;
-    if (applyNonLethalDamage(target, damage) <= 0) continue;
-    target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + 250;
-    startHitReaction(target, owner, currentTime, 0); hitIds.push(target.id);
-  }
-  return hitIds;
+  void zone; void soldiers; void currentTime;
+  // Damage is applied by the three scheduled SWF processing waves. The zone
+  // remains a visual lifetime record only, so render updates cannot deal damage.
+  return [];
 }
 export function updateStrategistFireZones(zones: StrategistFireZone[], soldiers: Soldier[], currentTime: number): { active: StrategistFireZone[]; hitIds: string[] } {
   const active = zones.filter((zone) => currentTime < zone.expiresAt && soldiers.some((soldier) => soldier.id === zone.ownerId && !soldier.isDead));
   return { active, hitIds: active.flatMap((zone) => updateStrategistFireZone(zone, soldiers, currentTime)) };
 }
 export function executeStrategistAttack(attacker: Soldier, soldiers: Soldier[], _obstacles: readonly BattleObstacle[], _bases: readonly BattleBase[],
-  currentTime: number, random: RandomSource, consumeCooldown: boolean): StrategistAttackEvent | null {
-  if (!isStrategistTechnique(attacker.technique) || !canActivateStrategist(attacker, soldiers, currentTime)) return null;
-  if (consumeCooldown) {
-    attacker.specialReadyAt = currentTime + calculateSpecialCooldownMs(attacker.stats.skill);
-    if (hasSpecialAbility(attacker, "DOUBLE_SPECIAL") && random() < SPECIAL_ABILITY_CONFIG.doubleSpecialChance)
-      attacker.pendingSecondSpecialAt = currentTime + SPECIAL_ABILITY_CONFIG.doubleSpecialDelayMs;
-  }
+  currentTime: number, random: RandomSource, consumeCooldown: boolean, isWave = false): StrategistAttackEvent | null {
+  if (!isStrategistTechnique(attacker.technique)) return null;
+  if (consumeCooldown && !beginTechniqueAction(attacker, currentTime, random, true)) return null;
   const event: StrategistAttackEvent = { kind: "STRATEGIST", attackerId: attacker.id, team: attacker.team, technique: attacker.technique,
     x: attacker.x, y: attacker.y, radius: 0, victimIds: [], confusedIds: [], healed: [], fireZone: null };
   if (isStrategistFireTechnique(attacker.technique)) {
-    const placement = getStrategistFirePlacement(attacker, soldiers)!;
-    const target = nearestEnemy(attacker, soldiers); if (target) { const dx = target.x - attacker.x; const dy = target.y - attacker.y; const l = Math.hypot(dx, dy) || 1; attacker.facingX = dx / l; attacker.facingY = dy / l; }
-    const zone: StrategistFireZone = { id: `${attacker.id}:${currentTime}`, ownerId: attacker.id, team: attacker.team,
-      ...placement, createdAt: currentTime, expiresAt: currentTime + STRATEGIST_CONFIG.fireZoneDurationMs, damagedSoldierIds: new Set() };
-    attacker.strategistFireZoneUntil = zone.expiresAt; event.x = zone.x; event.y = zone.y; event.radius = zone.radius; event.fireZone = zone;
-    event.victimIds = updateStrategistFireZone(zone, soldiers, currentTime); return event;
+    const placement = isWave
+      ? { ...getTechniqueAreaCenter(attacker.technique, attacker), radius: getStrategistFireRadius(attacker.technique) }
+      : getStrategistFirePlacement(attacker, soldiers)!;
+    event.x = placement.x; event.y = placement.y; event.radius = placement.radius;
+    if (!isWave) {
+      const zone: StrategistFireZone = { id: `${attacker.id}:${currentTime}`, ownerId: attacker.id, team: attacker.team,
+        ...placement, createdAt: currentTime, expiresAt: currentTime + STRATEGIST_CONFIG.fireZoneDurationMs, damagedSoldierIds: new Set() };
+      attacker.strategistFireZoneUntil = zone.expiresAt; event.fireZone = zone;
+    }
+    for (const target of enemiesInRadius(attacker, soldiers, placement.x, placement.y, placement.radius)) {
+      const damage = totalDamageComponents(applyRareDamageImmunity(target, {
+        FIRE: 1,
+        DIRECT_SPECIAL: Number(hasSpecialAbility(attacker, "MIGHT")),
+      }));
+      if (damage <= 0 || applyNonLethalDamage(target, damage) <= 0) continue;
+      target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + 250;
+      startHitReaction(target, attacker, currentTime, 0); event.victimIds.push(target.id);
+    }
+    return event;
   }
   if (attacker.technique === "STRATEGIST_HEAL") {
     event.radius = STRATEGIST_CONFIG.healRadius;
-    for (const target of findStrategistHealTargets(attacker, soldiers)) { target.hp += 1; event.healed.push({ targetId: target.id, amount: 1 }); }
+    for (const target of findStrategistHealTargets(attacker, soldiers)) {
+      const amount = Math.min(1 + Number(hasSpecialAbility(target, "RECOVERY_BOOST")), target.maxHp - target.hp);
+      target.hp += amount; if (amount > 0) event.healed.push({ targetId: target.id, amount });
+    }
     return event;
   }
-  event.radius = attacker.technique === "STRATEGIST_FALSE_REPORT" ? STRATEGIST_CONFIG.falseReportRadius : STRATEGIST_CONFIG.sorceryRadius;
+  event.radius = getTechniqueAreaWorld(attacker.technique).width / 2;
   const targets = enemiesInRadius(attacker, soldiers, attacker.x, attacker.y, event.radius);
   for (const target of targets) {
-    if (attacker.technique === "STRATEGIST_SORCERY" && applyNonLethalDamage(target, 1) > 0) {
+    if (attacker.technique === "STRATEGIST_SORCERY") {
+      applyDamage(target, 1 + Number(hasSpecialAbility(attacker, "MIGHT")));
       target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + 250; startHitReaction(target, attacker, currentTime, 0); event.victimIds.push(target.id);
     }
     applyConfusion(target); event.confusedIds.push(target.id);

@@ -46,6 +46,7 @@ import {
 import { updateRecoveryStates } from "./systems/recoverySystem";
 import { updateReactions } from "./systems/reactionSystem";
 import { updateNormalCombatContests } from "./systems/normalCombatSystem";
+import { isWithinNormalContact } from "./systems/techniqueCombatProfiles";
 import { getBattleResult } from "./systems/victorySystem";
 import type {
   BattleBase,
@@ -1060,6 +1061,7 @@ export class BattleScene extends Phaser.Scene {
   private showStrategistAttackEffect(
     event: Extract<SpecialAttackEvent, { kind: "STRATEGIST" }>,
   ): void {
+    const isFireTechnique = event.technique in STRATEGIST_CONFIG.fireDiameterUnits;
     if (event.fireZone) this.strategistFireZones.push(event.fireZone);
     const action = resolveTechniqueActionEffects(event.technique);
     if (action && this.actionAtlasReady(action, event.team)) {
@@ -1070,7 +1072,7 @@ export class BattleScene extends Phaser.Scene {
       this.playActionRole(action, "caster", casterPoint, event.team, {
         getRoot: () => this.soldierPoint(event.attackerId),
       });
-      const hitIds = event.fireZone
+      const hitIds = isFireTechnique
         ? event.victimIds
         : event.healed.length > 0
           ? event.healed.map((heal) => heal.targetId)
@@ -1081,8 +1083,9 @@ export class BattleScene extends Phaser.Scene {
       );
       return;
     }
-    if (event.fireZone) {
-      const ground = this.add
+    if (isFireTechnique) {
+      if (event.fireZone) {
+        const ground = this.add
         .circle(event.x, event.y, event.radius, 0xff5b20, 0.14)
         .setStrokeStyle(2, 0xffb02e, 0.75)
         .setDepth(1.1);
@@ -1121,6 +1124,7 @@ export class BattleScene extends Phaser.Scene {
           ground.destroy();
         },
       });
+      }
       for (const id of event.victimIds) this.showFireVictimEffect(id);
       return;
     }
@@ -1736,10 +1740,7 @@ function updateAiTargetsForPlayer(player: Soldier, soldiers: Soldier[]): void {
       player.x - soldier.x,
       player.y - soldier.y,
     );
-    if (
-      candidateDistance <= player.attackRange &&
-      candidateDistance < distance
-    ) {
+    if (isWithinNormalContact(player, soldier) && candidateDistance < distance) {
       nearest = soldier;
       distance = candidateDistance;
     }

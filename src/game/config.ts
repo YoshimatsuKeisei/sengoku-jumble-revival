@@ -3,6 +3,15 @@ import {
   BATTLEFIELD_STRATEGY_WORLD_GEOMETRY,
   BATTLEFIELD_WORLD_SIZE,
 } from "./battlefieldLayout";
+import {
+  SWF_IRON_WALL_KNOCKBACK_UNITS,
+  SWF_NORMAL_KNOCKBACK_UNITS,
+  getNormalContactBounds,
+  getTechniqueAreaWorld,
+  getTechniqueRangeWorld,
+  swfCellsToWorldX,
+  swfUnitsToWorldX,
+} from "./systems/techniqueCombatProfiles";
 
 export const GAME_WIDTH = 1600;
 export const GAME_HEIGHT = 900;
@@ -40,10 +49,11 @@ export const COMBAT_TIMING_CONFIG = {
   attackRecoveryMs: 320,
 } as const;
 
-// Temporary Phase 3B reaction tuning; exact original-game values are not yet confirmed.
+// SWF source-space reaction distances, converted once into the runtime world.
 export const REACTION_CONFIG = {
   hitStunMs: 180,
-  knockbackDistance: 8,
+  knockbackDistance: swfUnitsToWorldX(SWF_NORMAL_KNOCKBACK_UNITS),
+  ironWallGuardKnockbackDistance: swfUnitsToWorldX(SWF_IRON_WALL_KNOCKBACK_UNITS),
 } as const;
 
 // Temporary Phase 3C soft-positioning values; this is not a slot reservation system.
@@ -119,7 +129,8 @@ export const PROTOTYPE_DEFENSE_MAX = 100;
 export const PROTOTYPE_SKILL_MAX = 100;
 
 export const DEFENSE_CONFIG = {
-  maxGuardRate: 0.75,
+  randomScale: 200,
+  horoForcedGuardChance: 0.7,
   guardMarkerDurationMs: 250,
 } as const;
 
@@ -133,16 +144,16 @@ export const SPECIAL_ATTACK_CONFIG = {
   retreatForwardDotMinimum: 0,
 } as const;
 
-// Phase 3I v1 prototype values; these are not claimed to be original-game internals.
+// Ability values retained outside the combat-profile migration plus confirmed
+// SWF values used directly by the combat formulas.
 export const SPECIAL_ABILITY_CONFIG = {
   randomCommonAbilityMin: 0, randomCommonAbilityMax: 2,
-  doubleSpecialChance: 0.15, doubleSpecialDelayMs: 120,
-  guardKnockbackDistance: 6, supportPulseRadius: 60,
+  guardKnockbackDistance: REACTION_CONFIG.knockbackDistance, supportPulseRadius: 60,
   recoveryBoostMultiplier: 2,
   treatmentSearchRadius: 220, treatmentContactRadius: SOLDIER_RADIUS * 2 + 2, treatmentHealAmount: 5,
   fieldHospitalPerHolderChance: 0.05, fieldHospitalMaxChance: 0.60,
   trapPerHolderChance: 0.05, trapMaxChance: 0.60, trapDamage: 1,
-  horoArrowDefenseMultiplier: 1.5, fleetFootRetreatMultiplier: 1.5,
+  fleetFootBonus: 2, fleetFootMaximum: 8,
   debugPlayerSpecialAbilities: null as import("./types").CommonSpecialAbilityId[] | null,
   debugShowAbilities: false,
 } as const;
@@ -154,8 +165,9 @@ export const PLAYER_DEBUG_CONFIG = {
 export const SOLDIER_INSPECTOR_CONFIG = { holdMs: 400 } as const;
 
 export const GUN_CONFIG = {
-  shootingRange: 240,
-  snipingRange: 340,
+  shootingRange: getTechniqueRangeWorld("TEPPOU_SHOOTING")!,
+  snipingRange: getTechniqueRangeWorld("TEPPOU_SNIPING")!,
+  bombardmentRange: getTechniqueRangeWorld("TEPPOU_BOMBARDMENT")!,
   damage: 1,
   smokeDurationMs: 300,
   shotLineDurationMs: 110,
@@ -164,13 +176,16 @@ export const GUN_CONFIG = {
   bombardmentVictimSmokeRadius: SOLDIER_RADIUS * 1.8,
 } as const;
 
-export const BATTLE_RANGE_UNIT_PX = GUN_CONFIG.shootingRange / 9;
+export const BATTLE_RANGE_UNIT_PX = swfCellsToWorldX(1);
 export const ARCHER_CONFIG = {
-  arrowRange: BATTLE_RANGE_UNIT_PX * 3,
-  longShotRange: BATTLE_RANGE_UNIT_PX * 5,
-  fireArrowRange: BATTLE_RANGE_UNIT_PX * 3,
-  horokuRange: BATTLE_RANGE_UNIT_PX * 3,
-  areaImpactRadius: SPECIAL_ATTACK_CONFIG.radius,
+  arrowRange: getTechniqueRangeWorld("ARCHER_ARROW")!,
+  longShotRange: getTechniqueRangeWorld("ARCHER_LONG_SHOT")!,
+  fireArrowRange: getTechniqueRangeWorld("ARCHER_FIRE_ARROW")!,
+  horokuRange: getTechniqueRangeWorld("ARCHER_HOROKU")!,
+  /** @deprecated Use the technique profile rectangle dimensions. */
+  areaImpactRadius: getTechniqueAreaWorld("ARCHER_HOROKU").width / 2,
+  areaImpactWidth: getTechniqueAreaWorld("ARCHER_HOROKU").width,
+  areaImpactHeight: getTechniqueAreaWorld("ARCHER_HOROKU").height,
   damage: 1,
   projectileSpeedPxPerSecond: 420,
   impactFlashDurationMs: 120,
@@ -198,8 +213,8 @@ export const ASHIGARU_CONFIG = {
   minFoot: 2, maxFoot: 4,
   minCombat: 80, maxCombat: 110,
   minDefense: 70, maxDefense: 110,
-  spearStrikeReach: SPECIAL_ATTACK_CONFIG.radius,
-  spearStrikeHalfWidth: SOLDIER_RADIUS * 1.25,
+  spearStrikeReach: getTechniqueAreaWorld("ASHIGARU_SPEAR_STRIKE").width,
+  spearStrikeHalfWidth: getTechniqueAreaWorld("ASHIGARU_SPEAR_STRIKE").height / 2,
   spearStrikeKnockbackRatio: 0.75,
   spearTipGlowDurationMs: 500,
 } as const;
@@ -211,14 +226,14 @@ export const NINJA_CONFIG = {
   minCombat: 105, maxCombat: 110,
   minDefense: 105, maxDefense: 110,
   maxPerTeam: 6,
-  attackRange: SPECIAL_ATTACK_CONFIG.radius,
+  attackRange: getTechniqueAreaWorld("NINJA_NINJUTSU").width / 2,
   forwardHalfAngleDegrees: 55,
-  ninjutsuDashDistance: SPECIAL_ATTACK_CONFIG.radius * 1.35,
-  shadowRunDashDistance: SPECIAL_ATTACK_CONFIG.radius * 1.35 * 1.45,
+  ninjutsuDashDistance: swfUnitsToWorldX(10),
+  shadowRunDashDistance: swfUnitsToWorldX(40),
   ninjutsuKnockback: SPECIAL_ATTACK_CONFIG.knockbackDistance * 1.25,
   shadowRunKnockback: SPECIAL_ATTACK_CONFIG.knockbackDistance * 1.625,
   dashDurationMs: 150,
-  barrierSupportRadius: SPECIAL_ATTACK_CONFIG.radius * 1.5,
+  barrierSupportRadius: getTechniqueAreaWorld("GENERAL_COMMAND").width / 2,
   barrierHealMin: 4, barrierHealMax: 5,
   barrierAllyHealProc: 0.25, barrierSelfHealProc: 0.25,
   barrierForceSpecialProc: 0.25, barrierChargeProc: 0.25,
@@ -235,10 +250,10 @@ export const GENERAL_CONFIG = {
   minCombat: 70, maxCombat: 110,
   minDefense: 105, maxDefense: 110,
   maxPerTeam: 4,
-  commandRadius: SPECIAL_ATTACK_CONFIG.radius * 5,
-  heroicRadius: SPECIAL_ATTACK_CONFIG.radius,
-  heroicStepDistance: SOLDIER_RADIUS,
-  healRadius: SPECIAL_ATTACK_CONFIG.radius * 5,
+  commandRadius: getTechniqueAreaWorld("GENERAL_COMMAND").width / 2,
+  heroicRadius: getTechniqueAreaWorld("GENERAL_HEROIC").width / 2,
+  heroicStepDistance: swfUnitsToWorldX(20),
+  healRadius: getTechniqueAreaWorld("GENERAL_HEAL").width / 2,
   healAmount: 1,
   commandPulseDurationMs: 600,
   recipientSparkDurationMs: 220,
@@ -257,9 +272,9 @@ export const STRATEGIST_CONFIG = {
     STRATEGIST_HELLFIRE: 7, STRATEGIST_FLAME_ART: 9,
   },
   fireZoneDurationMs: 1_000,
-  falseReportRadius: BATTLE_RANGE_UNIT_PX * 3,
-  sorceryRadius: BATTLE_RANGE_UNIT_PX * 3,
-  healRadius: BATTLE_RANGE_UNIT_PX * 12,
+  falseReportRadius: getTechniqueAreaWorld("STRATEGIST_FALSE_REPORT").width / 2,
+  sorceryRadius: getTechniqueAreaWorld("STRATEGIST_SORCERY").width / 2,
+  healRadius: getTechniqueAreaWorld("STRATEGIST_HEAL").width / 2,
   healAmount: 1,
   pulseDurationMs: 600,
 } as const;
@@ -267,22 +282,22 @@ export const STRATEGIST_CONFIG = {
 export const MOSA_CONFIG = {
   minMaxHp: 85, maxMaxHp: 110, minSkill: 70, maxSkill: 110, minFoot: 2, maxFoot: 4,
   minCombat: 105, maxCombat: 110, minDefense: 70, maxDefense: 110, maxPerTeam: 6,
-  senpuuRadius: SPECIAL_ATTACK_CONFIG.radius, senpuuHalfAngleDegrees: 70,
+  senpuuRadius: getTechniqueAreaWorld("MOSA_SENPUU").width / 2, senpuuHalfAngleDegrees: 70,
   senpuuKnockback: SPECIAL_ATTACK_CONFIG.knockbackDistance * 1.25,
-  musouRadius: SPECIAL_ATTACK_CONFIG.radius, musouKnockback: SPECIAL_ATTACK_CONFIG.knockbackDistance * 1.25,
-  kijinRadius: SPECIAL_ATTACK_CONFIG.radius * 2, kijinKnockback: SPECIAL_ATTACK_CONFIG.knockbackDistance * 1.75,
+  musouRadius: getTechniqueAreaWorld("MOSA_MUSOU").width / 2, musouKnockback: SPECIAL_ATTACK_CONFIG.knockbackDistance * 1.25,
+  kijinRadius: getTechniqueAreaWorld("MOSA_KIJIN").width / 2, kijinKnockback: SPECIAL_ATTACK_CONFIG.knockbackDistance * 1.75,
   senpuuVisualDurationMs: 450, musouVisualDurationMs: 450, kijinVisualDurationMs: 520,
 } as const;
 
 export const SOLDIER_RUNTIME_CONFIG = {
-  attackRange: 28,
+  attackRange: getNormalContactBounds().x,
   attackCooldownMs: 700,
 } as const;
 
 export const MOVEMENT_SPEED_CONFIG = {
-  referenceSpeed: 80,
-  footSpeedUnitPxPerSecond: 80 / 3,
-  playerMinimumFoot: 3,
+  footSpeedUnitPxPerSecond: swfUnitsToWorldX(24),
+  /** @deprecated Compatibility alias for the speed of a foot=3 soldier. */
+  referenceSpeed: swfUnitsToWorldX(24) * 3,
 } as const;
 
 export const CAMERA_CONFIG = {

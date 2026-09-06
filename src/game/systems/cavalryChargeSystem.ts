@@ -1,15 +1,16 @@
-import { BATTLEFIELD_CONFIG, CAVALRY_CONFIG, DEFENSE_CONFIG, SOLDIER_RADIUS, SPECIAL_ABILITY_CONFIG, SPECIAL_ATTACK_CONFIG } from "../config";
+import { BATTLEFIELD_CONFIG, CAVALRY_CONFIG, DEFENSE_CONFIG, SOLDIER_RADIUS, SPECIAL_ATTACK_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, BattleObstacle, Soldier, Team } from "../types";
 import { applyDamage } from "./combatSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { getBaseRect } from "./battlefieldGeometry";
 import { startHitReaction } from "./reactionSystem";
-import { calculateSpecialCooldownMs } from "./skillCooldownSystem";
-import { hasSpecialAbility } from "./specialAbilitySystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
+import { hasSpecialAbility } from "./specialAbilitySystem";
+import { beginTechniqueAction } from "./combatGaugeSystem";
+import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
-export const CAVALRY_CHARGE_RADIUS = SPECIAL_ATTACK_CONFIG.radius * CAVALRY_CONFIG.chargeRadiusMultiplier;
+export const CAVALRY_CHARGE_RADIUS = getTechniqueAreaWorld("CAVALRY_CHARGE").width / 2;
 export const CAVALRY_CHARGE_KNOCKBACK = SPECIAL_ATTACK_CONFIG.knockbackDistance * CAVALRY_CONFIG.chargeKnockbackMultiplier;
 export interface CavalryChargeEvent { kind: "CAVALRY"; attackerId: string; team: Team; x: number; y: number; targetIds: string[]; reactive: boolean }
 export function queueMoutaiOnDamage(target: Soldier, damage: number): void {
@@ -36,17 +37,36 @@ export function calculateSafeCavalryKnockbackDistance(target: Soldier, direction
   }
   return safe;
 }
-export function executeCavalryCharge(attacker: Soldier, soldiers: Soldier[], obstacles: readonly BattleObstacle[], bases: readonly BattleBase[],
-  currentTime: number, random: RandomSource = Math.random, options: { reactive?: boolean; consumeCooldown?: boolean } = {}): CavalryChargeEvent | null {
-  const reactive = options.reactive ?? false; const consumeCooldown = options.consumeCooldown ?? !reactive;
-  const targets = soldiers.filter((target) => isValidCombatTarget(attacker, target)
-    && target.state !== "REJOINING" && Math.hypot(target.x - attacker.x, target.y - attacker.y) <= CAVALRY_CHARGE_RADIUS);
-  if (!reactive && targets.length === 0) return null;
-  if (consumeCooldown) {
-    attacker.specialReadyAt = currentTime + calculateSpecialCooldownMs(attacker.stats.skill);
-    if (hasSpecialAbility(attacker, "DOUBLE_SPECIAL") && random() < SPECIAL_ABILITY_CONFIG.doubleSpecialChance)
-      attacker.pendingSecondSpecialAt = currentTime + SPECIAL_ABILITY_CONFIG.doubleSpecialDelayMs;
+function calculateSafeCavalryAdvance(attacker: Soldier, directionX: number, directionY: number, requested: number,
+  soldiers: readonly Soldier[], obstacles: readonly BattleObstacle[], bases: readonly BattleBase[]): number {
+  let safe = 0;
+  for (let distance = 1; distance <= requested; distance += 1) {
+    if (!positionClear(attacker, attacker.x + directionX * distance, attacker.y + directionY * distance, soldiers, obstacles, bases)) break;
+    safe = distance;
   }
+  return safe;
+}
+export function executeCavalryCharge(attacker: Soldier, soldiers: Soldier[], obstacles: readonly BattleObstacle[], bases: readonly BattleBase[],
+  currentTime: number, random: RandomSource = Math.random,
+  options: { reactive?: boolean; consumeCooldown?: boolean; isWave?: boolean } = {}): CavalryChargeEvent | null {
+  const reactive = options.reactive ?? false; const consumeCooldown = options.consumeCooldown ?? !reactive; const isWave = options.isWave ?? false;
+  if (consumeCooldown && !beginTechniqueAction(attacker, currentTime, random, true)) return null;
+  if (!reactive && !isWave) {
+    const primary = soldiers.filter((target) => isValidCombatTarget(attacker, target))
+      .sort((a, b) => Math.hypot(a.x - attacker.x, a.y - attacker.y) - Math.hypot(b.x - attacker.x, b.y - attacker.y))[0];
+    let dx = primary ? primary.x - attacker.x : attacker.facingX; let dy = primary ? primary.y - attacker.y : attacker.facingY;
+    const length = Math.hypot(dx, dy) || 1; dx /= length; dy /= length;
+    attacker.facingX = dx; attacker.facingY = dy;
+    const full = getTechniqueSelfAdvanceWorld("CAVALRY_CHARGE");
+    const edgeLimited = attacker.x + dx * full < SOLDIER_RADIUS || attacker.x + dx * full > BATTLEFIELD_CONFIG.width - SOLDIER_RADIUS
+      || attacker.y + dy * full < SOLDIER_RADIUS || attacker.y + dy * full > BATTLEFIELD_CONFIG.height - SOLDIER_RADIUS;
+    const requested = edgeLimited ? getTechniqueSelfAdvanceWorld("CAVALRY_CHARGE", true) : full;
+    const safe = calculateSafeCavalryAdvance(attacker, dx, dy, requested, soldiers, obstacles, bases);
+    attacker.x += dx * safe; attacker.y += dy * safe;
+  }
+  const center = getTechniqueAreaCenter("CAVALRY_CHARGE", attacker);
+  const targets = soldiers.filter((target) => isValidCombatTarget(attacker, target)
+    && target.state !== "REJOINING" && isPointInTechniqueRectangle("CAVALRY_CHARGE", center, target));
   const hitIds: string[] = [];
   for (const target of targets) {
     if (isDamageGuarded(target, "SPECIAL_ATTACK", random)) {

@@ -28,15 +28,20 @@ export function createRandomCommonSpecialAbilities(random: RandomSource = Math.r
   return result;
 }
 export function calculateNormalAttackDamage(attacker: Soldier, defender: Soldier): number {
-  return 1 + Number(hasSpecialAbility(attacker, "MIGHT")) + Number(hasSpecialAbility(attacker, "FINISHER") && defender.hp <= 5);
+  const base = 1
+    + Number(hasSpecialAbility(attacker, "MIGHT"))
+    + Number(attacker.rareSpecialAbilities.includes("NINJA_HUNTER") && defender.unitType === "NINJA");
+  return base + Number(hasSpecialAbility(attacker, "FINISHER") && defender.hp - base < 6);
 }
 export function calculateBaseAttackDamage(attacker: Soldier): number { return hasSpecialAbility(attacker, "SIEGE") ? 2 : 1; }
 export function calculateRetreatMoveSpeed(baseSpeed: number, soldier: Soldier): number {
-  return baseSpeed * (hasSpecialAbility(soldier, "FLEET_FOOT") ? SPECIAL_ABILITY_CONFIG.fleetFootRetreatMultiplier : 1);
+  if (!hasSpecialAbility(soldier, "FLEET_FOOT")) return baseSpeed;
+  const normalFoot = Math.max(0, soldier.stats.foot);
+  const retreatFoot = Math.min(normalFoot + SPECIAL_ABILITY_CONFIG.fleetFootBonus, SPECIAL_ABILITY_CONFIG.fleetFootMaximum);
+  return normalFoot > 0 ? baseSpeed * retreatFoot / normalFoot : baseSpeed;
 }
 export function getEffectiveDefenseForAttack(defender: Soldier, kind: AttackKind): number {
-  return defender.stats.defense * (kind === "ARROW_ATTACK" && hasSpecialAbility(defender, "HORO")
-    ? SPECIAL_ABILITY_CONFIG.horoArrowDefenseMultiplier : 1);
+  return defender.stats.defense;
 }
 export function countTeamAbility(soldiers: readonly Soldier[], team: Team, id: CommonSpecialAbilityId): number {
   return soldiers.filter((s) => s.team === team && !s.isDead && hasSpecialAbility(s, id)).length;

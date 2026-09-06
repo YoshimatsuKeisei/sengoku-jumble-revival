@@ -2,7 +2,7 @@ export type Team = "player" | "enemy";
 export type ControllerType = "player" | "ai";
 export type Strategy = "charge" | "defend" | "intercept" | "melee" | "wait";
 export type SoldierState = "NORMAL" | "EMERGENCY_RETREAT" | "HEALING" | "REJOINING";
-export type TemporaryOrderType = "ADVANCE" | "DEFEND_ORDER" | "RALLY" | "NINJA_BARRIER_CHARGE";
+export type TemporaryOrderType = "ADVANCE" | "DEFEND_ORDER" | "RALLY" | "NINJA_BARRIER_CHARGE" | "JINTO_CHARGE";
 export type BaseGate = "TOP" | "BOTTOM";
 export type UnitType = "PROTOTYPE" | "TEPPOU" | "CAVALRY" | "ARCHER" | "ASHIGARU" | "NINJA" | "GENERAL" | "STRATEGIST" | "MOSA";
 export type UnitTechnique = "PROTOTYPE_AREA" | "TEPPOU_SHOOTING" | "TEPPOU_SNIPING" | "TEPPOU_BOMBARDMENT" | "CAVALRY_CHARGE" | "ARCHER_ARROW" | "ARCHER_LONG_SHOT" | "ARCHER_FIRE_ARROW" | "ARCHER_HOROKU" | "ASHIGARU_SPEAR_STRIKE" | "ASHIGARU_SPEAR_TECHNIQUE" | "NINJA_NINJUTSU" | "NINJA_SHADOW_RUN" | "NINJA_GENJUTSU" | "NINJA_BARRIER" | "GENERAL_COMMAND" | "GENERAL_HEROIC" | "GENERAL_HEAL" | "STRATEGIST_FIRE_PLAY" | "STRATEGIST_FIRE_ATTACK" | "STRATEGIST_FIRE_PLAN" | "STRATEGIST_HELLFIRE" | "STRATEGIST_FLAME_ART" | "STRATEGIST_FALSE_REPORT" | "STRATEGIST_SORCERY" | "STRATEGIST_HEAL" | "MOSA_SENPUU" | "MOSA_MUSOU" | "MOSA_KIJIN";
@@ -35,7 +35,8 @@ export type CommonSpecialAbilityId =
   | "RUSH" | "SIEGE" | "MIGHT" | "DOUBLE_SPECIAL" | "IRON_WALL" | "FORESIGHT"
   | "FINISHER" | "RALLY_SPIRIT" | "INSPIRE" | "RECOVERY_BOOST" | "TREATMENT"
   | "FIELD_HOSPITAL" | "TRAP" | "FORTIFY" | "HORO" | "FLEET_FOOT";
-export type RareSpecialAbilityId = "MOUTAI" | "KATON" | "VANGUARD" | "FIRE_ESCAPE" | "NINJA_HUNTER";
+export type RareSpecialAbilityId = "MOUTAI" | "JINTO" | "KATON" | "NINJA_HUNTER";
+export type LegacyRareSpecialAbilityId = "VANGUARD" | "FIRE_ESCAPE";
 export type RecoveryTargetKind = "BASE_GATE" | "HEALER";
 export type CombatFeedbackMarker = "H" | "S";
 
@@ -125,9 +126,18 @@ export interface Soldier {
   combatFeedbackUntil: number;
   specialReadyAt: number;
   pendingSecondSpecialAt: number | null;
+  combatGauge: number;
+  combatGaugeUpdatedAt: number | null;
+  specialLockUntil: number;
+  abilityActionLockUntil: number;
+  trapStateUntil: number;
+  activeSpecialTechnique: UnitTechnique | null;
+  specialWavesRemaining: number;
+  nextSpecialWaveAt: number | null;
   specialAbilities: CommonSpecialAbilityId[];
   rareSpecialAbilities: RareSpecialAbilityId[];
-  pendingMoutaiCharges: number;
+  pendingMoutaiSpecials: number;
+  moutaiTriggeredForRetreat: boolean;
   treatmentUsedSinceLastBaseVisit: boolean;
   recoveryTargetKind: RecoveryTargetKind;
   recoveryHealerId: string | null;

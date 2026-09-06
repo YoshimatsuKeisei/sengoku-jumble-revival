@@ -1,13 +1,19 @@
 import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier } from "../types";
-import { distanceBetween } from "./aiSystem";
 import { startSoldierAttack } from "./attackSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
+import { isWithinNormalContact } from "./techniqueCombatProfiles";
 
 export function getCombatWinProbability(combatA: number, combatB: number): number {
-  const weightA = Math.max(0, combatA);
-  const weightB = Math.max(0, combatB);
-  return weightA + weightB === 0 ? 0.5 : weightA / (weightA + weightB);
+  const valueA = Math.max(0, combatA);
+  const valueB = Math.max(0, combatB);
+  const scale = Math.max(valueA, valueB);
+  if (scale === 0) return 0.5;
+  // Scaling both sides before cubing preserves the ratio and avoids overflow
+  // if an imported/debug value is far outside the normal SWF stat range.
+  const weightA = (valueA / scale) ** 3;
+  const weightB = (valueB / scale) ** 3;
+  return weightA / (weightA + weightB);
 }
 
 export function resolveCombatContest(a: Soldier, b: Soldier, random: RandomSource = Math.random): Soldier {
@@ -16,8 +22,7 @@ export function resolveCombatContest(a: Soldier, b: Soldier, random: RandomSourc
 
 function isContactPair(a: Soldier, b: Soldier): boolean {
   if (!isValidCombatTarget(a, b) || !isValidCombatTarget(b, a)) return false;
-  if (a.targetId !== b.id && b.targetId !== a.id && !a.isConfused && !b.isConfused) return false;
-  return distanceBetween(a, b) <= Math.max(a.attackRange, b.attackRange);
+  return isWithinNormalContact(a, b);
 }
 
 /** Resolves every unordered contact pair at most once in this update. */

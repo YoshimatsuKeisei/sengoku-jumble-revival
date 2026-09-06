@@ -1,7 +1,6 @@
-import { COMBAT_TIMING_CONFIG, DEFENSE_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
+import { COMBAT_TIMING_CONFIG, DEFENSE_CONFIG, REACTION_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, Soldier, Team } from "../types";
-import { distanceBetween } from "./aiSystem";
 import { applyDamage } from "./combatSystem";
 import { startHitReaction } from "./reactionSystem";
 import { isDamageGuarded } from "./defenseSystem";
@@ -11,6 +10,7 @@ import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 export { cancelAttack, resetAttackRuntime } from "./attackRuntime";
 import { cancelAttack, resetAttackRuntime } from "./attackRuntime";
+import { isWithinNormalContact } from "./techniqueCombatProfiles";
 
 function cooldownReady(soldier: Soldier, currentTime: number): boolean {
   return currentTime - soldier.lastAttackAt >= soldier.attackCooldownMs;
@@ -20,9 +20,10 @@ export function canStartSoldierAttack(attacker: Soldier, target: Soldier, curren
   return !attacker.isDead
     && attacker.state === "NORMAL"
     && attacker.reactionState === "NONE"
+    && attacker.activeSpecialTechnique === null
     && attacker.combatActionState === "IDLE"
     && isValidCombatTarget(attacker, target)
-    && distanceBetween(attacker, target) <= attacker.attackRange
+    && isWithinNormalContact(attacker, target)
     && cooldownReady(attacker, currentTime);
 }
 
@@ -46,12 +47,14 @@ export function startSoldierAttack(attacker: Soldier, target: Soldier, currentTi
 function resolveSoldierHit(attacker: Soldier, soldiers: Soldier[], currentTime: number, random: RandomSource): void {
   const target = soldiers.find((candidate) => candidate.id === attacker.attackTargetId);
   if (!isValidCombatTarget(attacker, target) || attacker.isDead || attacker.state !== "NORMAL") return;
-  if (distanceBetween(attacker, target) > attacker.attackRange) return;
+  if (!isWithinNormalContact(attacker, target)) return;
   if (isDamageGuarded(target, "NORMAL_ATTACK", random)) {
     target.combatFeedbackMarker = "S";
     target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
-    if (!hasSpecialAbility(target, "IRON_WALL")) applyForcedMovement(target, target.x - attacker.x, target.y - attacker.y,
-      SPECIAL_ABILITY_CONFIG.guardKnockbackDistance);
+    applyForcedMovement(target, target.x - attacker.x, target.y - attacker.y,
+      hasSpecialAbility(target, "IRON_WALL")
+        ? REACTION_CONFIG.ironWallGuardKnockbackDistance
+        : SPECIAL_ABILITY_CONFIG.guardKnockbackDistance);
     return;
   }
   const damage = calculateNormalAttackDamage(attacker, target); applyDamage(target, damage); queueMoutaiOnDamage(target, damage);

@@ -1,14 +1,15 @@
-import { DEFENSE_CONFIG, GUN_CONFIG, SPECIAL_ABILITY_CONFIG, SPECIAL_ATTACK_CONFIG } from "../config";
+import { DEFENSE_CONFIG, GUN_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { DamageComponentKind, Soldier, Team, UnitTechnique } from "../types";
 import { applyDamage } from "./combatSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { startHitReaction } from "./reactionSystem";
-import { calculateSpecialCooldownMs } from "./skillCooldownSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { applyRareDamageImmunity, totalDamageComponents } from "./damageComponentSystem";
+import { beginTechniqueAction } from "./combatGaugeSystem";
+import { getRangedHoldMarginWorld, getTechniqueRangeWorld, isPointInTechniqueRectangle, isWithinNormalContact } from "./techniqueCombatProfiles";
 
 export interface GunAttackEvent {
   kind: "GUN"; attackerId: string; targetId: string; team: Team;
@@ -22,10 +23,7 @@ export function isGunTechnique(technique: UnitTechnique): boolean {
   return technique === "TEPPOU_SHOOTING" || technique === "TEPPOU_SNIPING" || technique === "TEPPOU_BOMBARDMENT";
 }
 export function getGunRange(technique: UnitTechnique): number | null {
-  if (technique === "TEPPOU_SHOOTING") return GUN_CONFIG.shootingRange;
-  if (technique === "TEPPOU_SNIPING") return GUN_CONFIG.snipingRange;
-  if (technique === "TEPPOU_BOMBARDMENT") return GUN_CONFIG.shootingRange;
-  return null;
+  return isGunTechnique(technique) ? getTechniqueRangeWorld(technique) : null;
 }
 export const BOMBARDMENT_DAMAGE_COMPONENTS: Readonly<Partial<Record<DamageComponentKind, number>>> = {
   DIRECT_SPECIAL: 1, FIRE: 1, EXPLOSION: 1,
@@ -42,8 +40,8 @@ export function getGunMovementDecision(soldier: Soldier, target: Soldier): GunMo
   const range = getGunRange(soldier.technique);
   if (range === null) return "NORMAL_COMBAT";
   const distance = Math.hypot(target.x - soldier.x, target.y - soldier.y);
-  if (distance <= soldier.attackRange) return "NORMAL_COMBAT";
-  return distance <= range ? "HOLD_IN_RANGE" : "ADVANCE_TO_RANGE";
+  if (isWithinNormalContact(soldier, target)) return "NORMAL_COMBAT";
+  return distance < range - getRangedHoldMarginWorld() ? "HOLD_IN_RANGE" : "ADVANCE_TO_RANGE";
 }
 export function aimGunAtTarget(attacker: Soldier, target: Soldier): { x: number; y: number } {
   const dx = target.x - attacker.x; const dy = target.y - attacker.y; const length = Math.hypot(dx, dy);
@@ -57,7 +55,7 @@ function activeEnemy(attacker: Soldier, target: Soldier): boolean {
 export function findGunTarget(attacker: Soldier, soldiers: readonly Soldier[]): Soldier | null {
   const range = getGunRange(attacker.technique); if (range === null) return null;
   const candidates = soldiers.filter((target) => activeEnemy(attacker, target)
-    && Math.hypot(target.x - attacker.x, target.y - attacker.y) <= range);
+    && Math.hypot(target.x - attacker.x, target.y - attacker.y) < range);
   const sticky = candidates.find((target) => target.id === attacker.targetId);
   return sticky ?? candidates.sort((a, b) => Math.hypot(a.x - attacker.x, a.y - attacker.y)
     - Math.hypot(b.x - attacker.x, b.y - attacker.y) || a.id.localeCompare(b.id))[0] ?? null;
@@ -65,14 +63,9 @@ export function findGunTarget(attacker: Soldier, soldiers: readonly Soldier[]): 
 export function executeGunAttack(attacker: Soldier, target: Soldier, currentTime: number,
   random: RandomSource = Math.random, consumeCooldown = true, soldiers: readonly Soldier[] = [target]): GunAttackEvent | null {
   const range = getGunRange(attacker.technique);
-  if (range === null || !activeEnemy(attacker, target) || Math.hypot(target.x - attacker.x, target.y - attacker.y) > range) return null;
-  if (consumeCooldown) {
-    if (currentTime < attacker.specialReadyAt || attacker.reactionState !== "NONE" || attacker.combatActionState !== "IDLE") return null;
-    attacker.specialReadyAt = currentTime + calculateSpecialCooldownMs(attacker.stats.skill);
-    if (hasSpecialAbility(attacker, "DOUBLE_SPECIAL") && random() < SPECIAL_ABILITY_CONFIG.doubleSpecialChance)
-      attacker.pendingSecondSpecialAt = currentTime + SPECIAL_ABILITY_CONFIG.doubleSpecialDelayMs;
-  }
-  const guarded = isDamageGuarded(target, "GUN_ATTACK", random);
+  if (range === null || !activeEnemy(attacker, target) || Math.hypot(target.x - attacker.x, target.y - attacker.y) >= range) return null;
+  if (consumeCooldown && !beginTechniqueAction(attacker, currentTime, random, true)) return null;
+  const guarded = isDamageGuarded(target, "GUN_ATTACK", random, attacker);
   const aim = aimGunAtTarget(attacker, target);
   const bombardment = attacker.technique === "TEPPOU_BOMBARDMENT";
   const victimIds: string[] = [];
@@ -91,8 +84,8 @@ export function executeGunAttack(attacker: Soldier, target: Soldier, currentTime
     for (const splash of soldiers) {
       if (splash === target || splash.team === attacker.team || splash.isDead || splash.hp <= 0
         || splash.state === "HEALING" || splash.state === "REJOINING"
-        || Math.hypot(splash.x - impactX, splash.y - impactY) > SPECIAL_ATTACK_CONFIG.radius) continue;
-      if (isDamageGuarded(splash, "GUN_ATTACK", random)) continue;
+        || !isPointInTechniqueRectangle(attacker.technique, { x: impactX, y: impactY }, splash)) continue;
+      if (isDamageGuarded(splash, "GUN_ATTACK", random, attacker)) continue;
       const splashDamage = totalDamageComponents(applyRareDamageImmunity(splash, { EXPLOSION: BOMBARDMENT_DAMAGE_COMPONENTS.EXPLOSION! }));
       if (splashDamage <= 0) continue;
       applyDamage(splash, splashDamage);
