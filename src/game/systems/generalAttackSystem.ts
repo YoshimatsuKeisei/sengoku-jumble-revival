@@ -6,9 +6,8 @@ import { clearConfusion } from "./confusionSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { calculateSafeNinjaMovement } from "./ninjaAttackSystem";
 import { startHitReaction } from "./reactionSystem";
-import { hasSpecialAbility } from "./specialAbilitySystem";
+import { calculateSuccessfulAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
-import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
 import { clearEngagement } from "./aiSystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
 import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
@@ -76,10 +75,10 @@ export function executeGeneralAttack(
         target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
         event.defendedIds.push(target.id); continue;
       }
-      const damage = SPECIAL_ATTACK_CONFIG.damage + Number(hasSpecialAbility(general, "MIGHT"));
-      applyDamage(target, damage); queueMoutaiOnDamage(target, damage); event.hitIds.push(target.id);
+      const damage = calculateSuccessfulAttackDamage(general, target, SPECIAL_ATTACK_CONFIG.damage);
+      applyDamage(target, damage); event.hitIds.push(target.id);
       target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
-      if (!target.isDead) startHitReaction(target, general, currentTime, SPECIAL_ATTACK_CONFIG.knockbackDistance);
+      if (!target.isDead) startHitReaction(target, general, currentTime, SPECIAL_ATTACK_CONFIG.knockbackDistance, random, "SPECIAL_ATTACK");
     }
   }
   if (isWave) return event;

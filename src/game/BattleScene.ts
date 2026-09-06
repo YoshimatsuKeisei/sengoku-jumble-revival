@@ -67,7 +67,7 @@ import {
   updateSpecialAttacks,
   type SpecialAttackEvent,
 } from "./systems/specialAttackSystem";
-import { updateFenceTrapContacts } from "./systems/specialAbilitySystem";
+import { updateInvaderTrapMovement } from "./systems/trapAbilitySystem";
 import {
   canPlayerContinueManualPursuitDuringWindup,
   canPlayerMoveInCurrentState,
@@ -378,7 +378,7 @@ export class BattleScene extends Phaser.Scene {
     this.strategistFireZones = fireUpdate.active;
     for (const victimId of fireUpdate.hitIds)
       this.showStrategistFireZoneHit(victimId);
-    updateRecoveryStates(this.soldiers, delta / 1000, this.bases);
+    updateRecoveryStates(this.soldiers, delta / 1000, this.bases, Math.random, time);
     const player = this.soldiers.find(
       (soldier) => soldier.controller === "player",
     );
@@ -418,6 +418,7 @@ export class BattleScene extends Phaser.Scene {
         delta / 1000,
         BATTLE_OBSTACLES,
         canPlayerContinueManualPursuitDuringWindup(player, this.soldiers),
+        time,
       );
       updateAiTargetsForPlayer(player, this.soldiers);
     }
@@ -429,6 +430,7 @@ export class BattleScene extends Phaser.Scene {
       time,
       this.bases,
     );
+    updateInvaderTrapMovement(this.soldiers, movementStartPositions, time);
     resolveBaseMovementContacts(
       this.soldiers,
       this.bases,
@@ -437,7 +439,6 @@ export class BattleScene extends Phaser.Scene {
     );
     separateSoldiers(this.soldiers);
     resolveObstacleOverlaps(this.soldiers, BATTLE_OBSTACLES);
-    updateFenceTrapContacts(this.soldiers, BATTLE_OBSTACLES);
     resolveBaseAccessCollisions(this.soldiers, this.bases);
     const leftDown = this.input.activePointer.leftButtonDown();
     const pressedThisFrame = leftDown && !this.previousLeftDown;

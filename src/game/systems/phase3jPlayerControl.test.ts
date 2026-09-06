@@ -27,7 +27,7 @@ describe("Phase 3J inspector and player controls", () => {
     const soldier = createSoldier("player-12", "player", "ai", 0, 0, "intercept");
     soldier.specialAbilities = ["MIGHT", "FORESIGHT"];
     expect(STRATEGY_LABELS.intercept).toBe("迎撃");
-    expect(formatSoldierInspector(soldier)).toContain("・膂力\n・見切");
+    expect(formatSoldierInspector(soldier)).toContain("・将力\n・見切");
   });
   it("can debug-assign all and only common abilities to player", () => {
     const debugArmy = createArmy("player", () => 0, { playerAllCommonAbilities: true });
@@ -55,14 +55,15 @@ describe("Phase 3J inspector and player controls", () => {
     expect(getSpecialGaugeProgress(player, 0)).toBeLessThanOrEqual(1);
     expect(getSpecialGaugeProgress(player, 5_000)).toBe(1);
   });
-  it("starts player retreat without automatic gate, healer, or movement target", () => {
+  it("starts player retreat toward a valid treatment holder without choosing a base gate", () => {
     const player = createSoldier("p", "player", "player", 500, 400);
     const healer = createSoldier("h", "player", "ai", 510, 400); healer.specialAbilities = ["TREATMENT"];
     player.hp = player.maxHp * 0.3;
     updateRecoveryStates([player, healer], 0, createBattleBases(), () => 1);
     expect(player.state).toBe("EMERGENCY_RETREAT");
     expect(player.recoveryGate).toBeNull();
-    expect(player.recoveryHealerId).toBeNull();
+    expect(player.recoveryHealerId).toBe("h");
+    expect(player.recoveryTargetKind).toBe("HEALER");
     expect(player.moveTargetX).toBeNull();
   });
   it("enters after manually clearing a gate and exits instantly through the same gate", () => {

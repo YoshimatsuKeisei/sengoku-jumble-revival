@@ -28,19 +28,19 @@ describe("Phase 4I mosa and base bounce", () => {
     expect(createMosaStats(() => 0.999999)).toEqual({ maxHp: 110, skill: 110, foot: 4, combat: 110, defense: 110 });
   });
 
-  it("senpuu hits multiple forward targets, misses rear, supports MIGHT and knockback", () => {
+  it("senpuu uses the confirmed centered 3x3 area, supports MIGHT and knockback", () => {
     const attacker = createSoldier("m", "player", "ai", 100, 100, "melee", undefined, mosa("MOSA_SENPUU", ["MIGHT"])); attacker.facingX = 1;
     const front = createSoldier("f", "enemy", "ai", 135, 100); const diagonal = createSoldier("d", "enemy", "ai", 130, 120);
     const rear = createSoldier("r", "enemy", "ai", 70, 100); const hp = front.hp;
-    expect(findMosaTargets(attacker, [attacker, front, diagonal, rear]).map((s) => s.id)).toEqual(["f", "d"]);
-    const event = executeMosaAttack(attacker, [attacker, front, diagonal, rear], [], [], 0, () => 1)!;
-    expect(front.hp).toBe(hp - 2); expect(event.hitIds).toEqual(["f", "d"]); expect(front.combatFeedbackMarker).toBe("H");
+    expect(findMosaTargets(attacker, [attacker, front, diagonal, rear]).map((s) => s.id)).toEqual(["f", "d", "r"]);
+    const event = executeMosaAttack(attacker, [attacker, front, diagonal, rear], [], [], 0, () => 1, false, true)!;
+    expect(front.hp).toBe(hp - 2); expect(event.hitIds).toEqual(["f", "d", "r"]); expect(front.combatFeedbackMarker).toBe("H");
     expect(front.knockbackRemainingDistance).toBeGreaterThan(SPECIAL_ATTACK_CONFIG.knockbackDistance);
   });
 
-  it("musou is 360 degrees and kijin doubles its radius with stronger knockback", () => {
-    expect(getMosaRadius("MOSA_MUSOU")).toBe(SPECIAL_ATTACK_CONFIG.radius);
-    expect(getMosaRadius("MOSA_KIJIN")).toBe(getMosaRadius("MOSA_MUSOU") * 2);
+  it("musou is 3x3 and kijin is 5x5 with stronger knockback", () => {
+    expect(getMosaRadius("MOSA_MUSOU")).toBe(getMosaRadius("MOSA_SENPUU"));
+    expect(getMosaRadius("MOSA_KIJIN") / getMosaRadius("MOSA_MUSOU")).toBeCloseTo(5 / 3);
     expect(getMosaKnockback("MOSA_KIJIN")).toBeGreaterThan(getMosaKnockback("MOSA_MUSOU"));
     const attacker = createSoldier("m", "player", "ai", 100, 100, "melee", undefined, mosa("MOSA_MUSOU"));
     const front = createSoldier("f", "enemy", "ai", 130, 100); const rear = createSoldier("r", "enemy", "ai", 70, 100);
@@ -50,7 +50,7 @@ describe("Phase 4I mosa and base bounce", () => {
   it("uses existing defense feedback and suppresses damage/stun/knockback on guard", () => {
     const attacker = createSoldier("m", "player", "ai", 100, 100, "melee", undefined, mosa("MOSA_KIJIN"));
     const target = createSoldier("t", "enemy", "ai", 130, 100); target.stats.defense = 110; target.specialAbilities = ["FORESIGHT"]; const hp = target.hp;
-    const event = executeMosaAttack(attacker, [attacker, target], [], [], 0, () => 0)!;
+    const event = executeMosaAttack(attacker, [attacker, target], [], [], 0, () => 0, false, true)!;
     expect(event.defendedIds).toEqual(["t"]); expect(target.hp).toBe(hp); expect(target.combatFeedbackMarker).toBe("S");
     expect(target.reactionState).toBe("NONE"); expect(target.knockbackRemainingDistance).toBe(0);
   });

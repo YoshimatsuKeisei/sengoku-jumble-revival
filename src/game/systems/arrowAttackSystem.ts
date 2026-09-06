@@ -5,8 +5,7 @@ import { applyDamage } from "./combatSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { startHitReaction } from "./reactionSystem";
-import { hasSpecialAbility } from "./specialAbilitySystem";
-import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
+import { calculateSuccessfulAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { applyRareDamageImmunity, totalDamageComponents, type DamageComponents } from "./damageComponentSystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
 import { getRangedHoldMarginWorld, getTechniqueRangeWorld, isPointInTechniqueRectangle, isWithinNormalContact } from "./techniqueCombatProfiles";
@@ -79,12 +78,17 @@ export function getArrowSplashComponents(technique: UnitTechnique): DamageCompon
   return technique === "ARCHER_HOROKU" ? HOROKU_SPLASH_COMPONENTS : null;
 }
 function damageVictim(victim: Soldier, attacker: Soldier, components: DamageComponents, currentTime: number,
-  showMarker: boolean): { damage: number; fire: boolean; explosion: boolean } {
-  const remaining = applyRareDamageImmunity(victim, components); const damage = totalDamageComponents(remaining);
+  showMarker: boolean, random: RandomSource): { damage: number; fire: boolean; explosion: boolean } {
+  const adjusted = { ...components };
+  if ((adjusted.DIRECT_ARROW ?? 0) > 0) {
+    const basicDirect = Math.max(1, adjusted.DIRECT_ARROW! - Number(hasSpecialAbility(attacker, "MIGHT")));
+    adjusted.DIRECT_ARROW = calculateSuccessfulAttackDamage(attacker, victim, basicDirect);
+  }
+  const remaining = applyRareDamageImmunity(victim, adjusted); const damage = totalDamageComponents(remaining);
   if (damage <= 0) return { damage: 0, fire: false, explosion: false };
-  applyDamage(victim, damage); queueMoutaiOnDamage(victim, damage);
+  applyDamage(victim, damage);
   if (showMarker) { victim.combatFeedbackMarker = "H"; victim.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; }
-  if (!victim.isDead) startHitReaction(victim, attacker, currentTime, 0);
+  if (!victim.isDead) startHitReaction(victim, attacker, currentTime, 0, random, "ARROW_ATTACK");
   return { damage, fire: (remaining.FIRE ?? 0) > 0, explosion: (remaining.EXPLOSION ?? 0) > 0 };
 }
 export function updateArrowProjectile(projectile: ArrowProjectileRuntime, soldiers: Soldier[], deltaMs: number,
@@ -102,7 +106,7 @@ export function updateArrowProjectile(projectile: ArrowProjectileRuntime, soldie
   if (defended) {
     target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
   } else {
-    const primary = damageVictim(target, shooter, getArrowPrimaryComponents(shooter), currentTime, true);
+    const primary = damageVictim(target, shooter, getArrowPrimaryComponents(shooter), currentTime, true, random);
     if (primary.fire && projectile.technique === "ARCHER_FIRE_ARROW") flameVictimIds.push(target.id);
     if ((primary.fire || primary.explosion) && projectile.technique === "ARCHER_HOROKU") brownSmokeVictimIds.push(target.id);
     const splashComponents = getArrowSplashComponents(projectile.technique);
@@ -110,7 +114,7 @@ export function updateArrowProjectile(projectile: ArrowProjectileRuntime, soldie
       if (splash === target || !isValidCombatTarget(shooter, splash) || splash.state === "REJOINING"
         || !isPointInTechniqueRectangle(projectile.technique, target, splash)) continue;
       if (isDamageGuarded(splash, "ARROW_ATTACK", random, shooter)) continue;
-      const result = damageVictim(splash, shooter, splashComponents, currentTime, true);
+      const result = damageVictim(splash, shooter, splashComponents, currentTime, true, random);
       if (result.fire && projectile.technique === "ARCHER_FIRE_ARROW") flameVictimIds.push(splash.id);
       if (result.explosion && projectile.technique === "ARCHER_HOROKU") brownSmokeVictimIds.push(splash.id);
     }

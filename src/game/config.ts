@@ -84,7 +84,6 @@ export const BASE_CONTACT_CONFIG = {
 // Temporary tuning values; the exact original-game values are not yet confirmed.
 export const RECOVERY_CONFIG = {
   dangerHpRatio: 0.3,
-  healingHpPerSecond: 1,
   arrivalTolerance: 4,
   debugStartPlayerLowHp: false,
 } as const;
@@ -148,11 +147,11 @@ export const SPECIAL_ATTACK_CONFIG = {
 // SWF values used directly by the combat formulas.
 export const SPECIAL_ABILITY_CONFIG = {
   randomCommonAbilityMin: 0, randomCommonAbilityMax: 2,
-  guardKnockbackDistance: REACTION_CONFIG.knockbackDistance, supportPulseRadius: 60,
+  guardKnockbackDistance: REACTION_CONFIG.knockbackDistance,
   recoveryBoostMultiplier: 2,
-  treatmentSearchRadius: 220, treatmentContactRadius: SOLDIER_RADIUS * 2 + 2, treatmentHealAmount: 5,
-  fieldHospitalPerHolderChance: 0.05, fieldHospitalMaxChance: 0.60,
-  trapPerHolderChance: 0.05, trapMaxChance: 0.60, trapDamage: 1,
+  treatmentContactRadius: SOLDIER_RADIUS * 2 + 2,
+  fieldHospitalHealAmount: 30,
+  trapDamage: 1,
   fleetFootBonus: 2, fleetFootMaximum: 8,
   debugPlayerSpecialAbilities: null as import("./types").CommonSpecialAbilityId[] | null,
   debugShowAbilities: false,

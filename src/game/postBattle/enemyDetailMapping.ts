@@ -147,9 +147,8 @@ const COMMON_ABILITY_SLOT: Record<CommonSpecialAbilityId, string> = {
 
 const RARE_ABILITY_FRAME: Record<RareSpecialAbilityId, number> = {
   MOUTAI: 2,
-  VANGUARD: 3,
+  JINTO: 3,
   KATON: 4,
-  FIRE_ESCAPE: 4,
   NINJA_HUNTER: 5,
 };
 

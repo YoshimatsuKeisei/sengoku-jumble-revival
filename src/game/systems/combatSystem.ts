@@ -14,6 +14,10 @@ export function applyDamage(target: Soldier, damage: number): void {
     target.activeSpecialTechnique = null;
     target.specialWavesRemaining = 0;
     target.nextSpecialWaveAt = null;
+    target.pendingMoutaiSpecials = 0;
+    target.moutaiTriggeredForRetreat = false;
+    target.abilityActionLockUntil = 0;
+    target.trapStateUntil = 0;
     clearConfusion(target, "BATTLE_OUT");
     // `isDead` is retained as a legacy runtime flag. HP 0 means battle withdrawal.
     target.isDead = true;

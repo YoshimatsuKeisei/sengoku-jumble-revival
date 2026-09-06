@@ -6,7 +6,6 @@ import { startHitReaction } from "./reactionSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { applyForcedMovement } from "./movementSystem";
 import { calculateNormalAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
-import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 export { cancelAttack, resetAttackRuntime } from "./attackRuntime";
 import { cancelAttack, resetAttackRuntime } from "./attackRuntime";
@@ -21,6 +20,7 @@ export function canStartSoldierAttack(attacker: Soldier, target: Soldier, curren
     && attacker.state === "NORMAL"
     && attacker.reactionState === "NONE"
     && attacker.activeSpecialTechnique === null
+    && currentTime >= attacker.abilityActionLockUntil
     && attacker.combatActionState === "IDLE"
     && isValidCombatTarget(attacker, target)
     && isWithinNormalContact(attacker, target)
@@ -57,10 +57,10 @@ function resolveSoldierHit(attacker: Soldier, soldiers: Soldier[], currentTime: 
         : SPECIAL_ABILITY_CONFIG.guardKnockbackDistance);
     return;
   }
-  const damage = calculateNormalAttackDamage(attacker, target); applyDamage(target, damage); queueMoutaiOnDamage(target, damage);
+  const damage = calculateNormalAttackDamage(attacker, target); applyDamage(target, damage);
   target.combatFeedbackMarker = "H";
   target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
-  if (!target.isDead) startHitReaction(target, attacker, currentTime, undefined, random);
+  if (!target.isDead) startHitReaction(target, attacker, currentTime, undefined, random, "NORMAL_ATTACK");
 }
 
 export function updateAttackStates(

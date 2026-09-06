@@ -3,8 +3,7 @@ import {
   COMBAT_TIMING_CONFIG,
   PROTOTYPE_COMBAT_MAX,
   PROTOTYPE_DEFENSE_MAX,
-  RECOVERY_CONFIG,
-  SPECIAL_ATTACK_CONFIG,
+  REACTION_CONFIG,
 } from "../config";
 import { createSoldier } from "../entities/Soldier";
 import { createArmy } from "../factories/createArmy";
@@ -14,6 +13,7 @@ import { createBattleBases, getBaseForTeam } from "./baseSystem";
 import { getBaseGatePoint } from "./battlefieldGeometry";
 import { getNormalGuardProbability, isDamageGuarded } from "./defenseSystem";
 import { updateHealing } from "./recoverySystem";
+import { getTechniqueAreaWorld } from "./techniqueCombatProfiles";
 import {
   calculateSpecialCooldownMs,
   executeSpecialAttack,
@@ -26,15 +26,15 @@ function stats(skill = 50, defense = 50): SoldierBaseStats {
 }
 
 describe("Phase 3H healing", () => {
-  it("uses 1 HP/sec with delta time", () => {
+  it("uses the SWF maxHp/400 per update healing rate", () => {
     const soldier = createSoldier("h", "player", "ai", 0, 0);
     soldier.state = "HEALING";
     soldier.hp -= 10;
     updateHealing(soldier, 0.5);
-    expect(RECOVERY_CONFIG.healingHpPerSecond).toBe(1);
-    expect(soldier.hp).toBe(soldier.maxHp - 9.5);
+    const healingPerSecond = soldier.maxHp / 400 * 24;
+    expect(soldier.hp).toBeCloseTo(soldier.maxHp - 10 + healingPerSecond * 0.5);
     updateHealing(soldier, 5);
-    expect(soldier.hp).toBe(soldier.maxHp - 4.5);
+    expect(soldier.hp).toBeCloseTo(Math.min(soldier.maxHp, soldier.maxHp - 10 + healingPerSecond * 5.5));
   });
 
   it.each(["TOP", "BOTTOM"] as const)("snaps through the stored %s gate and returns directly to NORMAL", (gate) => {
@@ -54,7 +54,7 @@ describe("Phase 3H healing", () => {
 });
 
 describe("Phase 3H guard", () => {
-  it.each([[0, 0], [25, 0.1875], [50, 0.375], [75, 0.5625], [100, 0.75]])(
+  it.each([[0, 0], [25, 0.125], [50, 0.25], [75, 0.375], [100, 0.5]])(
     "maps defense %i to guard probability %f", (defense, expected) => {
       expect(getNormalGuardProbability(defense)).toBe(expected);
     },
@@ -74,7 +74,7 @@ describe("Phase 3H guard", () => {
       expect(target.combatFeedbackMarker).toBe(marker);
       expect(target.hp).toBe(target.maxHp - damage);
       expect(target.reactionState).toBe(damage ? "HIT_STUN" : "NONE");
-      expect(target.knockbackRemainingDistance).toBe(damage ? 8 : 0);
+      expect(target.knockbackRemainingDistance).toBe(damage ? REACTION_CONFIG.knockbackDistance : 0);
     }
   });
 
@@ -107,16 +107,16 @@ describe("Phase 3H skill special attack", () => {
     const attacker = createSoldier("a", "player", "ai", 500, 100, "melee", stats(50));
     const first = createSoldier("e1", "enemy", "ai", 520, 100, "melee", stats(50, 100));
     const second = createSoldier("e2", "enemy", "ai", 500, 130, "melee", stats(50, 100));
-    const far = createSoldier("far", "enemy", "ai", 500 + SPECIAL_ATTACK_CONFIG.radius + 1, 100);
+    const far = createSoldier("far", "enemy", "ai", 500 + getTechniqueAreaWorld("PROTOTYPE_AREA").width / 2 + 1, 100);
     const soldiers = [attacker, first, second, far];
     const targets = findSpecialTargets(attacker, soldiers);
-    const event = executeSpecialAttack(attacker, targets, soldiers, [], [], 0);
+    const event = executeSpecialAttack(attacker, targets, soldiers, [], [], 0, false);
     expect(event?.team).toBe("player");
     expect(first.hp).toBe(first.maxHp - 1);
     expect(second.hp).toBe(second.maxHp - 1);
     expect(first.reactionState).toBe("HIT_STUN");
     expect(far.hp).toBe(far.maxHp);
-    expect(attacker.specialReadyAt).toBe(5750);
+    expect(attacker.specialReadyAt).toBe(0);
   });
 
   it("cancels knockback when another soldier blocks the path without moving the blocker", () => {
@@ -124,14 +124,14 @@ describe("Phase 3H skill special attack", () => {
     const target = createSoldier("t", "enemy", "ai", 520, 100);
     const blocker = createSoldier("b", "enemy", "ai", 548, 100);
     const before = { targetX: target.x, blockerX: blocker.x };
-    executeSpecialAttack(attacker, [target], [attacker, target, blocker], [], [], 0);
+    executeSpecialAttack(attacker, [target], [attacker, target, blocker], [], [], 0, false);
     expect(target.x).toBe(before.targetX);
     expect(blocker.x).toBe(before.blockerX);
     expect(target.hp).toBe(target.maxHp - 1);
     expect(target.reactionState).toBe("HIT_STUN");
   });
 
-  it("retreat special targets only the forward half and preserves retreat state", () => {
+  it("does not start a special while emergency retreat has priority", () => {
     const attacker = createSoldier("r", "player", "ai", 500, 100);
     attacker.state = "EMERGENCY_RETREAT";
     attacker.moveTargetX = 600;
@@ -141,8 +141,8 @@ describe("Phase 3H skill special attack", () => {
     front.specialReadyAt = 1;
     back.specialReadyAt = 1;
     const events = updateSpecialAttacks([attacker, front, back], [], [], 0);
-    expect(events).toHaveLength(1);
-    expect(front.hp).toBe(front.maxHp - 1);
+    expect(events).toHaveLength(0);
+    expect(front.hp).toBe(front.maxHp);
     expect(back.hp).toBe(back.maxHp);
     expect(attacker.state).toBe("EMERGENCY_RETREAT");
   });

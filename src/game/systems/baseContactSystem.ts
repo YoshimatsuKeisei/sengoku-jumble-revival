@@ -99,6 +99,11 @@ export function resolveBaseMovementContacts(
       aggroBaseDefenders(defenders, attacker, currentTime);
     }
     applyBaseAttackBounce(attacker, base, defenders);
+    if (attacker.temporaryOrder?.type === "JINTO_CHARGE") {
+      attacker.temporaryOrder = null;
+      attacker.moveTargetX = null;
+      attacker.moveTargetY = null;
+    }
     attacker.baseContactLockTicks = BASE_CONTACT_CONFIG.lockLogicUpdates;
     if (base.isDestroyed) return base.team;
   }

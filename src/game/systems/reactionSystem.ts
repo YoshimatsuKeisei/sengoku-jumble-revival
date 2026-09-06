@@ -1,6 +1,6 @@
 import { REACTION_CONFIG, STRATEGY_AI_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
-import type { BattleObstacle, Soldier } from "../types";
+import type { AttackKind, BattleObstacle, Soldier } from "../types";
 import { cancelAttack } from "./attackRuntime";
 import { applyForcedMovement } from "./movementSystem";
 import { startEngagement } from "./aiSystem";
@@ -27,11 +27,13 @@ export function startHitReaction(
   currentTime: number,
   knockbackDistance: number = REACTION_CONFIG.knockbackDistance,
   random: RandomSource = Math.random,
+  attackKind: AttackKind = "NORMAL_ATTACK",
 ): void {
   if (target.isDead) { clearReaction(target); return; }
   const canRetaliate = target.strategy === "wait" || target.strategy === "charge";
   const rushIgnoresRetarget = target.strategy === "charge"
     && hasSpecialAbility(target, "RUSH")
+    && attackKind !== "NORMAL_ATTACK"
     && random() < STRATEGY_AI_CONFIG.rushRetargetIgnoreChance;
   if (canRetaliate && !rushIgnoresRetarget) startEngagement(target, attacker, currentTime);
   cancelAttack(target);

@@ -3,7 +3,8 @@ import type { DamageComponentKind, Soldier } from "../types";
 export type DamageComponents = Readonly<Partial<Record<DamageComponentKind, number>>>;
 
 export function hasRareAbility(soldier: Pick<Soldier, "rareSpecialAbilities">, id: Soldier["rareSpecialAbilities"][number]): boolean {
-  return soldier.rareSpecialAbilities.includes(id);
+  const values = soldier.rareSpecialAbilities as readonly string[];
+  return values.includes(id) || (id === "KATON" && values.includes("FIRE_ESCAPE"));
 }
 
 export function applyRareDamageImmunity(victim: Pick<Soldier, "rareSpecialAbilities">,

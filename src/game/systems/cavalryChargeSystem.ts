@@ -6,17 +6,13 @@ import { isDamageGuarded } from "./defenseSystem";
 import { getBaseRect } from "./battlefieldGeometry";
 import { startHitReaction } from "./reactionSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
-import { hasSpecialAbility } from "./specialAbilitySystem";
+import { calculateSuccessfulAttackDamage } from "./specialAbilitySystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
 import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
 export const CAVALRY_CHARGE_RADIUS = getTechniqueAreaWorld("CAVALRY_CHARGE").width / 2;
 export const CAVALRY_CHARGE_KNOCKBACK = SPECIAL_ATTACK_CONFIG.knockbackDistance * CAVALRY_CONFIG.chargeKnockbackMultiplier;
 export interface CavalryChargeEvent { kind: "CAVALRY"; attackerId: string; team: Team; x: number; y: number; targetIds: string[]; reactive: boolean }
-export function queueMoutaiOnDamage(target: Soldier, damage: number): void {
-  if (damage > 0 && !target.isDead && target.unitType === "CAVALRY" && target.state === "EMERGENCY_RETREAT"
-    && target.rareSpecialAbilities.includes("MOUTAI")) target.pendingMoutaiCharges += 1;
-}
 export function getVerticalChargeDirection(attacker: Soldier, target: Soldier): number {
   if (target.y !== attacker.y) return target.y < attacker.y ? -1 : 1;
   let hash = 0; for (const character of target.id) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
@@ -72,12 +68,12 @@ export function executeCavalryCharge(attacker: Soldier, soldiers: Soldier[], obs
     if (isDamageGuarded(target, "SPECIAL_ATTACK", random)) {
       target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; continue;
     }
-    const damage = 1 + Number(hasSpecialAbility(attacker, "MIGHT")); applyDamage(target, damage); queueMoutaiOnDamage(target, damage);
+    const damage = calculateSuccessfulAttackDamage(attacker, target); applyDamage(target, damage);
     target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; hitIds.push(target.id);
     if (target.isDead) continue;
     const directionY = getVerticalChargeDirection(attacker, target);
     const safe = calculateSafeCavalryKnockbackDistance(target, directionY, CAVALRY_CHARGE_KNOCKBACK, soldiers, obstacles, bases);
-    startHitReaction(target, attacker, currentTime, safe); target.knockbackDirectionX = 0; target.knockbackDirectionY = directionY;
+    startHitReaction(target, attacker, currentTime, safe, random, "SPECIAL_ATTACK"); target.knockbackDirectionX = 0; target.knockbackDirectionY = directionY;
   }
   return { kind: "CAVALRY", attackerId: attacker.id, team: attacker.team, x: attacker.x, y: attacker.y, targetIds: hitIds, reactive };
 }

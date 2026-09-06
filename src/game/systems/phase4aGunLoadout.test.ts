@@ -50,6 +50,7 @@ describe("Phase 4A loadouts and gun specials", () => {
     expect(GUN_CONFIG.shootingRange).toBeLessThan(GUN_CONFIG.snipingRange);
     expect(getGunRange("PROTOTYPE_AREA")).toBeNull(); expect(isGunTechnique("TEPPOU_SHOOTING")).toBe(true);
     const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, shooting);
+    attacker.combatGauge = 201;
     const near = createSoldier("near", "enemy", "ai", 100, 0); const far = createSoldier("far", "enemy", "ai", 200, 0);
     expect(findGunTarget(attacker, [attacker, far, near])).toBe(near);
     attacker.targetId = far.id; expect(findGunTarget(attacker, [attacker, far, near])).toBe(far);
@@ -64,28 +65,28 @@ describe("Phase 4A loadouts and gun specials", () => {
   it("deals one, bypasses normal defense, supports foresight, and has no knockback", () => {
     const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, shooting);
     const target = createSoldier("t", "enemy", "ai", 100, 0); const x = target.x;
-    const event = executeGunAttack(attacker, target, 0, () => 0);
+    const event = executeGunAttack(attacker, target, 0, () => 1, false);
     expect(event).toMatchObject({ kind: "GUN", smoke: true, shotLine: true, shooterFlash: true });
     expect(target.hp).toBe(target.maxHp - 1); expect(target.combatFeedbackMarker).toBe("H");
     expect(target.reactionState).toBe("HIT_STUN"); expect(target.x).toBe(x);
     const guarded = createSoldier("g", "enemy", "ai", 100, 0); guarded.specialAbilities = ["FORESIGHT"];
-    attacker.specialReadyAt = 0; executeGunAttack(attacker, guarded, 0, () => 0);
+    attacker.specialReadyAt = 0; executeGunAttack(attacker, guarded, 0, () => 0, false);
     expect(guarded.hp).toBe(guarded.maxHp); expect(guarded.combatFeedbackMarker).toBe("S");
   });
-  it("uses skill cooldown and double-special emits a second gun event", () => {
+  it("keeps the player cooldown separate and does not use a fixed delayed second shot", () => {
     expect(calculateSpecialCooldownMs(100)).toBeLessThan(calculateSpecialCooldownMs(0));
     const attacker = createSoldier("a", "player", "player", 0, 0, "melee", undefined, { ...shooting, specialAbilities: ["DOUBLE_SPECIAL"] });
     const target = createSoldier("t", "enemy", "ai", 100, 0);
     const first = updateSpecialAttacks([attacker, target], [], createBattleBases(), 0, true, () => 0);
     const readyAt = attacker.specialReadyAt;
     const second = updateSpecialAttacks([attacker, target], [], createBattleBases(), 120, false, () => 1);
-    expect(first).toHaveLength(1); expect(second).toHaveLength(1); expect(second[0].kind).toBe("GUN");
+    expect(first).toHaveLength(1); expect(second).toHaveLength(0);
     expect(attacker.specialReadyAt).toBe(readyAt);
   });
   it("shows unit, technique and range in the inspector", () => {
     const soldier = createSoldier("s", "player", "ai", 0, 0, "melee", undefined, shooting);
     expect(formatSoldierInspector(soldier)).toContain("兵種：鉄砲");
     expect(formatSoldierInspector(soldier)).toContain("駒種：射撃");
-    expect(formatSoldierInspector(soldier)).toContain(`射程：${GUN_CONFIG.shootingRange} px`);
+    expect(formatSoldierInspector(soldier)).toContain(`射程：${Math.round(GUN_CONFIG.shootingRange)} px`);
   });
 });

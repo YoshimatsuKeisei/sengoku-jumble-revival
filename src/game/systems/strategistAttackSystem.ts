@@ -5,7 +5,7 @@ import { applyConfusion } from "./confusionSystem";
 import { applyRareDamageImmunity, totalDamageComponents } from "./damageComponentSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { startHitReaction } from "./reactionSystem";
-import { hasSpecialAbility } from "./specialAbilitySystem";
+import { calculateSuccessfulAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { applyDamage } from "./combatSystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
 import { getTechniqueAreaCenter, getTechniqueAreaWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
@@ -94,13 +94,14 @@ export function executeStrategistAttack(attacker: Soldier, soldiers: Soldier[], 
       attacker.strategistFireZoneUntil = zone.expiresAt; event.fireZone = zone;
     }
     for (const target of enemiesInRadius(attacker, soldiers, placement.x, placement.y, placement.radius)) {
+      // Kaen/fire-zone waves have no separate projectile/direct component:
+      // KATON removes the whole fire hit, including atck() bonus damage.
       const damage = totalDamageComponents(applyRareDamageImmunity(target, {
-        FIRE: 1,
-        DIRECT_SPECIAL: Number(hasSpecialAbility(attacker, "MIGHT")),
+        FIRE: calculateSuccessfulAttackDamage(attacker, target),
       }));
       if (damage <= 0 || applyNonLethalDamage(target, damage) <= 0) continue;
       target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + 250;
-      startHitReaction(target, attacker, currentTime, 0); event.victimIds.push(target.id);
+      startHitReaction(target, attacker, currentTime, 0, random, "SPECIAL_ATTACK"); event.victimIds.push(target.id);
     }
     return event;
   }
@@ -116,8 +117,9 @@ export function executeStrategistAttack(attacker: Soldier, soldiers: Soldier[], 
   const targets = enemiesInRadius(attacker, soldiers, attacker.x, attacker.y, event.radius);
   for (const target of targets) {
     if (attacker.technique === "STRATEGIST_SORCERY") {
-      applyDamage(target, 1 + Number(hasSpecialAbility(attacker, "MIGHT")));
-      target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + 250; startHitReaction(target, attacker, currentTime, 0); event.victimIds.push(target.id);
+      applyDamage(target, calculateSuccessfulAttackDamage(attacker, target));
+      target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + 250;
+      startHitReaction(target, attacker, currentTime, 0, random, "SPECIAL_ATTACK"); event.victimIds.push(target.id);
     }
     applyConfusion(target); event.confusedIds.push(target.id);
   }

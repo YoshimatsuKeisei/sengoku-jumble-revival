@@ -6,8 +6,7 @@ import { applyDamage } from "./combatSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { startHitReaction } from "./reactionSystem";
-import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
-import { hasSpecialAbility } from "./specialAbilitySystem";
+import { calculateSuccessfulAttackDamage } from "./specialAbilitySystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
 import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
@@ -75,7 +74,7 @@ export function executeSpearAttack(attacker: Soldier, soldiers: Soldier[], obsta
     if (isDamageGuarded(target, "SPECIAL_ATTACK", random)) {
       target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; continue;
     }
-    const damage = 1 + Number(hasSpecialAbility(attacker, "MIGHT")); applyDamage(target, damage); queueMoutaiOnDamage(target, damage);
+    const damage = calculateSuccessfulAttackDamage(attacker, target); applyDamage(target, damage);
     target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; hitIds.push(target.id);
     if (target.isDead) continue;
     let dx = facing.x; let dy = facing.y;
@@ -84,7 +83,7 @@ export function executeSpearAttack(attacker: Soldier, soldiers: Soldier[], obsta
     }
     const requested = attacker.technique === "ASHIGARU_SPEAR_STRIKE" ? SPEAR_STRIKE_KNOCKBACK : SPEAR_TECHNIQUE_KNOCKBACK;
     const safe = calculateSafeSpearKnockbackDistance(target, dx, dy, requested, soldiers, obstacles, bases);
-    startHitReaction(target, attacker, currentTime, safe); target.knockbackDirectionX = dx; target.knockbackDirectionY = dy;
+    startHitReaction(target, attacker, currentTime, safe, random, "SPECIAL_ATTACK"); target.knockbackDirectionX = dx; target.knockbackDirectionY = dy;
   }
   return { kind: "SPEAR", attackerId: attacker.id, team: attacker.team, x: attacker.x, y: attacker.y,
     technique: attacker.technique, facingX: facing.x, facingY: facing.y, targetIds: hitIds };

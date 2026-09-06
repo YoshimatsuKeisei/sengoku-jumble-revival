@@ -30,6 +30,14 @@ export function findNearestEnemyWithinRange(soldier: Soldier, soldiers: Soldier[
   return nearest;
 }
 
+export function findFrontmostEnemyNinja(soldier: Soldier, soldiers: readonly Soldier[]): Soldier | null {
+  const ninjas = soldiers.filter((candidate) => candidate.unitType === "NINJA" && isValidCombatTarget(soldier, candidate));
+  if (ninjas.length === 0) return null;
+  return ninjas.reduce((frontmost, candidate) => soldier.team === "player"
+    ? (candidate.x < frontmost.x ? candidate : frontmost)
+    : (candidate.x > frontmost.x ? candidate : frontmost));
+}
+
 function targetById(soldier: Soldier, soldiers: Soldier[]): Soldier | null {
   if (!soldier.targetId) return null;
   return soldiers.find((candidate) => candidate.id === soldier.targetId) ?? null;
@@ -175,6 +183,14 @@ export function updateMeleeAI(
   currentTime = 0,
   random: RandomSource = Math.random,
 ): void {
+  if (soldier.rareSpecialAbilities.includes("NINJA_HUNTER")) {
+    const ninja = findFrontmostEnemyNinja(soldier, soldiers);
+    if (ninja) {
+      startEngagement(soldier, ninja, currentTime);
+      setStrategyObjective(soldier, "SEEK_COMBAT", ninja.x, ninja.y);
+      return;
+    }
+  }
   const hadTarget = soldier.targetId !== null;
   const current = clearInvalidEngagement(soldier, soldiers);
   if (current) return;
@@ -200,6 +216,7 @@ export function isAtAnchor(soldier: Soldier): boolean {
 export function updateAiTargets(soldiers: Soldier[], currentTime = 0, random: RandomSource = Math.random): void {
   for (const soldier of soldiers) {
     if (soldier.isDead || soldier.isConfused || soldier.controller !== "ai" || soldier.reactionState !== "NONE"
+      || currentTime < soldier.abilityActionLockUntil
       || soldier.state !== "NORMAL" || (soldier.temporaryOrder && soldier.temporaryOrder.type !== "DEFEND_ORDER")) continue;
     if (soldier.temporaryOrder?.type === "DEFEND_ORDER") {
       const current = targetById(soldier, soldiers);

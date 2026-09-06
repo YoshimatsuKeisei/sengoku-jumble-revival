@@ -66,7 +66,7 @@ describe("recovery state system", () => {
     unit.hp = unit.maxHp - 20;
     const hpBefore = unit.hp;
     updateHealing(unit, 0.5);
-    expect(unit.hp).toBe(hpBefore + 0.5);
+    expect(unit.hp).toBeCloseTo(hpBefore + unit.maxHp / 400 * 24 * 0.5);
     expect(unit.state).toBe("HEALING");
     updateHealing(unit, 20);
     expect(unit.hp).toBe(unit.maxHp);

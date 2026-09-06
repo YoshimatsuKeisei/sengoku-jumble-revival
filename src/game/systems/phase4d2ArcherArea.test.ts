@@ -15,6 +15,7 @@ const loadout = (technique: "ARCHER_FIRE_ARROW" | "ARCHER_HOROKU", abilities: So
 });
 function impact(technique: "ARCHER_FIRE_ARROW" | "ARCHER_HOROKU", targets: ReturnType<typeof createSoldier>[], abilities: SoldierLoadout["specialAbilities"] = []) {
   const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, loadout(technique, abilities));
+  attacker.combatGauge = 201;
   const launch = executeArrowAttack(attacker, targets[0], 0, () => 1)!;
   return { attacker, result: updateArrowProjectile(launch.projectile, [attacker, ...targets], 10_000, 10_000, () => 1) };
 }
@@ -46,8 +47,8 @@ describe("Phase 4D-2 fire arrow, horoku and katon", () => {
   it("damages primary and splash and emits component-specific effects", () => {
     const primary = createSoldier("p", "enemy", "ai", 60, 0); const splash = createSoldier("s", "enemy", "ai", 70, 0);
     const fire = impact("ARCHER_FIRE_ARROW", [primary, splash]);
-    expect(primary.hp).toBe(primary.maxHp - 2); expect(splash.hp).toBe(splash.maxHp - 1);
-    expect(fire.result.impact?.flameVictimIds).toEqual(["p", "s"]);
+    expect(primary.hp).toBe(primary.maxHp - 2); expect(splash.hp).toBe(splash.maxHp);
+    expect(fire.result.impact?.flameVictimIds).toEqual(["p"]);
     const hp = [createSoldier("hp", "enemy", "ai", 60, 0), createSoldier("hs", "enemy", "ai", 70, 0)];
     const horoku = impact("ARCHER_HOROKU", hp);
     expect(hp[0].hp).toBe(hp[0].maxHp - 3); expect(hp[1].hp).toBe(hp[1].maxHp - 1);
@@ -55,6 +56,7 @@ describe("Phase 4D-2 fire arrow, horoku and katon", () => {
   });
   it("cancels every splash result when the primary defends", () => {
     const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, loadout("ARCHER_FIRE_ARROW"));
+    attacker.combatGauge = 201;
     const primary = createSoldier("p", "enemy", "ai", 60, 0); primary.specialAbilities = ["HORO"];
     const splash = createSoldier("s", "enemy", "ai", 65, 0); const launch = executeArrowAttack(attacker, primary, 0, () => 1)!;
     const result = updateArrowProjectile(launch.projectile, [attacker, primary, splash], 10_000, 10_000, () => 0);
@@ -64,10 +66,11 @@ describe("Phase 4D-2 fire arrow, horoku and katon", () => {
   });
   it("makes splash defense silent without stopping other victims", () => {
     const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, loadout("ARCHER_HOROKU"));
+    attacker.combatGauge = 201;
     const primary = createSoldier("p", "enemy", "ai", 60, 0);
     const guarded = createSoldier("g", "enemy", "ai", 65, 0); guarded.specialAbilities = ["FORESIGHT"];
     const hit = createSoldier("h", "enemy", "ai", 70, 0); const launch = executeArrowAttack(attacker, primary, 0, () => 1)!;
-    const samples = [0, 1]; const result = updateArrowProjectile(launch.projectile, [attacker, primary, guarded, hit], 10_000, 10_000, () => samples.shift() ?? 1);
+    const samples = [1, 0, 1]; const result = updateArrowProjectile(launch.projectile, [attacker, primary, guarded, hit], 10_000, 10_000, () => samples.shift() ?? 1);
     expect(guarded.hp).toBe(guarded.maxHp); expect(guarded.combatFeedbackMarker).toBeNull();
     expect(hit.hp).toBe(hit.maxHp - 1); expect(result.impact?.brownSmokeVictimIds).toEqual(["p", "h"]);
   });
@@ -89,7 +92,7 @@ describe("Phase 4D-2 fire arrow, horoku and katon", () => {
   });
   it("applies KATON to bombardment while preserving direct damage and MIGHT", () => {
     const gun = createSoldier("g", "player", "ai", 0, 0, "melee", undefined, makePlayerDebugPreset("TEPPOU_BOMBARDMENT"));
-    gun.specialAbilities = ["MIGHT"]; const primary = createSoldier("p", "enemy", "ai", 60, 0); primary.rareSpecialAbilities = ["KATON"];
+    gun.specialAbilities = ["MIGHT"]; gun.combatGauge = 201; const primary = createSoldier("p", "enemy", "ai", 60, 0); primary.rareSpecialAbilities = ["KATON"];
     const splash = createSoldier("s", "enemy", "ai", 65, 0); splash.rareSpecialAbilities = ["KATON"];
     const event = executeGunAttack(gun, primary, 0, () => 1, true, [primary, splash])!;
     expect(primary.hp).toBe(primary.maxHp - 2); expect(splash.hp).toBe(splash.maxHp);

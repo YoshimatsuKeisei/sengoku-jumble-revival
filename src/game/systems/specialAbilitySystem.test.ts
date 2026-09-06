@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createSoldier } from "../entities/Soldier";
 import { createArmy } from "../factories/createArmy";
 import {
-  COMMON_SPECIAL_ABILITY_POOL, aggregateProcChance, calculateBaseAttackDamage, calculateNormalAttackDamage,
+  COMMON_SPECIAL_ABILITY_POOL, calculateBaseAttackDamage, calculateNormalAttackDamage,
   createRandomCommonSpecialAbilities, getEffectiveDefenseForAttack, hasSpecialAbility,
 } from "./specialAbilitySystem";
 
@@ -24,20 +24,15 @@ describe("Phase 3I common special abilities", () => {
     const attacker = createSoldier("a", "player", "ai", 0, 0);
     const target = createSoldier("b", "enemy", "ai", 0, 0);
     attacker.specialAbilities = ["MIGHT", "FINISHER"];
-    target.hp = 6; expect(calculateNormalAttackDamage(attacker, target)).toBe(2);
+    target.hp = 6; expect(calculateNormalAttackDamage(attacker, target)).toBe(3);
     target.hp = 5; expect(calculateNormalAttackDamage(attacker, target)).toBe(3);
   });
-  it("limits siege to base damage and reserves horo for arrows", () => {
+  it("limits siege to base damage and leaves defense unchanged", () => {
     const soldier = createSoldier("a", "player", "ai", 0, 0);
     soldier.specialAbilities = ["SIEGE", "HORO"];
     expect(calculateBaseAttackDamage(soldier)).toBe(2);
     expect(getEffectiveDefenseForAttack(soldier, "NORMAL_ATTACK")).toBe(soldier.stats.defense);
-    expect(getEffectiveDefenseForAttack(soldier, "ARROW_ATTACK")).toBe(soldier.stats.defense * 1.5);
+    expect(getEffectiveDefenseForAttack(soldier, "ARROW_ATTACK")).toBe(soldier.stats.defense);
     expect(hasSpecialAbility(soldier, "SIEGE")).toBe(true);
-  });
-  it("uses capped independent aggregate probability", () => {
-    expect(aggregateProcChance(0, 0.05, 0.6)).toBe(0);
-    expect(aggregateProcChance(2, 0.05, 0.6)).toBeCloseTo(0.0975);
-    expect(aggregateProcChance(100, 0.05, 0.6)).toBe(0.6);
   });
 });

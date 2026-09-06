@@ -125,7 +125,6 @@ export interface Soldier {
   combatFeedbackMarker: CombatFeedbackMarker | null;
   combatFeedbackUntil: number;
   specialReadyAt: number;
-  pendingSecondSpecialAt: number | null;
   combatGauge: number;
   combatGaugeUpdatedAt: number | null;
   specialLockUntil: number;
@@ -141,7 +140,6 @@ export interface Soldier {
   treatmentUsedSinceLastBaseVisit: boolean;
   recoveryTargetKind: RecoveryTargetKind;
   recoveryHealerId: string | null;
-  touchingEnemyFenceIds: string[];
   facingX: number;
   facingY: number;
   aimX: number | null;

@@ -1,5 +1,5 @@
 import { PROTOTYPE_COMBAT_MAX, PROTOTYPE_DEFENSE_MAX, PROTOTYPE_SKILL_MAX } from "../config";
-import type { CommonSpecialAbilityId, SoldierLoadout, UnitTechnique, UnitType } from "../types";
+import type { CommonSpecialAbilityId, LegacyRareSpecialAbilityId, RareSpecialAbilityId, SoldierLoadout, UnitTechnique, UnitType } from "../types";
 import { COMMON_SPECIAL_ABILITY_POOL } from "./specialAbilitySystem";
 
 export const UNIT_TYPE_LABELS: Record<UnitType, string> = { PROTOTYPE: "Prototype", TEPPOU: "鉄砲", CAVALRY: "騎馬", ARCHER: "弓兵", ASHIGARU: "足軽", NINJA: "忍者", GENERAL: "武将", STRATEGIST: "軍師", MOSA: "猛者" };
@@ -48,6 +48,11 @@ export const TECHNIQUE_DEFINITIONS: Record<UnitTechnique, { unitType: UnitType; 
 export function isTechniqueCompatibleWithUnitType(unitType: UnitType, technique: UnitTechnique): boolean {
   return TECHNIQUE_DEFINITIONS[technique]?.unitType === unitType;
 }
+export function normalizeRareSpecialAbilityId(id: RareSpecialAbilityId | LegacyRareSpecialAbilityId | string): RareSpecialAbilityId | null {
+  if (id === "VANGUARD") return "JINTO";
+  if (id === "FIRE_ESCAPE") return "KATON";
+  return id === "MOUTAI" || id === "JINTO" || id === "KATON" || id === "NINJA_HUNTER" ? id : null;
+}
 export function validateSoldierLoadout(loadout: SoldierLoadout): SoldierLoadout {
   if (!isTechniqueCompatibleWithUnitType(loadout.unitType, loadout.technique)) throw new Error("Incompatible unit type and technique");
   if (!(loadout.stats.maxHp > 0)) throw new Error("maxHp must be positive");
@@ -60,7 +65,9 @@ export function validateSoldierLoadout(loadout: SoldierLoadout): SoldierLoadout 
   if (loadout.unitType === "CAVALRY") {
     for (const mandatory of ["RUSH", "FLEET_FOOT"] as const) if (!abilities.includes(mandatory)) abilities.push(mandatory);
   }
-  const rareSpecialAbilities = [...new Set(loadout.rareSpecialAbilities ?? [])];
+  const rareSpecialAbilities = [...new Set((loadout.rareSpecialAbilities ?? [])
+    .map((id) => normalizeRareSpecialAbilityId(id))
+    .filter((id): id is RareSpecialAbilityId => id !== null))];
   if (loadout.unitType === "CAVALRY" && !rareSpecialAbilities.includes("MOUTAI")) rareSpecialAbilities.push("MOUTAI");
   return { ...loadout, stats: { ...loadout.stats }, specialAbilities: abilities, rareSpecialAbilities };
 }

@@ -9,8 +9,7 @@ import { clearConfusion } from "./confusionSystem";
 import { issueNinjaBarrierCharge } from "./commandSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { startHitReaction } from "./reactionSystem";
-import { hasSpecialAbility } from "./specialAbilitySystem";
-import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
+import { calculateSuccessfulAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
 import { getTechniqueAreaCenter, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
@@ -107,14 +106,14 @@ export function executeNinjaAttack(attacker: Soldier, soldiers: Soldier[], obsta
     if (!bypass && isDamageGuarded(target, "SPECIAL_ATTACK", random)) {
       target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; continue;
     }
-    const damage = 1 + Number(hasSpecialAbility(attacker, "MIGHT"));
-    applyDamage(target, damage); queueMoutaiOnDamage(target, damage); victimIds.push(target.id);
+    const damage = calculateSuccessfulAttackDamage(attacker, target);
+    applyDamage(target, damage); victimIds.push(target.id);
     target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
     if (bypass && !target.isDead) applyConfusion(target);
     if (!target.isDead) {
       let kx = target.x - attacker.x; let ky = target.y - attacker.y; const kl = Math.hypot(kx, ky) || 1; kx /= kl; ky /= kl;
       const safe = calculateSafeNinjaMovement(target, kx, ky, getNinjaKnockback(attacker.technique), soldiers, obstacles, bases);
-      startHitReaction(target, attacker, currentTime, safe); target.knockbackDirectionX = kx; target.knockbackDirectionY = ky;
+      startHitReaction(target, attacker, currentTime, safe, random, "SPECIAL_ATTACK"); target.knockbackDirectionX = kx; target.knockbackDirectionY = ky;
     }
   }
   const fromX = attacker.x; const fromY = attacker.y;

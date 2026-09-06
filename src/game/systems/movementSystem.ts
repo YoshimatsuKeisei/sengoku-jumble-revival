@@ -185,10 +185,11 @@ export function applyForcedMovement(
 }
 
 export function movePlayer(soldier: Soldier, dx: number, dy: number, deltaSeconds: number,
-  obstacles: readonly BattleObstacle[] = [], allowDuringWindup = false): void {
+  obstacles: readonly BattleObstacle[] = [], allowDuringWindup = false, currentTime = 0): void {
   soldier.velocityX = 0;
   soldier.velocityY = 0;
   if (!soldier.isDead && soldier.reactionState === "NONE"
+    && currentTime >= soldier.abilityActionLockUntil && currentTime >= soldier.trapStateUntil
     && (soldier.state === "NORMAL" || soldier.state === "EMERGENCY_RETREAT")
     && (soldier.combatActionState === "IDLE" || allowDuringWindup)) {
     moveBy(soldier, dx, dy, deltaSeconds, obstacles, 0, false);
@@ -219,7 +220,8 @@ export function moveAiSoldiers(
       && soldier.state === "NORMAL"
       && soldier.combatActionState === "ATTACK_WINDUP"
       && windupTarget?.state === "EMERGENCY_RETREAT";
-    if (soldier.isDead || currentTime < soldier.ninjaDashUntil || soldier.activeSpecialTechnique !== null
+    if (soldier.isDead || currentTime < soldier.ninjaDashUntil || currentTime < soldier.abilityActionLockUntil
+      || currentTime < soldier.trapStateUntil || soldier.activeSpecialTechnique !== null
       || soldier.reactionState !== "NONE" || (soldier.combatActionState !== "IDLE" && !chasingRetreatWindup)
       || (!stateControlled && soldier.controller !== "ai") || soldier.state === "HEALING"
     ) continue;

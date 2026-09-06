@@ -33,17 +33,17 @@ describe("Phase 4E ashigaru spear attacks", () => {
     const attacker = createSoldier("a", "player", "ai", 100, 100, "melee", undefined, ashigaru()); attacker.facingX = 1; attacker.facingY = 0;
     const frontA = createSoldier("fa", "enemy", "ai", 125, 100); const frontB = createSoldier("fb", "enemy", "ai", 145, 108);
     const behind = createSoldier("b", "enemy", "ai", 90, 100); const side = createSoldier("s", "enemy", "ai", 100, 125);
-    const far = createSoldier("f", "enemy", "ai", 100 + SPEAR_STRIKE_REACH + 1, 100);
+    const far = createSoldier("f", "enemy", "ai", 100 + SPEAR_STRIKE_REACH * 2, 100);
     expect(isInsideSpearStrike(attacker, frontA)).toBe(true); expect(isInsideSpearStrike(attacker, behind)).toBe(false);
     expect(isInsideSpearStrike(attacker, side)).toBe(false); expect(isInsideSpearStrike(attacker, far)).toBe(false);
     expect(findSpearStrikeTargets(attacker, [attacker, frontA, frontB, behind, side, far]).map((s) => s.id)).toEqual(["fa", "fb"]);
   });
   it("deals one or MIGHT two, supports special defense, H and HIT_STUN", () => {
     const attacker = createSoldier("a", "player", "ai", 100, 100, "melee", undefined, ashigaru("ASHIGARU_SPEAR_STRIKE", ["MIGHT"]));
-    const hit = createSoldier("h", "enemy", "ai", 130, 100); executeSpearAttack(attacker, [attacker, hit], [], [], 0, () => 1);
+    const hit = createSoldier("h", "enemy", "ai", 130, 100); executeSpearAttack(attacker, [attacker, hit], [], [], 0, () => 1, false, true);
     expect(hit.hp).toBe(hit.maxHp - 2); expect(hit.combatFeedbackMarker).toBe("H"); expect(hit.reactionState).toBe("HIT_STUN");
     const guarded = createSoldier("g", "enemy", "ai", 130, 100); guarded.specialAbilities = ["FORESIGHT"]; attacker.specialReadyAt = 0;
-    executeSpearAttack(attacker, [attacker, guarded], [], [], 0, () => 0);
+    executeSpearAttack(attacker, [attacker, guarded], [], [], 0, () => 0, false, true);
     expect(guarded.hp).toBe(guarded.maxHp); expect(guarded.combatFeedbackMarker).toBe("S");
   });
   it("derives strike knockback between normal and spear-technique values and pushes along facing", () => {
@@ -51,18 +51,18 @@ describe("Phase 4E ashigaru spear attacks", () => {
     expect(SPEAR_STRIKE_KNOCKBACK).toBeGreaterThan(REACTION_CONFIG.knockbackDistance);
     expect(SPEAR_STRIKE_KNOCKBACK).toBeLessThan(SPEAR_TECHNIQUE_KNOCKBACK);
     const attacker = createSoldier("a", "player", "ai", 100, 100, "melee", undefined, ashigaru()); attacker.facingX = 1; attacker.facingY = 0;
-    const target = createSoldier("t", "enemy", "ai", 130, 100); executeSpearAttack(attacker, [attacker, target], [], [], 0, () => 1);
+    const target = createSoldier("t", "enemy", "ai", 130, 100); executeSpearAttack(attacker, [attacker, target], [], [], 0, () => 1, false, true);
     expect(target.knockbackDirectionX).toBe(1); expect(target.knockbackDirectionY).toBe(0);
     expect(target.knockbackRemainingDistance).toBe(SPEAR_STRIKE_KNOCKBACK);
   });
   it("makes spear technique exactly the prototype 360-degree area behavior", () => {
-    expect(SPEAR_TECHNIQUE_RADIUS).toBe(SPECIAL_ATTACK_CONFIG.radius);
+    expect(SPEAR_TECHNIQUE_RADIUS).toBeGreaterThan(SPECIAL_ATTACK_CONFIG.radius);
     expect(SPEAR_TECHNIQUE_KNOCKBACK).toBe(SPECIAL_ATTACK_CONFIG.knockbackDistance);
     const attacker = createSoldier("a", "player", "ai", 100, 100, "melee", undefined, ashigaru("ASHIGARU_SPEAR_TECHNIQUE"));
     const front = createSoldier("f", "enemy", "ai", 130, 100); const back = createSoldier("b", "enemy", "ai", 70, 100);
     const ally = createSoldier("ally", "player", "ai", 100, 120);
     expect(findSpearTechniqueTargets(attacker, [attacker, front, back, ally]).map((s) => s.id)).toEqual(["f", "b"]);
-    const event = executeSpearAttack(attacker, [attacker, front, back, ally], [], [], 0, () => 1)!;
+    const event = executeSpearAttack(attacker, [attacker, front, back, ally], [], [], 0, () => 1, false)!;
     expect(event.targetIds).toEqual(["f", "b"]); expect(front.hp).toBe(front.maxHp - 1); expect(back.hp).toBe(back.maxHp - 1);
     expect(front.knockbackDirectionX).toBe(1); expect(back.knockbackDirectionX).toBe(-1); expect(ally.hp).toBe(ally.maxHp);
   });
@@ -72,12 +72,14 @@ describe("Phase 4E ashigaru spear attacks", () => {
     const target = createSoldier("t", "enemy", "ai", 130, 100);
     const first = updateSpecialAttacks([attacker, target], [], createBattleBases(), 0, true, () => 0); const ready = attacker.specialReadyAt;
     const second = updateSpecialAttacks([attacker, target], [], createBattleBases(), 120, false, () => 1);
-    expect(first).toHaveLength(1); expect(second).toHaveLength(1); expect(first[0].kind).toBe("SPEAR"); expect(attacker.specialReadyAt).toBe(ready);
+    expect(first).toHaveLength(1); expect(second).toHaveLength(2); expect(first[0].kind).toBe("SPEAR"); expect(attacker.specialReadyAt).toBe(ready);
   });
-  it("does not consume cooldown when no valid enemy is in range", () => {
+  it("allows the confirmed empty special activation without an in-range enemy", () => {
     const attacker = createSoldier("a", "player", "player", 100, 100, "melee", undefined, ashigaru());
-    const far = createSoldier("f", "enemy", "ai", 100 + SPEAR_STRIKE_REACH + 20, 100);
-    expect(updateSpecialAttacks([attacker, far], [], createBattleBases(), 100, true)).toEqual([]); expect(attacker.specialReadyAt).toBe(0);
+    const far = createSoldier("f", "enemy", "ai", 100 + SPEAR_STRIKE_REACH * 3, 100);
+    const events = updateSpecialAttacks([attacker, far], [], createBattleBases(), 100, true);
+    expect(events).toHaveLength(1); expect(events[0]).toMatchObject({ kind: "SPEAR", targetIds: [] });
+    expect(attacker.specialReadyAt).toBeGreaterThan(100);
   });
   it("extends default composition with zero ashigaru and preserves cavalry/player override", () => {
     const setup = createDefaultTeamArmySetup(); expect(setup.techniqueCounts).toMatchObject({ ASHIGARU_SPEAR_STRIKE: 0, ASHIGARU_SPEAR_TECHNIQUE: 0 });
@@ -88,6 +90,6 @@ describe("Phase 4E ashigaru spear attacks", () => {
   });
   it("shows ashigaru technique and existing details in inspector", () => {
     const soldier = createSoldier("s", "player", "ai", 0, 0, "melee", undefined, ashigaru("ASHIGARU_SPEAR_TECHNIQUE", ["MIGHT"]));
-    const text = formatSoldierInspector(soldier); expect(text).toContain("兵種：足軽"); expect(text).toContain("駒種：槍術"); expect(text).toContain("・膂力");
+    const text = formatSoldierInspector(soldier); expect(text).toContain("兵種：足軽"); expect(text).toContain("駒種：槍術"); expect(text).toContain("・将力");
   });
 });

@@ -4,8 +4,7 @@ import type { DamageComponentKind, Soldier, Team, UnitTechnique } from "../types
 import { applyDamage } from "./combatSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { startHitReaction } from "./reactionSystem";
-import { hasSpecialAbility } from "./specialAbilitySystem";
-import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
+import { calculateSuccessfulAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { applyRareDamageImmunity, totalDamageComponents } from "./damageComponentSystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
@@ -71,13 +70,13 @@ export function executeGunAttack(attacker: Soldier, target: Soldier, currentTime
   const victimIds: string[] = [];
   const bombardmentComponents = bombardment ? applyRareDamageImmunity(target, {
     ...BOMBARDMENT_DAMAGE_COMPONENTS,
-    DIRECT_SPECIAL: BOMBARDMENT_DAMAGE_COMPONENTS.DIRECT_SPECIAL! + Number(hasSpecialAbility(attacker, "MIGHT")),
+    DIRECT_SPECIAL: calculateSuccessfulAttackDamage(attacker, target, BOMBARDMENT_DAMAGE_COMPONENTS.DIRECT_SPECIAL!),
   }) : null;
-  const primaryDamage = bombardment ? totalDamageComponents(bombardmentComponents!) : calculateGunDirectDamage(attacker);
-  if (!guarded) { applyDamage(target, primaryDamage); queueMoutaiOnDamage(target, primaryDamage); }
+  const primaryDamage = bombardment ? totalDamageComponents(bombardmentComponents!) : calculateSuccessfulAttackDamage(attacker, target, GUN_CONFIG.damage);
+  if (!guarded) applyDamage(target, primaryDamage);
   target.combatFeedbackMarker = guarded ? "S" : "H";
   target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
-  if (!guarded && !target.isDead) startHitReaction(target, attacker, currentTime, 0);
+  if (!guarded && !target.isDead) startHitReaction(target, attacker, currentTime, 0, random, "GUN_ATTACK");
   if (!guarded && bombardment && ((bombardmentComponents!.FIRE ?? 0) > 0 || (bombardmentComponents!.EXPLOSION ?? 0) > 0)) victimIds.push(target.id);
   if (bombardment && !guarded) {
     const impactX = target.x; const impactY = target.y;
@@ -89,9 +88,8 @@ export function executeGunAttack(attacker: Soldier, target: Soldier, currentTime
       const splashDamage = totalDamageComponents(applyRareDamageImmunity(splash, { EXPLOSION: BOMBARDMENT_DAMAGE_COMPONENTS.EXPLOSION! }));
       if (splashDamage <= 0) continue;
       applyDamage(splash, splashDamage);
-      queueMoutaiOnDamage(splash, splashDamage);
       splash.combatFeedbackMarker = "H"; splash.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
-      if (!splash.isDead) startHitReaction(splash, target, currentTime, 0);
+      if (!splash.isDead) startHitReaction(splash, target, currentTime, 0, random, "GUN_ATTACK");
       victimIds.push(splash.id);
     }
   }

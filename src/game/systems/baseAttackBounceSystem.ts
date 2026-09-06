@@ -3,12 +3,12 @@ import { getTeamForwardSign } from "./battlefieldGeometry";
 import { applyForcedMovement } from "./movementSystem";
 import { BASE_CONTACT_CONFIG } from "../config";
 import { battlefieldSourceDistanceToWorldX } from "../battlefieldLayout";
-import { countTeamAbility } from "./specialAbilitySystem";
+import { countRosterSlotAbility } from "./specialAbilitySystem";
 
 export const BASE_ATTACK_BOUNCE_DISTANCE = battlefieldSourceDistanceToWorldX(BASE_CONTACT_CONFIG.baseBounceSourceDistance);
 
 export function getBaseAttackBounceDistance(defendingSoldiers: readonly Soldier[]): number {
-  const fortifyHolders = countTeamAbility(defendingSoldiers, defendingSoldiers[0]?.team ?? "player", "FORTIFY");
+  const fortifyHolders = countRosterSlotAbility(defendingSoldiers, defendingSoldiers[0]?.team ?? "player", "FORTIFY");
   return battlefieldSourceDistanceToWorldX(
     BASE_CONTACT_CONFIG.baseBounceSourceDistance
       + fortifyHolders * BASE_CONTACT_CONFIG.fortifyBounceSourceDistance,

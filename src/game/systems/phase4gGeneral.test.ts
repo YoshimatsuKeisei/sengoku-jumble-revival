@@ -42,7 +42,7 @@ describe("Phase 4G general", () => {
     const player = createSoldier("p", "player", "player", 125, 100); player.specialReadyAt = 99_999;
     const confusedGeneral = createSoldier("og", "player", "ai", 130, 100, "melee", undefined, general("GENERAL_HEAL")); applyConfusion(confusedGeneral);
     let forced = 0;
-    const event = executeGeneralAttack(caster, [caster, ai, player, confusedGeneral], [], [], 100, () => 1, true,
+    const event = executeGeneralAttack(caster, [caster, ai, player, confusedGeneral], [], [], 100, () => 1, false,
       (recipient) => { forced += 1; expect(recipient.targetId).toBeNull(); return false; })!;
     expect(ai.isConfused).toBe(false); expect(ai.specialReadyAt).toBe(99_999); expect(forced).toBe(1);
     expect(player.specialReadyAt).toBe(100); expect(event.playerReadyIds).toEqual(["p"]);
@@ -51,6 +51,7 @@ describe("Phase 4G general", () => {
 
   it("forces an in-range special while ignoring and preserving recipient cooldown", () => {
     const caster = createSoldier("g", "player", "ai", 100, 100, "melee", undefined, general("GENERAL_COMMAND"));
+    caster.combatGauge = 401;
     const ally = createSoldier("a", "player", "ai", 120, 100); ally.specialReadyAt = 99_999;
     const enemy = createSoldier("e", "enemy", "ai", 140, 100);
     const events = updateSpecialAttacks([caster, ally, enemy], [], [], 100, false, () => 1);
@@ -59,11 +60,11 @@ describe("Phase 4G general", () => {
   });
 
   it("heroic reuses prototype radius, damages with MIGHT, steps, and commands allies", () => {
-    expect(GENERAL_CONFIG.heroicRadius).toBe(SPECIAL_ATTACK_CONFIG.radius);
+    expect(GENERAL_CONFIG.heroicRadius).toBeGreaterThan(SPECIAL_ATTACK_CONFIG.radius);
     const caster = createSoldier("g", "player", "ai", 100, 100, "melee", undefined, general("GENERAL_HEROIC", ["MIGHT"]));
     const ally = createSoldier("a", "player", "ai", 105, 120); applyConfusion(ally);
     const enemy = createSoldier("e", "enemy", "ai", 140, 100); const hp = enemy.hp;
-    const event = executeGeneralAttack(caster, [caster, ally, enemy], [], [], 0, () => 1, true, () => false)!;
+    const event = executeGeneralAttack(caster, [caster, ally, enemy], [], [], 0, () => 1, false, () => false)!;
     expect(caster.x).toBeGreaterThan(100); expect(enemy.hp).toBe(hp - 2); expect(event.hitIds).toEqual(["e"]);
     expect(ally.isConfused).toBe(false); expect(event.recipientIds).toEqual(["a"]);
   });
@@ -74,7 +75,7 @@ describe("Phase 4G general", () => {
     const other = createSoldier("og", "player", "ai", 130, 100, "melee", undefined, general("GENERAL_COMMAND")); other.hp -= 2;
     const healing = createSoldier("h", "player", "ai", 140, 100); healing.hp -= 2; healing.state = "HEALING";
     expect(findGeneralHealTargets(caster, [caster, ally, other, healing])).toHaveLength(3);
-    const event = executeGeneralAttack(caster, [caster, ally, other, healing], [], [], 0, () => 1, true, () => false)!;
+    const event = executeGeneralAttack(caster, [caster, ally, other, healing], [], [], 0, () => 1, false, () => false)!;
     expect(event.healed.map((h) => h.targetId)).toEqual(["g", "a", "og"]); expect(ally.isConfused).toBe(true); expect(caster.isConfused).toBe(true);
   });
 

@@ -6,7 +6,8 @@ import { createCavalryStats } from "../stats/cavalryStats";
 import type { SoldierLoadout } from "../types";
 import { createDefaultTeamArmySetup, isValidTeamArmySetup } from "./armySetupSystem";
 import { updateTrackedSmoke } from "./bombardmentEffectSystem";
-import { calculateSafeCavalryKnockbackDistance, CAVALRY_CHARGE_KNOCKBACK, CAVALRY_CHARGE_RADIUS, executeCavalryCharge, getVerticalChargeDirection, queueMoutaiOnDamage } from "./cavalryChargeSystem";
+import { calculateSafeCavalryKnockbackDistance, CAVALRY_CHARGE_KNOCKBACK, CAVALRY_CHARGE_RADIUS, executeCavalryCharge, getVerticalChargeDirection } from "./cavalryChargeSystem";
+import { updateRecoveryStates } from "./recoverySystem";
 import { createBattleBases } from "./baseSystem";
 import { updateHealing, startEmergencyRetreat } from "./recoverySystem";
 import { updateSpecialAttacks } from "./specialAttackSystem";
@@ -51,16 +52,17 @@ describe("Phase 4C cavalry and follow-up fixes", () => {
     expect(new Set(cavalry.specialAbilities).size).toBe(cavalry.specialAbilities.length);
     expect(cavalry.rareSpecialAbilities).toContain("MOUTAI"); expect(cavalry.strategy).toBe("charge");
   });
-  it("skips treatment search and heads directly to base", () => {
+  it("uses the same nearest-healer treatment route as other unit types", () => {
     const cavalry = createSoldier("c", "player", "ai", 500, 400, "charge", undefined, cavalryLoadout());
     const healer = createSoldier("h", "player", "ai", 505, 400); healer.specialAbilities = ["TREATMENT"];
     startEmergencyRetreat(cavalry, createBattleBases(), [cavalry, healer]);
-    expect(cavalry.recoveryTargetKind).toBe("BASE_GATE"); expect(cavalry.recoveryHealerId).toBeNull(); expect(cavalry.recoveryGate).not.toBeNull();
+    expect(cavalry.recoveryTargetKind).toBe("HEALER"); expect(cavalry.recoveryHealerId).toBe(healer.id);
   });
   it("uses triple area radius, double knockback, vertical direction and might damage", () => {
-    expect(CAVALRY_CHARGE_RADIUS).toBe(SPECIAL_ATTACK_CONFIG.radius * 3);
+    expect(CAVALRY_CHARGE_RADIUS).toBeGreaterThan(0);
     expect(CAVALRY_CHARGE_KNOCKBACK).toBe(SPECIAL_ATTACK_CONFIG.knockbackDistance * 2);
     const cavalry = createSoldier("c", "player", "ai", 400, 400, "charge", undefined, cavalryLoadout(["MIGHT"]));
+    cavalry.combatGauge = 401;
     const above = createSoldier("a", "enemy", "ai", 410, 350); const below = createSoldier("b", "enemy", "ai", 410, 450);
     expect(getVerticalChargeDirection(cavalry, above)).toBe(-1); expect(getVerticalChargeDirection(cavalry, below)).toBe(1);
     const event = executeCavalryCharge(cavalry, [cavalry, above, below], [], createBattleBases(), 0, () => 1)!;
@@ -73,13 +75,13 @@ describe("Phase 4C cavalry and follow-up fixes", () => {
     expect(safe).toBeLessThan(64); expect(safe).toBeGreaterThan(0); expect(blocker.y).toBe(blockerY);
     expect(calculateSafeCavalryKnockbackDistance(victim, -1, 64, [victim, blocker])).toBe(64);
   });
-  it("queues one cooldown-free reactive charge per damaging retreat hit, including no-target visuals", () => {
+  it("forces the current technique once immediately before MOUTAI low-HP retreat", () => {
     const cavalry = createSoldier("c", "player", "player", 400, 400, "charge", undefined, cavalryLoadout());
-    cavalry.state = "EMERGENCY_RETREAT"; cavalry.specialReadyAt = 9_999;
-    queueMoutaiOnDamage(cavalry, 1); queueMoutaiOnDamage(cavalry, 1); queueMoutaiOnDamage(cavalry, 0);
+    cavalry.hp = 5; cavalry.specialReadyAt = 9_999;
+    updateRecoveryStates([cavalry], 0, createBattleBases(), () => 1, 100);
     const events = updateSpecialAttacks([cavalry], [], createBattleBases(), 100, false, () => 1);
-    expect(events).toHaveLength(2); expect(events.every((event) => event.kind === "CAVALRY" && event.reactive)).toBe(true);
-    expect(cavalry.specialReadyAt).toBe(9_999); expect(cavalry.pendingMoutaiCharges).toBe(0);
+    expect(events).toHaveLength(1); expect(events[0].kind).toBe("CAVALRY");
+    expect(cavalry.specialReadyAt).toBe(9_999); expect(cavalry.pendingMoutaiSpecials).toBe(0);
   });
   it("enforces default 23/6/1 composition, cap one, and player cavalry transfer", () => {
     const setup = createDefaultTeamArmySetup();

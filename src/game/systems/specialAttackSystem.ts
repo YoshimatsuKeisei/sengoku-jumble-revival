@@ -12,7 +12,7 @@ import { startHitReaction } from "./reactionSystem";
 import type { RandomSource } from "../stats/soldierStats";
 import { isDamageGuarded } from "./defenseSystem";
 import { executeGunAttack, findGunTarget, getGunMovementDecision, isGunTechnique, type GunAttackEvent } from "./gunAttackSystem";
-import { executeCavalryCharge, queueMoutaiOnDamage, type CavalryChargeEvent } from "./cavalryChargeSystem";
+import { executeCavalryCharge, type CavalryChargeEvent } from "./cavalryChargeSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { executeArrowAttack, findArrowTarget, getArrowMovementDecision, isArrowTechnique, type ArrowLaunchEvent } from "./arrowAttackSystem";
 import { executeSpearAttack, isSpearTechnique, type SpearAttackEvent } from "./spearAttackSystem";
@@ -22,6 +22,7 @@ import { executeStrategistAttack, isStrategistTechnique, type StrategistAttackEv
 import { executeMosaAttack, isMosaTechnique, type MosaAttackEvent } from "./mosaAttackSystem";
 import { advanceCombatGauge, beginTechniqueAction, clearTechniqueActionIfComplete, hasTechniqueGauge } from "./combatGaugeSystem";
 import { swfLogicTicksToMs } from "./techniqueCombatProfiles";
+import { calculateSuccessfulAttackDamage } from "./specialAbilitySystem";
 
 export interface AreaSpecialAttackEvent { kind: "AREA"; attackerId: string; team: Team; x: number; y: number }
 export type SpecialAttackEvent = AreaSpecialAttackEvent | GunAttackEvent | CavalryChargeEvent | ArrowLaunchEvent | SpearAttackEvent | NinjaAttackEvent | GeneralAttackEvent | StrategistAttackEvent | MosaAttackEvent;
@@ -60,7 +61,8 @@ export function findSpecialTargets(attacker: Soldier, soldiers: readonly Soldier
 export function canUseSpecial(soldier: Soldier, currentTime: number): boolean {
   if (soldier.isDead || soldier.hp <= 0 || soldier.state !== "NORMAL") return false;
   if (soldier.reactionState !== "NONE" || soldier.combatActionState !== "IDLE") return false;
-  if (soldier.activeSpecialTechnique !== null || currentTime < soldier.specialLockUntil) return false;
+  if (soldier.activeSpecialTechnique !== null || currentTime < soldier.specialLockUntil
+    || currentTime < soldier.abilityActionLockUntil) return false;
   return soldier.controller === "player" ? isSpecialReady(soldier, currentTime) : hasTechniqueGauge(soldier);
 }
 
@@ -129,8 +131,8 @@ export function executeSpecialAttack(
     const direction = knockbackDirection(attacker, target);
     const canMove = specialKnockbackDestinationIsClear(target, attacker, direction.x, direction.y, soldiers, obstacles, bases);
     const guarded = isDamageGuarded(target, "SPECIAL_ATTACK", random);
-    const damage = SPECIAL_ATTACK_CONFIG.damage + Number(attacker.specialAbilities.includes("MIGHT"));
-    if (!guarded) { applyDamage(target, damage); queueMoutaiOnDamage(target, damage); }
+    const damage = calculateSuccessfulAttackDamage(attacker, target, SPECIAL_ATTACK_CONFIG.damage);
+    if (!guarded) applyDamage(target, damage);
     target.combatFeedbackMarker = guarded ? "S" : "H";
     target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
     if (target.isDead) continue;
@@ -138,7 +140,7 @@ export function executeSpecialAttack(
       target.x += direction.x * SPECIAL_ATTACK_CONFIG.knockbackDistance;
       target.y += direction.y * SPECIAL_ATTACK_CONFIG.knockbackDistance;
     }
-    if (!guarded) startHitReaction(target, attacker, currentTime, 0);
+    if (!guarded) startHitReaction(target, attacker, currentTime, 0, random, "SPECIAL_ATTACK");
   }
   return { kind: "AREA", attackerId: attacker.id, team: attacker.team, x: attacker.x, y: attacker.y };
 }
@@ -152,18 +154,22 @@ export function updateSpecialAttacks(
   random: RandomSource = Math.random,
 ): SpecialAttackEvent[] {
   const events: SpecialAttackEvent[] = [];
-  const forceGeneralRecipient = (recipient: Soldier): boolean => {
-    const event = isGunTechnique(recipient.technique)
+  function dispatchForcedTechnique(recipient: Soldier): SpecialAttackEvent | null {
+    return isGunTechnique(recipient.technique)
       ? (() => { const target = findGunTarget(recipient, soldiers); return target ? executeGunAttack(recipient, target, currentTime, random, false, soldiers) : null; })()
       : isArrowTechnique(recipient.technique)
       ? (() => { const target = findArrowTarget(recipient, soldiers); return target ? executeArrowAttack(recipient, target, currentTime, random, false) : null; })()
       : recipient.technique === "CAVALRY_CHARGE" ? executeCavalryCharge(recipient, soldiers, obstacles, bases, currentTime, random, { consumeCooldown: false })
       : isSpearTechnique(recipient.technique) ? executeSpearAttack(recipient, soldiers, obstacles, bases, currentTime, random, false)
       : isNinjaTechnique(recipient.technique) ? executeNinjaAttack(recipient, soldiers, obstacles, bases, currentTime, random, "GENERAL_FORCED")
+      : isGeneralTechnique(recipient.technique) ? executeGeneralAttack(recipient, soldiers, obstacles, bases, currentTime, random, false, forceGeneralRecipient)
       : isStrategistTechnique(recipient.technique) ? executeStrategistAttack(recipient, soldiers, obstacles, bases, currentTime, random, false)
       : isMosaTechnique(recipient.technique) ? executeMosaAttack(recipient, soldiers, obstacles, bases, currentTime, random, false)
       : recipient.technique === "PROTOTYPE_AREA" ? executeSpecialAttack(recipient, findSpecialTargets(recipient, soldiers), soldiers, obstacles, bases, currentTime, false, random)
       : null;
+  }
+  const forceGeneralRecipient = (recipient: Soldier): boolean => {
+    const event = dispatchForcedTechnique(recipient);
     if (event) events.push(event);
     return event !== null;
   };
@@ -186,9 +192,10 @@ export function updateSpecialAttacks(
 
   for (const attacker of soldiers) {
     advanceCombatGauge(attacker, currentTime);
-    while (attacker.pendingMoutaiCharges > 0) {
-      attacker.pendingMoutaiCharges -= 1;
-      const reactive = executeCavalryCharge(attacker, soldiers, obstacles, bases, currentTime, random, { reactive: true, consumeCooldown: false });
+    while (attacker.pendingMoutaiSpecials > 0) {
+      attacker.pendingMoutaiSpecials -= 1;
+      if (!beginTechniqueAction(attacker, currentTime, random, false)) continue;
+      const reactive = dispatchForcedTechnique(attacker);
       if (reactive) events.push(reactive);
     }
     if (attacker.activeSpecialTechnique !== null && attacker.nextSpecialWaveAt !== null) {

@@ -38,52 +38,52 @@ describe("Phase 4H strategist", () => {
     expect(placement.x).toBeGreaterThan(caster.x); expect(placement.y).toBe(caster.y);
   });
 
-  it("creates one persistent fire zone, damages each victim once, is non-lethal, ignores MIGHT and respects KATON", () => {
+  it("creates a visual fire zone, is non-lethal, and lets KATON remove the kaen wave", () => {
     const caster = createSoldier("s", "player", "ai", 100, 100, "melee", undefined, strategist("STRATEGIST_FIRE_PLAN", ["MIGHT"]));
     const victim = createSoldier("v", "enemy", "ai", 145, 100); victim.hp = 2;
     const immune = createSoldier("k", "enemy", "ai", 145, 105, "melee", undefined, { ...strategist("STRATEGIST_FIRE_PLAY"), unitType: "PROTOTYPE", technique: "PROTOTYPE_AREA", rareSpecialAbilities: ["KATON"] });
-    const event = executeStrategistAttack(caster, [caster, victim, immune], [], [], 0, () => 1, true)!;
+    const event = executeStrategistAttack(caster, [caster, victim, immune], [], [], 0, () => 1, false)!;
     expect(victim.hp).toBe(1); expect(immune.hp).toBe(immune.maxHp); expect(immune.combatFeedbackMarker).toBeNull();
     updateStrategistFireZone(event.fireZone!, [caster, victim, immune], 500); expect(victim.hp).toBe(1);
-    expect(executeStrategistAttack(caster, [caster, victim], [], [], 100, () => 1, false)).toBeNull();
   });
 
-  it("damages a soldier entering an active zone later exactly once", () => {
+  it("keeps the persistent fire zone visual-only after the three scheduled processing waves", () => {
     const caster = createSoldier("s", "player", "ai", 100, 100, "melee", undefined, strategist("STRATEGIST_FIRE_ATTACK"));
     const initial = createSoldier("i", "enemy", "ai", 140, 100);
     const late = createSoldier("l", "enemy", "ai", 400, 100);
-    const zone = executeStrategistAttack(caster, [caster, initial, late], [], [], 0, () => 1, true)!.fireZone!;
+    const zone = executeStrategistAttack(caster, [caster, initial, late], [], [], 0, () => 1, false)!.fireZone!;
     late.x = zone.x; const hp = late.hp;
-    expect(updateStrategistFireZone(zone, [caster, initial, late], 500)).toEqual(["l"]); expect(late.hp).toBe(hp - 1);
+    expect(updateStrategistFireZone(zone, [caster, initial, late], 500)).toEqual([]); expect(late.hp).toBe(hp);
     expect(updateStrategistFireZone(zone, [caster, initial, late], 600)).toEqual([]);
   });
 
   it("false report applies confusion without damage or defense feedback", () => {
     const caster = createSoldier("s", "player", "ai", 100, 100, "melee", undefined, strategist("STRATEGIST_FALSE_REPORT"));
     const enemy = createSoldier("e", "enemy", "ai", 140, 100); enemy.specialAbilities = ["FORESIGHT"]; const hp = enemy.hp;
-    const event = executeStrategistAttack(caster, [caster, enemy], [], [], 0, () => 0, true)!;
-    expect(event.radius).toBe(BATTLE_RANGE_UNIT_PX * 3); expect(enemy.hp).toBe(hp); expect(enemy.isConfused).toBe(true);
+    const event = executeStrategistAttack(caster, [caster, enemy], [], [], 0, () => 0, false)!;
+    expect(event.radius).toBe(BATTLE_RANGE_UNIT_PX * 2.5); expect(enemy.hp).toBe(hp); expect(enemy.isConfused).toBe(true);
     expect(enemy.combatFeedbackMarker).toBeNull();
   });
 
-  it("sorcery bypasses defense, deals non-lethal one without MIGHT and applies shared confusion", () => {
+  it("sorcery bypasses defense, applies successful-attack bonuses, and applies shared confusion", () => {
     const caster = createSoldier("s", "player", "ai", 100, 100, "melee", undefined, strategist("STRATEGIST_SORCERY", ["MIGHT"]));
     const enemy = createSoldier("e", "enemy", "ai", 140, 100); enemy.specialAbilities = ["FORESIGHT"]; enemy.hp = 2;
-    const event = executeStrategistAttack(caster, [caster, enemy], [], [], 0, () => 0, true)!;
-    expect(enemy.hp).toBe(1); expect(enemy.combatFeedbackMarker).toBe("H"); expect(enemy.isConfused).toBe(true); expect(event.victimIds).toEqual(["e"]);
+    const event = executeStrategistAttack(caster, [caster, enemy], [], [], 0, () => 0, false)!;
+    expect(enemy.hp).toBe(0); expect(enemy.combatFeedbackMarker).toBe("H"); expect(enemy.isConfused).toBe(true); expect(event.victimIds).toEqual(["e"]);
   });
 
-  it("heals all active damaged allies in twelve units without clearing confusion", () => {
+  it("heals active damaged allies in the confirmed friendly 11x11 rectangle without clearing confusion", () => {
     const caster = createSoldier("s", "player", "ai", 100, 100, "melee", undefined, strategist("STRATEGIST_HEAL")); caster.hp -= 2; applyConfusion(caster);
     const general = createSoldier("g", "player", "ai", 200, 100, "melee", undefined, makePlayerDebugPreset("GENERAL_COMMAND")); general.hp -= 2;
     const healing = createSoldier("h", "player", "ai", 150, 100); healing.hp -= 2; healing.state = "HEALING";
-    const event = executeStrategistAttack(caster, [caster, general, healing], [], [], 0, () => 1, true)!;
-    expect(event.radius).toBe(BATTLE_RANGE_UNIT_PX * 12); expect(event.healed.map((h) => h.targetId)).toEqual(["s", "g"]);
+    const event = executeStrategistAttack(caster, [caster, general, healing], [], [], 0, () => 1, false)!;
+    expect(event.radius).toBe(BATTLE_RANGE_UNIT_PX * 5.5); expect(event.healed.map((h) => h.targetId)).toEqual(["s", "g"]);
     expect(caster.isConfused).toBe(true); expect(healing.hp).toBe(healing.maxHp - 2);
   });
 
   it("is a General Command recipient and forced activation preserves cooldown", () => {
     const general = createSoldier("g", "player", "ai", 100, 100, "melee", undefined, makePlayerDebugPreset("GENERAL_COMMAND"));
+    general.combatGauge = 401;
     const adviser = createSoldier("s", "player", "ai", 120, 100, "melee", undefined, strategist("STRATEGIST_FALSE_REPORT")); adviser.specialReadyAt = 99_999; applyConfusion(adviser);
     const enemy = createSoldier("e", "enemy", "ai", 140, 100);
     const events = updateSpecialAttacks([general, adviser, enemy], [], [], 100, false, () => 1);

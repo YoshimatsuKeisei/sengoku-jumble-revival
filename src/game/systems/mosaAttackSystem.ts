@@ -6,8 +6,7 @@ import { isValidCombatTarget } from "./combatTargetSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { startHitReaction } from "./reactionSystem";
 import { calculateSafeSpearKnockbackDistance } from "./spearAttackSystem";
-import { queueMoutaiOnDamage } from "./cavalryChargeSystem";
-import { hasSpecialAbility } from "./specialAbilitySystem";
+import { calculateSuccessfulAttackDamage } from "./specialAbilitySystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
 import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
@@ -60,12 +59,12 @@ export function executeMosaAttack(attacker: Soldier, soldiers: Soldier[], obstac
       target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
       event.defendedIds.push(target.id); continue;
     }
-    const damage = 1 + Number(hasSpecialAbility(attacker, "MIGHT")); applyDamage(target, damage); queueMoutaiOnDamage(target, damage);
+    const damage = calculateSuccessfulAttackDamage(attacker, target); applyDamage(target, damage);
     target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; event.hitIds.push(target.id);
     if (target.isDead) continue;
     let dx = target.x - attacker.x; let dy = target.y - attacker.y; const length = Math.hypot(dx, dy) || 1; dx /= length; dy /= length;
     const safe = calculateSafeSpearKnockbackDistance(target, dx, dy, getMosaKnockback(attacker.technique), soldiers, obstacles, bases);
-    startHitReaction(target, attacker, currentTime, safe); target.knockbackDirectionX = dx; target.knockbackDirectionY = dy;
+    startHitReaction(target, attacker, currentTime, safe, random, "SPECIAL_ATTACK"); target.knockbackDirectionX = dx; target.knockbackDirectionY = dy;
   }
   return event;
 }

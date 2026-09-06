@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BASE_CONFIG, BATTLEFIELD_CONFIG, CAMERA_CONFIG, MOVEMENT_SPEED_CONFIG, RECOVERY_CONFIG, SOLDIER_RADIUS } from "../config";
+import { BASE_CONFIG, BATTLEFIELD_CONFIG, CAMERA_CONFIG, MOVEMENT_SPEED_CONFIG, SOLDIER_RADIUS } from "../config";
 import { BATTLEFIELD_BASE_WORLD_RECTS } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import { calculateMoveSpeedFromFoot } from "../stats/soldierStats";
@@ -114,18 +114,18 @@ describe("Phase 3E base healing", () => {
     expect(soldier.state).toBe("HEALING");
   });
 
-  it("heals at exactly 1 HP/sec using delta time and caps at max HP", () => {
+  it("heals at the SWF maxHp/400 per update rate and caps at max HP", () => {
     const soldier = createSoldier("s", "player", "ai", 0, 0);
     soldier.state = "HEALING";
     soldier.hp = soldier.maxHp - 20;
+    const healingPerSecond = soldier.maxHp / 400 * 24;
     updateHealing(soldier, 0.5);
-    expect(soldier.hp).toBe(soldier.maxHp - 19.5);
+    expect(soldier.hp).toBeCloseTo(soldier.maxHp - 20 + healingPerSecond * 0.5);
     updateHealing(soldier, 5);
-    expect(soldier.hp).toBe(soldier.maxHp - 14.5);
+    expect(soldier.hp).toBeCloseTo(soldier.maxHp - 20 + healingPerSecond * 5.5);
     updateHealing(soldier, 100);
     expect(soldier.hp).toBe(soldier.maxHp);
     expect(soldier.state).toBe("NORMAL");
-    expect(RECOVERY_CONFIG.healingHpPerSecond).toBe(1);
   });
 
   it("derives rejoin exits from the selected top gate", () => {

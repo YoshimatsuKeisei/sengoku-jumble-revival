@@ -84,7 +84,7 @@ export function updateTemporaryOrder(soldier: Soldier, player: Soldier, currentT
   }
 
   clearEngagement(soldier);
-  if (order.type === "ADVANCE" || order.type === "NINJA_BARRIER_CHARGE") {
+  if (order.type === "ADVANCE" || order.type === "NINJA_BARRIER_CHARGE" || order.type === "JINTO_CHARGE") {
     soldier.moveTargetX = soldier.team === "player" ? BATTLEFIELD_CONFIG.enemyHomeX : BATTLEFIELD_CONFIG.playerHomeX;
     soldier.moveTargetY = soldier.y;
     return;
