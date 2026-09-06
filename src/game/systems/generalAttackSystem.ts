@@ -16,7 +16,7 @@ export type GeneralTechnique = "GENERAL_COMMAND" | "GENERAL_HEROIC" | "GENERAL_H
 export interface GeneralAttackEvent {
   kind: "GENERAL"; attackerId: string; team: Team; technique: GeneralTechnique; x: number; y: number;
   commandRadius: number; recipientIds: string[]; forcedAttackerIds: string[]; playerReadyIds: string[];
-  hitIds: string[]; defendedIds: string[]; healed: Array<{ targetId: string; amount: number }>;
+  hitIds: string[]; defendedIds: string[]; healed: Array<{ targetId: string; amount: number }>; isWave: boolean;
 }
 
 export function isGeneralTechnique(technique: UnitTechnique): technique is GeneralTechnique {
@@ -51,7 +51,7 @@ export function executeGeneralAttack(
   if (consumeCooldown && !beginTechniqueAction(general, currentTime, random, true)) return null;
   const event: GeneralAttackEvent = { kind: "GENERAL", attackerId: general.id, team: general.team, technique: general.technique,
     x: general.x, y: general.y, commandRadius: getTechniqueAreaWorld("GENERAL_COMMAND").width / 2, recipientIds: [], forcedAttackerIds: [],
-    playerReadyIds: [], hitIds: [], defendedIds: [], healed: [] };
+    playerReadyIds: [], hitIds: [], defendedIds: [], healed: [], isWave };
   if (general.technique === "GENERAL_HEAL") {
     for (const target of findGeneralHealTargets(general, soldiers)) {
       const requested = GENERAL_CONFIG.healAmount + Number(hasSpecialAbility(target, "RECOVERY_BOOST"));

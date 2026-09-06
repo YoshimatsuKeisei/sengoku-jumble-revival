@@ -12,7 +12,7 @@ import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceW
 
 export type MosaTechnique = "MOSA_SENPUU" | "MOSA_MUSOU" | "MOSA_KIJIN";
 export interface MosaAttackEvent { kind: "MOSA"; attackerId: string; team: Team; technique: MosaTechnique;
-  x: number; y: number; facingX: number; facingY: number; radius: number; hitIds: string[]; defendedIds: string[] }
+  x: number; y: number; facingX: number; facingY: number; radius: number; hitIds: string[]; defendedIds: string[]; isWave: boolean }
 export function isMosaTechnique(technique: UnitTechnique): technique is MosaTechnique {
   return technique === "MOSA_SENPUU" || technique === "MOSA_MUSOU" || technique === "MOSA_KIJIN";
 }
@@ -53,7 +53,7 @@ export function executeMosaAttack(attacker: Soldier, soldiers: Soldier[], obstac
   }
   const targets = findMosaTargets(attacker, soldiers);
   const event: MosaAttackEvent = { kind: "MOSA", attackerId: attacker.id, team: attacker.team, technique: attacker.technique,
-    x: attacker.x, y: attacker.y, facingX: attacker.facingX, facingY: attacker.facingY, radius: getMosaRadius(attacker.technique), hitIds: [], defendedIds: [] };
+    x: attacker.x, y: attacker.y, facingX: attacker.facingX, facingY: attacker.facingY, radius: getMosaRadius(attacker.technique), hitIds: [], defendedIds: [], isWave };
   for (const target of targets) {
     if (isDamageGuarded(target, "SPECIAL_ATTACK", random)) {
       target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;

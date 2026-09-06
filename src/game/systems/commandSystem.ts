@@ -3,6 +3,7 @@ import type { Soldier, TemporaryOrderType } from "../types";
 import { clearEngagement } from "./aiSystem";
 import { cancelAttack } from "./attackRuntime";
 import { clearConfusion } from "./confusionSystem";
+import { isInsideSupportRectangle } from "./specialAbilitySystem";
 
 function canReceiveOrder(soldier: Soldier, player: Soldier): boolean {
   return soldier.team === player.team
@@ -11,9 +12,9 @@ function canReceiveOrder(soldier: Soldier, player: Soldier): boolean {
     && soldier.state === "NORMAL";
 }
 
-export function findCommandTargets(player: Soldier, soldiers: Soldier[], radius: number): Soldier[] {
+export function findCommandTargets(player: Soldier, soldiers: readonly Soldier[]): Soldier[] {
   return soldiers.filter((soldier) => canReceiveOrder(soldier, player)
-    && Math.hypot(soldier.x - player.x, soldier.y - player.y) <= radius);
+    && isInsideSupportRectangle(player, soldier));
 }
 
 function applyOrder(soldier: Soldier, type: TemporaryOrderType, player: Soldier, currentTime: number, duration: number): void {
@@ -35,19 +36,25 @@ export function issueNinjaBarrierCharge(soldier: Soldier, source: Soldier, curre
 }
 
 export function issueAdvanceCommand(player: Soldier, soldiers: Soldier[], currentTime: number): Soldier[] {
-  const targets = findCommandTargets(player, soldiers, COMMAND_CONFIG.advanceRadius);
+  const targets = findCommandTargets(player, soldiers);
   for (const soldier of targets) applyOrder(soldier, "ADVANCE", player, currentTime, COMMAND_CONFIG.commandDurationMs);
   return targets;
 }
 
 export function issueDefendCommand(player: Soldier, soldiers: Soldier[], currentTime: number): Soldier[] {
-  const targets = findCommandTargets(player, soldiers, COMMAND_CONFIG.defendRadius);
+  const targets = findCommandTargets(player, soldiers);
   for (const soldier of targets) applyOrder(soldier, "DEFEND_ORDER", player, currentTime, COMMAND_CONFIG.commandDurationMs);
   return targets;
 }
 
+export function issueRetreatCommand(player: Soldier, soldiers: Soldier[], currentTime: number): Soldier[] {
+  const targets = findCommandTargets(player, soldiers);
+  for (const soldier of targets) applyOrder(soldier, "RETREAT", player, currentTime, COMMAND_CONFIG.commandDurationMs);
+  return targets;
+}
+
 export function issueRallyCommand(player: Soldier, soldiers: Soldier[], currentTime: number): Soldier[] {
-  const targets = soldiers.filter((soldier) => canReceiveOrder(soldier, player));
+  const targets = findCommandTargets(player, soldiers);
   for (const soldier of targets) applyOrder(soldier, "RALLY", player, currentTime, COMMAND_CONFIG.rallyMaxDurationMs);
   return targets;
 }
@@ -84,6 +91,11 @@ export function updateTemporaryOrder(soldier: Soldier, player: Soldier, currentT
   }
 
   clearEngagement(soldier);
+  if (order.type === "RETREAT") {
+    soldier.moveTargetX = soldier.team === "player" ? BATTLEFIELD_CONFIG.playerHomeX : BATTLEFIELD_CONFIG.enemyHomeX;
+    soldier.moveTargetY = soldier.y;
+    return;
+  }
   if (order.type === "ADVANCE" || order.type === "NINJA_BARRIER_CHARGE" || order.type === "JINTO_CHARGE") {
     soldier.moveTargetX = soldier.team === "player" ? BATTLEFIELD_CONFIG.enemyHomeX : BATTLEFIELD_CONFIG.playerHomeX;
     soldier.moveTargetY = soldier.y;

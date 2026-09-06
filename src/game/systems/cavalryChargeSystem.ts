@@ -12,7 +12,7 @@ import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceW
 
 export const CAVALRY_CHARGE_RADIUS = getTechniqueAreaWorld("CAVALRY_CHARGE").width / 2;
 export const CAVALRY_CHARGE_KNOCKBACK = SPECIAL_ATTACK_CONFIG.knockbackDistance * CAVALRY_CONFIG.chargeKnockbackMultiplier;
-export interface CavalryChargeEvent { kind: "CAVALRY"; attackerId: string; team: Team; x: number; y: number; targetIds: string[]; reactive: boolean }
+export interface CavalryChargeEvent { kind: "CAVALRY"; attackerId: string; team: Team; x: number; y: number; targetIds: string[]; reactive: boolean; isWave: boolean }
 export function getVerticalChargeDirection(attacker: Soldier, target: Soldier): number {
   if (target.y !== attacker.y) return target.y < attacker.y ? -1 : 1;
   let hash = 0; for (const character of target.id) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
@@ -75,5 +75,5 @@ export function executeCavalryCharge(attacker: Soldier, soldiers: Soldier[], obs
     const safe = calculateSafeCavalryKnockbackDistance(target, directionY, CAVALRY_CHARGE_KNOCKBACK, soldiers, obstacles, bases);
     startHitReaction(target, attacker, currentTime, safe, random, "SPECIAL_ATTACK"); target.knockbackDirectionX = 0; target.knockbackDirectionY = directionY;
   }
-  return { kind: "CAVALRY", attackerId: attacker.id, team: attacker.team, x: attacker.x, y: attacker.y, targetIds: hitIds, reactive };
+  return { kind: "CAVALRY", attackerId: attacker.id, team: attacker.team, x: attacker.x, y: attacker.y, targetIds: hitIds, reactive, isWave };
 }

@@ -16,7 +16,7 @@ export const SPEAR_STRIKE_KNOCKBACK = SPECIAL_ATTACK_CONFIG.knockbackDistance * 
 export const SPEAR_TECHNIQUE_RADIUS = getTechniqueAreaWorld("ASHIGARU_SPEAR_TECHNIQUE").width / 2;
 export const SPEAR_TECHNIQUE_KNOCKBACK = SPECIAL_ATTACK_CONFIG.knockbackDistance;
 export interface SpearAttackEvent { kind: "SPEAR"; attackerId: string; team: Team; x: number; y: number;
-  technique: "ASHIGARU_SPEAR_STRIKE" | "ASHIGARU_SPEAR_TECHNIQUE"; facingX: number; facingY: number; targetIds: string[] }
+  technique: "ASHIGARU_SPEAR_STRIKE" | "ASHIGARU_SPEAR_TECHNIQUE"; facingX: number; facingY: number; targetIds: string[]; isWave: boolean }
 
 export function isSpearTechnique(technique: UnitTechnique): technique is SpearAttackEvent["technique"] {
   return technique === "ASHIGARU_SPEAR_STRIKE" || technique === "ASHIGARU_SPEAR_TECHNIQUE";
@@ -86,5 +86,5 @@ export function executeSpearAttack(attacker: Soldier, soldiers: Soldier[], obsta
     startHitReaction(target, attacker, currentTime, safe, random, "SPECIAL_ATTACK"); target.knockbackDirectionX = dx; target.knockbackDirectionY = dy;
   }
   return { kind: "SPEAR", attackerId: attacker.id, team: attacker.team, x: attacker.x, y: attacker.y,
-    technique: attacker.technique, facingX: facing.x, facingY: facing.y, targetIds: hitIds };
+    technique: attacker.technique, facingX: facing.x, facingY: facing.y, targetIds: hitIds, isWave };
 }

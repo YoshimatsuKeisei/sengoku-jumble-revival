@@ -32,7 +32,7 @@ import {
 } from "./systems/baseContactSystem";
 import {
   issueAdvanceCommand,
-  issueDefendCommand,
+  issueRetreatCommand,
   issueRallyCommand,
   updateTemporaryOrders,
 } from "./systems/commandSystem";
@@ -138,6 +138,21 @@ import type {
 } from "./map/mapTransitionState";
 import { resolveCommittedFormationForRoster } from "./formation/formationState";
 import { createPostBattleSnapshot } from "./postBattle/postBattleState";
+import type { PostBattleSnapshot } from "./postBattle/postBattleState";
+import {
+  areBattleOutTransitionsComplete,
+  releaseBattleOutTargets,
+  updateBattleOutMovement,
+} from "./systems/battleOutSystem";
+import {
+  BATTLE_FRAME_SEQUENCE_ASSETS,
+  battleOutSequenceFor,
+  commandSequenceFor,
+  shouldShowCriticalRetreat,
+  specialCasterSequencesFor,
+  temporaryOrderSequenceFor,
+} from "./rendering/battleFrameSequenceManifest";
+import { BattleFrameSequenceRenderer } from "./rendering/battleFrameSequenceRenderer";
 
 export class BattleScene extends Phaser.Scene {
   private selectedMapCell: SelectedMapCell | null = null;
@@ -153,6 +168,7 @@ export class BattleScene extends Phaser.Scene {
     { pose: CharacterPose; until: number }
   >();
   private battleEffectRenderer: BattleEffectRenderer | null = null;
+  private battleFrameSequenceRenderer: BattleFrameSequenceRenderer | null = null;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private commandKeys!: Record<"A" | "S" | "D", Phaser.Input.Keyboard.Key>;
   private zoomKeys!: Record<
@@ -174,6 +190,10 @@ export class BattleScene extends Phaser.Scene {
   private rangeDisplayUntil = 0;
   private rangeDisplayRadius = 0;
   private result: BattleResult = null;
+  private pendingPostBattleSnapshot: PostBattleSnapshot | null = null;
+  private criticalRetreatVisualIds = new Set<string>();
+  private battleOutVisualIds = new Set<string>();
+  private temporaryOrderVisuals = new Map<string, TemporaryOrderType>();
   private arrowProjectiles: ArrowProjectileRuntime[] = [];
   private atlasArrowProjectiles = new WeakMap<
     ArrowProjectileRuntime,
@@ -209,6 +229,9 @@ export class BattleScene extends Phaser.Scene {
     for (const atlas of BATTLE_PANEL_PRELOAD_ATLASES) {
       if (!this.textures.exists(atlas.key))
         this.load.image(atlas.key, atlas.url);
+    }
+    for (const asset of BATTLE_FRAME_SEQUENCE_ASSETS) {
+      if (!this.textures.exists(asset.key)) this.load.image(asset.key, asset.url);
     }
   }
 
@@ -265,6 +288,7 @@ export class BattleScene extends Phaser.Scene {
       this,
       UNIT_ATLAS_ASSETS,
     );
+    this.battleFrameSequenceRenderer = new BattleFrameSequenceRenderer(this);
     this.battlePanelUi = new BattlePanelUi(this, this.time.now);
     this.characterSprites.clear();
     this.characterVisualRuntimes.clear();
@@ -330,6 +354,11 @@ export class BattleScene extends Phaser.Scene {
       this.characterPoseOverrides.clear();
       this.battleEffectRenderer?.destroy();
       this.battleEffectRenderer = null;
+      this.battleFrameSequenceRenderer?.destroy();
+      this.battleFrameSequenceRenderer = null;
+      this.criticalRetreatVisualIds.clear();
+      this.battleOutVisualIds.clear();
+      this.temporaryOrderVisuals.clear();
       this.battlePanelUi?.destroy();
       this.battlePanelUi = null;
       this.clearSpearEffects();
@@ -361,7 +390,15 @@ export class BattleScene extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(this.armySetupPanelKey))
       toggleArmySetupPanel();
     this.battleEffectRenderer?.update(time);
-    if (this.result) return;
+    updateBattleOutMovement(this.soldiers, delta / 1000);
+    releaseBattleOutTargets(this.soldiers);
+    this.syncBattleFrameEffects(time);
+    if (this.result) {
+      this.battleFrameSequenceRenderer?.update(time);
+      this.draw();
+      if (areBattleOutTransitionsComplete(this.soldiers)) this.finishPostBattleTransition();
+      return;
+    }
     updateNinjaDashes(this.soldiers, time);
     updateReactions(
       this.soldiers,
@@ -478,19 +515,18 @@ export class BattleScene extends Phaser.Scene {
     }
     this.arrowProjectiles = activeArrows;
     updateAttackStates(this.soldiers, this.bases, time, this.result !== null);
+    this.syncBattleFrameEffects(time);
+    this.battleFrameSequenceRenderer?.update(time);
     this.result = getBattleResult(this.soldiers, this.bases);
     if (this.result) {
-      const snapshot = createPostBattleSnapshot(
+      this.pendingPostBattleSnapshot = createPostBattleSnapshot(
         this.result,
         this.soldiers,
         this.bases,
         this.selectedMapCell,
       );
-      this.arrowProjectiles = [];
-      this.strategistFireZones = [];
-      this.clearSpearEffects();
-      this.battleEffectRenderer?.destroy();
-      this.scene.start("PostBattle", { snapshot });
+      this.draw();
+      if (areBattleOutTransitionsComplete(this.soldiers)) this.finishPostBattleTransition();
       return;
     }
     if (!this.result) updateNormalCombatContests(this.soldiers, time);
@@ -520,7 +556,7 @@ export class BattleScene extends Phaser.Scene {
     }
     for (const soldier of this.soldiers) {
       const characterSprite = this.characterSprites.get(soldier.id);
-      if (soldier.isDead) {
+      if (soldier.isDead && soldier.battleOutState !== "EXITING") {
         characterSprite?.setVisible(false);
         continue;
       }
@@ -650,13 +686,13 @@ export class BattleScene extends Phaser.Scene {
       return;
     let order: TemporaryOrderType | null = null;
     if (Phaser.Input.Keyboard.JustDown(this.commandKeys.A)) {
-      issueDefendCommand(player, this.soldiers, time);
-      order = "DEFEND_ORDER";
-      this.rangeDisplayRadius = COMMAND_CONFIG.defendRadius;
+      issueRetreatCommand(player, this.soldiers, time);
+      order = "RETREAT";
+      this.rangeDisplayRadius = 0;
     } else if (Phaser.Input.Keyboard.JustDown(this.commandKeys.S)) {
       issueAdvanceCommand(player, this.soldiers, time);
       order = "ADVANCE";
-      this.rangeDisplayRadius = COMMAND_CONFIG.advanceRadius;
+      this.rangeDisplayRadius = 0;
     } else if (Phaser.Input.Keyboard.JustDown(this.commandKeys.D)) {
       issueRallyCommand(player, this.soldiers, time);
       order = "RALLY";
@@ -666,8 +702,94 @@ export class BattleScene extends Phaser.Scene {
     clearConfusionByCommand(player);
     this.lastOrder = order;
     this.lastCommandAt = time;
+    this.battleFrameSequenceRenderer?.play(
+      commandSequenceFor(order as "RETREAT" | "ADVANCE" | "RALLY"),
+      time,
+      { x: player.x, y: player.y },
+      { getRoot: () => this.soldierPoint(player.id) },
+    );
     this.rangeDisplayUntil =
       this.rangeDisplayRadius > 0 ? time + COMMAND_CONFIG.rangeDisplayMs : 0;
+  }
+
+  private finishPostBattleTransition(): void {
+    const snapshot = this.pendingPostBattleSnapshot;
+    if (!snapshot) return;
+    this.pendingPostBattleSnapshot = null;
+    this.arrowProjectiles = [];
+    this.strategistFireZones = [];
+    this.clearSpearEffects();
+    this.battleEffectRenderer?.destroy();
+    this.battleFrameSequenceRenderer?.destroy();
+    this.scene.start("PostBattle", { snapshot });
+  }
+
+  private syncBattleFrameEffects(time: number): void {
+    for (const soldier of this.soldiers) {
+      const criticalRetreatActive = shouldShowCriticalRetreat(soldier);
+      if (criticalRetreatActive) {
+        if (!this.criticalRetreatVisualIds.has(soldier.id)) {
+          this.criticalRetreatVisualIds.add(soldier.id);
+          this.battleFrameSequenceRenderer?.play(
+            "critical_retreat",
+            time,
+            soldier,
+            {
+              getRoot: () => this.soldierPoint(soldier.id),
+              isActive: () => shouldShowCriticalRetreat(soldier),
+            },
+          );
+        }
+      } else {
+        this.criticalRetreatVisualIds.delete(soldier.id);
+      }
+
+      if (soldier.isDead && soldier.battleOutState === "EXITING" && !this.battleOutVisualIds.has(soldier.id)) {
+        this.battleOutVisualIds.add(soldier.id);
+        this.battleFrameSequenceRenderer?.play(
+          battleOutSequenceFor(soldier.team),
+          time,
+          soldier,
+          {
+            getRoot: () => this.soldierPoint(soldier.id),
+            isActive: () => soldier.battleOutState === "EXITING",
+          },
+        );
+      }
+
+      const currentOrder = soldier.temporaryOrder?.type;
+      const sequence = currentOrder ? temporaryOrderSequenceFor(currentOrder, soldier.team) : null;
+      if (!sequence) {
+        this.temporaryOrderVisuals.delete(soldier.id);
+      } else if (this.temporaryOrderVisuals.get(soldier.id) !== currentOrder) {
+        this.temporaryOrderVisuals.set(soldier.id, currentOrder!);
+        this.battleFrameSequenceRenderer?.play(
+          sequence,
+          time,
+          soldier,
+          { getRoot: () => this.soldierPoint(soldier.id) },
+        );
+      }
+    }
+  }
+
+  private playExtractedCasterEffects(
+    technique: Soldier["technique"],
+    attackerId: string,
+    fallback: { x: number; y: number },
+  ): number {
+    const point = this.soldierPoint(attackerId, fallback);
+    if (!point) return 0;
+    let played = 0;
+    for (const sequence of specialCasterSequencesFor(technique)) {
+      if (this.battleFrameSequenceRenderer?.play(
+        sequence,
+        this.time.now,
+        point,
+        { getRoot: () => this.soldierPoint(attackerId) },
+      )) played += 1;
+    }
+    return played;
   }
 
   private updateCamera(player: Soldier): void {
@@ -935,6 +1057,8 @@ export class BattleScene extends Phaser.Scene {
   private showCavalryAttackEffect(
     event: Extract<SpecialAttackEvent, { kind: "CAVALRY" }>,
   ): void {
+    if (event.isWave) return;
+    if (this.playExtractedCasterEffects("CAVALRY_CHARGE", event.attackerId, event) > 0) return;
     const action = resolveTechniqueActionEffects("CAVALRY_CHARGE");
     if (action && this.actionAtlasReady(action, event.team)) {
       this.playActionRole(
@@ -969,6 +1093,8 @@ export class BattleScene extends Phaser.Scene {
   private showSpearAttackEffect(
     event: Extract<SpecialAttackEvent, { kind: "SPEAR" }>,
   ): void {
+    if (event.isWave && specialCasterSequencesFor(event.technique).length > 0) return;
+    if (this.playExtractedCasterEffects(event.technique, event.attackerId, event) > 0) return;
     const action = resolveTechniqueActionEffects(event.technique);
     if (!action) return;
     if (!actionHasIndependentEffects(action)) return;
@@ -1004,6 +1130,8 @@ export class BattleScene extends Phaser.Scene {
   private showMosaAttackEffect(
     event: Extract<SpecialAttackEvent, { kind: "MOSA" }>,
   ): void {
+    if (event.isWave && specialCasterSequencesFor(event.technique).length > 0) return;
+    if (this.playExtractedCasterEffects(event.technique, event.attackerId, event) > 0) return;
     const action = resolveTechniqueActionEffects(event.technique);
     if (!action) return;
     if (!actionHasIndependentEffects(action)) return;
@@ -1185,6 +1313,17 @@ export class BattleScene extends Phaser.Scene {
     event: Extract<SpecialAttackEvent, { kind: "GENERAL" }>,
   ): void {
     const action = resolveTechniqueActionEffects(event.technique);
+    const extractedCaster = specialCasterSequencesFor(event.technique).length > 0;
+    if (extractedCaster && !event.isWave && this.playExtractedCasterEffects(event.technique, event.attackerId, event) > 0) {
+      if (action) {
+        const hitIds = event.healed.length > 0
+          ? event.healed.map((heal) => heal.targetId)
+          : event.recipientIds;
+        this.playReferencesAtSoldiers(this.effectReferences(action, "hit", event.team), hitIds);
+      }
+      return;
+    }
+    if (extractedCaster && event.isWave) return;
     if (action && this.actionAtlasReady(action, event.team)) {
       this.playActionRole(
         action,

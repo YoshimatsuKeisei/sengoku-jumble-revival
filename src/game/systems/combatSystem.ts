@@ -21,6 +21,7 @@ export function applyDamage(target: Soldier, damage: number): void {
     clearConfusion(target, "BATTLE_OUT");
     // `isDead` is retained as a legacy runtime flag. HP 0 means battle withdrawal.
     target.isDead = true;
+    target.battleOutState = "EXITING";
     target.targetId = null;
     target.engagementStartedAt = null;
     target.engagementOriginX = null;

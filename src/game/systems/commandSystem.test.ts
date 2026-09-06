@@ -6,8 +6,10 @@ import {
   issueAdvanceCommand,
   issueRallyCommand,
   issueDefendCommand,
+  issueRetreatCommand,
   updateTemporaryOrder,
 } from "./commandSystem";
+import { swfCellsToWorldX, swfCellsToWorldY } from "./techniqueCombatProfiles";
 import { updateRecoveryStates } from "./recoverySystem";
 
 function setup() {
@@ -37,7 +39,7 @@ describe("temporary command system", () => {
     expect(enemy.temporaryOrder).toBeNull();
   });
 
-  it("RALLY affects every living NORMAL allied AI and excludes recovery states", () => {
+  it("RALLY uses the same 11x11 area and excludes recovery states", () => {
     const { player, near, far, soldiers } = setup();
     const retreating = createSoldier("p3", "player", "ai", 0, 0);
     const healing = createSoldier("p4", "player", "ai", 0, 0);
@@ -48,11 +50,33 @@ describe("temporary command system", () => {
     rejoining.state = "REJOINING";
     dead.isDead = true;
     const targets = issueRallyCommand(player, [...soldiers, retreating, healing, rejoining, dead], 0);
-    expect(targets).toEqual([near, far]);
+    expect(targets).toEqual([near]);
     expect(retreating.temporaryOrder).toBeNull();
     expect(healing.temporaryOrder).toBeNull();
     expect(rejoining.temporaryOrder).toBeNull();
     expect(dead.temporaryOrder).toBeNull();
+  });
+
+  it("RETREAT is a distinct temporary order and never overwrites base strategy", () => {
+    const { player, near, soldiers } = setup();
+    issueRetreatCommand(player, soldiers, 0);
+    updateTemporaryOrder(near, player, 100);
+    expect(near.temporaryOrder?.type).toBe("RETREAT");
+    expect(near.moveTargetX).toBe(BATTLEFIELD_CONFIG.playerHomeX);
+    expect(near.strategy).toBe("defend");
+    expect(near.state).toBe("NORMAL");
+  });
+
+  it("selects command recipients with an axis-aligned 11x11 rectangle", () => {
+    const player = createSoldier("p", "player", "player", 500, 400);
+    const corner = createSoldier("corner", "player", "ai",
+      player.x + swfCellsToWorldX(4.99), player.y + swfCellsToWorldY(4.99));
+    const outsideX = createSoldier("outside-x", "player", "ai",
+      player.x + swfCellsToWorldX(5.01), player.y);
+    const outsideY = createSoldier("outside-y", "player", "ai",
+      player.x, player.y + swfCellsToWorldY(5.01));
+    const targets = issueAdvanceCommand(player, [player, corner, outsideX, outsideY], 0);
+    expect(targets).toEqual([corner]);
   });
 
   it("ADVANCE moves toward the enemy side without changing strategy", () => {
@@ -99,6 +123,7 @@ describe("temporary command system", () => {
 
   it("RALLY follows the player's current position and completes in the rally ring", () => {
     const { player, far, soldiers } = setup();
+    far.x = 300;
     issueRallyCommand(player, soldiers, 0);
     player.x = 200;
     player.y = 300;

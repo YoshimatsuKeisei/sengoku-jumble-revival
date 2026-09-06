@@ -87,5 +87,6 @@ export function createSoldier(
     moveTargetX: null,
     moveTargetY: null,
     isDead: false,
+    battleOutState: "NONE",
   };
 }
