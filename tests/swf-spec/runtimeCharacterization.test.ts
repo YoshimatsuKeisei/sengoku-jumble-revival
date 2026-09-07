@@ -6,6 +6,7 @@ import type { Soldier } from "../../src/game/types";
 import { captureSoldierPositions, resolveBaseMovementContacts } from "../../src/game/systems/baseContactSystem";
 import { getBaseAttackSurfaceRect, getBaseRect } from "../../src/game/systems/battlefieldGeometry";
 import { createBattleBases, getBaseForTeam, resolveBaseAccessCollisions } from "../../src/game/systems/baseSystem";
+import { COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 
 function unit(id: string, team: "player" | "enemy", sourceX: number, sourceY = 450): Soldier {
@@ -62,6 +63,32 @@ describe("runtime characterization for major combat bugs", () => {
     expect(archer.specialLockUntil).toBeGreaterThan(1_000);
   });
 
+  it("currently dumps banked ranged gauge as a rapid burst when a target enters range", () => {
+    const archer = unit("banked-archer", "player", 520);
+    const enemy = unit("enemy", "enemy", 900);
+    archer.unitType = "ARCHER";
+    archer.technique = "ARCHER_ARROW";
+    archer.stats.skill = 100;
+    archer.combatGauge = 0;
+    archer.combatGaugeUpdatedAt = 0;
+
+    // While the enemy is out of arrow range, repeated gauge updates accumulate
+    // without being consumed because no ranged attack can start.
+    const bankedAt = COMBAT_GAUGE_UPDATE_INTERVAL_MS * 10 + 1;
+    expect(updateSpecialAttacks([archer, enemy], [], createBattleBases(), bankedAt, false, () => 1)).toEqual([]);
+    expect(archer.combatGauge).toBe(1_000);
+
+    // Move the enemy into range. With a one-SWF-tick ranged action lock, the
+    // stored gauge can now be drained in successive ~50 ms scene updates.
+    enemy.x = unit("range-marker", "enemy", 600).x;
+    let arrows = 0;
+    for (const offset of [0, 50, 100, 150, 200]) {
+      const events = updateSpecialAttacks([archer, enemy], [], createBattleBases(), bankedAt + offset, false, () => 1);
+      arrows += events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id).length;
+    }
+    expect(arrows).toBe(5);
+  });
+
   it("currently turns base re-entry during the contact lock into rectangle snapback without another hit", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "enemy");
@@ -78,8 +105,6 @@ describe("runtime characterization for major combat bugs", () => {
     const lockAfterFirstHit = attacker.baseContactLockTicks;
     expect(lockAfterFirstHit).toBeGreaterThan(0);
 
-    // Reproduce the BattleScene ordering after movement has carried the unit
-    // just inside the base again while the contact lock is still active.
     const beforeReentry = new Map([[attacker.id, { x: rect.x - SOLDIER_RADIUS, y: attacker.y }]]);
     attacker.x = rect.x + 1;
     resolveBaseMovementContacts([attacker], bases, beforeReentry, 1, () => 0.99);
@@ -97,8 +122,6 @@ describe("runtime characterization for major combat bugs", () => {
     const surface = getBaseAttackSurfaceRect(base);
     const attacker = unit("off-core-attacker", "player", 800);
 
-    // Stay inside the full base vertical span but immediately above the narrow
-    // attack surface. A charge unit preserves its current Y while advancing.
     attacker.y = surface.y - SOLDIER_RADIUS - 2;
     expect(attacker.y).toBeGreaterThan(rect.y);
     expect(attacker.y).toBeLessThan(rect.y + rect.height);
