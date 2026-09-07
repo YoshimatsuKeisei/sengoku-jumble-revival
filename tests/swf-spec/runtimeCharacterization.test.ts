@@ -72,21 +72,20 @@ describe("runtime characterization for major combat bugs", () => {
     archer.combatGauge = 0;
     archer.combatGaugeUpdatedAt = 0;
 
-    // While the enemy is out of arrow range, repeated gauge updates accumulate
-    // without being consumed because no ranged attack can start.
     const bankedAt = COMBAT_GAUGE_UPDATE_INTERVAL_MS * 10 + 1;
     expect(updateSpecialAttacks([archer, enemy], [], createBattleBases(), bankedAt, false, () => 1)).toEqual([]);
     expect(archer.combatGauge).toBe(1_000);
 
-    // Move the enemy into range. With a one-SWF-tick ranged action lock, the
-    // stored gauge can now be drained in successive ~50 ms scene updates.
     enemy.x = unit("range-marker", "enemy", 600).x;
     let arrows = 0;
     for (const offset of [0, 50, 100, 150, 200]) {
       const events = updateSpecialAttacks([archer, enemy], [], createBattleBases(), bankedAt + offset, false, () => 1);
       arrows += events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id).length;
     }
-    expect(arrows).toBe(5);
+    // Strict >200 readiness means 1000 drains as 1000→800→600→400→200,
+    // yielding four launches in roughly 150 ms before the fifth check is blocked.
+    expect(arrows).toBe(4);
+    expect(archer.combatGauge).toBe(200);
   });
 
   it("currently turns base re-entry during the contact lock into rectangle snapback without another hit", () => {
