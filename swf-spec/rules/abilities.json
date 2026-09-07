@@ -6,6 +6,13 @@
       "category": "ability",
       "expected": { "actionLockTicks": 10, "trapStateTicks": 20, "retriggerWhileTrapStateActive": false },
       "evidence": { "reference": "evidence/trap_boundary.md" }
+    },
+    {
+      "id": "DOUBLE_SPECIAL_MAX_TWO_ACTIVATIONS",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": { "maxTotalActivationsPerSuccessfulProc": 2 },
+      "evidence": { "reference": "evidence/double_special_cardinality.md" }
     }
   ]
 }
