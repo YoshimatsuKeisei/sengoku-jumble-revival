@@ -1,0 +1,11 @@
+{
+  "rules": [
+    {
+      "id": "TRAP_ACTIVE_STATE_DEDUPES_RECHECK",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": { "actionLockTicks": 10, "trapStateTicks": 20, "retriggerWhileTrapStateActive": false },
+      "evidence": { "reference": "evidence/trap_boundary.md" }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "rules": [
+    {
+      "id": "BASE_CONTACT_BOUNCE_SEQUENCE",
+      "status": "inferred",
+      "category": "base",
+      "expected": { "contactCausesDamageThenBounce": true, "mustNotOscillateAtBoundary": true },
+      "evidence": { "reference": "evidence/base_contact.md" }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "rules": [
+    {
+      "id": "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH",
+      "status": "unconfirmed",
+      "category": "combat",
+      "expected": { "projectileLaunchesPerAttackCycle": 1 },
+      "evidence": { "reference": "evidence/ranged_cycle.md" }
+    }
+  ]
+}

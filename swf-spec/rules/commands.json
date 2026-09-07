@@ -1,0 +1,11 @@
+{
+  "rules": [
+    {
+      "id": "GENERAL_SAME_TICK_DEDUPE",
+      "status": "inferred",
+      "category": "command",
+      "expected": { "maxForcedActivationsPerSoldierPerTick": 1 },
+      "evidence": { "reference": "evidence/general_same_tick.md" }
+    }
+  ]
+}

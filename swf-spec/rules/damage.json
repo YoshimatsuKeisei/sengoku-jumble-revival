@@ -1,0 +1,11 @@
+{
+  "rules": [
+    {
+      "id": "DAMAGE_REACTION_PRIORITY",
+      "status": "confirmed",
+      "category": "damage",
+      "expected": { "priority": ["death", "hit_stun", "emergency_retreat", "normal_action"] },
+      "evidence": { "reference": "evidence/damage_priority.md" }
+    }
+  ]
+}
