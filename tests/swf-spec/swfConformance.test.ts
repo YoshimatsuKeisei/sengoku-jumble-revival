@@ -76,7 +76,8 @@ describe("SWF conformance: confirmed rules", () => {
 
 describe("SWF conformance: pending evidence", () => {
   it("does not silently promote inferred/unconfirmed major-bug rules", () => {
-    expect(baseSpec.rules[0].status).toBe("inferred");
+    expect(baseSpec.rules.find((candidate) => candidate.id === "BASE_CONTACT_BOUNCE_SEQUENCE")?.status).toBe("inferred");
+    expect(baseSpec.rules.find((candidate) => candidate.id === "BASE_ATTACK_SURFACE_VERTICAL_SPAN")?.status).toBe("unconfirmed");
     expect(commandSpec.rules[0].status).toBe("inferred");
     expect(combatSpec.rules[0].status).toBe("unconfirmed");
   });
