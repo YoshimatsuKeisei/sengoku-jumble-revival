@@ -66,7 +66,7 @@ import {
   updateSpecialAttacks,
   type SpecialAttackEvent,
 } from "./systems/specialAttackSystem";
-import { updateInvaderTrapMovement } from "./systems/trapAbilitySystem";
+import { updateEnemyFenceTrapContacts } from "./systems/trapAbilitySystem";
 import {
   canPlayerContinueManualPursuitDuringWindup,
   canPlayerMoveInCurrentState,
@@ -612,7 +612,6 @@ export class BattleScene extends Phaser.Scene {
       time,
       this.bases,
     );
-    updateInvaderTrapMovement(this.soldiers, movementStartPositions, time);
     resolveBaseMovementContacts(
       this.soldiers,
       this.bases,
@@ -621,6 +620,7 @@ export class BattleScene extends Phaser.Scene {
     );
     separateSoldiers(this.soldiers);
     resolveObstacleOverlaps(this.soldiers, BATTLE_OBSTACLES);
+    updateEnemyFenceTrapContacts(this.soldiers, BATTLE_OBSTACLES, time);
     resolveBaseAccessCollisions(this.soldiers, this.bases);
     const leftDown = this.input.activePointer.leftButtonDown();
     const pressedThisFrame = leftDown && !this.previousLeftDown;

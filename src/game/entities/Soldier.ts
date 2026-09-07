@@ -54,6 +54,7 @@ export function createSoldier(
     specialLockUntil: 0,
     abilityActionLockUntil: 0,
     trapStateUntil: 0,
+    touchingEnemyFenceIds: [],
     activeSpecialTechnique: null,
     specialWavesRemaining: 0,
     nextSpecialWaveAt: null,

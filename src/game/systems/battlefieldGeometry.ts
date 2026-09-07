@@ -40,6 +40,33 @@ export function getBaseAttackSurfaceRect(base: Pick<BattleBase, "x" | "y" | "wid
   return getBaseDamageCoreRect(base);
 }
 
+export interface BaseFrontContactSegment {
+  x: number;
+  minY: number;
+  maxY: number;
+}
+
+/** Shared front boundary used by both base contact attacks and base access collision. */
+export function getBaseFrontAccessBoundaryX(
+  base: Pick<BattleBase, "x" | "y" | "width" | "height" | "team">,
+): number {
+  const rect = getBaseRect(base);
+  return base.team === "enemy"
+    ? rect.x - SOLDIER_RADIUS
+    : rect.x + rect.width + SOLDIER_RADIUS;
+}
+
+export function getBaseAttackContactSegment(
+  base: Pick<BattleBase, "x" | "y" | "width" | "height" | "team">,
+): BaseFrontContactSegment {
+  const surface = getBaseAttackSurfaceRect(base);
+  return {
+    x: getBaseFrontAccessBoundaryX(base),
+    minY: surface.y - SOLDIER_RADIUS,
+    maxY: surface.y + surface.height + SOLDIER_RADIUS,
+  };
+}
+
 function getBaseGateRect(base: BattleBase, gate: BaseGate): Rect {
   return { ...BATTLEFIELD_BASE_GATE_WORLD_RECTS[base.team][gate] };
 }

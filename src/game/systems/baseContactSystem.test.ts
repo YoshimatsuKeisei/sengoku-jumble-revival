@@ -9,7 +9,7 @@ import {
   isBaseHitBlockedByFortify,
   resolveBaseMovementContacts,
 } from "./baseContactSystem";
-import { getBaseAttackSurfaceRect } from "./battlefieldGeometry";
+import { getBaseAttackContactSegment, getBaseAttackSurfaceRect } from "./battlefieldGeometry";
 import { createBattleBases, getBaseForTeam } from "./baseSystem";
 
 function crossEnemySurface(attacker: Soldier, base: BattleBase) {
@@ -95,7 +95,7 @@ describe("SWF movement-contact base attacks", () => {
       const defenders = makeDefenders();
       if (blocked) defenders[0].specialAbilities = ["FORTIFY"];
       const previous = crossEnemySurface(attacker, base);
-      const contactX = attacker.x;
+      const contactX = getBaseAttackContactSegment(base).x;
       resolveBaseMovementContacts([attacker, ...defenders], bases, previous, 0, blocked ? () => 0 : () => 0.99);
       expect(attacker.x).toBeLessThan(contactX);
       expect(contactX - attacker.x).toBeCloseTo(getBaseAttackBounceDistance(defenders));

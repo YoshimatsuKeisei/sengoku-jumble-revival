@@ -169,8 +169,14 @@ export function updateSpecialAttacks(
       : null;
   }
   const forceGeneralRecipient = (recipient: Soldier): boolean => {
+    // General-forced techniques ignore gauge consumption, not the one-action
+    // runtime guard. Without this guard a recipient could fire here and then
+    // fire again from its autonomous branch later in this same update.
+    if (recipient.isDead || recipient.hp <= 0 || recipient.state !== "NORMAL"
+      || recipient.reactionState !== "NONE" || recipient.combatActionState !== "IDLE"
+      || recipient.activeSpecialTechnique !== null || currentTime < recipient.specialLockUntil) return false;
     const event = dispatchForcedTechnique(recipient);
-    if (event) events.push(event);
+    if (event && beginTechniqueAction(recipient, currentTime, random, false)) events.push(event);
     return event !== null;
   };
 
@@ -191,7 +197,7 @@ export function updateSpecialAttacks(
   };
 
   for (const attacker of soldiers) {
-    advanceCombatGauge(attacker, currentTime);
+    const autonomousDecisionTick = advanceCombatGauge(attacker, currentTime);
     while (attacker.pendingMoutaiSpecials > 0) {
       attacker.pendingMoutaiSpecials -= 1;
       if (!beginTechniqueAction(attacker, currentTime, random, false)) continue;
@@ -210,6 +216,7 @@ export function updateSpecialAttacks(
       }
     }
     clearTechniqueActionIfComplete(attacker, currentTime);
+    if (attacker.controller === "ai" && !autonomousDecisionTick) continue;
     if (!canUseSpecial(attacker, currentTime)) continue;
     if (!hasBattleActivationContext(attacker, soldiers)) continue;
     if (attacker.controller === "player" && !playerRequested) continue;

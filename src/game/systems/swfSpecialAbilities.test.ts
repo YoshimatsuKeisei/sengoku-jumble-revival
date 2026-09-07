@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { battlefieldSourcePointToWorld } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
-import { REACTION_CONFIG } from "../config";
+import { BATTLE_OBSTACLES, REACTION_CONFIG, SOLDIER_RADIUS } from "../config";
 import type { Soldier, SoldierLoadout } from "../types";
 import { updateMeleeAI } from "./aiSystem";
 import { applyDamage } from "./combatSystem";
@@ -31,7 +30,7 @@ import {
   rosterSlotDrawHasAbility,
 } from "./specialAbilitySystem";
 import { updateSpecialAttacks } from "./specialAttackSystem";
-import { updateInvaderTrapMovement } from "./trapAbilitySystem";
+import { updateEnemyFenceTrapContacts } from "./trapAbilitySystem";
 import { normalizeRareSpecialAbilityId, validateSoldierLoadout } from "./unitLoadoutSystem";
 
 function unit(id: string, team: "player" | "enemy" = "player", x = 500, y = 450): Soldier {
@@ -175,13 +174,12 @@ describe("SWF special ability hooks", () => {
     expect(defenders[0].merits.recovery).toBe(30);
   });
 
-  it("checks TRAP during movement in the enemy half, samples two slots and floors HP at two", () => {
-    const source = battlefieldSourcePointToWorld({ x: 901, y: 450 });
-    const invader = unit("invader", "player", source.x, source.y); invader.hp = 1;
+  it("checks TRAP once on a new enemy-fence contact, samples two slots and floors HP at two", () => {
+    const fence = BATTLE_OBSTACLES.find((candidate) => candidate.id === "enemy-upper")!;
+    const invader = unit("invader", "player", fence.x - SOLDIER_RADIUS, fence.y + fence.height / 2); invader.hp = 1;
     const defenders = roster("enemy", "TRAP"); defenders[0].isDead = true;
     const soldiers = [invader, ...defenders];
-    const previous = new Map([[invader.id, { x: invader.x - 1, y: invader.y }]]);
-    expect(updateInvaderTrapMovement(soldiers, previous, 100, () => 0)).toEqual([invader.id]);
+    expect(updateEnemyFenceTrapContacts(soldiers, BATTLE_OBSTACLES, 100, () => 0)).toEqual([invader.id]);
     expect(invader.hp).toBe(2);
     expect(invader.trapStateUntil).toBeGreaterThan(invader.abilityActionLockUntil);
   });

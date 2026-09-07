@@ -1,9 +1,9 @@
-import { BASE_CONTACT_CONFIG, SOLDIERS_PER_TEAM, SOLDIER_RADIUS } from "../config";
+import { BASE_CONTACT_CONFIG, SOLDIERS_PER_TEAM } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, Soldier, Team } from "../types";
 import { startEngagement } from "./aiSystem";
 import { applyBaseAttackBounce } from "./baseAttackBounceSystem";
-import { getBaseAttackSurfaceRect } from "./battlefieldGeometry";
+import { getBaseAttackContactSegment } from "./battlefieldGeometry";
 import { damageBase } from "./baseSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { calculateBaseAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
@@ -39,24 +39,30 @@ export function isBaseHitBlockedByFortify(
   return false;
 }
 
-function crossedAttackSurface(
+const BASE_CONTACT_EPSILON = 0.001;
+
+function getAttackSurfaceCrossing(
   attacker: Soldier,
   previous: SoldierPosition,
   base: BattleBase,
-): boolean {
-  const surface = getBaseAttackSurfaceRect(base);
-  const contactX = base.team === "enemy"
-    ? surface.x - SOLDIER_RADIUS
-    : surface.x + surface.width + SOLDIER_RADIUS;
+): SoldierPosition | null {
+  const contact = getBaseAttackContactSegment(base);
   const deltaX = attacker.x - previous.x;
-  const crossed = base.team === "enemy"
-    ? previous.x < contactX && attacker.x >= contactX
-    : previous.x > contactX && attacker.x <= contactX;
-  if (!crossed || deltaX === 0) return false;
-  const progress = (contactX - previous.x) / deltaX;
+  const movingTowardBase = base.team === "enemy"
+    ? deltaX > BASE_CONTACT_EPSILON
+    : deltaX < -BASE_CONTACT_EPSILON;
+  const startedOutside = base.team === "enemy"
+    ? previous.x <= contact.x + BASE_CONTACT_EPSILON
+    : previous.x >= contact.x - BASE_CONTACT_EPSILON;
+  const reachedBoundary = base.team === "enemy"
+    ? attacker.x >= contact.x - BASE_CONTACT_EPSILON
+    : attacker.x <= contact.x + BASE_CONTACT_EPSILON;
+  if (!movingTowardBase || !startedOutside || !reachedBoundary) return null;
+  const progress = Math.max(0, Math.min(1, (contact.x - previous.x) / deltaX));
   const crossingY = previous.y + (attacker.y - previous.y) * progress;
-  return crossingY >= surface.y - SOLDIER_RADIUS
-    && crossingY <= surface.y + surface.height + SOLDIER_RADIUS;
+  return crossingY >= contact.minY && crossingY <= contact.maxY
+    ? { x: contact.x, y: crossingY }
+    : null;
 }
 
 function canTriggerBaseContact(attacker: Soldier, base: BattleBase): boolean {
@@ -91,7 +97,13 @@ export function resolveBaseMovementContacts(
     const previous = previousPositions.get(attacker.id);
     if (!previous || (previous.x === attacker.x && previous.y === attacker.y)) continue;
     const base = bases.find((candidate) => candidate.team !== attacker.team);
-    if (!base || !canTriggerBaseContact(attacker, base) || !crossedAttackSurface(attacker, previous, base)) continue;
+    if (!base || !canTriggerBaseContact(attacker, base)) continue;
+    const crossing = getAttackSurfaceCrossing(attacker, previous, base);
+    if (!crossing) continue;
+
+    // Resolve from the exact shared boundary, never from inside the base collider.
+    attacker.x = crossing.x;
+    attacker.y = crossing.y;
 
     const defenders = soldiers.filter((soldier) => soldier.team === base.team);
     const blocked = isBaseHitBlockedByFortify(attacker, defenders, random);

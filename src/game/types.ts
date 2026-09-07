@@ -145,6 +145,8 @@ export interface Soldier {
   specialLockUntil: number;
   abilityActionLockUntil: number;
   trapStateUntil: number;
+  /** Enemy-owned fixed fences touched during the previous movement update. */
+  touchingEnemyFenceIds: string[];
   activeSpecialTechnique: UnitTechnique | null;
   specialWavesRemaining: number;
   nextSpecialWaveAt: number | null;

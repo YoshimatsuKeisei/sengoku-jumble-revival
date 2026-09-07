@@ -8,6 +8,7 @@ import { findGunTarget, getGunMovementDecision } from "./gunAttackSystem";
 import { findArrowTarget, getArrowMovementDecision } from "./arrowAttackSystem";
 import { clearStaleCombatTarget, isValidCombatTarget } from "./combatTargetSystem";
 import { getArrivalToleranceWorld, isWithinNormalContact } from "./techniqueCombatProfiles";
+import { getBaseAttackContactSegment } from "./battlefieldGeometry";
 
 export interface Direction { x: number; y: number }
 
@@ -190,6 +191,7 @@ export function movePlayer(soldier: Soldier, dx: number, dy: number, deltaSecond
   soldier.velocityY = 0;
   if (!soldier.isDead && soldier.reactionState === "NONE"
     && currentTime >= soldier.abilityActionLockUntil && currentTime >= soldier.trapStateUntil
+    && soldier.baseContactLockTicks <= 0
     && (soldier.state === "NORMAL" || soldier.state === "EMERGENCY_RETREAT")
     && (soldier.combatActionState === "IDLE" || allowDuringWindup)) {
     moveBy(soldier, dx, dy, deltaSeconds, obstacles, 0, false);
@@ -221,7 +223,8 @@ export function moveAiSoldiers(
       && soldier.combatActionState === "ATTACK_WINDUP"
       && windupTarget?.state === "EMERGENCY_RETREAT";
     if (soldier.isDead || currentTime < soldier.ninjaDashUntil || currentTime < soldier.abilityActionLockUntil
-      || currentTime < soldier.trapStateUntil || soldier.activeSpecialTechnique !== null
+      || currentTime < soldier.trapStateUntil || soldier.baseContactLockTicks > 0
+      || soldier.activeSpecialTechnique !== null
       || soldier.reactionState !== "NONE" || (soldier.combatActionState !== "IDLE" && !chasingRetreatWindup)
       || (!stateControlled && soldier.controller !== "ai") || soldier.state === "HEALING"
     ) continue;
@@ -261,6 +264,22 @@ export function moveAiSoldiers(
       ? predictiveDefendDestination
         ?? (target.state === "EMERGENCY_RETREAT" ? target : getPreferredApproachPoint(soldier, target, soldiers, obstacles) ?? target)
       : { x: soldier.moveTargetX!, y: soldier.moveTargetY! };
+    if (!target && soldier.state === "NORMAL" && soldier.strategyObjectiveKind === "ENEMY_SIDE") {
+      const enemyBase = bases.find((base) => base.team !== soldier.team && !base.isDestroyed && base.hp > 0);
+      if (enemyBase) {
+        const contact = getBaseAttackContactSegment(enemyBase);
+        const verticalInset = SOLDIER_RADIUS * 2;
+        const minimumApproachY = Math.min(contact.maxY, contact.minY + verticalInset);
+        const maximumApproachY = Math.max(contact.minY, contact.maxY - verticalInset);
+        destination.y = Math.max(minimumApproachY, Math.min(maximumApproachY, destination.y));
+        if (soldier.y < contact.minY || soldier.y > contact.maxY) {
+          // First line up outside the base. A diagonal aimed directly through
+          // the base rectangle is ejected by its top/bottom collider before it
+          // can ever reach the narrow attack segment.
+          destination.x = contact.x + (enemyBase.team === "enemy" ? -verticalInset : verticalInset);
+        }
+      }
+    }
     // Engagements use their own SWF 24-unit spacing point. Applying the
     // destination tolerance on top of that spacing would stop short of contact.
     const stopDistance = target ? 2 : getArrivalToleranceWorld(soldier.stats.foot);
@@ -302,11 +321,16 @@ export function separateSoldiers(soldiers: Soldier[]): void {
       let distance = Math.hypot(dx, dy);
       if (distance >= minimumDistance) continue;
       if (distance === 0) { dx = 1; dy = 0; distance = 1; }
-      const push = (minimumDistance - distance) / 2;
-      a.x -= (dx / distance) * push;
-      a.y -= (dy / distance) * push;
-      b.x += (dx / distance) * push;
-      b.y += (dy / distance) * push;
+      const overlap = minimumDistance - distance;
+      const aContactLocked = a.baseContactLockTicks > 0;
+      const bContactLocked = b.baseContactLockTicks > 0;
+      if (aContactLocked && bContactLocked) continue;
+      const aPush = bContactLocked ? overlap : aContactLocked ? 0 : overlap / 2;
+      const bPush = aContactLocked ? overlap : bContactLocked ? 0 : overlap / 2;
+      a.x -= (dx / distance) * aPush;
+      a.y -= (dy / distance) * aPush;
+      b.x += (dx / distance) * bPush;
+      b.y += (dy / distance) * bPush;
     }
   }
   for (const soldier of soldiers) {

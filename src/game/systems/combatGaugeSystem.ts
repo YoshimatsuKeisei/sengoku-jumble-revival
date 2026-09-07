@@ -19,24 +19,33 @@ export function isRangedGaugeTechnique(soldier: Pick<Soldier, "technique">): boo
   return soldier.technique.startsWith("ARCHER_") || soldier.technique.startsWith("TEPPOU_");
 }
 
-export function advanceCombatGauge(soldier: Soldier, currentTime: number): void {
+/**
+ * Advances the SWF combat gauge and reports whether this update is also an
+ * autonomous technique-decision tick. The original check lived in the same
+ * 23-tick battle loop as gauge accumulation; Phaser render updates must not
+ * drain a banked gauge once per frame.
+ */
+export function advanceCombatGauge(soldier: Soldier, currentTime: number): boolean {
   if (soldier.controller === "player") {
     advancePlayerTechniqueGauge(soldier, currentTime);
-    return;
+    return false;
   }
-  if (soldier.isDead || soldier.hp <= 0) return;
+  if (soldier.isDead || soldier.hp <= 0) return false;
   if (soldier.state !== "NORMAL") {
     soldier.combatGaugeUpdatedAt = currentTime;
-    return;
+    return false;
   }
   if (soldier.combatGaugeUpdatedAt === null) {
     soldier.combatGaugeUpdatedAt = currentTime;
-    return;
+    // A restored/precharged runtime may already be ready. Permit one initial
+    // decision, then require the normal 23-tick cadence for later decisions.
+    return hasTechniqueGauge(soldier);
   }
   const intervals = Math.floor((currentTime - soldier.combatGaugeUpdatedAt) / COMBAT_GAUGE_UPDATE_INTERVAL_MS);
-  if (intervals <= 0) return;
+  if (intervals <= 0) return false;
   soldier.combatGauge += intervals * soldier.stats.skill;
   soldier.combatGaugeUpdatedAt += intervals * COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+  return true;
 }
 
 export function advancePlayerTechniqueGauge(soldier: Soldier, currentTime: number): void {

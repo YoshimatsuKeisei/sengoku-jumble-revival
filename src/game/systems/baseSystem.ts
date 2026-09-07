@@ -4,6 +4,7 @@ import type { BattleBase, Soldier, Team } from "../types";
 import {
   distanceToRect,
   getBaseAttackSurfaceRect,
+  getBaseFrontAccessBoundaryX,
   getBaseRect,
   isPointInsideRect,
   isPointWithinBaseGateSpan,
@@ -73,6 +74,16 @@ export function resolveBaseAccessCollisions(soldiers: Soldier[], bases: readonly
     for (const base of bases) {
       if (canOccupyOwnBase(soldier, base)) continue;
       const rect = getBaseRect(base);
+      const frontBoundaryX = getBaseFrontAccessBoundaryX(base);
+      const overlapsFrontFace = soldier.y >= rect.y - SOLDIER_RADIUS
+        && soldier.y <= rect.y + rect.height + SOLDIER_RADIUS
+        && (base.team === "enemy"
+          ? soldier.x > frontBoundaryX && soldier.x < rect.x
+          : soldier.x < frontBoundaryX && soldier.x > rect.x + rect.width);
+      if (overlapsFrontFace) {
+        soldier.x = frontBoundaryX;
+        continue;
+      }
       if (!isPointInsideRect(soldier, rect)) continue;
       const distances = {
         left: rect.x <= 0 ? Number.POSITIVE_INFINITY : Math.abs(soldier.x - rect.x),
@@ -84,7 +95,10 @@ export function resolveBaseAccessCollisions(soldiers: Soldier[], bases: readonly
       };
       const nearest = (Object.keys(distances) as Array<keyof typeof distances>)
         .reduce((best, side) => distances[side] < distances[best] ? side : best, "left");
-      if (nearest === "left") soldier.x = rect.x - SOLDIER_RADIUS;
+      if ((base.team === "enemy" && nearest === "left")
+        || (base.team === "player" && nearest === "right")) {
+        soldier.x = getBaseFrontAccessBoundaryX(base);
+      } else if (nearest === "left") soldier.x = rect.x - SOLDIER_RADIUS;
       else if (nearest === "right") soldier.x = rect.x + rect.width + SOLDIER_RADIUS;
       else if (nearest === "top") soldier.y = rect.y - SOLDIER_RADIUS;
       else soldier.y = rect.y + rect.height + SOLDIER_RADIUS;
