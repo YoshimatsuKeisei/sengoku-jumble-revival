@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { SOLDIER_RADIUS } from "../../src/game/config";
 import { battlefieldSourcePointToWorld } from "../../src/game/battlefieldLayout";
 import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
-import { createBattleBases } from "../../src/game/systems/baseSystem";
+import { captureSoldierPositions, resolveBaseMovementContacts } from "../../src/game/systems/baseContactSystem";
+import { getBaseAttackSurfaceRect, getBaseRect } from "../../src/game/systems/battlefieldGeometry";
+import { createBattleBases, getBaseForTeam, resolveBaseAccessCollisions } from "../../src/game/systems/baseSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 
 function unit(id: string, team: "player" | "enemy", sourceX: number, sourceY = 450): Soldier {
@@ -57,5 +60,33 @@ describe("runtime characterization for major combat bugs", () => {
     const arrows = events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
     expect(arrows).toHaveLength(2);
     expect(archer.specialLockUntil).toBeGreaterThan(1_000);
+  });
+
+  it("currently turns base re-entry during the contact lock into rectangle snapback without another hit", () => {
+    const bases = createBattleBases();
+    const base = getBaseForTeam(bases, "enemy");
+    const surface = getBaseAttackSurfaceRect(base);
+    const rect = getBaseRect(base);
+    const attacker = unit("base-attacker", "player", 800);
+    attacker.x = surface.x - SOLDIER_RADIUS - 1;
+    attacker.y = surface.y + surface.height / 2;
+    const crossing = captureSoldierPositions([attacker]);
+    attacker.x = surface.x - SOLDIER_RADIUS + 1;
+
+    resolveBaseMovementContacts([attacker], bases, crossing, 0, () => 0.99);
+    const hpAfterFirstHit = base.hp;
+    const lockAfterFirstHit = attacker.baseContactLockTicks;
+    expect(lockAfterFirstHit).toBeGreaterThan(0);
+
+    // Reproduce the BattleScene ordering after movement has carried the unit
+    // just inside the base again while the contact lock is still active.
+    const beforeReentry = new Map([[attacker.id, { x: rect.x - SOLDIER_RADIUS, y: attacker.y }]]);
+    attacker.x = rect.x + 1;
+    resolveBaseMovementContacts([attacker], bases, beforeReentry, 1, () => 0.99);
+    expect(base.hp).toBe(hpAfterFirstHit);
+    expect(attacker.baseContactLockTicks).toBe(lockAfterFirstHit - 1);
+
+    resolveBaseAccessCollisions([attacker], bases);
+    expect(attacker.x).toBe(rect.x - SOLDIER_RADIUS);
   });
 });
