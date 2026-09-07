@@ -25,7 +25,7 @@ describe("runtime characterization for major combat bugs", () => {
     const generalA = ready(unit("general-a", "player", 500));
     const generalB = ready(unit("general-b", "player", 510));
     const archer = unit("archer", "player", 520);
-    const enemy = unit("enemy", "enemy", 650);
+    const enemy = unit("enemy", "enemy", 600);
     generalA.unitType = generalB.unitType = "GENERAL";
     generalA.technique = generalB.technique = "GENERAL_COMMAND";
     archer.unitType = "ARCHER";
@@ -45,7 +45,7 @@ describe("runtime characterization for major combat bugs", () => {
   it("currently permits a forced ranged shot and a gauge-driven normal shot in the same update", () => {
     const general = ready(unit("general", "player", 500));
     const archer = ready(unit("archer", "player", 520));
-    const enemy = unit("enemy", "enemy", 650);
+    const enemy = unit("enemy", "enemy", 600);
     general.unitType = "GENERAL";
     general.technique = "GENERAL_COMMAND";
     archer.unitType = "ARCHER";
