@@ -6,6 +6,17 @@
       "category": "combat",
       "expected": { "projectileLaunchesPerAttackCycle": 1 },
       "evidence": { "reference": "evidence/ranged_cycle.md" }
+    },
+    {
+      "id": "RANGED_GAUGE_BANKING_LIMIT",
+      "status": "unconfirmed",
+      "category": "combat",
+      "expected": {
+        "swfGaugeMaximum": null,
+        "runtimeCurrentlyUnbounded": true,
+        "mustNotInventGaugeCapWithoutEvidence": true
+      },
+      "evidence": { "reference": "evidence/ranged_cycle.md" }
     }
   ]
 }
