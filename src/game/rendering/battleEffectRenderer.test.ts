@@ -85,4 +85,18 @@ describe("BattleEffectRenderer", () => {
     expect(renderer.activeCount).toBe(0);
     expect(images[0].destroy).toHaveBeenCalledTimes(1);
   });
+
+  it("holds the final non-looping isha frame until its selected healer state clears", () => {
+    const { scene, images } = makeScene();
+    const renderer = new BattleEffectRenderer(scene as never, UNIT_ATLAS_ASSETS);
+    let active = true;
+    expect(renderer.play("as_isha", 0, { x: 1, y: 2 }, { holdLastFrame: true, isActive: () => active })).toBe(true);
+    renderer.update(1_000);
+    expect(renderer.activeCount).toBe(1);
+    expect(images[0].destroy).not.toHaveBeenCalled();
+    active = false;
+    renderer.update(1_001);
+    expect(renderer.activeCount).toBe(0);
+    expect(images[0].destroy).toHaveBeenCalledTimes(1);
+  });
 });

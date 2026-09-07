@@ -1,0 +1,21 @@
+{
+  "formation_ids": 71,
+  "formation_id_ranges": [
+    "1..38",
+    "98..130"
+  ],
+  "named_map_stages": 31,
+  "famous_direct_records": 127,
+  "pstch_anomaly_count": 2,
+  "map_cells": 289,
+  "map_battle_kind_counts": {
+    "generic": 218,
+    "excluded": 38,
+    "named": 31,
+    "special_locked": 1,
+    "training": 1
+  },
+  "technique_probability_rows": 28,
+  "stat_level_rows": 80,
+  "plain_override_formations": 38
+}

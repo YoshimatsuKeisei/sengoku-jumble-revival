@@ -4,11 +4,13 @@ import type {
   CommonSpecialAbilityId,
   RareSpecialAbilityId,
   Soldier,
+  SoldierMeritCounters,
   Strategy,
   UnitTechnique,
   UnitType,
 } from "../types";
 import type { SelectedMapCell } from "../map/mapTransitionState";
+import type { BattleSituationScore } from "../systems/battleOutcomeSystem";
 
 export interface PostBattleSoldierSnapshot {
   readonly id: string;
@@ -26,6 +28,9 @@ export interface PostBattleSoldierSnapshot {
   readonly isWithdrawn: boolean;
   readonly specialAbilities: readonly CommonSpecialAbilityId[];
   readonly rareSpecialAbilities: readonly RareSpecialAbilityId[];
+  readonly merits: Readonly<SoldierMeritCounters>;
+  readonly stipend: number;
+  readonly recruitCost: number;
 }
 
 export interface PostBattleResultMetrics {
@@ -47,7 +52,12 @@ export interface PostBattleSnapshot {
   readonly selectedAreaId: string | null;
   readonly selectedMapCell: Readonly<SelectedMapCell> | null;
   readonly resultMetrics: PostBattleResultMetrics;
-  readonly meritCounters: null;
+  readonly economy: Readonly<{
+    moneyBefore: number | null;
+    moneyAfter: number | null;
+    totalRank: number | null;
+  }>;
+  readonly meritCounters: Readonly<Record<string, Readonly<SoldierMeritCounters>>>;
   readonly recruitmentCandidates: null;
 }
 
@@ -55,17 +65,20 @@ export interface PostBattleSceneData {
   snapshot: PostBattleSnapshot;
 }
 
-export function resolvePostBattleSoldierDisplayName(soldier: Pick<Soldier, "id">): string {
-  // Soldier does not yet expose a distinct name field. Keep this adapter as the
-  // single replacement point when the domain model gains an original-game name.
-  return soldier.id;
+export interface PostBattleResolvedOutcome {
+  readonly situation: BattleSituationScore;
+  readonly acquiredMoney: number | null;
+  readonly moneyBefore: number | null;
+  readonly totalRank: number | null;
+}
+
+export function resolvePostBattleSoldierDisplayName(soldier: Pick<Soldier, "id" | "name">): string {
+  return soldier.name || soldier.id;
 }
 
 function copySoldier(soldier: Soldier): PostBattleSoldierSnapshot {
   return Object.freeze({
     id: soldier.id,
-    // Soldier currently has no separate display-name field. Its stable real id
-    // is used rather than inventing a character name.
     name: resolvePostBattleSoldierDisplayName(soldier),
     team: soldier.team,
     unitType: soldier.unitType,
@@ -80,6 +93,9 @@ function copySoldier(soldier: Soldier): PostBattleSoldierSnapshot {
     isWithdrawn: soldier.isDead,
     specialAbilities: Object.freeze([...soldier.specialAbilities]),
     rareSpecialAbilities: Object.freeze([...soldier.rareSpecialAbilities]),
+    merits: Object.freeze({ ...soldier.merits }),
+    stipend: soldier.stipend,
+    recruitCost: soldier.stipend,
   });
 }
 
@@ -88,6 +104,7 @@ export function createPostBattleSnapshot(
   soldiers: readonly Soldier[],
   bases: readonly BattleBase[],
   selectedMapCell: SelectedMapCell | null,
+  outcome?: PostBattleResolvedOutcome,
 ): PostBattleSnapshot {
   const playerRoster = Object.freeze(soldiers.filter((soldier) => soldier.team === "player").map(copySoldier));
   const enemyRoster = Object.freeze(soldiers.filter((soldier) => soldier.team === "enemy").map(copySoldier));
@@ -104,13 +121,20 @@ export function createPostBattleSnapshot(
     selectedAreaId: selectedMapCell?.cellId ?? null,
     selectedMapCell: selectedMapCell ? Object.freeze({ ...selectedMapCell }) : null,
     resultMetrics: Object.freeze({
-      playerRetreats: null,
-      enemyRetreats: null,
-      playerTotal: null,
-      enemyTotal: null,
-      acquiredMoney: null,
+      playerRetreats: outcome?.situation.playerRetreats ?? null,
+      enemyRetreats: outcome?.situation.enemyRetreats ?? null,
+      playerTotal: outcome?.situation.player ?? null,
+      enemyTotal: outcome?.situation.enemy ?? null,
+      acquiredMoney: outcome?.acquiredMoney ?? null,
     }),
-    meritCounters: null,
+    economy: Object.freeze({
+      moneyBefore: outcome?.moneyBefore ?? null,
+      moneyAfter: outcome?.moneyBefore === null || outcome?.moneyBefore === undefined
+        ? null
+        : outcome.moneyBefore + (outcome.acquiredMoney ?? 0),
+      totalRank: outcome?.totalRank ?? null,
+    }),
+    meritCounters: Object.freeze(Object.fromEntries(playerRoster.map((soldier) => [soldier.id, soldier.merits]))),
     recruitmentCandidates: null,
   });
 }

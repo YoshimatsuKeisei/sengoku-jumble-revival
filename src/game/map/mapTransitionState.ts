@@ -7,12 +7,20 @@ export interface SelectedMapCell {
   type: string;
 }
 
+export interface BattleEconomyState {
+  money: number;
+  totalRank: number;
+}
+
 export interface BattleIntroSceneData {
   selectedMapCell: SelectedMapCell;
+  economy?: BattleEconomyState;
 }
 
 export interface BattleSceneData {
   selectedMapCell: SelectedMapCell;
+  economy?: BattleEconomyState;
+  playIntro?: boolean;
 }
 
 export function frameAtElapsed(elapsedMs: number, firstFrame = 1): number {
@@ -30,23 +38,20 @@ export class OnceTransitionGuard {
   }
 }
 
-export function createBattleIntroData(selectedMapCell: SelectedMapCell): BattleIntroSceneData {
-  return { selectedMapCell: { ...selectedMapCell } };
+export function createBattleIntroData(
+  selectedMapCell: SelectedMapCell,
+  economy?: BattleEconomyState,
+): BattleIntroSceneData {
+  return {
+    selectedMapCell: { ...selectedMapCell },
+    ...(economy ? { economy: { ...economy } } : {}),
+  };
 }
 
 export function createBattleSceneData(data: BattleIntroSceneData): BattleSceneData {
-  return { selectedMapCell: { ...data.selectedMapCell } };
-}
-
-export class BattleIntroTransition {
-  private readonly guard = new OnceTransitionGuard();
-
-  frame(elapsedMs: number): number {
-    return Math.min(96, frameAtElapsed(elapsedMs));
-  }
-
-  update(elapsedMs: number, startBattle: () => void): boolean {
-    if (elapsedMs < 96 / MAP_UI_FPS * 1_000) return false;
-    return this.guard.run(startBattle);
-  }
+  return {
+    selectedMapCell: { ...data.selectedMapCell },
+    ...(data.economy ? { economy: { ...data.economy } } : {}),
+    playIntro: true,
+  };
 }

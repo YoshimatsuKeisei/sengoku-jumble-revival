@@ -3,17 +3,13 @@ import type { Soldier } from "../types";
 import { startSoldierAttack } from "./attackSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { isWithinNormalContact } from "./techniqueCombatProfiles";
+import { recordNormalCombatResult } from "./meritSystem";
 
 export function getCombatWinProbability(combatA: number, combatB: number): number {
   const valueA = Math.max(0, combatA);
   const valueB = Math.max(0, combatB);
-  const scale = Math.max(valueA, valueB);
-  if (scale === 0) return 0.5;
-  // Scaling both sides before cubing preserves the ratio and avoids overflow
-  // if an imported/debug value is far outside the normal SWF stat range.
-  const weightA = (valueA / scale) ** 3;
-  const weightB = (valueB / scale) ** 3;
-  return weightA / (weightA + weightB);
+  const total = valueA + valueB;
+  return total === 0 ? 0.5 : valueA / total;
 }
 
 export function resolveCombatContest(a: Soldier, b: Soldier, random: RandomSource = Math.random): Soldier {
@@ -38,7 +34,7 @@ export function updateNormalCombatContests(
       if (!isContactPair(first, second)) continue;
       const winner = resolveCombatContest(first, second, random);
       const loser = winner === first ? second : first;
-      startSoldierAttack(winner, loser, currentTime);
+      if (startSoldierAttack(winner, loser, currentTime)) recordNormalCombatResult(winner, loser);
     }
   }
 }

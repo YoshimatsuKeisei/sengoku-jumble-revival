@@ -32,6 +32,7 @@ export function updateInvaderTrapMovement(
     if (!defendingTeam || !rosterSlotDrawHasAbility(soldiers, defendingTeam, "TRAP", 2, random)) continue;
 
     invader.hp = Math.max(2, invader.hp - SPECIAL_ABILITY_CONFIG.trapDamage);
+    invader.hpBarHp = invader.hp;
     cancelAttack(invader);
     invader.activeSpecialTechnique = null;
     invader.specialWavesRemaining = 0;

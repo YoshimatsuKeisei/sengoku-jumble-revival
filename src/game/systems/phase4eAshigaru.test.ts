@@ -90,6 +90,6 @@ describe("Phase 4E ashigaru spear attacks", () => {
   });
   it("shows ashigaru technique and existing details in inspector", () => {
     const soldier = createSoldier("s", "player", "ai", 0, 0, "melee", undefined, ashigaru("ASHIGARU_SPEAR_TECHNIQUE", ["MIGHT"]));
-    const text = formatSoldierInspector(soldier); expect(text).toContain("兵種：足軽"); expect(text).toContain("駒種：槍術"); expect(text).toContain("・将力");
+    const text = formatSoldierInspector(soldier); expect(text).toContain("兵種：足軽"); expect(text).toContain("駒種：槍術"); expect(text).toContain("・膂力");
   });
 });

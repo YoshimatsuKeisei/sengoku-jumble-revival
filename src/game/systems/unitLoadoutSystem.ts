@@ -10,7 +10,7 @@ export const UNIT_DEFINITIONS: Record<UnitType, { label: string; maxPerTeam?: nu
   ARCHER: { label: "弓兵", maxPerTeam: 30, techniques: ["ARCHER_ARROW", "ARCHER_LONG_SHOT", "ARCHER_FIRE_ARROW", "ARCHER_HOROKU"] },
   ASHIGARU: { label: "足軽", maxPerTeam: 30, techniques: ["ASHIGARU_SPEAR_STRIKE", "ASHIGARU_SPEAR_TECHNIQUE"] },
   NINJA: { label: "忍者", maxPerTeam: 6, techniques: ["NINJA_NINJUTSU", "NINJA_SHADOW_RUN", "NINJA_GENJUTSU", "NINJA_BARRIER"] },
-  GENERAL: { label: "武将", maxPerTeam: 4, techniques: ["GENERAL_COMMAND", "GENERAL_HEROIC", "GENERAL_HEAL"] },
+  GENERAL: { label: "武将", maxPerTeam: 4, techniques: ["GENERAL_COMMAND", "GENERAL_HEROIC", "GENERAL_HEAL", "GENERAL_FURIOUS"] },
   STRATEGIST: { label: "軍師", maxPerTeam: 4, techniques: ["STRATEGIST_FIRE_PLAY", "STRATEGIST_FIRE_ATTACK", "STRATEGIST_FIRE_PLAN", "STRATEGIST_HELLFIRE", "STRATEGIST_FLAME_ART", "STRATEGIST_FALSE_REPORT", "STRATEGIST_SORCERY", "STRATEGIST_HEAL"] },
   MOSA: { label: "猛者", maxPerTeam: 6, techniques: ["MOSA_SENPUU", "MOSA_MUSOU", "MOSA_KIJIN"] },
 };
@@ -33,6 +33,7 @@ export const TECHNIQUE_DEFINITIONS: Record<UnitTechnique, { unitType: UnitType; 
   GENERAL_COMMAND: { unitType: "GENERAL", label: "号令" },
   GENERAL_HEROIC: { unitType: "GENERAL", label: "豪傑" },
   GENERAL_HEAL: { unitType: "GENERAL", label: "治癒" },
+  GENERAL_FURIOUS: { unitType: "GENERAL", label: "奮迅" },
   STRATEGIST_FIRE_PLAY: { unitType: "STRATEGIST", label: "火遊" },
   STRATEGIST_FIRE_ATTACK: { unitType: "STRATEGIST", label: "火攻" },
   STRATEGIST_FIRE_PLAN: { unitType: "STRATEGIST", label: "火計" },

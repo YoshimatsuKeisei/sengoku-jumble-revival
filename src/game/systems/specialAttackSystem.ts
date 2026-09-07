@@ -29,7 +29,7 @@ export type SpecialAttackEvent = AreaSpecialAttackEvent | GunAttackEvent | Caval
 export { calculateSpecialCooldownMs } from "./skillCooldownSystem";
 
 export function isSpecialReady(soldier: Soldier, currentTime: number): boolean {
-  return currentTime >= soldier.specialReadyAt;
+  return currentTime >= soldier.specialReadyAt && hasTechniqueGauge(soldier);
 }
 
 function activeEnemy(attacker: Soldier, candidate: Soldier): boolean {
@@ -132,7 +132,7 @@ export function executeSpecialAttack(
     const canMove = specialKnockbackDestinationIsClear(target, attacker, direction.x, direction.y, soldiers, obstacles, bases);
     const guarded = isDamageGuarded(target, "SPECIAL_ATTACK", random);
     const damage = calculateSuccessfulAttackDamage(attacker, target, SPECIAL_ATTACK_CONFIG.damage);
-    if (!guarded) applyDamage(target, damage);
+    if (!guarded) applyDamage(target, damage, attacker);
     target.combatFeedbackMarker = guarded ? "S" : "H";
     target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
     if (target.isDead) continue;

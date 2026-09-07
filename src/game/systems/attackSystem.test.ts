@@ -118,7 +118,7 @@ describe("attack state machine", () => {
   it("cancels an attack when dangerous HP starts emergency retreat", () => {
     const { attacker, soldiers, bases } = duel();
     updateAttackStates(soldiers, bases, 0);
-    attacker.hp = attacker.maxHp * RECOVERY_CONFIG.dangerHpRatio;
+    attacker.hp = 5;
     updateRecoveryStates(soldiers, 0);
     expect(attacker.state).toBe("EMERGENCY_RETREAT");
     expect(attacker.combatActionState).toBe("IDLE");

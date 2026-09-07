@@ -34,6 +34,9 @@ export interface TechniqueCombatProfile {
   actionLockTicks: number;
   selfAdvanceSwfUnits: number;
   edgeSelfAdvanceSwfUnits?: number;
+  forwardOffsetSwfUnits?: number;
+  horizontalYOffsetSwfUnits?: number;
+  activationRangeSwfUnits?: number;
 }
 
 const profile = (
@@ -47,8 +50,12 @@ const profile = (
   actionLockTicks: number,
   selfAdvanceSwfUnits: number,
   edgeSelfAdvanceSwfUnits?: number,
+  forwardOffsetSwfUnits?: number,
+  horizontalYOffsetSwfUnits?: number,
+  activationRangeSwfUnits?: number,
 ): TechniqueCombatProfile => ({ role, rangeCells, areaShape, areaWidthCells, areaHeightCells, forwardOffsetCells,
-  waveCount, actionLockTicks, selfAdvanceSwfUnits, edgeSelfAdvanceSwfUnits });
+  waveCount, actionLockTicks, selfAdvanceSwfUnits, edgeSelfAdvanceSwfUnits, forwardOffsetSwfUnits,
+  horizontalYOffsetSwfUnits, activationRangeSwfUnits });
 
 export const TECHNIQUE_COMBAT_PROFILES: Record<UnitTechnique, TechniqueCombatProfile> = {
   PROTOTYPE_AREA: profile("melee", null, "CENTER_RECTANGLE", 3, 3, 0, 1, 16, 0),
@@ -68,15 +75,16 @@ export const TECHNIQUE_COMBAT_PROFILES: Record<UnitTechnique, TechniqueCombatPro
   GENERAL_COMMAND: profile("support", null, "SUPPORT_RECTANGLE", 11, 11, 0, 1, 16, 0),
   GENERAL_HEROIC: profile("melee", null, "CENTER_RECTANGLE", 3, 3, 0, 10, 16, 20),
   GENERAL_HEAL: profile("support", null, "SUPPORT_RECTANGLE", 11, 11, 0, 1, 16, 0),
+  GENERAL_FURIOUS: profile("melee", null, "CENTER_RECTANGLE", 5, 5, 0, 10, 16, 30, 10),
   NINJA_NINJUTSU: profile("melee", null, "CENTER_RECTANGLE", 3, 3, 0, 16, 16, 10),
   NINJA_SHADOW_RUN: profile("melee", null, "CENTER_RECTANGLE", 3, 3, 0, 16, 16, 40, 10),
   NINJA_GENJUTSU: profile("control", null, "CENTER_RECTANGLE", 3, 3, 0, 16, 16, 10),
-  NINJA_BARRIER: profile("support", null, "CENTER_RECTANGLE", 3, 3, 0, 16, 16, 0),
-  STRATEGIST_FIRE_PLAY: profile("melee", null, "FORWARD_RECTANGLE", 1, 1, 1, 3, 28, 0),
-  STRATEGIST_FIRE_ATTACK: profile("melee", null, "FORWARD_RECTANGLE", 3, 3, 2, 3, 28, 0),
-  STRATEGIST_FIRE_PLAN: profile("melee", null, "FORWARD_RECTANGLE", 5, 5, 3, 3, 28, 0),
-  STRATEGIST_HELLFIRE: profile("melee", null, "FORWARD_RECTANGLE", 7, 7, 4, 3, 28, 0),
-  STRATEGIST_FLAME_ART: profile("melee", null, "FORWARD_RECTANGLE", 9, 9, 5, 3, 28, 0),
+  NINJA_BARRIER: profile("support", null, "CENTER_RECTANGLE", 3, 3, 0, 16, 16, 16),
+  STRATEGIST_FIRE_PLAY: profile("melee", null, "FORWARD_RECTANGLE", 1, 1, 1, 3, 28, 0, undefined, 40, -8, 60),
+  STRATEGIST_FIRE_ATTACK: profile("melee", null, "FORWARD_RECTANGLE", 3, 3, 2, 3, 28, 0, undefined, 80, -16, 60),
+  STRATEGIST_FIRE_PLAN: profile("melee", null, "FORWARD_RECTANGLE", 5, 5, 3, 3, 28, 0, undefined, 120, -24, 60),
+  STRATEGIST_HELLFIRE: profile("melee", null, "FORWARD_RECTANGLE", 7, 7, 4, 3, 28, 0, undefined, 160, -32, 60),
+  STRATEGIST_FLAME_ART: profile("melee", null, "FORWARD_RECTANGLE", 9, 9, 5, 3, 28, 0, undefined, 200, -40, 60),
   STRATEGIST_FALSE_REPORT: profile("control", null, "CENTER_RECTANGLE", 5, 5, 0, 1, 28, 0),
   STRATEGIST_SORCERY: profile("control", null, "CENTER_RECTANGLE", 5, 5, 0, 1, 28, 0),
   STRATEGIST_HEAL: profile("support", null, "SUPPORT_RECTANGLE", 11, 11, 0, 1, 16, 0),
@@ -124,9 +132,16 @@ export function getTechniqueAreaCenter(
   const length = Math.hypot(origin.facingX, origin.facingY);
   const facingX = length > 0 ? origin.facingX / length : origin.team === "player" ? 1 : -1;
   const facingY = length > 0 ? origin.facingY / length : 0;
-  const offsetX = swfCellsToWorldX(profile.forwardOffsetCells);
-  const offsetY = swfCellsToWorldY(profile.forwardOffsetCells);
-  return { x: origin.x + facingX * offsetX, y: origin.y + facingY * offsetY };
+  const offsetX = profile.forwardOffsetSwfUnits === undefined
+    ? swfCellsToWorldX(profile.forwardOffsetCells)
+    : swfUnitsToWorldX(profile.forwardOffsetSwfUnits);
+  const offsetY = profile.forwardOffsetSwfUnits === undefined
+    ? swfCellsToWorldY(profile.forwardOffsetCells)
+    : swfUnitsToWorldY(profile.forwardOffsetSwfUnits);
+  const horizontalYOffset = Math.abs(facingX) >= Math.abs(facingY)
+    ? swfUnitsToWorldY(profile.horizontalYOffsetSwfUnits ?? 0)
+    : 0;
+  return { x: origin.x + facingX * offsetX, y: origin.y + facingY * offsetY + horizontalYOffset };
 }
 
 export function isTargetInTechniqueArea(attacker: Soldier, target: Pick<Soldier, "x" | "y">): boolean {

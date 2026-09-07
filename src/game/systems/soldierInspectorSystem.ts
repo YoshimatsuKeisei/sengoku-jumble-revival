@@ -26,7 +26,8 @@ export function formatSoldierInspector(soldier: Soldier): string {
   const rangeUnits = soldier.technique === "ARCHER_LONG_SHOT" ? 5
     : soldier.unitType === "ARCHER" ? 3 : null;
   const rareLabels = soldier.rareSpecialAbilities.map((id) => ({ MOUTAI: "猛退", JINTO: "陣頭", KATON: "火遁", NINJA_HUNTER: "忍狩" })[id]);
-  return `兵士：${soldier.id.toUpperCase()}\n兵種：${UNIT_TYPE_LABELS[soldier.unitType]}\n駒種：${TECHNIQUE_DEFINITIONS[soldier.technique].label}`
+  const name = soldier.name && soldier.name !== soldier.id ? soldier.name : soldier.id.toUpperCase();
+  return `兵士：${name}\n兵種：${UNIT_TYPE_LABELS[soldier.unitType]}\n駒種：${TECHNIQUE_DEFINITIONS[soldier.technique].label}`
     + `${range === null ? "" : `\n射程：${rangeUnits === null ? "" : `約${rangeUnits}マス / `}${Math.round(range)} px`}\n\nHP：${Math.ceil(soldier.hp)} / ${soldier.maxHp}`
     + `\n技量：${soldier.stats.skill}\n脚力：${soldier.stats.foot}\n戦闘：${soldier.stats.combat}\n防御：${soldier.stats.defense}`
     + `\n\n作戦：${STRATEGY_LABELS[soldier.strategy]}\n状態：${soldier.isConfused ? "混乱" : soldier.state}\n反応：${soldier.reactionState}`

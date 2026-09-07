@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { configureBattleGameStage } from "./stageLayout";
 import {
   AI_THINK_INTERVAL_MS,
   ARCHER_CONFIG,
@@ -19,6 +20,7 @@ import {
   STRATEGIST_CONFIG,
 } from "./config";
 import { createArmy, getDefaultArmyPosition } from "./factories/createArmy";
+import { createEnemyArmyForBattle } from "./factories/createEnemyArmy";
 import { updateAiTargets } from "./systems/aiSystem";
 import {
   createBattleBases,
@@ -32,7 +34,7 @@ import {
 } from "./systems/baseContactSystem";
 import {
   issueAdvanceCommand,
-  issueRetreatCommand,
+  issueDefendCommand,
   issueRallyCommand,
   updateTemporaryOrders,
 } from "./systems/commandSystem";
@@ -55,11 +57,8 @@ import type {
   TemporaryOrderType,
 } from "./types";
 import {
-  clampCameraZoom,
-  getCameraZoomLimits,
   getFollowScroll,
   getViewModeZoom,
-  getZoomAnchoredScroll,
   toggleCameraViewMode,
   type CameraViewMode,
 } from "./systems/cameraSystem";
@@ -86,6 +85,7 @@ import {
   toggleArmySetupPanel,
 } from "./ui/armySetupPanel";
 import { loadStoredArmySetup } from "./systems/armySetupSystem";
+import { loadEnemyCustomArmyEnabled } from "./systems/armyGenerationMode";
 import { updateTrackedSmoke } from "./systems/bombardmentEffectSystem";
 import { clearConfusionByCommand } from "./systems/confusionSystem";
 import { updateNinjaDashes } from "./systems/ninjaAttackSystem";
@@ -106,6 +106,7 @@ import {
   CHARACTER_SPRITESHEETS,
   createCharacterVisualRuntime,
   getCharacterFrameIndex,
+  getBattleOutFrameIndex,
   getCharacterRenderConfig,
   getCharacterTextureKey,
   isSpriteUnitType,
@@ -132,27 +133,59 @@ import {
 } from "./rendering/actionEffectPolicy";
 import { BATTLE_PANEL_PRELOAD_ATLASES } from "./rendering/battlePanelAssets";
 import { BattlePanelUi } from "./rendering/battlePanelUi";
+import { preloadBattleBalanceGauge } from "./rendering/battleBalanceGauge";
 import type {
   BattleSceneData,
   SelectedMapCell,
 } from "./map/mapTransitionState";
+import { getMapCell } from "./map/mapUiModel";
+import {
+  INITIAL_PLAYER_MONEY,
+  INITIAL_PLAYER_TOTAL_STIPEND,
+} from "./systems/originalPlayerArmySystem";
 import { resolveCommittedFormationForRoster } from "./formation/formationState";
 import { createPostBattleSnapshot } from "./postBattle/postBattleState";
 import type { PostBattleSnapshot } from "./postBattle/postBattleState";
 import {
-  areBattleOutTransitionsComplete,
   releaseBattleOutTargets,
+  startBattleEndWithdrawal,
   updateBattleOutMovement,
 } from "./systems/battleOutSystem";
+import {
+  advanceBattleClock,
+  battleResultFromSituation,
+  calculateBattleSituation,
+  calculateLocalVictoryReward,
+  createBattleClockState,
+  type BattleClockState,
+  type BattleEndReason,
+  type BattleSituationScore,
+} from "./systems/battleOutcomeSystem";
 import {
   BATTLE_FRAME_SEQUENCE_ASSETS,
   battleOutSequenceFor,
   commandSequenceFor,
   shouldShowCriticalRetreat,
+  shouldShowTreatmentHealerMark,
   specialCasterSequencesFor,
   temporaryOrderSequenceFor,
 } from "./rendering/battleFrameSequenceManifest";
 import { BattleFrameSequenceRenderer } from "./rendering/battleFrameSequenceRenderer";
+import { BATTLE_UNIT_UI_ASSETS } from "./rendering/battleUnitUiAssets";
+import { UnitHpBarRenderer } from "./rendering/unitHpBarRenderer";
+import {
+  preloadMapUiAtlases,
+  registerMapUiAtlasFrames,
+} from "./map/mapUiAssets";
+import { BattleIntroOverlay } from "./rendering/battleIntroOverlay";
+import { BattleEndCurtainOverlay } from "./rendering/battleEndCurtainOverlay";
+import {
+  BATTLE_INTRO_DURATION_MS,
+  clampBattleCameraZoom,
+  createBattleOpeningCameraState,
+  updateBattleOpeningCamera,
+  type BattleOpeningCameraState,
+} from "./systems/battleTransitionSystem";
 
 export class BattleScene extends Phaser.Scene {
   private selectedMapCell: SelectedMapCell | null = null;
@@ -160,6 +193,13 @@ export class BattleScene extends Phaser.Scene {
   private bases: BattleBase[] = [];
   private graphics!: Phaser.GameObjects.Graphics;
   private battlePanelUi: BattlePanelUi | null = null;
+  private introOverlay: BattleIntroOverlay | null = null;
+  private endCurtainOverlay: BattleEndCurtainOverlay | null = null;
+  private openingCamera: BattleOpeningCameraState | null = null;
+  private introStartedAt: number | null = null;
+  private playIntro = false;
+  private battlePhase: "INTRO_PAN" | "INTRO_ZOOM" | "NORMAL_BATTLE" | "ENDING" =
+    "NORMAL_BATTLE";
   private baseSprites = new Map<string, Phaser.GameObjects.Image>();
   private characterSprites = new Map<string, Phaser.GameObjects.Sprite>();
   private characterVisualRuntimes = new Map<string, CharacterVisualRuntime>();
@@ -169,6 +209,7 @@ export class BattleScene extends Phaser.Scene {
   >();
   private battleEffectRenderer: BattleEffectRenderer | null = null;
   private battleFrameSequenceRenderer: BattleFrameSequenceRenderer | null = null;
+  private unitHpBarRenderer: UnitHpBarRenderer | null = null;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private commandKeys!: Record<"A" | "S" | "D", Phaser.Input.Keyboard.Key>;
   private zoomKeys!: Record<
@@ -183,7 +224,6 @@ export class BattleScene extends Phaser.Scene {
   private previousLeftDown = false;
   private pendingWheelZoomSteps = 0;
   private cameraViewMode: CameraViewMode = "COMBAT";
-  private targetZoom = 1;
   private lastAiThinkAt = -AI_THINK_INTERVAL_MS;
   private lastCommandAt = -COMMAND_CONFIG.commandCooldownMs;
   private lastOrder: TemporaryOrderType | null = null;
@@ -191,7 +231,12 @@ export class BattleScene extends Phaser.Scene {
   private rangeDisplayRadius = 0;
   private result: BattleResult = null;
   private pendingPostBattleSnapshot: PostBattleSnapshot | null = null;
+  private battleClock: BattleClockState = createBattleClockState();
+  private battleEndStartedAt: number | null = null;
+  private currentMoney = INITIAL_PLAYER_MONEY;
+  private currentTotalRank = INITIAL_PLAYER_TOTAL_STIPEND;
   private criticalRetreatVisualIds = new Set<string>();
+  private treatmentHealerVisualIds = new Set<string>();
   private battleOutVisualIds = new Set<string>();
   private temporaryOrderVisuals = new Map<string, TemporaryOrderType>();
   private arrowProjectiles: ArrowProjectileRuntime[] = [];
@@ -207,10 +252,20 @@ export class BattleScene extends Phaser.Scene {
   }
 
   init(data?: Partial<BattleSceneData>): void {
-    // Kept as transition context only. Map selection must not alter battle setup yet.
+    // The selected cell is the sole stage key used by formal enemy generation.
     this.selectedMapCell = data?.selectedMapCell
       ? { ...data.selectedMapCell }
       : null;
+    this.currentMoney = data?.economy?.money ?? INITIAL_PLAYER_MONEY;
+    this.currentTotalRank = data?.economy?.totalRank ?? INITIAL_PLAYER_TOTAL_STIPEND;
+    this.result = null;
+    this.pendingPostBattleSnapshot = null;
+    this.battleClock = createBattleClockState();
+    this.battleEndStartedAt = null;
+    this.playIntro = data?.playIntro ?? false;
+    this.introStartedAt = null;
+    this.openingCamera = null;
+    this.battlePhase = this.playIntro ? "INTRO_PAN" : "NORMAL_BATTLE";
   }
 
   preload(): void {
@@ -233,9 +288,16 @@ export class BattleScene extends Phaser.Scene {
     for (const asset of BATTLE_FRAME_SEQUENCE_ASSETS) {
       if (!this.textures.exists(asset.key)) this.load.image(asset.key, asset.url);
     }
+    for (const asset of BATTLE_UNIT_UI_ASSETS) {
+      if (!this.textures.exists(asset.key)) this.load.image(asset.key, asset.url);
+    }
+    preloadBattleBalanceGauge(this);
+    if (this.playIntro) preloadMapUiAtlases(this);
   }
 
   create(): void {
+    configureBattleGameStage(this);
+    if (this.playIntro) registerMapUiAtlasFrames(this);
     const armySetup = loadStoredArmySetup();
     const playerFormation = resolveCommittedFormationForRoster(
       Array.from({ length: 30 }, (_, rosterIndex) => ({
@@ -249,14 +311,19 @@ export class BattleScene extends Phaser.Scene {
         armySetup: armySetup.player,
         initialPositions: playerFormation?.soldiers,
       }),
-      ...createArmy("enemy", Math.random, { armySetup: armySetup.enemy }),
+      ...createEnemyArmyForBattle({
+        mapKey: this.selectedMapCell?.cellId ?? "x8y14",
+        useCustomArmy: loadEnemyCustomArmyEnabled(),
+        customSetup: armySetup.enemy,
+        random: Math.random,
+      }),
     ];
     this.bases = createBattleBases();
     if (RECOVERY_CONFIG.debugStartPlayerLowHp) {
       const player = this.soldiers.find(
         (soldier) => soldier.controller === "player",
       );
-      if (player) player.hp = player.maxHp * RECOVERY_CONFIG.dangerHpRatio;
+      if (player) player.hp = Math.min(5, Math.max(1, Math.floor(player.maxHp * 0.19)));
     }
     this.baseSprites.clear();
     const battlefieldLayers = BATTLEFIELD_LAYER_DEFINITIONS.map((layer) => {
@@ -289,7 +356,16 @@ export class BattleScene extends Phaser.Scene {
       UNIT_ATLAS_ASSETS,
     );
     this.battleFrameSequenceRenderer = new BattleFrameSequenceRenderer(this);
-    this.battlePanelUi = new BattlePanelUi(this, this.time.now);
+    for (const asset of BATTLE_UNIT_UI_ASSETS) {
+      if (this.textures.exists(asset.key))
+        this.textures.get(asset.key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
+    this.unitHpBarRenderer = new UnitHpBarRenderer(this);
+    this.battlePanelUi = new BattlePanelUi(
+      this,
+      this.time.now,
+      () => this.beginBattleEnd("DEFEAT", "EXIT", this.time.now),
+    );
     this.characterSprites.clear();
     this.characterVisualRuntimes.clear();
     this.characterPoseOverrides.clear();
@@ -356,11 +432,18 @@ export class BattleScene extends Phaser.Scene {
       this.battleEffectRenderer = null;
       this.battleFrameSequenceRenderer?.destroy();
       this.battleFrameSequenceRenderer = null;
+      this.unitHpBarRenderer?.destroy();
+      this.unitHpBarRenderer = null;
       this.criticalRetreatVisualIds.clear();
+      this.treatmentHealerVisualIds.clear();
       this.battleOutVisualIds.clear();
       this.temporaryOrderVisuals.clear();
       this.battlePanelUi?.destroy();
       this.battlePanelUi = null;
+      this.introOverlay?.destroy();
+      this.introOverlay = null;
+      this.endCurtainOverlay?.destroy();
+      this.endCurtainOverlay = null;
       this.clearSpearEffects();
     });
     this.input.on(
@@ -378,8 +461,23 @@ export class BattleScene extends Phaser.Scene {
     camera
       .setBounds(0, 0, BATTLEFIELD_CONFIG.width, BATTLEFIELD_CONFIG.height)
       .setRoundPixels(true);
-    this.targetZoom = getCameraZoomLimits(camera.width).defaultZoom;
-    camera.setZoom(this.targetZoom);
+    const initialZoom = getViewModeZoom(
+      this.playIntro ? "OVERVIEW" : "COMBAT",
+      camera.width,
+      camera.height,
+    );
+    camera.setZoom(clampBattleCameraZoom(initialZoom));
+    if (this.playIntro && this.selectedMapCell) {
+      this.introStartedAt = this.time.now;
+      this.openingCamera = createBattleOpeningCameraState(initialZoom);
+      this.introOverlay = new BattleIntroOverlay(this, this.selectedMapCell);
+      camera.centerOn(
+        this.openingCamera.centerX,
+        this.openingCamera.centerY,
+      );
+      this.introOverlay.update(0, camera);
+    }
+    this.battlePanelUi?.updateViewport(camera);
 
     this.draw();
   }
@@ -389,14 +487,61 @@ export class BattleScene extends Phaser.Scene {
       togglePlayerLoadoutPanel();
     if (Phaser.Input.Keyboard.JustDown(this.armySetupPanelKey))
       toggleArmySetupPanel();
+    if (
+      this.introStartedAt !== null &&
+      (this.battlePhase === "INTRO_PAN" ||
+        this.battlePhase === "INTRO_ZOOM")
+    ) {
+      const player = this.soldiers.find(
+        (soldier) => soldier.controller === "player",
+      );
+      const elapsed = time - this.introStartedAt;
+      if (player) this.updateOpeningCamera(elapsed, player);
+      this.introOverlay?.update(elapsed, this.cameras.main);
+      this.draw();
+      if (elapsed >= BATTLE_INTRO_DURATION_MS && this.introOverlay) {
+        this.introOverlay.destroy();
+        this.introOverlay = null;
+      }
+      if (
+        elapsed >= BATTLE_INTRO_DURATION_MS &&
+        this.openingCamera?.phase === "DONE"
+      ) {
+        this.introStartedAt = null;
+        this.openingCamera = null;
+        this.battlePhase = "NORMAL_BATTLE";
+        this.cameraViewMode = "COMBAT";
+        this.cameras.main.setZoom(
+          clampBattleCameraZoom(
+            getViewModeZoom(
+              "COMBAT",
+              this.cameras.main.width,
+              this.cameras.main.height,
+            ),
+          ),
+        );
+      }
+      return;
+    }
     this.battleEffectRenderer?.update(time);
     updateBattleOutMovement(this.soldiers, delta / 1000);
     releaseBattleOutTargets(this.soldiers);
     this.syncBattleFrameEffects(time);
     if (this.result) {
+      const player = this.soldiers.find(
+        (soldier) => soldier.controller === "player",
+      );
+      if (player) this.updateCamera(player, false);
       this.battleFrameSequenceRenderer?.update(time);
       this.draw();
-      if (areBattleOutTransitionsComplete(this.soldiers)) this.finishPostBattleTransition();
+      if (
+        this.battleEndStartedAt !== null &&
+        this.endCurtainOverlay?.update(
+          time - this.battleEndStartedAt,
+          this.cameras.main,
+        )
+      )
+        this.finishPostBattleTransition();
       return;
     }
     updateNinjaDashes(this.soldiers, time);
@@ -517,19 +662,32 @@ export class BattleScene extends Phaser.Scene {
     updateAttackStates(this.soldiers, this.bases, time, this.result !== null);
     this.syncBattleFrameEffects(time);
     this.battleFrameSequenceRenderer?.update(time);
-    this.result = getBattleResult(this.soldiers, this.bases);
-    if (this.result) {
-      this.pendingPostBattleSnapshot = createPostBattleSnapshot(
-        this.result,
-        this.soldiers,
-        this.bases,
-        this.selectedMapCell,
+    const terminalResult = getBattleResult(this.soldiers, this.bases);
+    if (terminalResult) {
+      const playerBase = getBaseForTeam(this.bases, "player");
+      const enemyBase = getBaseForTeam(this.bases, "enemy");
+      this.beginBattleEnd(
+        terminalResult,
+        playerBase.hp <= 0 || enemyBase.hp <= 0 ? "BASE" : "ELIMINATION",
+        time,
       );
       this.draw();
-      if (areBattleOutTransitionsComplete(this.soldiers)) this.finishPostBattleTransition();
       return;
     }
-    if (!this.result) updateNormalCombatContests(this.soldiers, time);
+    const situation = calculateBattleSituation(this.soldiers, this.bases);
+    const clockUpdate = advanceBattleClock(this.battleClock, delta, situation);
+    if (clockUpdate.advantageTriggered) this.battlePanelUi?.showAdvantageVictory();
+    if (clockUpdate.expired) {
+      this.beginBattleEnd(
+        battleResultFromSituation(situation),
+        this.battleClock.advantageTriggered ? "ADVANTAGE" : "TIME",
+        time,
+        situation,
+      );
+      this.draw();
+      return;
+    }
+    updateNormalCombatContests(this.soldiers, time);
     this.draw();
   }
 
@@ -558,6 +716,17 @@ export class BattleScene extends Phaser.Scene {
       const characterSprite = this.characterSprites.get(soldier.id);
       if (soldier.isDead && soldier.battleOutState !== "EXITING") {
         characterSprite?.setVisible(false);
+        continue;
+      }
+      if (soldier.isDead && soldier.battleOutState === "EXITING" && characterSprite && isSpriteUnitType(soldier.unitType)) {
+        const renderConfig = getCharacterRenderConfig(soldier.unitType);
+        characterSprite
+          .setVisible(true)
+          .setPosition(
+            soldier.x + renderConfig.visualOffsetX,
+            soldier.y + renderConfig.visualOffsetY,
+          )
+          .setFrame(getBattleOutFrameIndex(soldier.team));
         continue;
       }
       if (characterSprite && isSpriteUnitType(soldier.unitType)) {
@@ -669,13 +838,56 @@ export class BattleScene extends Phaser.Scene {
     // SWF d/atck target drives the right panel. Pointer selection remains an auxiliary fallback only.
     const rightStatus =
       attackTarget ?? targeted ?? inspected ?? selected ?? hovered;
+    this.unitHpBarRenderer?.update(this.soldiers);
     this.battlePanelUi?.update(
       this.time.now,
       this.soldiers,
       this.bases,
       player,
       rightStatus,
+      this.battleClock.remainingSeconds,
     );
+  }
+
+  private beginBattleEnd(
+    result: Exclude<BattleResult, null>,
+    reason: BattleEndReason,
+    now: number,
+    existingSituation?: BattleSituationScore,
+  ): void {
+    if (this.result) return;
+    const situation = existingSituation ?? calculateBattleSituation(this.soldiers, this.bases);
+    const selectedLevel = this.selectedMapCell
+      ? getMapCell(this.selectedMapCell.cellId)?.hover.level ?? 1
+      : 1;
+    const earnsLocalVictoryMoney = result === "VICTORY"
+      && reason !== "EXIT"
+      && situation.player > situation.enemy;
+    const acquiredMoney = reason === "EXIT"
+      ? null
+      : earnsLocalVictoryMoney
+        ? calculateLocalVictoryReward(selectedLevel, situation)
+        : 0;
+    this.result = result;
+    this.battlePhase = "ENDING";
+    this.battleEndStartedAt = now;
+    this.pendingPostBattleSnapshot = createPostBattleSnapshot(
+      result,
+      this.soldiers,
+      this.bases,
+      this.selectedMapCell,
+      {
+        situation,
+        acquiredMoney,
+        moneyBefore: this.currentMoney,
+        totalRank: this.currentTotalRank,
+      },
+    );
+    startBattleEndWithdrawal(this.soldiers);
+    this.battlePanelUi?.showResult(result, this.bases, reason);
+    this.endCurtainOverlay?.destroy();
+    this.endCurtainOverlay = new BattleEndCurtainOverlay(this);
+    this.endCurtainOverlay.update(0, this.cameras.main);
   }
 
   private handleCommandInput(player: Soldier, time: number): void {
@@ -686,8 +898,8 @@ export class BattleScene extends Phaser.Scene {
       return;
     let order: TemporaryOrderType | null = null;
     if (Phaser.Input.Keyboard.JustDown(this.commandKeys.A)) {
-      issueRetreatCommand(player, this.soldiers, time);
-      order = "RETREAT";
+      issueDefendCommand(player, this.soldiers, time);
+      order = "DEFEND_ORDER";
       this.rangeDisplayRadius = 0;
     } else if (Phaser.Input.Keyboard.JustDown(this.commandKeys.S)) {
       issueAdvanceCommand(player, this.soldiers, time);
@@ -703,7 +915,7 @@ export class BattleScene extends Phaser.Scene {
     this.lastOrder = order;
     this.lastCommandAt = time;
     this.battleFrameSequenceRenderer?.play(
-      commandSequenceFor(order as "RETREAT" | "ADVANCE" | "RALLY"),
+      commandSequenceFor(order as "DEFEND_ORDER" | "ADVANCE" | "RALLY"),
       time,
       { x: player.x, y: player.y },
       { getRoot: () => this.soldierPoint(player.id) },
@@ -744,6 +956,25 @@ export class BattleScene extends Phaser.Scene {
         this.criticalRetreatVisualIds.delete(soldier.id);
       }
 
+      const treatmentHealerActive = shouldShowTreatmentHealerMark(soldier.id, this.soldiers);
+      if (treatmentHealerActive) {
+        if (!this.treatmentHealerVisualIds.has(soldier.id)) {
+          this.treatmentHealerVisualIds.add(soldier.id);
+          this.battleEffectRenderer?.play(
+            "as_isha",
+            time,
+            soldier,
+            {
+              getRoot: () => this.soldierPoint(soldier.id),
+              isActive: () => shouldShowTreatmentHealerMark(soldier.id, this.soldiers),
+              holdLastFrame: true,
+            },
+          );
+        }
+      } else {
+        this.treatmentHealerVisualIds.delete(soldier.id);
+      }
+
       if (soldier.isDead && soldier.battleOutState === "EXITING" && !this.battleOutVisualIds.has(soldier.id)) {
         this.battleOutVisualIds.add(soldier.id);
         this.battleFrameSequenceRenderer?.play(
@@ -767,7 +998,10 @@ export class BattleScene extends Phaser.Scene {
           sequence,
           time,
           soldier,
-          { getRoot: () => this.soldierPoint(soldier.id) },
+          {
+            getRoot: () => this.soldierPoint(soldier.id),
+            isActive: () => soldier.temporaryOrder?.type === currentOrder,
+          },
         );
       }
     }
@@ -792,61 +1026,70 @@ export class BattleScene extends Phaser.Scene {
     return played;
   }
 
-  private updateCamera(player: Soldier): void {
+  private updateOpeningCamera(elapsedMs: number, player: Soldier): void {
+    if (!this.openingCamera) return;
     const camera = this.cameras.main;
-    if (this.zoomKeys.out.some((key) => Phaser.Input.Keyboard.JustDown(key)))
-      this.targetZoom -= CAMERA_CONFIG.zoomStep;
-    if (this.zoomKeys.in.some((key) => Phaser.Input.Keyboard.JustDown(key)))
-      this.targetZoom += CAMERA_CONFIG.zoomStep;
-    if (this.pendingWheelZoomSteps !== 0) {
-      this.targetZoom += this.pendingWheelZoomSteps * CAMERA_CONFIG.zoomStep;
-      this.pendingWheelZoomSteps = 0;
-    }
-    if (Phaser.Input.Keyboard.JustDown(this.zoomKeys.toggle)) {
-      this.cameraViewMode = toggleCameraViewMode(this.cameraViewMode);
-      this.targetZoom = getViewModeZoom(
-        this.cameraViewMode,
-        camera.width,
-        camera.height,
-      );
-    }
-    if (
-      this.zoomKeys.reset.some((key) => Phaser.Input.Keyboard.JustDown(key))
-    ) {
-      this.cameraViewMode = "COMBAT";
-      this.targetZoom = getViewModeZoom("COMBAT", camera.width, camera.height);
-    }
-    this.targetZoom = clampCameraZoom(this.targetZoom, camera.width);
-    const previousZoom = camera.zoom;
-    const nextZoom = Phaser.Math.Linear(
-      previousZoom,
-      this.targetZoom,
-      CAMERA_CONFIG.zoomLerp,
+    const combatZoom = getViewModeZoom(
+      "COMBAT",
+      camera.width,
+      camera.height,
     );
-    if (Math.abs(nextZoom - previousZoom) > 1e-6) {
-      const anchored = getZoomAnchoredScroll(
-        { x: camera.scrollX, y: camera.scrollY },
-        previousZoom,
-        nextZoom,
-        player,
-        camera.width,
-        camera.height,
-      );
-      camera.setZoom(nextZoom).setScroll(anchored.x, anchored.y);
-    } else {
-      const scroll = getFollowScroll(
-        player.x,
-        camera.zoom,
-        camera.width,
-        camera.height,
-      );
-      camera.scrollX = Phaser.Math.Linear(
-        camera.scrollX,
-        scroll.x,
-        CAMERA_CONFIG.followLerp,
-      );
-      camera.scrollY = scroll.y;
+    // Never catch up the whole timeline in one render update. In particular,
+    // DONE no longer sits inside a while whose counter cannot advance.
+    updateBattleOpeningCamera(
+      this.openingCamera,
+      elapsedMs,
+      player,
+      combatZoom,
+    );
+    this.battlePhase =
+      this.openingCamera.phase === "PAN" ? "INTRO_PAN" : "INTRO_ZOOM";
+    camera
+      .setZoom(clampBattleCameraZoom(this.openingCamera.zoom))
+      .centerOn(this.openingCamera.centerX, this.openingCamera.centerY);
+    this.battlePanelUi?.updateViewport(camera);
+  }
+
+  private updateCamera(player: Soldier, allowInput = true): void {
+    const camera = this.cameras.main;
+    let requestedMode: CameraViewMode | null = null;
+    if (allowInput) {
+      if (this.zoomKeys.out.some((key) => Phaser.Input.Keyboard.JustDown(key)))
+        requestedMode = "OVERVIEW";
+      if (this.zoomKeys.in.some((key) => Phaser.Input.Keyboard.JustDown(key)))
+        requestedMode = "COMBAT";
+      if (this.pendingWheelZoomSteps !== 0) {
+        requestedMode =
+          this.pendingWheelZoomSteps < 0 ? "OVERVIEW" : "COMBAT";
+        this.pendingWheelZoomSteps = 0;
+      }
+      if (Phaser.Input.Keyboard.JustDown(this.zoomKeys.toggle))
+        requestedMode = toggleCameraViewMode(this.cameraViewMode);
+      if (
+        this.zoomKeys.reset.some((key) => Phaser.Input.Keyboard.JustDown(key))
+      )
+        requestedMode = "COMBAT";
     }
+    if (requestedMode) {
+      this.cameraViewMode = requestedMode;
+      camera.setZoom(
+        clampBattleCameraZoom(
+          getViewModeZoom(requestedMode, camera.width, camera.height),
+        ),
+      );
+    }
+    const scroll = getFollowScroll(
+      player.x,
+      camera.zoom,
+      camera.width,
+      camera.height,
+    );
+    camera.scrollX = Phaser.Math.Linear(
+      camera.scrollX,
+      scroll.x,
+      CAMERA_CONFIG.followLerp,
+    );
+    camera.scrollY = scroll.y;
     this.battlePanelUi?.updateViewport(camera);
   }
 

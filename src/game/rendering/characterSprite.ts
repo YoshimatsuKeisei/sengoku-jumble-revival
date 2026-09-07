@@ -197,6 +197,15 @@ export function getCharacterFrameIndex(pose: CharacterPose, direction: EightDire
   return CHARACTER_POSE_ROWS[pose] * CHARACTER_SHEET_COLUMNS + CHARACTER_DIRECTION_COLUMNS[direction];
 }
 
+export function getBattleOutDirection(team: Team): EightDirection {
+  return team === "player" ? "west" : "east";
+}
+
+/** Battle-out uses the closed-feet walk baseline, facing directly off the battlefield. */
+export function getBattleOutFrameIndex(team: Team): number {
+  return getCharacterFrameIndex("walk_1", getBattleOutDirection(team));
+}
+
 function attackPose(
   soldier: Pick<Soldier, "combatActionState" | "attackStartedAt" | "attackHitAt">,
   now: number,

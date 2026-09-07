@@ -86,7 +86,7 @@ function damageVictim(victim: Soldier, attacker: Soldier, components: DamageComp
   }
   const remaining = applyRareDamageImmunity(victim, adjusted); const damage = totalDamageComponents(remaining);
   if (damage <= 0) return { damage: 0, fire: false, explosion: false };
-  applyDamage(victim, damage);
+  applyDamage(victim, damage, attacker);
   if (showMarker) { victim.combatFeedbackMarker = "H"; victim.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; }
   if (!victim.isDead) startHitReaction(victim, attacker, currentTime, 0, random, "ARROW_ATTACK");
   return { damage, fire: (remaining.FIRE ?? 0) > 0, explosion: (remaining.EXPLOSION ?? 0) > 0 };

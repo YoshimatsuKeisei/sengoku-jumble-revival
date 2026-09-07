@@ -83,7 +83,6 @@ export const BASE_CONTACT_CONFIG = {
 
 // Temporary tuning values; the exact original-game values are not yet confirmed.
 export const RECOVERY_CONFIG = {
-  dangerHpRatio: 0.3,
   arrivalTolerance: 4,
   debugStartPlayerLowHp: false,
 } as const;
@@ -306,7 +305,7 @@ export const CAMERA_CONFIG = {
   maxZoomInVisibleWidthRatio: 0.22,
   zoomStep: 0.1,
   zoomLerp: 0.18,
-  followLerp: 0.16,
+  followLerp: 1 / 7,
 } as const;
 
 export const PLAYER_MOUSE_DEAD_ZONE = 18;

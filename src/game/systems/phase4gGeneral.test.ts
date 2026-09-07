@@ -45,7 +45,7 @@ describe("Phase 4G general", () => {
     const event = executeGeneralAttack(caster, [caster, ai, player, confusedGeneral], [], [], 100, () => 1, false,
       (recipient) => { forced += 1; expect(recipient.targetId).toBeNull(); return false; })!;
     expect(ai.isConfused).toBe(false); expect(ai.specialReadyAt).toBe(99_999); expect(forced).toBe(1);
-    expect(player.specialReadyAt).toBe(100); expect(event.playerReadyIds).toEqual(["p"]);
+    expect(player.specialReadyAt).toBe(100); expect(player.playerTechniqueGauge).toBe(100); expect(event.playerReadyIds).toEqual(["p"]);
     expect(confusedGeneral.isConfused).toBe(true);
   });
 

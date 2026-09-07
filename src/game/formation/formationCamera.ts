@@ -81,6 +81,11 @@ export function toggleFormationCamera(camera: FormationCameraState): FormationCa
   return createFormationCameraState(camera.mode === "normal" ? "overview" : "normal");
 }
 
+export function createNormalFormationCameraAt(worldX: number, worldY: number): FormationCameraState {
+  const normal = createFormationCameraState("normal");
+  return clampFormationCamera({ ...normal, centerX: worldX, centerY: worldY });
+}
+
 export function panFormationCameraAtPointer(
   camera: FormationCameraState,
   stageX: number,

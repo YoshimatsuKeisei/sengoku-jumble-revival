@@ -1,0 +1,247 @@
+{
+  "source_function": "chpr(u, dfstp)",
+  "base_rolls": {
+    "1": {
+      "class": "足軽",
+      "foot": [
+        2,
+        4
+      ],
+      "combat": [
+        40,
+        59
+      ],
+      "hp": [
+        30,
+        49
+      ],
+      "defense": [
+        30,
+        49
+      ],
+      "skill": [
+        30,
+        49
+      ],
+      "default_technique": 1
+    },
+    "2": {
+      "class": "弓兵",
+      "foot": [
+        2,
+        4
+      ],
+      "combat": [
+        20,
+        39
+      ],
+      "hp": [
+        30,
+        49
+      ],
+      "defense": [
+        20,
+        39
+      ],
+      "skill": [
+        30,
+        49
+      ],
+      "default_technique": 2
+    },
+    "3": {
+      "class": "武将",
+      "foot": [
+        2,
+        4
+      ],
+      "combat": [
+        30,
+        49
+      ],
+      "hp": [
+        30,
+        49
+      ],
+      "defense": [
+        65,
+        79
+      ],
+      "skill": [
+        30,
+        49
+      ],
+      "default_technique": 14
+    },
+    "4": {
+      "class": "猛者",
+      "foot": [
+        2,
+        4
+      ],
+      "combat": [
+        65,
+        79
+      ],
+      "hp": [
+        45,
+        59
+      ],
+      "defense": [
+        30,
+        49
+      ],
+      "skill": [
+        30,
+        49
+      ],
+      "default_technique": 11
+    },
+    "5": {
+      "class": "軍師",
+      "foot": [
+        2,
+        3
+      ],
+      "combat": [
+        10,
+        19
+      ],
+      "hp": [
+        20,
+        34
+      ],
+      "defense": [
+        30,
+        49
+      ],
+      "skill": [
+        30,
+        49
+      ],
+      "default_technique": "random 6 or 7"
+    },
+    "6": {
+      "class": "鉄砲",
+      "foot": [
+        1,
+        2
+      ],
+      "combat": [
+        10,
+        19
+      ],
+      "hp": [
+        20,
+        39
+      ],
+      "defense": [
+        20,
+        39
+      ],
+      "skill": [
+        30,
+        49
+      ],
+      "default_technique": 4
+    },
+    "7": {
+      "class": "忍者",
+      "foot": [
+        4,
+        5
+      ],
+      "combat": [
+        65,
+        79
+      ],
+      "hp": [
+        15,
+        19
+      ],
+      "defense": [
+        65,
+        79
+      ],
+      "skill": [
+        30,
+        49
+      ],
+      "default_technique": 12
+    },
+    "8": {
+      "class": "騎馬",
+      "foot": [
+        5,
+        6
+      ],
+      "combat": [
+        85,
+        104
+      ],
+      "hp": [
+        50,
+        54
+      ],
+      "defense": [
+        15,
+        19
+      ],
+      "skill": [
+        55,
+        64
+      ],
+      "default_technique": 26
+    }
+  },
+  "level_adjustment": {
+    "formula": "elv = level*5 - 10",
+    "table": {
+      "1": {
+        "elv": -5
+      },
+      "2": {
+        "elv": 0
+      },
+      "3": {
+        "elv": 5
+      },
+      "4": {
+        "elv": 10
+      },
+      "5": {
+        "elv": 15
+      },
+      "6": {
+        "elv": 20
+      },
+      "7": {
+        "elv": 25
+      },
+      "8": {
+        "elv": 30
+      },
+      "9": {
+        "elv": 35
+      },
+      "10": {
+        "elv": 40
+      }
+    },
+    "applied_to": [
+      "combat_pw",
+      "defense_df",
+      "skill_kp"
+    ],
+    "hp": "hp_mp += elv except class 7 (忍者)",
+    "caps": {
+      "combat_non_cavalry": 110,
+      "combat_cavalry": 125,
+      "defense": 110,
+      "skill": 110,
+      "hp": 110
+    },
+    "cavalry_hp_special": "After general adjustments, if class8 hp>90 then hp=80+floor(random*15), i.e. 80..94."
+  },
+  "warning": "Base rolls are BEFORE class-specific random bonus blocks and technique selection. Use chpr bytecode for exact final generation; do not mistake these for final recruit ranges."
+}

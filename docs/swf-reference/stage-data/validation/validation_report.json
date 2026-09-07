@@ -1,0 +1,32 @@
+{
+  "formation_count": 71,
+  "formation_all_30_slots": true,
+  "formation_all_composition_total_30": true,
+  "map_cells": 289,
+  "unique_map_cells": 289,
+  "map_battle_kind_counts": {
+    "generic": 218,
+    "excluded": 38,
+    "named": 31,
+    "special_locked": 1,
+    "training": 1
+  },
+  "named_stage_count": 31,
+  "named_all_30_slots": true,
+  "famous_direct_records": 127,
+  "technique_probability_sums": {
+    "1": 1.0,
+    "2": 1.0,
+    "3": 1.0,
+    "4": 1.0,
+    "5": 0.9999999999999998,
+    "6": 1.0,
+    "7": 1.0,
+    "8": 1.0
+  },
+  "named_technique_expectation_stage_sums_all_30": true,
+  "named_technique_expectation_bad_sums": {},
+  "json_files_parsed": 21,
+  "issues": [],
+  "ok": true
+}

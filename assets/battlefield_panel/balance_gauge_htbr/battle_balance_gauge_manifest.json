@@ -1,0 +1,127 @@
+{
+  "source": {
+    "swf": "sgjbgm.swf",
+    "sprite_id": 2609,
+    "instance_name": "htbr",
+    "root_stage_position": {
+      "x": 2,
+      "y": 20
+    },
+    "declared_frames": 600,
+    "logical_size_px": {
+      "width": 200,
+      "height": 4
+    },
+    "fps": 24
+  },
+  "components": [
+    {
+      "character_id": 2604,
+      "role": "base",
+      "outer_rgba": [
+        0,
+        0,
+        0,
+        255
+      ],
+      "inner_red_rgba": [
+        231,
+        21,
+        0,
+        255
+      ]
+    },
+    {
+      "character_id": 2606,
+      "role": "blue morph first half",
+      "start_bounds": [
+        1,
+        2,
+        1,
+        3
+      ],
+      "end_bounds": [
+        1,
+        97.5,
+        1,
+        3
+      ],
+      "rgba": [
+        44,
+        147,
+        255,
+        255
+      ]
+    },
+    {
+      "character_id": 2607,
+      "role": "blue morph second half",
+      "start_bounds": [
+        1,
+        97.5,
+        1,
+        3
+      ],
+      "end_bounds": [
+        1,
+        199,
+        1,
+        3
+      ],
+      "rgba": [
+        44,
+        147,
+        255,
+        255
+      ]
+    },
+    {
+      "character_id": 2608,
+      "role": "blue full-state",
+      "bounds": [
+        1,
+        199,
+        1,
+        3
+      ],
+      "rgba": [
+        44,
+        147,
+        255,
+        255
+      ]
+    },
+    {
+      "character_id": 2605,
+      "role": "overlay",
+      "lower_shade_rgba": [
+        0,
+        0,
+        0,
+        69
+      ],
+      "center_divider_x": [
+        97,
+        98
+      ]
+    }
+  ],
+  "runtime_mapping": {
+    "htpt1": "mcp*5 + mmb*3 + eth",
+    "htpt2": "ecp*5 + emb*3 + mth",
+    "bf": "clamp((htpt1 - htpt2 + 30) * 10, 1, 600)",
+    "smoothing": "mf = mf + (bf - mf) / 8",
+    "display_frame": "round(mf)",
+    "neutral_frame": 300,
+    "enemy_max_frame": 1,
+    "player_max_frame": 600
+  },
+  "spritesheet": {
+    "file": "battle_balance_gauge_600frames.png",
+    "layout": "vertical",
+    "frame_width": 200,
+    "frame_height": 4,
+    "frame_count": 600,
+    "frame_n_y": "(n-1)*4"
+  }
+}

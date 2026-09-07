@@ -26,6 +26,7 @@ export interface BattlePanelViewModel {
 export interface BattleUiSnapshot {
   soldiers: Record<string, {
     id: string;
+    name: string;
     team: Team;
     controller: Soldier["controller"];
     hp: number;
@@ -48,7 +49,7 @@ function status(soldier: Soldier | null | undefined): CharacterStatusView | null
   return {
     id: soldier.id,
     team: soldier.team,
-    name: soldier.id.toUpperCase(),
+    name: displaySoldierName(soldier),
     hp: `${Math.ceil(soldier.hp)}/${soldier.maxHp}`,
     hpRatio: soldier.maxHp > 0 ? Math.max(0, soldier.hp / soldier.maxHp) : 0,
     power: soldier.stats.combat,
@@ -56,6 +57,10 @@ function status(soldier: Soldier | null | undefined): CharacterStatusView | null
     skill: soldier.stats.skill,
     foot: soldier.stats.foot,
   };
+}
+
+function displaySoldierName(soldier: Pick<Soldier, "id" | "name">): string {
+  return soldier.name && soldier.name !== soldier.id ? soldier.name : soldier.id.toUpperCase();
 }
 
 function baseFor(bases: readonly BattleBase[], team: Team): BattleBase {
@@ -88,6 +93,7 @@ export function collectBattleUiSnapshot(soldiers: readonly Soldier[], bases: rea
   return {
     soldiers: Object.fromEntries(soldiers.map((soldier) => [soldier.id, {
       id: soldier.id,
+      name: soldier.name,
       team: soldier.team,
       controller: soldier.controller,
       hp: soldier.hp,
@@ -112,14 +118,14 @@ export function diffBattleUiSnapshots(previous: BattleUiSnapshot, current: Battl
     if (!before) continue;
     if (!before.isDead && soldier.isDead) {
       notifications.push({ kind: "event", side: soldier.team, message: soldier.team === "enemy"
-        ? `${soldier.id.toUpperCase()} 討ち取ったり！`
-        : `${soldier.id.toUpperCase()} が戦線離脱！` });
+        ? `${displaySoldierName(soldier)} 討ち取ったり！`
+        : `${displaySoldierName(soldier)} が戦線離脱！` });
     } else if (before.state !== "EMERGENCY_RETREAT" && soldier.state === "EMERGENCY_RETREAT" && soldier.controller === "player") {
-      notifications.push({ kind: "event", side: "player", message: `${soldier.id.toUpperCase()} 一時退避！` });
+      notifications.push({ kind: "event", side: "player", message: `${displaySoldierName(soldier)} 一時退避！` });
       notifications.push({ kind: "temporary", state: 4 });
     }
     if (soldier.team === "player" && soldier.hp > before.hp && (before.state === "HEALING" || soldier.state === "HEALING")) {
-      notifications.push({ kind: "event", side: "player", message: `${soldier.id.toUpperCase()}の療所効果！` });
+      notifications.push({ kind: "event", side: "player", message: `${displaySoldierName(soldier)}の療所効果！` });
     }
   }
   if (previous.playerAlive > BATTLE_PANEL_LOW_ALLY_COUNT && current.playerAlive <= BATTLE_PANEL_LOW_ALLY_COUNT) {

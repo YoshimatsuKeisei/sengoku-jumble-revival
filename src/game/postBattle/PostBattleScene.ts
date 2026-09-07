@@ -4,11 +4,8 @@ import {
   CHARACTER_FRAME_HEIGHT,
   CHARACTER_FRAME_WIDTH,
   CHARACTER_SPRITESHEETS,
-  getCharacterFrameIndex,
-  getCharacterRenderConfig,
-  getCharacterTextureKey,
-  isSpriteUnitType,
 } from "../rendering/characterSprite";
+import { createSoldierDetailDisplay } from "../rendering/soldierDetailRenderer";
 import { configureMapUiCamera } from "../map/mapUiRenderer";
 import {
   createPostBattleImage,
@@ -36,14 +33,6 @@ import {
   type PostBattleSnapshot,
   type PostBattleSoldierSnapshot,
 } from "./postBattleState";
-import {
-  ENEMY_DETAIL_LAYOUT,
-  resolveEnemyDetailActionSlots,
-  resolveEnemyDetailSpecialSlots,
-  resolveEnemyDetailTechnique,
-  resolveEnemyDetailUnitType,
-  type EnemyDetailTextPlacement,
-} from "./enemyDetailMapping";
 
 const ui = uiManifestJson;
 const TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
@@ -54,11 +43,6 @@ const TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
   strokeThickness: 1,
 };
 const ROW_STYLE = { ...TEXT_STYLE, fontSize: "8px" } as const;
-const DETAIL_TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
-  color: "#cec0a9",
-  fontFamily: "sans-serif",
-  fontSize: "16px",
-};
 const LIST_TRACK_TOP = 73;
 const LIST_TRACK_BOTTOM = 303;
 
@@ -198,7 +182,11 @@ export class PostBattleScene extends Phaser.Scene {
     this.resultGroups.final.push(...this.createButton("result_next", () => {
       const target = routeAfterBattleResult(this.snapshot);
       if (target === "map") {
-        this.scene.start("Map", this.snapshot.selectedMapCell ? { currentCellId: this.snapshot.selectedMapCell.cellId } : {});
+        this.scene.start("Map", {
+          ...(this.snapshot.selectedMapCell ? { currentCellId: this.snapshot.selectedMapCell.cellId } : {}),
+          ...(this.snapshot.economy.moneyAfter !== null ? { money: this.snapshot.economy.moneyAfter } : {}),
+          ...(this.snapshot.economy.totalRank !== null ? { totalRank: this.snapshot.economy.totalRank } : {}),
+        });
       } else {
         this.showScreen(target);
       }
@@ -351,7 +339,17 @@ export class PostBattleScene extends Phaser.Scene {
       const y = config.list.y + (index - first) * config.list.row_height;
       const values = runtime.screen === "enemy_list"
         ? [soldier.name, soldier.unitType, soldier.technique, soldier.maxHp, soldier.skill, soldier.attack, soldier.defense, soldier.speed]
-        : [soldier.name, null, null, null, null, null, null, null, null];
+        : [
+          soldier.name,
+          soldier.merits.battleWins,
+          soldier.merits.battleLosses,
+          soldier.merits.repels,
+          soldier.merits.kills,
+          soldier.merits.soldierDamage,
+          soldier.merits.baseDamage,
+          soldier.merits.defense,
+          soldier.merits.recovery,
+        ];
       const xs = runtime.screen === "enemy_list"
         ? [18, 88, 130, 170, 213, 255, 298, 337]
         : [18, 89, 115, 150, 184, 219, 254, 289, 325];
@@ -380,39 +378,16 @@ export class PostBattleScene extends Phaser.Scene {
   private createEnemyDetail(): void {
     const config = ui.screens.enemy_detail;
     const soldier = this.snapshot.enemyRoster[this.selectedEnemyIndex];
-    this.image(config.panel.asset, config.panel.x, config.panel.y);
     if (!soldier) {
+      this.image(config.panel.asset, config.panel.x, config.panel.y);
       this.text(190, 180, "敵兵データなし", { ...TEXT_STYLE, fontSize: "14px" }).setOrigin(0.5);
       this.createButton("back_to_enemy_list", () => this.showScreen("enemy_list"));
       return;
     }
-    this.createEnemyPortrait(soldier);
-    this.enemyDetailText(ENEMY_DETAIL_LAYOUT.name, soldier.name);
-    this.enemyDetailText(ENEMY_DETAIL_LAYOUT.hp, soldier.maxHp);
-    this.enemyDetailText(ENEMY_DETAIL_LAYOUT.skill, soldier.skill);
-    this.enemyDetailText(ENEMY_DETAIL_LAYOUT.speed, soldier.speed);
-    this.enemyDetailText(ENEMY_DETAIL_LAYOUT.attack, soldier.attack);
-    this.enemyDetailText(ENEMY_DETAIL_LAYOUT.defense, soldier.defense);
-    this.enemyDetailText(ENEMY_DETAIL_LAYOUT.stipend, null);
-
-    const unitType = resolveEnemyDetailUnitType(soldier.unitType);
-    if (unitType) this.image(unitType.bitmapId, ENEMY_DETAIL_LAYOUT.unitType.tx, ENEMY_DETAIL_LAYOUT.unitType.ty, 10);
-    else this.text(ENEMY_DETAIL_LAYOUT.unitType.tx + 26, ENEMY_DETAIL_LAYOUT.unitType.ty + 5, "--", DETAIL_TEXT_STYLE).setOrigin(0.5, 0);
-
-    const technique = resolveEnemyDetailTechnique(soldier.technique);
-    if (technique) this.image(technique.bitmapId, ENEMY_DETAIL_LAYOUT.technique.tx, ENEMY_DETAIL_LAYOUT.technique.ty, 10);
-    else this.text(ENEMY_DETAIL_LAYOUT.technique.tx + 26, ENEMY_DETAIL_LAYOUT.technique.ty + 5, "--", DETAIL_TEXT_STYLE).setOrigin(0.5, 0);
-
-    // The original frame contains this static label. There is no growth counter
-    // in the current domain model, so no synthetic number is layered over it.
-    this.image(2709, ENEMY_DETAIL_LAYOUT.growthLabel.tx, ENEMY_DETAIL_LAYOUT.growthLabel.ty, 10);
-
-    for (const slot of resolveEnemyDetailActionSlots(soldier.strategy)) {
-      this.image(slot.bitmapId, slot.x, slot.y, 10);
-    }
-    for (const slot of resolveEnemyDetailSpecialSlots(soldier.specialAbilities, soldier.rareSpecialAbilities)) {
-      this.image(slot.bitmapId, slot.x, slot.y, 10);
-    }
+    for (const object of createSoldierDetailDisplay(this, soldier, {
+      team: "enemy",
+      showGrowthLabel: true,
+    })) this.track(object);
     this.createButton("previous_enemy", () => {
       if (this.selectedEnemyIndex <= 0) return;
       this.selectedEnemyIndex -= 1;
@@ -426,27 +401,6 @@ export class PostBattleScene extends Phaser.Scene {
     this.createButton("recruit_this_soldier", () => this.showUnconnectedNotice());
     this.createButton("do_not_recruit", () => this.showUnconnectedNotice());
     this.createButton("back_to_enemy_list", () => this.showScreen("enemy_list"));
-  }
-
-  private enemyDetailText(placement: EnemyDetailTextPlacement, value: string | number | null): Phaser.GameObjects.Text {
-    return this.text(placement.x, placement.y, displayPostBattleValue(value), {
-      ...DETAIL_TEXT_STYLE,
-      align: placement.align,
-    }).setFixedSize(placement.width, placement.height);
-  }
-
-  private createEnemyPortrait(soldier: PostBattleSoldierSnapshot): void {
-    if (!isSpriteUnitType(soldier.unitType)) return;
-    const config = ui.screens.enemy_detail.portrait_anchor;
-    const render = getCharacterRenderConfig(soldier.unitType);
-    const sprite = this.track(this.add.sprite(
-      config.x,
-      config.y,
-      getCharacterTextureKey(soldier.unitType, "enemy"),
-      getCharacterFrameIndex("walk_1", "south"),
-    ).setOrigin(render.originX, render.originY).setScale(config.swf_scale).setDepth(5));
-    const maskShape = this.track(this.add.graphics().fillStyle(0xffffff).fillRect(20, 43, 103, 83).setVisible(false));
-    sprite.setMask(maskShape.createGeometryMask());
   }
 
   private showUnconnectedNotice(): void {

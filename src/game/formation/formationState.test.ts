@@ -3,13 +3,16 @@ import { createArmy } from "../factories/createArmy";
 import { createDefaultTeamArmySetup } from "../systems/armySetupSystem";
 import {
   clearCommittedFormationState,
+  clearFormationSlots,
   cloneFormationState,
   commitFormationState,
   createInitialFormationState,
   getCommittedFormationState,
+  loadFormationSlot,
   moveFormationSoldier,
   reconcileFormationState,
   resolveCommittedFormationForRoster,
+  saveFormationSlot,
   validateFormationState,
 } from "./formationState";
 
@@ -19,7 +22,10 @@ const roster = Array.from({ length: 30 }, (_, index) => ({
   y: 180 + (index % 10) * 60,
 }));
 
-afterEach(() => clearCommittedFormationState());
+afterEach(() => {
+  clearCommittedFormationState();
+  clearFormationSlots();
+});
 
 describe("formation working and committed state", () => {
   it("creates and atomically commits 30 unique legal positions", () => {
@@ -93,5 +99,15 @@ describe("formation working and committed state", () => {
       strategyObjectiveY: free.y * 36,
     });
     expect(enemy.map((soldier) => ({ x: soldier.x, y: soldier.y, hp: soldier.hp }))).toEqual(enemyBefore);
+  });
+
+  it("stores three in-session slots without sharing mutable formation objects", () => {
+    const state = createInitialFormationState(roster);
+    saveFormationSlot(2, state);
+    expect(loadFormationSlot(0, roster)).toBeNull();
+    const loaded = loadFormationSlot(2, roster)!;
+    expect(loaded).toEqual(state);
+    loaded.soldiers[0].worldX = -1;
+    expect(loadFormationSlot(2, roster)).toEqual(state);
   });
 });

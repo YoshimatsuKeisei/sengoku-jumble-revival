@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { BATTLEFIELD_CONFIG, COMMAND_CONFIG, RECOVERY_CONFIG } from "../config";
+import { BATTLEFIELD_CONFIG } from "../config";
+import { battlefieldSourceDistanceToWorldX } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import { updateAiTargets } from "./aiSystem";
 import {
@@ -94,18 +95,27 @@ describe("temporary command system", () => {
     expect(Math.hypot((near.moveTargetX ?? 0) - player.x, (near.moveTargetY ?? 0) - player.y)).toBeCloseTo(62.5);
   });
 
-  it("expires and resumes the unchanged strategy", () => {
+  it("does not invent a timer release for the partially confirmed S path", () => {
     const { player, near, soldiers } = setup();
     issueAdvanceCommand(player, soldiers, 0);
-    updateTemporaryOrder(near, player, COMMAND_CONFIG.commandDurationMs);
-    expect(near.temporaryOrder).toBeNull();
+    updateTemporaryOrder(near, player, 60_000);
+    expect(near.temporaryOrder?.type).toBe("ADVANCE");
+    expect(near.strategy).toBe("defend");
+  });
+
+  it("replaces an active A/S/D order without changing the base strategy", () => {
+    const { player, near, soldiers } = setup();
+    issueRetreatCommand(player, soldiers, 0);
+    expect(near.temporaryOrder?.type).toBe("RETREAT");
+    issueRallyCommand(player, soldiers, 1);
+    expect(near.temporaryOrder?.type).toBe("RALLY");
     expect(near.strategy).toBe("defend");
   });
 
   it("recovery cancels an active command when HP becomes dangerous", () => {
     const { player, near, soldiers } = setup();
     issueAdvanceCommand(player, soldiers, 0);
-    near.hp = near.maxHp * RECOVERY_CONFIG.dangerHpRatio;
+    near.hp = 5;
     updateRecoveryStates(soldiers, 0);
     expect(near.state).toBe("EMERGENCY_RETREAT");
     expect(near.temporaryOrder).toBeNull();
@@ -121,16 +131,17 @@ describe("temporary command system", () => {
     expect(near.targetId).toBeNull();
   });
 
-  it("RALLY follows the player's current position and completes in the rally ring", () => {
+  it("RALLY keeps the issued D point and releases only below the SWF Manhattan boundary", () => {
     const { player, far, soldiers } = setup();
     far.x = 300;
+    const issuedAt = { x: player.x, y: player.y };
     issueRallyCommand(player, soldiers, 0);
     player.x = 200;
     player.y = 300;
     updateTemporaryOrder(far, player, 100);
-    expect(Math.hypot((far.moveTargetX ?? 0) - player.x, (far.moveTargetY ?? 0) - player.y)).toBeCloseTo(62.5);
-    far.x = player.x + 50;
-    far.y = player.y;
+    expect({ x: far.moveTargetX, y: far.moveTargetY }).toEqual(issuedAt);
+    far.x = issuedAt.x + battlefieldSourceDistanceToWorldX(49);
+    far.y = issuedAt.y;
     updateTemporaryOrder(far, player, 200);
     expect(far.temporaryOrder).toBeNull();
   });

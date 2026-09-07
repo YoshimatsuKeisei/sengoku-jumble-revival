@@ -1,0 +1,413 @@
+SWF AVM1 chpr(u, dfstp) decompiler output. This is evidence/reference; UNKNOWN/UNHANDLED lines should not be treated as source-level AS syntax.
+
+00012 // r3 := 0.0
+00026 // r0 := u.ch
+00039 IF (u.ch === 1) -> 161
+00055 IF (u.ch === 2) -> 1892
+00071 IF (u.ch === 3) -> 3698
+00087 IF (u.ch === 4) -> 5312
+00103 IF (u.ch === 5) -> 6674
+00119 IF (u.ch === 6) -> 8686
+00135 IF (u.ch === 7) -> 10313
+00151 IF (u.ch === 8) -> 11883
+00156 JUMP -> 13297
+00173 u.ac = 1
+00217 IF !(((Math.random() * 400) > 398)) -> 238
+00239 IF !(!((fmdat == 'n'))) -> 257
+00256 u.ac = 21
+00321 u.s = (Math.floor((Math.random() * 3)) + 2)
+00383 u.pw = (40 + Math.floor((Math.random() * 20)))
+00445 u.mp = (30 + Math.floor((Math.random() * 20)))
+00507 u.df = (30 + Math.floor((Math.random() * 20)))
+00569 u.kp = (30 + Math.floor((Math.random() * 20)))
+00612 IF !(((Math.random() * 100) > 60)) -> 1407
+00681 u.pw = (u.pw + Math.floor((Math.random() * 30)))
+00746 u.mp = (u.mp + Math.floor((Math.random() * 25)))
+00811 u.df = (u.df + Math.floor((Math.random() * 25)))
+00876 u.kp = (u.kp + Math.floor((Math.random() * 30)))
+00920 IF !(((Math.random() * 100) > 70)) -> 941
+00942 IF !(!((fmdat == 'n'))) -> 1407
+01011 u.pw = (u.pw + Math.floor((Math.random() * 20)))
+01076 u.mp = (u.mp + Math.floor((Math.random() * 5)))
+01141 u.df = (u.df + Math.floor((Math.random() * 10)))
+01206 u.kp = (u.kp + Math.floor((Math.random() * 20)))
+01250 IF !(((Math.random() * 100) > 70)) -> 1271
+01272 IF !(!((fmdat == 'n'))) -> 1407
+01341 u.mp = (u.mp + Math.floor((Math.random() * 15)))
+01406 u.df = (u.df + Math.floor((Math.random() * 15)))
+01413 // r3 := ''
+01460 IF ((Math.random() * 100) > 50) -> 1477
+01478 IF !((dfstp == 1)) -> 1494
+01489 // r3 := 's1'
+01536 IF ((Math.random() * 100) > 50) -> 1551
+01552 IF ('s1' == '') -> 1569
+01570 IF !((dfstp == 3)) -> 1589
+01584 // r3 := ('s1' + 's2')
+01631 IF ((Math.random() * 100) > 65) -> 1648
+01649 IF !((dfstp == 8)) -> 1668
+01663 // r3 := (('s1' + 's2') + 's3')
+01710 IF ((Math.random() * 100) > 95) -> 1727
+01728 IF !((dfstp == 10)) -> 1747
+01742 // r3 := ((('s1' + 's2') + 's3') + 's4')
+01789 IF ((Math.random() * 100) > 80) -> 1806
+01807 IF !((dfstp == 14)) -> 1826
+01821 // r3 := (((('s1' + 's2') + 's3') + 's4') + 's5')
+01868 IF !(((Math.random() * 100) > 90)) -> 1887
+01882 // r3 := ((((('s1' + 's2') + 's3') + 's4') + 's5') + 's6')
+01887 JUMP -> 13316
+01904 u.ac = 2
+01948 IF !(((Math.random() * 300) > 287)) -> 1969
+01970 IF !(!((fmdat == 'n'))) -> 2053
+02017 IF !(((Math.random() * 100) > 30)) -> 2040
+02034 u.ac = 15
+02035 JUMP -> 2053
+02052 u.ac = 16
+02117 u.s = (Math.floor((Math.random() * 3)) + 2)
+02179 u.pw = (20 + Math.floor((Math.random() * 20)))
+02241 u.mp = (30 + Math.floor((Math.random() * 20)))
+02303 u.df = (20 + Math.floor((Math.random() * 20)))
+02365 u.kp = (30 + Math.floor((Math.random() * 20)))
+02408 IF !(((Math.random() * 100) > 60)) -> 3180
+02477 u.ac = (Math.floor((Math.random() * 2)) + 2)
+02542 u.pw = (u.pw + Math.floor((Math.random() * 20)))
+02607 u.mp = (u.mp + Math.floor((Math.random() * 30)))
+02672 u.df = (u.df + Math.floor((Math.random() * 30)))
+02737 u.kp = (u.kp + Math.floor((Math.random() * 30)))
+02781 IF !(((Math.random() * 100) > 90)) -> 2802
+02803 IF !(!((fmdat == 'n'))) -> 3180
+02872 u.pw = (u.pw + Math.floor((Math.random() * 20)))
+02915 IF !(((Math.random() * 100) > 95)) -> 2985
+02984 u.pw = (u.pw + Math.floor((Math.random() * 80)))
+03049 u.mp = (u.mp + Math.floor((Math.random() * 20)))
+03114 u.df = (u.df + Math.floor((Math.random() * 20)))
+03179 u.kp = (u.kp + Math.floor((Math.random() * 20)))
+03186 // r3 := ''
+03233 IF ((Math.random() * 100) > 50) -> 3250
+03251 IF !((dfstp == 1)) -> 3267
+03262 // r3 := 's1'
+03309 IF ((Math.random() * 100) > 40) -> 3324
+03325 IF ('s1' == '') -> 3342
+03343 IF !((dfstp == 3)) -> 3362
+03357 // r3 := ('s1' + 's2')
+03404 IF ((Math.random() * 100) > 65) -> 3421
+03422 IF !((dfstp == 8)) -> 3441
+03436 // r3 := (('s1' + 's2') + 's3')
+03483 IF ((Math.random() * 100) > 95) -> 3500
+03501 IF !((dfstp == 10)) -> 3520
+03515 // r3 := ((('s1' + 's2') + 's3') + 's4')
+03562 IF ((Math.random() * 100) > 30) -> 3594
+03595 IF (((('s1' + 's2') + 's3') + 's4').indexOf('s2') > -1) -> 3612
+03613 IF !((dfstp == 14)) -> 3632
+03627 // r3 := (((('s1' + 's2') + 's3') + 's4') + 's5')
+03674 IF !(((Math.random() * 100) > 90)) -> 3693
+03688 // r3 := ((((('s1' + 's2') + 's3') + 's4') + 's5') + 's6')
+03693 JUMP -> 13316
+03710 u.ac = 14
+03754 IF !(((Math.random() * 400) > 398)) -> 3775
+03776 IF !(!((fmdat == 'n'))) -> 3794
+03793 u.ac = 22
+03837 IF !(((Math.random() * 1800) > 1798)) -> 3858
+03859 IF !(!((fmdat == 'n'))) -> 3877
+03876 u.ac = 24
+03941 u.s = (Math.floor((Math.random() * 3)) + 2)
+04003 u.pw = (30 + Math.floor((Math.random() * 20)))
+04065 u.mp = (30 + Math.floor((Math.random() * 20)))
+04127 u.df = (65 + Math.floor((Math.random() * 15)))
+04189 u.kp = (30 + Math.floor((Math.random() * 20)))
+04232 IF !(((Math.random() * 100) > 60)) -> 4827
+04301 u.pw = (u.pw + Math.floor((Math.random() * 30)))
+04366 u.mp = (u.mp + Math.floor((Math.random() * 30)))
+04431 u.df = (u.df + Math.floor((Math.random() * 50)))
+04496 u.kp = (u.kp + Math.floor((Math.random() * 30)))
+04540 IF !(((Math.random() * 100) > 70)) -> 4561
+04562 IF !(!((fmdat == 'n'))) -> 4827
+04631 u.pw = (u.pw + Math.floor((Math.random() * 50)))
+04696 u.mp = (u.mp + Math.floor((Math.random() * 20)))
+04761 u.df = (u.df + Math.floor((Math.random() * 50)))
+04826 u.kp = (u.kp + Math.floor((Math.random() * 20)))
+04833 // r3 := ''
+04880 IF ((Math.random() * 100) > 50) -> 4897
+04898 IF !((dfstp == 1)) -> 4914
+04909 // r3 := 's1'
+04956 IF ((Math.random() * 100) > 50) -> 4973
+04974 IF !((dfstp == 3)) -> 4993
+04988 // r3 := ('s1' + 's2')
+05035 IF ((Math.random() * 100) > 25) -> 5050
+05051 IF (('s1' + 's2') == '') -> 5068
+05069 IF !((dfstp == 8)) -> 5088
+05083 // r3 := (('s1' + 's2') + 's3')
+05130 IF ((Math.random() * 100) > 97) -> 5147
+05148 IF !((dfstp == 10)) -> 5167
+05162 // r3 := ((('s1' + 's2') + 's3') + 's4')
+05209 IF ((Math.random() * 100) > 97) -> 5226
+05227 IF !((dfstp == 14)) -> 5246
+05241 // r3 := (((('s1' + 's2') + 's3') + 's4') + 's5')
+05288 IF !(((Math.random() * 100) > 95)) -> 5307
+05302 // r3 := ((((('s1' + 's2') + 's3') + 's4') + 's5') + 's6')
+05307 JUMP -> 13316
+05324 u.ac = 11
+05367 IF !(((Math.random() * 100) > 75)) -> 5385
+05384 u.ac = 23
+05427 IF !(((Math.random() * 500) > 498)) -> 5445
+05444 u.ac = 25
+05509 u.s = (Math.floor((Math.random() * 3)) + 2)
+05571 u.pw = (65 + Math.floor((Math.random() * 15)))
+05633 u.mp = (45 + Math.floor((Math.random() * 15)))
+05695 u.df = (30 + Math.floor((Math.random() * 20)))
+05757 u.kp = (30 + Math.floor((Math.random() * 20)))
+05800 IF !(((Math.random() * 100) > 60)) -> 6395
+05869 u.pw = (u.pw + Math.floor((Math.random() * 30)))
+05934 u.mp = (u.mp + Math.floor((Math.random() * 30)))
+05999 u.df = (u.df + Math.floor((Math.random() * 30)))
+06064 u.kp = (u.kp + Math.floor((Math.random() * 30)))
+06108 IF !(((Math.random() * 100) > 70)) -> 6129
+06130 IF !(!((fmdat == 'n'))) -> 6395
+06199 u.pw = (u.pw + Math.floor((Math.random() * 20)))
+06264 u.mp = (u.mp + Math.floor((Math.random() * 20)))
+06329 u.df = (u.df + Math.floor((Math.random() * 20)))
+06394 u.kp = (u.kp + Math.floor((Math.random() * 20)))
+06401 // r3 := ''
+06449 IF !(((Math.random() * 400) > 395)) -> 6470
+06471 IF !(!((fmdat == 'n'))) -> 6487
+06482 // r3 := 's1'
+06530 IF !(((Math.random() * 400) > 396)) -> 6551
+06552 IF !(!((fmdat == 'n'))) -> 6571
+06566 // r3 := ('s1' + 's2')
+06614 IF !(((Math.random() * 400) > 396)) -> 6635
+06636 IF !(!((fmdat == 'n'))) -> 6655
+06650 // r3 := (('s1' + 's2') + 's3')
+06664 // r3 := ((('s1' + 's2') + 's3') + 's4')
+06669 JUMP -> 13316
+06738 u.ac = (Math.floor((Math.random() * 2)) + 6)
+06782 IF !(((Math.random() * 100) > 97)) -> 6803
+06804 IF !(!((fmdat == 'n'))) -> 6822
+06821 u.ac = 19
+06865 IF !(((Math.random() * 300) > 297)) -> 6886
+06887 IF !(!((fmdat == 'n'))) -> 6905
+06904 u.ac = 18
+06969 u.s = (Math.floor((Math.random() * 2)) + 2)
+07031 u.pw = (10 + Math.floor((Math.random() * 10)))
+07093 u.mp = (20 + Math.floor((Math.random() * 15)))
+07155 u.df = (30 + Math.floor((Math.random() * 20)))
+07217 u.kp = (30 + Math.floor((Math.random() * 20)))
+07260 IF !(((Math.random() * 100) > 60)) -> 8217
+07329 u.pw = (u.pw + Math.floor((Math.random() * 20)))
+07394 u.mp = (u.mp + Math.floor((Math.random() * 10)))
+07459 u.df = (u.df + Math.floor((Math.random() * 30)))
+07524 u.kp = (u.kp + Math.floor((Math.random() * 30)))
+07568 IF !(((Math.random() * 100) > 85)) -> 7589
+07590 IF !(!((fmdat == 'n'))) -> 8217
+07659 u.ac = (Math.floor((Math.random() * 3)) + 6)
+07702 IF !(((Math.random() * 100) > 85)) -> 7957
+07771 u.ac = (Math.floor((Math.random() * 4)) + 6)
+07836 u.mp = (u.mp + Math.floor((Math.random() * 35)))
+07879 IF !(((Math.random() * 1800) > 1798)) -> 7897
+07896 u.ac = 24
+07939 IF !(((Math.random() * 1400) > 1398)) -> 7957
+07956 u.ac = 10
+08021 u.pw = (u.pw + Math.floor((Math.random() * 40)))
+08086 u.mp = (u.mp + Math.floor((Math.random() * 20)))
+08151 u.df = (u.df + Math.floor((Math.random() * 50)))
+08216 u.kp = (u.kp + Math.floor((Math.random() * 80)))
+08223 // r3 := ''
+08270 IF ((Math.random() * 100) > 50) -> 8287
+08288 IF !((dfstp == 1)) -> 8304
+08299 // r3 := 's1'
+08346 IF ((Math.random() * 100) > 50) -> 8363
+08364 IF !((dfstp == 3)) -> 8383
+08378 // r3 := ('s1' + 's2')
+08425 IF ((Math.random() * 100) > 50) -> 8442
+08443 IF !((dfstp == 8)) -> 8462
+08457 // r3 := (('s1' + 's2') + 's3')
+08504 IF ((Math.random() * 100) > 50) -> 8521
+08522 IF !((dfstp == 10)) -> 8541
+08536 // r3 := ((('s1' + 's2') + 's3') + 's4')
+08583 IF ((Math.random() * 100) > 50) -> 8600
+08601 IF !((dfstp == 14)) -> 8620
+08615 // r3 := (((('s1' + 's2') + 's3') + 's4') + 's5')
+08662 IF !(((Math.random() * 100) > 90)) -> 8681
+08676 // r3 := ((((('s1' + 's2') + 's3') + 's4') + 's5') + 's6')
+08681 JUMP -> 13316
+08698 u.ac = 4
+08742 IF !(((Math.random() * 300) > 298)) -> 8763
+08764 IF !(!((fmdat == 'n'))) -> 8782
+08781 u.ac = 17
+08846 u.s = (Math.floor((Math.random() * 2)) + 1)
+08908 u.pw = (10 + Math.floor((Math.random() * 10)))
+08970 u.mp = (20 + Math.floor((Math.random() * 20)))
+09032 u.df = (20 + Math.floor((Math.random() * 20)))
+09094 u.kp = (30 + Math.floor((Math.random() * 20)))
+09137 IF !(((Math.random() * 100) > 60)) -> 9909
+09206 u.ac = (Math.floor((Math.random() * 2)) + 4)
+09271 u.pw = (u.pw + Math.floor((Math.random() * 20)))
+09336 u.mp = (u.mp + Math.floor((Math.random() * 10)))
+09401 u.df = (u.df + Math.floor((Math.random() * 30)))
+09466 u.kp = (u.kp + Math.floor((Math.random() * 30)))
+09510 IF !(((Math.random() * 100) > 90)) -> 9531
+09532 IF !(!((fmdat == 'n'))) -> 9909
+09601 u.pw = (u.pw + Math.floor((Math.random() * 20)))
+09666 u.mp = (u.mp + Math.floor((Math.random() * 15)))
+09731 u.df = (u.df + Math.floor((Math.random() * 20)))
+09796 u.kp = (u.kp + Math.floor((Math.random() * 20)))
+09839 IF !(((Math.random() * 100) > 95)) -> 9909
+09908 u.mp = (u.mp + Math.floor((Math.random() * 30)))
+09915 // r3 := ''
+09962 IF ((Math.random() * 100) > 90) -> 9979
+09980 IF !((dfstp == 1)) -> 9996
+09991 // r3 := 's1'
+10038 IF ((Math.random() * 100) > 90) -> 10055
+10056 IF !((dfstp == 3)) -> 10075
+10070 // r3 := ('s1' + 's2')
+10117 IF ((Math.random() * 100) > 80) -> 10134
+10135 IF !((dfstp == 8)) -> 10154
+10149 // r3 := (('s1' + 's2') + 's3')
+10196 IF ((Math.random() * 100) > 97) -> 10213
+10214 IF !((dfstp == 10)) -> 10233
+10228 // r3 := ((('s1' + 's2') + 's3') + 's4')
+10242 // r3 := (((('s1' + 's2') + 's3') + 's4') + 's5')
+10289 IF !(((Math.random() * 100) > 95)) -> 10308
+10303 // r3 := ((((('s1' + 's2') + 's3') + 's4') + 's5') + 's6')
+10308 JUMP -> 13316
+10325 u.ac = 12
+10369 IF !(((Math.random() * 100) > 87)) -> 10390
+10391 IF !(!((fmdat == 'n'))) -> 10409
+10408 u.ac = 13
+10452 IF !(((Math.random() * 200) > 198)) -> 10473
+10474 IF !(!((fmdat == 'n'))) -> 10492
+10491 u.ac = 20
+10535 IF !(((Math.random() * 200) > 198)) -> 10556
+10557 IF !(!((fmdat == 'n'))) -> 10575
+10574 u.ac = 27
+10639 u.s = (Math.floor((Math.random() * 2)) + 4)
+10701 u.pw = (65 + Math.floor((Math.random() * 15)))
+10763 u.mp = (15 + Math.floor((Math.random() * 5)))
+10825 u.df = (65 + Math.floor((Math.random() * 15)))
+10887 u.kp = (30 + Math.floor((Math.random() * 20)))
+10930 IF !(((Math.random() * 100) > 60)) -> 11525
+10999 u.pw = (u.pw + Math.floor((Math.random() * 20)))
+11064 u.mp = (u.mp + Math.floor((Math.random() * 15)))
+11129 u.df = (u.df + Math.floor((Math.random() * 30)))
+11194 u.kp = (u.kp + Math.floor((Math.random() * 30)))
+11238 IF !(((Math.random() * 100) > 70)) -> 11259
+11260 IF !(!((fmdat == 'n'))) -> 11525
+11329 u.pw = (u.pw + Math.floor((Math.random() * 20)))
+11394 u.mp = (u.mp + Math.floor((Math.random() * 15)))
+11459 u.df = (u.df + Math.floor((Math.random() * 20)))
+11524 u.kp = (u.kp + Math.floor((Math.random() * 20)))
+11531 // r3 := ''
+11542 // r3 := 's1'
+11590 IF !(((Math.random() * 400) > 398)) -> 11611
+11612 IF !(!((fmdat == 'n'))) -> 11631
+11626 // r3 := ('s1' + 's2')
+11674 IF !(((Math.random() * 400) > 398)) -> 11695
+11696 IF !(!((fmdat == 'n'))) -> 11715
+11710 // r3 := (('s1' + 's2') + 's3')
+11758 IF !(((Math.random() * 400) > 398)) -> 11779
+11780 IF !((fmdat == 'n')) -> 11797
+11798 IF !((dfstp == 10)) -> 11817
+11812 // r3 := ((('s1' + 's2') + 's3') + 's4')
+11859 IF !(((Math.random() * 100) > 75)) -> 11878
+11873 // r3 := (((('s1' + 's2') + 's3') + 's4') + 's6')
+11878 JUMP -> 13316
+11895 u.ac = 26
+11960 u.s = (Math.floor((Math.random() * 2)) + 5)
+12022 u.pw = (85 + Math.floor((Math.random() * 20)))
+12084 u.mp = (50 + Math.floor((Math.random() * 5)))
+12146 u.df = (15 + Math.floor((Math.random() * 5)))
+12208 u.kp = (55 + Math.floor((Math.random() * 10)))
+12251 IF !(((Math.random() * 100) > 60)) -> 13023
+12320 u.pw = (u.pw + Math.floor((Math.random() * 20)))
+12385 u.mp = (u.mp + Math.floor((Math.random() * 20)))
+12450 u.df = (u.df + Math.floor((Math.random() * 10)))
+12515 u.kp = (u.kp + Math.floor((Math.random() * 20)))
+12559 IF !(((Math.random() * 100) > 70)) -> 12580
+12581 IF !(!((fmdat == 'n'))) -> 13023
+12650 u.pw = (u.pw + Math.floor((Math.random() * 40)))
+12693 IF !(((Math.random() * 100) > 70)) -> 12893
+12762 u.mp = (u.mp + Math.floor((Math.random() * 10)))
+12827 u.df = (u.df + Math.floor((Math.random() * 10)))
+12892 u.kp = (u.kp + Math.floor((Math.random() * 20)))
+12957 u.mp = (u.mp + Math.floor((Math.random() * 5)))
+13022 u.kp = (u.kp + Math.floor((Math.random() * 10)))
+13029 // r3 := ''
+13040 // r3 := 's1'
+13088 IF !(((Math.random() * 400) > 398)) -> 13109
+13110 IF !(!((fmdat == 'n'))) -> 13129
+13124 // r3 := ('s1' + 's3')
+13172 IF !(((Math.random() * 400) > 348)) -> 13193
+13194 IF !((fmdat == 'n')) -> 13211
+13212 IF !((dfstp == 10)) -> 13231
+13226 // r3 := (('s1' + 's3') + 's4')
+13273 IF !(((Math.random() * 400) > 398)) -> 13292
+13287 // r3 := ((('s1' + 's3') + 's4') + 's6')
+13292 JUMP -> 13316
+13310 u.p = 1
+13311 JUMP -> 13316
+13342 r1.elv = parseInt(r1.elv)
+13365 u.pw = (u.pw + r1.elv)
+13388 u.df = (u.df + r1.elv)
+13411 u.kp = (u.kp + r1.elv)
+13432 IF !(!((u.ch == 7))) -> 13460
+13459 u.mp = (u.mp + r1.elv)
+13468 // r5 := 110
+13493 IF !(!((u.ch == 8))) -> 13533
+13513 IF !((u.pw > 110)) -> 13528
+13527 u.pw = 110
+13528 JUMP -> 13569
+13551 IF !((u.pw > 125)) -> 13569
+13568 u.pw = 125
+13584 IF !((u.df > 110)) -> 13599
+13598 u.df = 110
+13614 IF !((u.kp > 110)) -> 13629
+13628 u.kp = 110
+13644 IF !((u.mp > 110)) -> 13659
+13658 u.mp = 110
+13679 IF !((u.ch == 8)) -> 13702
+13703 IF !((u.mp > 90)) -> 13770
+13769 u.mp = (80 + Math.floor((Math.random() * 15)))
+13789 IF (u.ch == 3) -> 13813
+13814 IF (u.ch == 5) -> 13838
+13840 IF !((u.ch == 8)) -> 13887
+13888 IF !(((Math.random() * 100) > 25)) -> 14073
+13957 u.na = Math.floor((Math.random() * r1.na.length))
+14023 u.nb = Math.floor(((Math.random() * 19) + 17))
+14067 u.nm = (r1.na[u.na] + r1.nb[u.nb])
+14068 JUMP -> 14465
+14115 IF !(((Math.random() * 100) > 25)) -> 14291
+14184 u.na = Math.floor((Math.random() * r1.na.length))
+14241 u.nb = Math.floor((Math.random() * 18))
+14285 u.nm = (r1.na[u.na] + r1.nb[u.nb])
+14286 JUMP -> 14465
+14355 u.na = Math.floor((Math.random() * r1.na.length))
+14420 u.nb = Math.floor((Math.random() * r1.nb.length))
+14464 u.nm = (r1.na[u.na] + r1.nb[u.nb])
+14478 u.nm2 = u.nm
+14488 u.ss = ((('s1' + 's3') + 's4') + 's6')
+14497 // r3 := 7
+14515 IF !(!((7 > 28))) -> 14775
+14569 IF (7 > 24) -> 14586
+14587 IF (7 == 9) -> 14604
+14605 IF (7 == 10) -> 14622
+14623 IF (7 == 15) -> 14640
+14641 IF (7 == 21) -> 14658
+14670 IF ((Math.random() * 100) > (75 + ((7 == 13) * 20))) -> 14731
+14688 IF (7 == 7) -> 14705
+14707 IF !((7 == 22)) -> 14731
+14732 IF !((u.ch == 8)) -> 14759
+14758 u.ss = (u.ss + ('s' + 7))
+14765 // r3 := (7+1)
+14770 JUMP -> 14502
+14794 IF !((u.ch == 8)) -> 14937
+14845 IF !(((Math.random() * 100) > 0.0)) -> 14870
+14869 u.ss = (u.ss + 's31')
+14912 IF !(((Math.random() * 100) > 90)) -> 14937
+14936 u.ss = (u.ss + 's32')
+14956 IF !((u.ch == 7)) -> 15028
+15003 IF !(((Math.random() * 100) > 80)) -> 15028
+15027 u.ss = (u.ss + 's33')
+15047 IF !((u.ch == 4)) -> 15119
+15094 IF !(((Math.random() * 100) > 85)) -> 15119
+15118 u.ss = (u.ss + 's34')
+15138 u.ss = (u.ss + 's99')
+15157 u.ss = (u.ss + 's')
+15171 u.hp = u.mp

@@ -31,6 +31,7 @@ interface ActiveEffect {
   getRoot?: () => EffectPoint | null;
   isActive?: () => boolean;
   persistUntilArrival: boolean;
+  holdLastFrame: boolean;
   image: Phaser.GameObjects.Image;
 }
 
@@ -75,6 +76,7 @@ export class BattleEffectRenderer {
       getRoot?: () => EffectPoint | null;
       isActive?: () => boolean;
       persistUntilArrival?: boolean;
+      holdLastFrame?: boolean;
     } = {},
   ): boolean {
     const sequence = getEffectSequence(effectId);
@@ -98,6 +100,7 @@ export class BattleEffectRenderer {
       getRoot: options.getRoot,
       isActive: options.isActive,
       persistUntilArrival: options.persistUntilArrival ?? false,
+      holdLastFrame: options.holdLastFrame ?? false,
       image,
     });
     return true;
@@ -124,7 +127,10 @@ export class BattleEffectRenderer {
       const timelineElapsed = effect.persistUntilArrival && sequence && elapsedMs < effect.travelDurationMs
         ? elapsedMs % Math.max(1, sequence.duration_ms)
         : elapsedMs;
-      const sample = resolveEffectTimeline(effect.effectId, timelineElapsed);
+      let sample = resolveEffectTimeline(effect.effectId, timelineElapsed);
+      if (sample?.ended && effect.holdLastFrame && sequence) {
+        sample = resolveEffectTimeline(effect.effectId, Math.max(0, sequence.duration_ms - 0.001));
+      }
       if (!sample || sample.ended) {
         effect.image.destroy();
         continue;

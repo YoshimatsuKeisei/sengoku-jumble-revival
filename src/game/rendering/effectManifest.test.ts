@@ -57,8 +57,8 @@ describe("effect manifests", () => {
     }
   });
 
-  it("binds every currently implemented game technique and leaves admiral action 28 manifest-only", () => {
-    expect(Object.keys(ACTION_BINDING_BY_TECHNIQUE)).toHaveLength(28);
+  it("binds all 29 recovered unit actions, including admiral action 28", () => {
+    expect(Object.keys(ACTION_BINDING_BY_TECHNIQUE)).toHaveLength(29);
     for (const technique of Object.keys(ACTION_BINDING_BY_TECHNIQUE)) {
       expect(resolveTechniqueActionEffects(technique as keyof typeof ACTION_BINDING_BY_TECHNIQUE)).not.toBeNull();
     }

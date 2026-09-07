@@ -4,8 +4,10 @@ import { createSoldier } from "../entities/Soldier";
 import { REACTION_CONFIG } from "../config";
 import type { Soldier, SoldierLoadout } from "../types";
 import { updateMeleeAI } from "./aiSystem";
+import { applyDamage } from "./combatSystem";
 import { startSoldierAttack, updateAttackStates } from "./attackSystem";
 import { createBattleBases } from "./baseSystem";
+import { getBaseGatePoint } from "./battlefieldGeometry";
 import { getBaseAttackBounceDistance } from "./baseAttackBounceSystem";
 import { isBaseHitBlockedByFortify } from "./baseContactSystem";
 import { isDamageGuarded } from "./defenseSystem";
@@ -22,6 +24,7 @@ import {
 import {
   COMMON_SPECIAL_ABILITY_LABELS,
   applyFieldHospitalArrival,
+  applySupportHealingPulse,
   calculateBaseAttackDamage,
   calculateSuccessfulAttackDamage,
   handleRetreatStateEntered,
@@ -75,7 +78,7 @@ describe("SWF special ability hooks", () => {
     attacker.rareSpecialAbilities = ["NINJA_HUNTER"];
     target.unitType = "NINJA";
     expect(calculateSuccessfulAttackDamage(attacker, target)).toBe(4);
-    expect(COMMON_SPECIAL_ABILITY_LABELS.MIGHT).toBe("将力");
+    expect(COMMON_SPECIAL_ABILITY_LABELS.MIGHT).toBe("膂力");
   });
 
   it("keeps IRON_WALL out of guard chance and applies FORESIGHT before HORO", () => {
@@ -85,7 +88,8 @@ describe("SWF special ability hooks", () => {
     defender.specialAbilities = ["HORO"];
     expect(isDamageGuarded(defender, "SPECIAL_ATTACK", () => 0)).toBe(false);
     defender.specialAbilities = ["FORESIGHT", "HORO"];
-    expect(isDamageGuarded(defender, "SPECIAL_ATTACK", () => 0.69)).toBe(true);
+    expect(isDamageGuarded(defender, "SPECIAL_ATTACK", () => 0.69)).toBe(false);
+    expect(isDamageGuarded(defender, "ARROW_ATTACK", () => 0.69)).toBe(true);
 
     const normalGuard = unit("normal-guard", "enemy", 510, 450);
     const ironGuard = unit("iron-guard", "enemy", 510, 450); ironGuard.specialAbilities = ["IRON_WALL"];
@@ -113,7 +117,7 @@ describe("SWF special ability hooks", () => {
   });
 
   it("selects the nearest actionable TREATMENT holder by SWF Manhattan distance and applies H/2H", () => {
-    const patient = unit("patient", "player", 500, 450); patient.maxHp = 100; patient.hp = 10;
+    const patient = unit("patient", "player", 500, 450); patient.maxHp = 100; patient.hp = 10; patient.hpBarHp = 10;
     const near = unit("near", "player", 510, 450); near.specialAbilities = ["TREATMENT"];
     const far = unit("far", "player", 700, 450); far.specialAbilities = ["TREATMENT"];
     expect(findNearestTreatmentHealer(patient, [patient, far, near])).toBe(near);
@@ -124,8 +128,42 @@ describe("SWF special ability hooks", () => {
     Object.assign(patient, { x: near.x, y: near.y });
     updateEmergencyRetreat(patient, createBattleBases(), () => 1, [patient, near, pulseTarget], 1);
     expect(patient.hp).toBe(54);
+    expect(patient.hpBarHp).toBe(54);
     expect(patient.state).toBe("NORMAL");
-    expect(pulseTarget.hp).toBe(pulseTarget.maxHp - 2);
+    expect(pulseTarget.hp).toBe(pulseTarget.maxHp - 3);
+    expect(near.merits.recovery).toBe(44);
+  });
+
+  it("keeps h stale for sz small recovery even when s20 restores two HP", () => {
+    const source = unit("source");
+    const target = unit("target");
+    applyDamage(target, 5);
+    const displayedAfterDamage = target.hpBarHp;
+    target.specialAbilities = ["RECOVERY_BOOST"];
+    applySupportHealingPulse(source, [source, target], false);
+    expect(target.hp).toBe(target.maxHp - 3);
+    expect(target.hpBarHp).toBe(displayedAfterDamage);
+  });
+
+  it("clamps TREATMENT, blocks consecutive treatment, and resets eligibility after the base route", () => {
+    const bases = createBattleBases();
+    const patient = unit("patient", "player", 500, 450); patient.maxHp = 83; patient.hp = 80;
+    const healer = unit("healer", "player", 501, 450); healer.specialAbilities = ["TREATMENT"];
+    expect(calculateTreatmentHealAmount(patient)).toBe(18);
+    startEmergencyRetreat(patient, bases, [patient, healer], 0);
+    updateEmergencyRetreat(patient, bases, () => 1, [patient, healer], 1);
+    expect(patient.hp).toBe(83);
+    expect(patient.treatmentUsedSinceLastBaseVisit).toBe(true);
+    expect(healer.merits.recovery).toBe(3);
+
+    patient.hp = 5;
+    startEmergencyRetreat(patient, bases, [patient, healer], 2);
+    expect(patient.recoveryTargetKind).toBe("BASE_GATE");
+    const base = bases.find((candidate) => candidate.team === "player")!;
+    Object.assign(patient, getBaseGatePoint(base, patient.recoveryGate!, true));
+    updateEmergencyRetreat(patient, bases, () => 1, [patient, healer], 3);
+    expect(patient.state).toBe("HEALING");
+    expect(patient.treatmentUsedSinceLastBaseVisit).toBe(false);
   });
 
   it("uses three FIELD_HOSPITAL roster-slot draws with replacement without alive filtering", () => {
@@ -134,11 +172,12 @@ describe("SWF special ability hooks", () => {
     expect(rosterSlotDrawHasAbility(defenders, "player", "FIELD_HOSPITAL", 3, () => 0)).toBe(true);
     expect(applyFieldHospitalArrival(patient, defenders, () => 0)).toBe(30);
     expect(patient.hp).toBe(patient.maxHp - 10);
+    expect(defenders[0].merits.recovery).toBe(30);
   });
 
   it("checks TRAP during movement in the enemy half, samples two slots and floors HP at two", () => {
     const source = battlefieldSourcePointToWorld({ x: 901, y: 450 });
-    const invader = unit("invader", "player", source.x, source.y); invader.hp = 2;
+    const invader = unit("invader", "player", source.x, source.y); invader.hp = 1;
     const defenders = roster("enemy", "TRAP"); defenders[0].isDead = true;
     const soldiers = [invader, ...defenders];
     const previous = new Map([[invader.id, { x: invader.x - 1, y: invader.y }]]);
@@ -153,6 +192,8 @@ describe("SWF special ability hooks", () => {
     boosted.specialAbilities = ["RECOVERY_BOOST"];
     updateHealing(normal, 1 / 24); updateHealing(boosted, 1 / 24);
     expect(boosted.hp - 10).toBeCloseTo((normal.hp - 10) * 2);
+    expect(normal.merits.recovery).toBe(0);
+    expect(boosted.merits.recovery).toBe(0);
   });
 
   it("queues a gauge-free current-technique MOUTAI special before entering retreat", () => {

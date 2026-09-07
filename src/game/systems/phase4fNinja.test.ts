@@ -77,12 +77,13 @@ describe("Phase 4F ninja", () => {
     expect(chargeEvent.healResults).toEqual([]); expect(chargeAlly.temporaryOrder?.type).toBe("NINJA_BARRIER_CHARGE");
     updateTemporaryOrder(chargeAlly, chargeBarrier, 4_000); expect(chargeAlly.temporaryOrder).toBeNull(); expect(chargeAlly.strategy).toBe(strategy);
   });
-  it("applies the confirmed TEPPOU versus NINJA defense bypass", () => {
+  it("keeps ninja in the defense branch and bypasses other classes for TEPPOU", () => {
     const ninjaTarget = createSoldier("n", "enemy", "ai", 0, 0, "charge", undefined, ninja());
     const gunner = createSoldier("g", "player", "ai", 0, 0); gunner.unitType = "TEPPOU";
-    expect(isDamageGuarded(ninjaTarget, "GUN_ATTACK", () => 0, gunner)).toBe(false);
-    ninjaTarget.specialAbilities = ["FORESIGHT"]; expect(isDamageGuarded(ninjaTarget, "GUN_ATTACK", () => 0, gunner)).toBe(false);
-    const normal = createSoldier("p", "enemy", "ai", 0, 0); expect(isDamageGuarded(normal, "GUN_ATTACK", () => 0)).toBe(true);
+    expect(isDamageGuarded(ninjaTarget, "GUN_ATTACK", () => 0, gunner)).toBe(true);
+    ninjaTarget.specialAbilities = ["HORO"]; expect(isDamageGuarded(ninjaTarget, "GUN_ATTACK", () => 0, gunner)).toBe(true);
+    const normal = createSoldier("p", "enemy", "ai", 0, 0);
+    expect(isDamageGuarded(normal, "GUN_ATTACK", () => { throw new Error("non-ninja defense must be bypassed"); }, gunner)).toBe(false);
   });
   it("validates ninja total six, preserves total thirty, and caps player override", () => {
     const setup = createDefaultTeamArmySetup(); expect(setup.techniqueCounts).toMatchObject({ NINJA_NINJUTSU: 0, NINJA_SHADOW_RUN: 0, NINJA_GENJUTSU: 0, NINJA_BARRIER: 0 });

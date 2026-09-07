@@ -1,0 +1,780 @@
+[
+  {
+    "formation_id": 1,
+    "eligible_slots": 14,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m53",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.4000000000000001
+  },
+  {
+    "formation_id": 2,
+    "eligible_slots": 15,
+    "eligible_slot_ids": [
+      "m38",
+      "m39",
+      "m40",
+      "m42",
+      "m43",
+      "m47",
+      "m48",
+      "m49",
+      "m50",
+      "m51",
+      "m52",
+      "m55",
+      "m57",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.5
+  },
+  {
+    "formation_id": 3,
+    "eligible_slots": 10,
+    "eligible_slot_ids": [
+      "m47",
+      "m49",
+      "m50",
+      "m51",
+      "m52",
+      "m53",
+      "m54",
+      "m55",
+      "m56",
+      "m57"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.0
+  },
+  {
+    "formation_id": 4,
+    "eligible_slots": 4,
+    "eligible_slot_ids": [
+      "m48",
+      "m49",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 0.4
+  },
+  {
+    "formation_id": 5,
+    "eligible_slots": 17,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m40",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m51",
+      "m52",
+      "m53",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.7000000000000002
+  },
+  {
+    "formation_id": 6,
+    "eligible_slots": 12,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.2000000000000002
+  },
+  {
+    "formation_id": 7,
+    "eligible_slots": 9,
+    "eligible_slot_ids": [
+      "m37",
+      "m38",
+      "m39",
+      "m46",
+      "m48",
+      "m49",
+      "m57",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 0.9
+  },
+  {
+    "formation_id": 8,
+    "eligible_slots": 11,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m43",
+      "m46",
+      "m48",
+      "m50",
+      "m52",
+      "m58"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.1
+  },
+  {
+    "formation_id": 9,
+    "eligible_slots": 16,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m43",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m50",
+      "m52",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.6
+  },
+  {
+    "formation_id": 10,
+    "eligible_slots": 18,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m34",
+      "m36",
+      "m37",
+      "m38",
+      "m39",
+      "m41",
+      "m42",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m50",
+      "m52",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.8
+  },
+  {
+    "formation_id": 11,
+    "eligible_slots": 16,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m43",
+      "m44",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m53",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.6
+  },
+  {
+    "formation_id": 12,
+    "eligible_slots": 16,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m50",
+      "m52",
+      "m53",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.6
+  },
+  {
+    "formation_id": 13,
+    "eligible_slots": 19,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m34",
+      "m36",
+      "m37",
+      "m38",
+      "m39",
+      "m44",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m50",
+      "m52",
+      "m53",
+      "m57",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.9000000000000001
+  },
+  {
+    "formation_id": 14,
+    "eligible_slots": 3,
+    "eligible_slot_ids": [
+      "m53",
+      "m54",
+      "m57"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 0.30000000000000004
+  },
+  {
+    "formation_id": 15,
+    "eligible_slots": 8,
+    "eligible_slot_ids": [
+      "m32",
+      "m48",
+      "m49",
+      "m52",
+      "m53",
+      "m54",
+      "m57",
+      "m58"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 0.8
+  },
+  {
+    "formation_id": 16,
+    "eligible_slots": 10,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m43",
+      "m48",
+      "m49",
+      "m50",
+      "m51",
+      "m53",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.0
+  },
+  {
+    "formation_id": 17,
+    "eligible_slots": 18,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m43",
+      "m44",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m53",
+      "m54",
+      "m55",
+      "m57",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.8
+  },
+  {
+    "formation_id": 18,
+    "eligible_slots": 9,
+    "eligible_slot_ids": [
+      "m43",
+      "m44",
+      "m48",
+      "m49",
+      "m53",
+      "m54",
+      "m55",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 0.9
+  },
+  {
+    "formation_id": 19,
+    "eligible_slots": 11,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m43",
+      "m44",
+      "m48",
+      "m49",
+      "m53",
+      "m54",
+      "m55",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.1
+  },
+  {
+    "formation_id": 20,
+    "eligible_slots": 8,
+    "eligible_slot_ids": [
+      "m32",
+      "m43",
+      "m44",
+      "m49",
+      "m53",
+      "m55",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 0.8
+  },
+  {
+    "formation_id": 21,
+    "eligible_slots": 25,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m34",
+      "m35",
+      "m37",
+      "m38",
+      "m39",
+      "m40",
+      "m43",
+      "m44",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m50",
+      "m51",
+      "m52",
+      "m53",
+      "m54",
+      "m55",
+      "m56",
+      "m57",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 2.5
+  },
+  {
+    "formation_id": 22,
+    "eligible_slots": 24,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m34",
+      "m36",
+      "m37",
+      "m38",
+      "m39",
+      "m41",
+      "m42",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m50",
+      "m51",
+      "m52",
+      "m53",
+      "m54",
+      "m55",
+      "m56",
+      "m57",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 2.4000000000000004
+  },
+  {
+    "formation_id": 23,
+    "eligible_slots": 24,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m34",
+      "m36",
+      "m37",
+      "m38",
+      "m39",
+      "m41",
+      "m42",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m50",
+      "m51",
+      "m52",
+      "m53",
+      "m54",
+      "m55",
+      "m56",
+      "m57",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 2.4000000000000004
+  },
+  {
+    "formation_id": 24,
+    "eligible_slots": 27,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m34",
+      "m36",
+      "m37",
+      "m38",
+      "m39",
+      "m40",
+      "m41",
+      "m42",
+      "m43",
+      "m44",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m50",
+      "m51",
+      "m52",
+      "m53",
+      "m54",
+      "m55",
+      "m56",
+      "m57",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 2.7
+  },
+  {
+    "formation_id": 25,
+    "eligible_slots": 6,
+    "eligible_slot_ids": [
+      "m48",
+      "m49",
+      "m53",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 0.6000000000000001
+  },
+  {
+    "formation_id": 26,
+    "eligible_slots": 12,
+    "eligible_slot_ids": [
+      "m32",
+      "m45",
+      "m46",
+      "m47",
+      "m49",
+      "m50",
+      "m52",
+      "m53",
+      "m54",
+      "m57",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.2000000000000002
+  },
+  {
+    "formation_id": 27,
+    "eligible_slots": 14,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m53",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.4000000000000001
+  },
+  {
+    "formation_id": 28,
+    "eligible_slots": 15,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m51",
+      "m53",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.5
+  },
+  {
+    "formation_id": 29,
+    "eligible_slots": 14,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m41",
+      "m46",
+      "m48",
+      "m49",
+      "m51",
+      "m53",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.4000000000000001
+  },
+  {
+    "formation_id": 30,
+    "eligible_slots": 18,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m34",
+      "m36",
+      "m37",
+      "m38",
+      "m39",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m50",
+      "m52",
+      "m53",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.8
+  },
+  {
+    "formation_id": 31,
+    "eligible_slots": 14,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m45",
+      "m46",
+      "m47",
+      "m49",
+      "m51",
+      "m53",
+      "m54",
+      "m57",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.4000000000000001
+  },
+  {
+    "formation_id": 32,
+    "eligible_slots": 10,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m45",
+      "m46",
+      "m47",
+      "m49",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.0
+  },
+  {
+    "formation_id": 33,
+    "eligible_slots": 14,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m53",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.4000000000000001
+  },
+  {
+    "formation_id": 34,
+    "eligible_slots": 14,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m45",
+      "m46",
+      "m47",
+      "m48",
+      "m49",
+      "m53",
+      "m54",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.4000000000000001
+  },
+  {
+    "formation_id": 35,
+    "eligible_slots": 15,
+    "eligible_slot_ids": [
+      "m38",
+      "m39",
+      "m40",
+      "m42",
+      "m43",
+      "m47",
+      "m48",
+      "m49",
+      "m50",
+      "m51",
+      "m52",
+      "m55",
+      "m57",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.5
+  },
+  {
+    "formation_id": 36,
+    "eligible_slots": 10,
+    "eligible_slot_ids": [
+      "m47",
+      "m49",
+      "m50",
+      "m51",
+      "m52",
+      "m53",
+      "m54",
+      "m55",
+      "m56",
+      "m57"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 1.0
+  },
+  {
+    "formation_id": 37,
+    "eligible_slots": 4,
+    "eligible_slot_ids": [
+      "m48",
+      "m49",
+      "m58",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 0.4
+  },
+  {
+    "formation_id": 38,
+    "eligible_slots": 8,
+    "eligible_slot_ids": [
+      "m31",
+      "m32",
+      "m37",
+      "m38",
+      "m39",
+      "m46",
+      "m49",
+      "m59"
+    ],
+    "expected_cavalry_conversions_at_lv4plus": 0.8
+  }
+]

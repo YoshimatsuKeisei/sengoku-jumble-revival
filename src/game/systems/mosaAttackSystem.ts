@@ -59,7 +59,7 @@ export function executeMosaAttack(attacker: Soldier, soldiers: Soldier[], obstac
       target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
       event.defendedIds.push(target.id); continue;
     }
-    const damage = calculateSuccessfulAttackDamage(attacker, target); applyDamage(target, damage);
+    const damage = calculateSuccessfulAttackDamage(attacker, target); applyDamage(target, damage, attacker);
     target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; event.hitIds.push(target.id);
     if (target.isDead) continue;
     let dx = target.x - attacker.x; let dy = target.y - attacker.y; const length = Math.hypot(dx, dy) || 1; dx /= length; dy /= length;

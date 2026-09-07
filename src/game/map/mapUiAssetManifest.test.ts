@@ -25,6 +25,17 @@ describe("map UI atlas resolver", () => {
     expect([...ids].filter((id) => resolveMapUiAsset(id) === null)).toEqual([]);
   });
 
+  it("retains the original visible grid, movable outline, and in-stage lower panel", () => {
+    expect(requireMapUiAsset("cell_plain")).toMatchObject({ width: 21, height: 21 });
+    expect(requireMapUiAsset(MAP_UI_MANIFEST.cell_states.movable.asset))
+      .toMatchObject({ frameKey: "movable_outline", width: 29, height: 29 });
+    expect(requireMapUiAsset(MAP_UI_MANIFEST.bottom_ui.background))
+      .toMatchObject({ frameKey: "bottom_panel", width: 382, height: 62 });
+    expect(MAP_UI_MANIFEST.coordinate_space).toMatchObject({ width: 380, height: 380 });
+    expect({ x: MAP_UI_MANIFEST.bottom_ui.x, y: MAP_UI_MANIFEST.bottom_ui.y })
+      .toEqual({ x: -1, y: 319 });
+  });
+
   it("returns null for an unknown logical asset", () => {
     expect(resolveMapUiAsset("missing.asset")).toBeNull();
   });

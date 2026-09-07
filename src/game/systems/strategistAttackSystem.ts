@@ -1,4 +1,5 @@
 import { STRATEGIST_CONFIG } from "../config";
+import { battlefieldWorldPointToSource } from "../battlefieldLayout";
 import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, BattleObstacle, Soldier, Team, UnitTechnique } from "../types";
 import { applyConfusion } from "./confusionSystem";
@@ -8,7 +9,8 @@ import { startHitReaction } from "./reactionSystem";
 import { calculateSuccessfulAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { applyDamage } from "./combatSystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
-import { getTechniqueAreaCenter, getTechniqueAreaWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
+import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueProfile, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
+import { recordSmallRecoveryPulse, recordSoldierDamage } from "./meritSystem";
 
 export type StrategistFireTechnique = keyof typeof STRATEGIST_CONFIG.fireDiameterUnits;
 export type StrategistTechnique = StrategistFireTechnique | "STRATEGIST_FALSE_REPORT" | "STRATEGIST_SORCERY" | "STRATEGIST_HEAL";
@@ -41,6 +43,13 @@ function nearestEnemy(attacker: Soldier, soldiers: readonly Soldier[]): Soldier 
   return soldiers.filter((target) => activeEnemy(attacker, target))
     .sort((a, b) => Math.hypot(a.x - attacker.x, a.y - attacker.y) - Math.hypot(b.x - attacker.x, b.y - attacker.y))[0] ?? null;
 }
+function isWithinFireActivationRange(attacker: Soldier, target: Soldier): boolean {
+  const range = getTechniqueProfile(attacker.technique).activationRangeSwfUnits;
+  if (range === undefined) return false;
+  const sourceAttacker = battlefieldWorldPointToSource(attacker);
+  const sourceTarget = battlefieldWorldPointToSource(target);
+  return Math.hypot(sourceTarget.x - sourceAttacker.x, sourceTarget.y - sourceAttacker.y) < range;
+}
 export function getStrategistFirePlacement(attacker: Soldier, soldiers: readonly Soldier[]): { x: number; y: number; radius: number } | null {
   if (!isStrategistFireTechnique(attacker.technique)) return null;
   const radius = getStrategistFireRadius(attacker.technique); const target = nearestEnemy(attacker, soldiers);
@@ -57,6 +66,8 @@ export function findStrategistHealTargets(attacker: Soldier, soldiers: readonly 
 export function canActivateStrategist(attacker: Soldier, soldiers: readonly Soldier[], currentTime: number): boolean {
   if (isStrategistFireTechnique(attacker.technique)) {
     if (currentTime < attacker.strategistFireZoneUntil) return false;
+    const target = nearestEnemy(attacker, soldiers);
+    if (!target || !isWithinFireActivationRange(attacker, target)) return false;
     const placement = getStrategistFirePlacement(attacker, soldiers);
     return Boolean(placement && enemiesInRadius(attacker, soldiers, placement.x, placement.y, placement.radius).length);
   }
@@ -64,8 +75,12 @@ export function canActivateStrategist(attacker: Soldier, soldiers: readonly Sold
   const radius = attacker.technique === "STRATEGIST_FALSE_REPORT" ? STRATEGIST_CONFIG.falseReportRadius : STRATEGIST_CONFIG.sorceryRadius;
   return enemiesInRadius(attacker, soldiers, attacker.x, attacker.y, radius).length > 0;
 }
-function applyNonLethalDamage(target: Soldier, amount: number): number {
-  const applied = Math.min(Math.max(0, amount), Math.max(0, target.hp - 1)); target.hp -= applied; return applied;
+function applyNonLethalDamage(attacker: Soldier, target: Soldier, amount: number): number {
+  const applied = Math.min(Math.max(0, amount), Math.max(0, target.hp - 1));
+  target.hp -= applied;
+  if (applied > 0) target.hpBarHp = target.hp;
+  recordSoldierDamage(attacker, target, applied);
+  return applied;
 }
 export function updateStrategistFireZone(zone: StrategistFireZone, soldiers: Soldier[], currentTime: number): string[] {
   void zone; void soldiers; void currentTime;
@@ -99,7 +114,7 @@ export function executeStrategistAttack(attacker: Soldier, soldiers: Soldier[], 
       const damage = totalDamageComponents(applyRareDamageImmunity(target, {
         FIRE: calculateSuccessfulAttackDamage(attacker, target),
       }));
-      if (damage <= 0 || applyNonLethalDamage(target, damage) <= 0) continue;
+      if (damage <= 0 || applyNonLethalDamage(attacker, target, damage) <= 0) continue;
       target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + 250;
       startHitReaction(target, attacker, currentTime, 0, random, "SPECIAL_ATTACK"); event.victimIds.push(target.id);
     }
@@ -109,7 +124,9 @@ export function executeStrategistAttack(attacker: Soldier, soldiers: Soldier[], 
     event.radius = STRATEGIST_CONFIG.healRadius;
     for (const target of findStrategistHealTargets(attacker, soldiers)) {
       const amount = Math.min(1 + Number(hasSpecialAbility(target, "RECOVERY_BOOST")), target.maxHp - target.hp);
-      target.hp += amount; if (amount > 0) event.healed.push({ targetId: target.id, amount });
+      target.hp += amount;
+      recordSmallRecoveryPulse(attacker, target, amount);
+      if (amount > 0) event.healed.push({ targetId: target.id, amount });
     }
     return event;
   }
@@ -117,7 +134,7 @@ export function executeStrategistAttack(attacker: Soldier, soldiers: Soldier[], 
   const targets = enemiesInRadius(attacker, soldiers, attacker.x, attacker.y, event.radius);
   for (const target of targets) {
     if (attacker.technique === "STRATEGIST_SORCERY") {
-      applyDamage(target, calculateSuccessfulAttackDamage(attacker, target));
+      applyDamage(target, calculateSuccessfulAttackDamage(attacker, target), attacker);
       target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + 250;
       startHitReaction(target, attacker, currentTime, 0, random, "SPECIAL_ATTACK"); event.victimIds.push(target.id);
     }

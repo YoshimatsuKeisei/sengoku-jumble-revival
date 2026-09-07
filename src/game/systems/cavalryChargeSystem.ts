@@ -68,7 +68,7 @@ export function executeCavalryCharge(attacker: Soldier, soldiers: Soldier[], obs
     if (isDamageGuarded(target, "SPECIAL_ATTACK", random)) {
       target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; continue;
     }
-    const damage = calculateSuccessfulAttackDamage(attacker, target); applyDamage(target, damage);
+    const damage = calculateSuccessfulAttackDamage(attacker, target); applyDamage(target, damage, attacker);
     target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; hitIds.push(target.id);
     if (target.isDead) continue;
     const directionY = getVerticalChargeDirection(attacker, target);

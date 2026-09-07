@@ -4,6 +4,10 @@ import { clearEngagement } from "./aiSystem";
 import { cancelAttack } from "./attackRuntime";
 import { clearConfusion } from "./confusionSystem";
 import { isInsideSupportRectangle } from "./specialAbilitySystem";
+import { battlefieldWorldPointToSource } from "../battlefieldLayout";
+
+export const SWF_GATHER_TARGET_MAX_X = 1286;
+export const SWF_GATHER_ARRIVAL_MANHATTAN = 50;
 
 function canReceiveOrder(soldier: Soldier, player: Soldier): boolean {
   return soldier.team === player.team
@@ -37,13 +41,13 @@ export function issueNinjaBarrierCharge(soldier: Soldier, source: Soldier, curre
 
 export function issueAdvanceCommand(player: Soldier, soldiers: Soldier[], currentTime: number): Soldier[] {
   const targets = findCommandTargets(player, soldiers);
-  for (const soldier of targets) applyOrder(soldier, "ADVANCE", player, currentTime, COMMAND_CONFIG.commandDurationMs);
+  for (const soldier of targets) applyOrder(soldier, "ADVANCE", player, currentTime, Number.POSITIVE_INFINITY);
   return targets;
 }
 
 export function issueDefendCommand(player: Soldier, soldiers: Soldier[], currentTime: number): Soldier[] {
   const targets = findCommandTargets(player, soldiers);
-  for (const soldier of targets) applyOrder(soldier, "DEFEND_ORDER", player, currentTime, COMMAND_CONFIG.commandDurationMs);
+  for (const soldier of targets) applyOrder(soldier, "DEFEND_ORDER", player, currentTime, Number.POSITIVE_INFINITY);
   return targets;
 }
 
@@ -54,8 +58,11 @@ export function issueRetreatCommand(player: Soldier, soldiers: Soldier[], curren
 }
 
 export function issueRallyCommand(player: Soldier, soldiers: Soldier[], currentTime: number): Soldier[] {
-  const targets = findCommandTargets(player, soldiers);
-  for (const soldier of targets) applyOrder(soldier, "RALLY", player, currentTime, COMMAND_CONFIG.rallyMaxDurationMs);
+  const targets = findCommandTargets(player, soldiers).filter((soldier) => {
+    const source = battlefieldWorldPointToSource(soldier);
+    return source.x < SWF_GATHER_TARGET_MAX_X && !soldier.isConfused;
+  });
+  for (const soldier of targets) applyOrder(soldier, "RALLY", player, currentTime, Number.POSITIVE_INFINITY);
   return targets;
 }
 
@@ -90,6 +97,10 @@ export function updateTemporaryOrder(soldier: Soldier, player: Soldier, currentT
     return;
   }
 
+  if (order.type === "ADVANCE" && (soldier.targetId !== null || soldier.combatActionState !== "IDLE")) {
+    clearTemporaryOrder(soldier);
+    return;
+  }
   clearEngagement(soldier);
   if (order.type === "RETREAT") {
     soldier.moveTargetX = soldier.team === "player" ? BATTLEFIELD_CONFIG.playerHomeX : BATTLEFIELD_CONFIG.enemyHomeX;
@@ -105,14 +116,15 @@ export function updateTemporaryOrder(soldier: Soldier, player: Soldier, currentT
     clearTemporaryOrder(soldier);
     return;
   }
-  const distanceToPlayer = Math.hypot(soldier.x - player.x, soldier.y - player.y);
-  if (distanceToPlayer >= COMMAND_CONFIG.rallyInnerRadius && distanceToPlayer <= COMMAND_CONFIG.rallyOuterRadius) {
+  const soldierSource = battlefieldWorldPointToSource(soldier);
+  const gatherSource = battlefieldWorldPointToSource({ x: order.sourceX, y: order.sourceY });
+  const distanceToGatherPoint = Math.abs(soldierSource.x - gatherSource.x) + Math.abs(soldierSource.y - gatherSource.y);
+  if (distanceToGatherPoint < SWF_GATHER_ARRIVAL_MANHATTAN) {
     clearTemporaryOrder(soldier);
     return;
   }
-  const offset = rallyOffset(soldier);
-  soldier.moveTargetX = player.x + offset.x;
-  soldier.moveTargetY = player.y + offset.y;
+  soldier.moveTargetX = order.sourceX;
+  soldier.moveTargetY = order.sourceY;
 }
 
 export function updateTemporaryOrders(soldiers: Soldier[], player: Soldier, currentTime: number): void {

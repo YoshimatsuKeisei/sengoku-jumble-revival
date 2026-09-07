@@ -1,0 +1,20 @@
+[
+  {
+    "efm": 126,
+    "slot": "m31",
+    "name": "本多忠勝",
+    "missing": [
+      "ac"
+    ],
+    "note": "Direct pstch assignments missing in recovered SWF; preserve as source anomaly, do not silently invent value."
+  },
+  {
+    "efm": 129,
+    "slot": "m50",
+    "name": "筧十蔵",
+    "missing": [
+      "ac"
+    ],
+    "note": "Direct pstch assignments missing in recovered SWF; preserve as source anomaly, do not silently invent value."
+  }
+]

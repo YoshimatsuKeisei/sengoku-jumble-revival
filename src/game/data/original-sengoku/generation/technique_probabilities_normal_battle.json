@@ -1,0 +1,229 @@
+{
+  "condition": "Final generic technique probabilities derived from chpr control flow when fmdat != \"n\". Later technique assignments overwrite earlier ones exactly as AVM1 does.",
+  "rows": [
+    {
+      "class_code": 1,
+      "class_name": "足軽",
+      "technique_code": 1,
+      "technique_name": "槍撃",
+      "probability": 0.995,
+      "percent": 99.5
+    },
+    {
+      "class_code": 1,
+      "class_name": "足軽",
+      "technique_code": 21,
+      "technique_name": "槍術",
+      "probability": 0.005,
+      "percent": 0.5
+    },
+    {
+      "class_code": 2,
+      "class_name": "弓兵",
+      "technique_code": 2,
+      "technique_name": "弓矢",
+      "probability": 0.774,
+      "percent": 77.4
+    },
+    {
+      "class_code": 2,
+      "class_name": "弓兵",
+      "technique_code": 3,
+      "technique_name": "遠射",
+      "probability": 0.2,
+      "percent": 20.0
+    },
+    {
+      "class_code": 2,
+      "class_name": "弓兵",
+      "technique_code": 15,
+      "technique_name": "火矢",
+      "probability": 0.018199999999999997,
+      "percent": 1.8199999999999998
+    },
+    {
+      "class_code": 2,
+      "class_name": "弓兵",
+      "technique_code": 16,
+      "technique_name": "焙烙",
+      "probability": 0.0078,
+      "percent": 0.7799999999999999
+    },
+    {
+      "class_code": 3,
+      "class_name": "武将",
+      "technique_code": 14,
+      "technique_name": "号令",
+      "probability": 0.9938944444444445,
+      "percent": 99.38944444444445
+    },
+    {
+      "class_code": 3,
+      "class_name": "武将",
+      "technique_code": 22,
+      "technique_name": "豪傑",
+      "probability": 0.004994444444444445,
+      "percent": 0.49944444444444447
+    },
+    {
+      "class_code": 3,
+      "class_name": "武将",
+      "technique_code": 24,
+      "technique_name": "治癒",
+      "probability": 0.0011111111111111111,
+      "percent": 0.1111111111111111
+    },
+    {
+      "class_code": 4,
+      "class_name": "猛者",
+      "technique_code": 11,
+      "technique_name": "旋風",
+      "probability": 0.747,
+      "percent": 74.7
+    },
+    {
+      "class_code": 4,
+      "class_name": "猛者",
+      "technique_code": 23,
+      "technique_name": "無双",
+      "probability": 0.249,
+      "percent": 24.9
+    },
+    {
+      "class_code": 4,
+      "class_name": "猛者",
+      "technique_code": 25,
+      "technique_name": "鬼神",
+      "probability": 0.004,
+      "percent": 0.4
+    },
+    {
+      "class_code": 5,
+      "class_name": "軍師",
+      "technique_code": 6,
+      "technique_name": "火遊",
+      "probability": 0.4705852892857142,
+      "percent": 47.05852892857142
+    },
+    {
+      "class_code": 5,
+      "class_name": "軍師",
+      "technique_code": 7,
+      "technique_name": "火攻",
+      "probability": 0.4705852892857142,
+      "percent": 47.05852892857142
+    },
+    {
+      "class_code": 5,
+      "class_name": "軍師",
+      "technique_code": 8,
+      "technique_name": "火計",
+      "probability": 0.019244289285714283,
+      "percent": 1.9244289285714284
+    },
+    {
+      "class_code": 5,
+      "class_name": "軍師",
+      "technique_code": 9,
+      "technique_name": "業火",
+      "probability": 0.0022442892857142856,
+      "percent": 0.22442892857142854
+    },
+    {
+      "class_code": 5,
+      "class_name": "軍師",
+      "technique_code": 10,
+      "technique_name": "炎術",
+      "probability": 1.2857142857142856e-05,
+      "percent": 0.0012857142857142856
+    },
+    {
+      "class_code": 5,
+      "class_name": "軍師",
+      "technique_code": 18,
+      "technique_name": "妖術",
+      "probability": 0.0094,
+      "percent": 0.9400000000000001
+    },
+    {
+      "class_code": 5,
+      "class_name": "軍師",
+      "technique_code": 19,
+      "technique_name": "虚報",
+      "probability": 0.027917999999999995,
+      "percent": 2.7917999999999994
+    },
+    {
+      "class_code": 5,
+      "class_name": "軍師",
+      "technique_code": 24,
+      "technique_name": "治癒",
+      "probability": 9.985714285714286e-06,
+      "percent": 0.0009985714285714285
+    },
+    {
+      "class_code": 6,
+      "class_name": "鉄砲",
+      "technique_code": 4,
+      "technique_name": "射撃",
+      "probability": 0.796,
+      "percent": 79.60000000000001
+    },
+    {
+      "class_code": 6,
+      "class_name": "鉄砲",
+      "technique_code": 5,
+      "technique_name": "狙撃",
+      "probability": 0.2,
+      "percent": 20.0
+    },
+    {
+      "class_code": 6,
+      "class_name": "鉄砲",
+      "technique_code": 17,
+      "technique_name": "砲撃",
+      "probability": 0.004,
+      "percent": 0.4
+    },
+    {
+      "class_code": 7,
+      "class_name": "忍者",
+      "technique_code": 12,
+      "technique_name": "忍術",
+      "probability": 0.852687,
+      "percent": 85.2687
+    },
+    {
+      "class_code": 7,
+      "class_name": "忍者",
+      "technique_code": 13,
+      "technique_name": "影走",
+      "probability": 0.127413,
+      "percent": 12.741299999999999
+    },
+    {
+      "class_code": 7,
+      "class_name": "忍者",
+      "technique_code": 20,
+      "technique_name": "幻術",
+      "probability": 0.0099,
+      "percent": 0.9900000000000001
+    },
+    {
+      "class_code": 7,
+      "class_name": "忍者",
+      "technique_code": 27,
+      "technique_name": "結界",
+      "probability": 0.01,
+      "percent": 1.0
+    },
+    {
+      "class_code": 8,
+      "class_name": "騎馬",
+      "technique_code": 26,
+      "technique_name": "騎突",
+      "probability": 1.0,
+      "percent": 100.0
+    }
+  ]
+}

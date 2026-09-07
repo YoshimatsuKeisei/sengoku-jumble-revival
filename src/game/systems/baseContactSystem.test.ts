@@ -62,7 +62,18 @@ describe("SWF movement-contact base attacks", () => {
       attacker.specialAbilities = [...abilities];
       resolveBaseMovementContacts([attacker], bases, crossEnemySurface(attacker, base), 0, () => 0.99);
       expect(base.hp).toBe(base.maxHp - damage);
+      expect(attacker.merits.baseDamage).toBe(1);
     }
+  });
+
+  it("adds the separate +2 merit when the base capture branch is reached", () => {
+    const bases = createBattleBases();
+    const base = getBaseForTeam(bases, "enemy");
+    base.hp = 1;
+    const attacker = createSoldier("capture", "player", "ai", 0, 0, "charge");
+    resolveBaseMovementContacts([attacker], bases, crossEnemySurface(attacker, base), 0, () => 0.99);
+    expect(base.isDestroyed).toBe(true);
+    expect(attacker.merits.baseDamage).toBe(3);
   });
 
   it("uses two 30-slot FORTIFY draws and lets NINJA ignore the block", () => {

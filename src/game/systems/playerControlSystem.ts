@@ -1,5 +1,5 @@
 import type { Soldier } from "../types";
-import { calculateSpecialCooldownMs } from "./specialAttackSystem";
+import { PLAYER_TECHNIQUE_GAUGE_MAX } from "./combatGaugeSystem";
 
 export function canPlayerContinueManualPursuitDuringWindup(player: Soldier, soldiers: readonly Soldier[]): boolean {
   if (player.combatActionState !== "ATTACK_WINDUP" || player.attackTargetKind !== "SOLDIER") return false;
@@ -10,8 +10,6 @@ export function canPlayerMoveInCurrentState(player: Soldier, soldiers: readonly 
     || player.state === "HEALING" || player.state === "REJOINING") return false;
   return player.combatActionState === "IDLE" || canPlayerContinueManualPursuitDuringWindup(player, soldiers);
 }
-export function getSpecialGaugeProgress(player: Soldier, currentTime: number): number {
-  if (currentTime >= player.specialReadyAt) return 1;
-  const cooldown = calculateSpecialCooldownMs(player.stats.skill);
-  return Math.max(0, Math.min(1, 1 - (player.specialReadyAt - currentTime) / cooldown));
+export function getSpecialGaugeProgress(player: Soldier, _currentTime: number): number {
+  return Math.max(0, Math.min(1, Math.round(player.playerTechniqueGauge) / PLAYER_TECHNIQUE_GAUGE_MAX));
 }

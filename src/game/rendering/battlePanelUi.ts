@@ -26,6 +26,24 @@ import {
   getUwdPanelY,
   type BattleEventNoticeSide,
 } from "./battleUiTimeline";
+import {
+  BATTLE_UNIT_UI_TEXTURES,
+  TECHNIQUE_GAUGE_SIZE,
+  getTechniqueGaugeFillWidth,
+} from "./battleUnitUiAssets";
+import {
+  BATTLE_BALANCE_GAUGE_ASSET,
+  configureBattleBalanceGaugeTexture,
+} from "./battleBalanceGauge";
+import {
+  BALANCE_GAUGE_INITIAL_FRAME,
+  SWF_BATTLE_FPS,
+  calculateBattleSituation,
+  formatBattleTime,
+  getBattleBalanceTargetFrame,
+  smoothBattleBalanceFrame,
+  type BattleEndReason,
+} from "../systems/battleOutcomeSystem";
 
 export const BATTLE_PANEL_UI_CONFIG = {
   stageScale: GAME_HEIGHT / BATTLE_PANEL_STAGE_SIZE.height,
@@ -48,7 +66,7 @@ type UiTextKey =
   | "tdf"
   | "tmp"
   | "ts";
-type UwdMessageState = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+type UwdMessageState = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 type ProgressState = "rules" | "mode" | "counter" | null;
 
 interface EventNoticeLane {
@@ -68,6 +86,7 @@ const UWD_MESSAGE_ASSETS: Readonly<Partial<Record<UwdMessageState, string>>> = {
   5: "battle_messages.exit_confirmation.exit_confirmation_text",
   6: "battle_messages.battle_end.player_base_fallen",
   7: "battle_messages.battle_end.enemy_base_fallen",
+  8: "battle_messages.battle_end.advantage_victory",
 };
 
 function layoutPosition(id: string): { x: number; y: number } {
@@ -94,6 +113,8 @@ export class BattlePanelUi {
   private readonly root: Phaser.GameObjects.Container;
   private readonly text = new Map<UiTextKey, Phaser.GameObjects.Text>();
   private readonly allegianceIcon: Phaser.GameObjects.Image;
+  private readonly techniqueGaugeFill: Phaser.GameObjects.Image;
+  private readonly balanceGauge: Phaser.GameObjects.Sprite;
   private readonly playerNotice: EventNoticeLane;
   private readonly enemyNotice: EventNoticeLane;
   private readonly uwdTimeline = new BattleUiTimelinePlayer();
@@ -115,6 +136,8 @@ export class BattlePanelUi {
   private uwdState: UwdMessageState = 1;
   private progressState: ProgressState = "rules";
   private pointerOverControl = false;
+  private balanceGaugeFrame = BALANCE_GAUGE_INITIAL_FRAME;
+  private balanceGaugeUpdatedAt: number;
   private readonly onEscape = (): void => {
     if (this.uwdState === 5) this.closeExitConfirmation(this.scene.time.now);
     else this.openExitConfirmation(this.scene.time.now);
@@ -127,6 +150,8 @@ export class BattlePanelUi {
     private readonly onExit?: () => void,
   ) {
     registerBattlePanelAtlasFrames(scene);
+    configureBattleBalanceGaugeTexture(scene);
+    this.balanceGaugeUpdatedAt = startedAt;
     this.root = scene.add
       .container(0, 0)
       .setScrollFactor(0)
@@ -138,6 +163,15 @@ export class BattlePanelUi {
         "top_hud.battle_balance.battle_balance_strip",
       ),
     );
+    this.balanceGauge = scene.add
+      .sprite(
+        BATTLE_BALANCE_GAUGE_ASSET.x,
+        BATTLE_BALANCE_GAUGE_ASSET.y,
+        BATTLE_BALANCE_GAUGE_ASSET.key,
+        BALANCE_GAUGE_INITIAL_FRAME - 1,
+      )
+      .setOrigin(0);
+    this.root.add(this.balanceGauge);
     this.root.add(this.imageAtLayout("timer", "top_hud.timer.timer_panel"));
     for (const variable of ["mb", "mm", "em", "eb", "tm"] as const)
       this.addField(variable, "top_hud");
@@ -145,12 +179,20 @@ export class BattlePanelUi {
     this.playerNotice = this.createEventNoticeLane("player");
     this.enemyNotice = this.createEventNoticeLane("enemy");
 
+    const bottomPanelPosition = layoutPosition("bottom_character_status");
     this.root.add(
-      this.imageAtLayout(
-        "bottom_character_status",
-        "bottom_character_status.panel.character_status_panel",
-      ),
+      scene.add
+        .image(
+          bottomPanelPosition.x,
+          bottomPanelPosition.y,
+          BATTLE_UNIT_UI_TEXTURES.bottomPanel,
+        )
+        .setOrigin(0),
     );
+    this.techniqueGaugeFill = scene.add
+      .image(21, 366, BATTLE_UNIT_UI_TEXTURES.techniqueGaugeFill)
+      .setOrigin(0);
+    this.root.add(this.techniqueGaugeFill);
     const selectorPosition = layoutPosition("allegiance_selector");
     this.allegianceIcon = this.image(
       "bottom_character_status.allegiance_selector.friendly_icon",
@@ -340,11 +382,12 @@ export class BattlePanelUi {
       .setVisible(false);
     const text = this.scene.add
       .text(player ? 23 : 197, 37, "", {
-        fontFamily: "sans-serif",
+        fontFamily: '"MS Mincho", "Yu Mincho", serif',
         fontSize: "11px",
         color: "#ffffff",
         fixedWidth: 167,
         fixedHeight: 15,
+        align: player ? "center" : "left",
       })
       .setOrigin(0)
       .setVisible(false);
@@ -500,14 +543,15 @@ export class BattlePanelUi {
     if (!field) throw new Error(`Missing dynamic field ${area}.${variable}`);
     const text = this.scene.add
       .text(field.x, field.y, "", {
-        fontFamily: "monospace",
-        fontSize: "7px",
-        fontStyle: "bold",
+        fontFamily: '"MS Mincho", "Yu Mincho", serif',
+        fontSize: "12px",
+        align: variable === "tm" ? "right" : "left",
         color: "#ffffff",
         stroke: "#20160d",
         strokeThickness: 1,
       })
       .setOrigin(0);
+    if (variable === "tm") text.setFixedSize(31, 15);
     this.text.set(variable, text);
     this.root.add(text);
   }
@@ -546,6 +590,7 @@ export class BattlePanelUi {
     bases: readonly BattleBase[],
     left: Soldier | null | undefined,
     right: Soldier | null | undefined,
+    remainingSeconds: number,
   ): void {
     const model: BattlePanelViewModel = buildBattlePanelViewModel(
       soldiers,
@@ -557,9 +602,29 @@ export class BattlePanelUi {
     this.setField("mm", model.playerAlive);
     this.setField("em", model.enemyAlive);
     this.setField("eb", model.enemyBaseHp);
-    // No battle-clock state exists yet; preserve the confirmed SWF initialization without inventing a timer.
-    this.setField("tm", "3:00");
+    this.setField("tm", formatBattleTime(remainingSeconds));
+    const targetBalanceFrame = getBattleBalanceTargetFrame(
+      calculateBattleSituation(soldiers, bases),
+    );
+    const frameDurationMs = 1_000 / SWF_BATTLE_FPS;
+    const elapsedFrames = Math.floor(
+      Math.max(0, now - this.balanceGaugeUpdatedAt) / frameDurationMs,
+    );
+    for (let frame = 0; frame < elapsedFrames; frame += 1) {
+      this.balanceGaugeFrame = smoothBattleBalanceFrame(
+        this.balanceGaugeFrame,
+        targetBalanceFrame,
+      );
+    }
+    if (elapsedFrames > 0) {
+      this.balanceGaugeUpdatedAt += elapsedFrames * frameDurationMs;
+      this.balanceGauge.setFrame(Math.round(this.balanceGaugeFrame) - 1);
+    }
     this.updateStatus(model.leftStatus, model.rightStatus);
+    const gaugeWidth = getTechniqueGaugeFillWidth(left?.playerTechniqueGauge ?? 0);
+    this.techniqueGaugeFill
+      .setVisible(Boolean(left) && gaugeWidth > 0)
+      .setCrop(0, 0, gaugeWidth, TECHNIQUE_GAUGE_SIZE.height);
 
     const snapshot = collectBattleUiSnapshot(soldiers, bases);
     if (this.previousSnapshot) {
@@ -579,16 +644,19 @@ export class BattlePanelUi {
   showResult(
     result: Exclude<BattleResult, null>,
     bases: readonly BattleBase[],
+    reason: BattleEndReason,
   ): void {
     if (this.shownResult) return;
     this.shownResult = result;
     const playerBase = bases.find((base) => base.team === "player");
     const enemyBase = bases.find((base) => base.team === "enemy");
-    const terminalState: 6 | 7 | null =
+    const terminalState: 6 | 7 | 8 | null =
       playerBase && playerBase.hp <= 0
         ? 6
         : enemyBase && enemyBase.hp <= 0
           ? 7
+          : reason === "ADVANTAGE"
+            ? 8
           : null;
     this.playerNotice.controller.timeline.stopAt(1);
     this.enemyNotice.controller.timeline.stopAt(1);
@@ -596,10 +664,15 @@ export class BattlePanelUi {
     if (terminalState) {
       this.uwdState = terminalState;
       this.uwdTimeline.stopAt(13);
-    } else {
-      // SWF message state8 has no confirmed trigger, so non-base results stay deliberately unconnected.
-      this.uwdTimeline.stopAt(1);
-    }
+    } else this.uwdTimeline.stopAt(1);
+    this.renderTimelines(this.scene.time.now);
+  }
+
+  showAdvantageVictory(): void {
+    if (this.shownResult) return;
+    this.uwdState = 8;
+    this.promptTimeline.stopAt(1);
+    this.uwdTimeline.stopAt(13);
     this.renderTimelines(this.scene.time.now);
   }
 

@@ -77,7 +77,7 @@ describe("hit reaction layer", () => {
 
   it("delays emergency retreat until dangerous-HP hit stun ends", () => {
     const { attacker, target } = pair();
-    target.hp = target.maxHp * RECOVERY_CONFIG.dangerHpRatio + NORMAL_ATTACK_DAMAGE;
+    target.hp = 6;
     attacker.targetId = target.id;
     const soldiers = [attacker, target];
     const bases = createBattleBases();

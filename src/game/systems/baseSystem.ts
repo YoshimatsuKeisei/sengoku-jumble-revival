@@ -50,10 +50,12 @@ export function canAttackEnemyBase(soldier: Soldier, enemyBase: BattleBase): boo
   return distanceToBaseEdge(soldier, enemyBase) <= SOLDIER_RADIUS;
 }
 
-export function damageBase(base: BattleBase, damage: number = BASE_CONFIG.damagePerHit): void {
-  if (base.isDestroyed) return;
+export function damageBase(base: BattleBase, damage: number = BASE_CONFIG.damagePerHit): number {
+  if (base.isDestroyed) return 0;
+  const beforeHp = base.hp;
   base.hp = Math.max(0, base.hp - damage);
   if (base.hp === 0) base.isDestroyed = true;
+  return beforeHp - base.hp;
 }
 
 function canOccupyOwnBase(soldier: Soldier, base: BattleBase): boolean {

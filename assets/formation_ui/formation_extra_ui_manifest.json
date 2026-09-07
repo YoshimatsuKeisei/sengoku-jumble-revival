@@ -1,0 +1,97 @@
+{
+  "source_swf": "sgjbgm.swf",
+  "formation_screen": {
+    "root_frame": 17,
+    "stage": [
+      380,
+      380
+    ],
+    "fps": 24
+  },
+  "save_drawer": {
+    "sprite_id": 2693,
+    "inner_sprite_id": 2692,
+    "root_position": [
+      0,
+      0
+    ],
+    "panel_width": 300,
+    "panel_height": 55,
+    "inner_x": 40,
+    "animation_frames": 20,
+    "open_motion": "inner panel y moves from -31 to -3 over frames 1..10; frames 11..20 reverse back to -31",
+    "assets": {
+      "2663": "save_drawer_bg.png",
+      "2665": "formation_save_normal.png",
+      "2667": "formation_save_hover_down.png",
+      "2670": "slot_labels_ichi_ni_san.png",
+      "2672": "load_normal.png",
+      "2674": "load_hover_down.png",
+      "2677": "save_normal.png",
+      "2679": "save_hover_down.png",
+      "2686": "close_normal.png",
+      "2688": "close_hover_down.png"
+    },
+    "note": "All PNGs are direct SWF bitmap exports; no resizing/repainting."
+  },
+  "overview_viewport_selector": {
+    "sprite_id": 2662,
+    "shape_id": 2661,
+    "bounds_local": [
+      -67.5,
+      67.5,
+      -67.5,
+      67.5
+    ],
+    "logical_size": [
+      135,
+      135
+    ],
+    "role": "overview-mode normal-view target/viewport selector; follows pointer in overview mode",
+    "raster_export": "not included because this is a vector Shape, not a Bitmap"
+  },
+  "soldier_detail": {
+    "sprite_id": 3033,
+    "frames": 4,
+    "label": {
+      "frame": 4,
+      "name": "chrsl"
+    },
+    "base_panel_bitmap_id": 2696,
+    "base_panel_size": [
+      380,
+      380
+    ],
+    "assets": {
+      "2696": "detail_panel_bg_380x380.png",
+      "2698": "stat_button_state_1.png",
+      "2700": "stat_button_state_2.png",
+      "2702": "stat_button_state_3.png",
+      "2704": "stat_button_state_4.png",
+      "2846": "make_self_button_bg_normal.png",
+      "2848": "make_self_button_label.png",
+      "2850": "make_self_button_bg_hover_down.png",
+      "2853": "to_formation_button_bg_normal.png",
+      "2855": "to_formation_button_label.png",
+      "2857": "to_formation_button_bg_hover_down.png",
+      "2860": "to_list_button_label.png",
+      "2863": "prev_normal.png",
+      "2865": "prev_hover_down.png",
+      "2868": "next_normal.png",
+      "2870": "next_hover_down.png",
+      "2873": "class_ashigaru.png",
+      "2875": "class_yumi.png",
+      "2877": "class_busho.png",
+      "2879": "class_mosa.png",
+      "2881": "class_gunshi.png",
+      "2883": "class_teppo.png",
+      "2885": "class_ninja.png",
+      "2887": "class_kiba.png"
+    },
+    "portrait_anchor": [
+      75,
+      103
+    ],
+    "note": "Detail screen reuses the existing character renderer for the portrait; character bitmap is intentionally not duplicated."
+  }
+}

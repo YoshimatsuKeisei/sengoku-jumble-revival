@@ -1,0 +1,24 @@
+{
+  "source": "sprite:2456 function shk, offsets ~4012..4248",
+  "plain_high_level_cavalry_conversion": {
+    "condition_all": [
+      "skskbt != 1",
+      "tklv > 3",
+      "mppt == 0",
+      "internal p == 2 OR internal p == 11",
+      "Math.random()*100 > 90",
+      "efm != 129"
+    ],
+    "raw_strategy_equivalent": [
+      "raw P=1 突撃 -> internal p=2",
+      "raw P=0 乱戦 -> raw0 converted to10 then incremented -> internal p=11"
+    ],
+    "effect": [
+      "p = 2 (突撃)",
+      "ch = 8 (騎馬)"
+    ],
+    "probability_per_eligible_slot": 0.1,
+    "scope_note": "Only mppt==0 ordinary/plain battles. Named bases have mppt 2..7, so their fmdt class composition is not altered by this conversion.",
+    "important": "fmdt composition is the base formation. Ordinary Lv4+ plain battles can have eligible 突撃/乱戦 slots converted to 騎馬 at runtime."
+  }
+}

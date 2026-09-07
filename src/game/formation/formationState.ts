@@ -27,6 +27,7 @@ export interface FormationState {
 export type FormationRosterSoldier = Pick<Soldier, "id" | "x" | "y">;
 
 let committedFormation: FormationState | null = null;
+const savedFormationSlots: Array<FormationState | null> = [null, null, null];
 
 export function cloneFormationState(state: FormationState): FormationState {
   return { version: 1, soldiers: state.soldiers.map((soldier) => ({ ...soldier })) };
@@ -168,6 +169,28 @@ export function getCommittedFormationState(): FormationState | null {
 
 export function clearCommittedFormationState(): void {
   committedFormation = null;
+}
+
+export function saveFormationSlot(slotIndex: number, state: FormationState): FormationState {
+  if (slotIndex < 0 || slotIndex >= savedFormationSlots.length)
+    throw new Error(`Invalid formation slot: ${slotIndex}`);
+  if (!validateFormationState(state)) throw new Error("Cannot save an invalid 30-soldier formation");
+  savedFormationSlots[slotIndex] = cloneFormationState(state);
+  return cloneFormationState(state);
+}
+
+export function loadFormationSlot(
+  slotIndex: number,
+  roster: readonly FormationRosterSoldier[],
+): FormationState | null {
+  if (slotIndex < 0 || slotIndex >= savedFormationSlots.length)
+    throw new Error(`Invalid formation slot: ${slotIndex}`);
+  const saved = savedFormationSlots[slotIndex];
+  return saved ? reconcileFormationState(roster, saved) : null;
+}
+
+export function clearFormationSlots(): void {
+  savedFormationSlots.fill(null);
 }
 
 export function resolveCommittedFormationForRoster(

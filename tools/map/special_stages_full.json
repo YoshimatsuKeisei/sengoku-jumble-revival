@@ -1,0 +1,2305 @@
+[
+  {
+    "kind": "special_locked",
+    "map_key": "x8y8",
+    "name": "裏戦国",
+    "formation_id": 129,
+    "level": 10,
+    "elv": 40,
+    "composition": {
+      "足軽": 1,
+      "弓兵": 1,
+      "武将": 9,
+      "猛者": 3,
+      "軍師": 3,
+      "鉄砲": 10,
+      "忍者": 3,
+      "騎馬": 0
+    },
+    "strategy_counts": {
+      "守備": 15,
+      "待機": 10,
+      "突撃": 4,
+      "乱戦": 1
+    },
+    "units": [
+      {
+        "index": 0,
+        "slot": "m30",
+        "raw_record": "081633",
+        "x_code": 8,
+        "y_code": 16,
+        "world_x": 1545,
+        "world_y": 576,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m30",
+          "index": 0,
+          "name_raw": "織田信長",
+          "name": "織田信長",
+          "raw_record": "081633",
+          "world_x": 1545,
+          "world_y": 576,
+          "class_code": 3,
+          "class_name": "武将",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 84,
+          "defense_df": 130,
+          "skill_kp": 130,
+          "hp_mp": 112,
+          "foot_s": 4,
+          "technique_code": 24,
+          "technique_name": "治癒",
+          "special_codes_raw": "s1s2s3s4s5s6s8s11s19s12s13s15s20s17s18s21s22s26s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 1,
+        "slot": "m31",
+        "raw_record": "101634",
+        "x_code": 10,
+        "y_code": 16,
+        "world_x": 1473,
+        "world_y": 576,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m31",
+          "index": 1,
+          "name_raw": "徳川家康",
+          "name": "徳川家康",
+          "raw_record": "101634",
+          "world_x": 1473,
+          "world_y": 576,
+          "class_code": 3,
+          "class_name": "武将",
+          "strategy_raw": 4,
+          "strategy_name": "待機",
+          "combat_pw": 85,
+          "defense_df": 112,
+          "skill_kp": 112,
+          "hp_mp": 122,
+          "foot_s": 3,
+          "technique_code": 24,
+          "technique_name": "治癒",
+          "special_codes_raw": "s1s2s3s8s11s19s15s20s14s16s17s18s21s22s25s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 2,
+        "slot": "m32",
+        "raw_record": "081833",
+        "x_code": 8,
+        "y_code": 18,
+        "world_x": 1545,
+        "world_y": 648,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m32",
+          "index": 2,
+          "name_raw": "羽柴秀吉",
+          "name": "羽柴秀吉",
+          "raw_record": "081833",
+          "world_x": 1545,
+          "world_y": 648,
+          "class_code": 3,
+          "class_name": "武将",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 81,
+          "defense_df": 95,
+          "skill_kp": 110,
+          "hp_mp": 112,
+          "foot_s": 5,
+          "technique_code": 24,
+          "technique_name": "治癒",
+          "special_codes_raw": "s1s2s3s8s11s19s12s15s20s14s16s17s18s21s22s26s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 3,
+        "slot": "m33",
+        "raw_record": "121233",
+        "x_code": 12,
+        "y_code": 12,
+        "world_x": 1401,
+        "world_y": 432,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m33",
+          "index": 3,
+          "name_raw": "柴田勝家",
+          "name": "柴田勝家",
+          "raw_record": "121233",
+          "world_x": 1401,
+          "world_y": 432,
+          "class_code": 3,
+          "class_name": "武将",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 105,
+          "defense_df": 95,
+          "skill_kp": 69,
+          "hp_mp": 126,
+          "foot_s": 4,
+          "technique_code": 22,
+          "technique_name": "豪傑",
+          "special_codes_raw": "s1s2s3s4s7s8s10s11s9s13s15s20s25s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 4,
+        "slot": "m34",
+        "raw_record": "081534",
+        "x_code": 8,
+        "y_code": 15,
+        "world_x": 1545,
+        "world_y": 540,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m34",
+          "index": 4,
+          "name_raw": "丹羽長秀",
+          "name": "丹羽長秀",
+          "raw_record": "081534",
+          "world_x": 1545,
+          "world_y": 540,
+          "class_code": 3,
+          "class_name": "武将",
+          "strategy_raw": 4,
+          "strategy_name": "待機",
+          "combat_pw": 69,
+          "defense_df": 81,
+          "skill_kp": 83,
+          "hp_mp": 109,
+          "foot_s": 4,
+          "technique_code": 24,
+          "technique_name": "治癒",
+          "special_codes_raw": "s1s2s3s8s11s19s12s13s15s20s14s16s18s21s28s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 5,
+        "slot": "m35",
+        "raw_record": "122033",
+        "x_code": 12,
+        "y_code": 20,
+        "world_x": 1401,
+        "world_y": 720,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m35",
+          "index": 5,
+          "name_raw": "滝川一益",
+          "name": "滝川一益",
+          "raw_record": "122033",
+          "world_x": 1401,
+          "world_y": 720,
+          "class_code": 3,
+          "class_name": "武将",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 94,
+          "defense_df": 84,
+          "skill_kp": 83,
+          "hp_mp": 111,
+          "foot_s": 4,
+          "technique_code": 22,
+          "technique_name": "豪傑",
+          "special_codes_raw": "s1s2s3s8s10s11s19s9s15s21s26s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 6,
+        "slot": "m36",
+        "raw_record": "161743",
+        "x_code": 16,
+        "y_code": 17,
+        "world_x": 1257,
+        "world_y": 612,
+        "class_code": 4,
+        "class_name": "猛者",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m36",
+          "index": 6,
+          "name_raw": "前田慶次郎",
+          "name": "前田慶次郎",
+          "raw_record": "161743",
+          "world_x": 1257,
+          "world_y": 612,
+          "class_code": 4,
+          "class_name": "猛者",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 120,
+          "defense_df": 115,
+          "skill_kp": 72,
+          "hp_mp": 155,
+          "foot_s": 4,
+          "technique_code": 25,
+          "technique_name": "鬼神",
+          "special_codes_raw": "s1s2s3s4s7s8s10s11s19s20s9s13s15s21s26s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 7,
+        "slot": "m37",
+        "raw_record": "161543",
+        "x_code": 16,
+        "y_code": 15,
+        "world_x": 1257,
+        "world_y": 540,
+        "class_code": 4,
+        "class_name": "猛者",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m37",
+          "index": 7,
+          "name_raw": "宮本武蔵",
+          "name": "宮本武蔵",
+          "raw_record": "161543",
+          "world_x": 1257,
+          "world_y": 540,
+          "class_code": 4,
+          "class_name": "猛者",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 125,
+          "defense_df": 125,
+          "skill_kp": 70,
+          "hp_mp": 145,
+          "foot_s": 4,
+          "technique_code": 25,
+          "technique_name": "鬼神",
+          "special_codes_raw": "s1s4s10s11s19s20s21s25s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 8,
+        "slot": "m38",
+        "raw_record": "102233",
+        "x_code": 10,
+        "y_code": 22,
+        "world_x": 1473,
+        "world_y": 792,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m38",
+          "index": 8,
+          "name_raw": "服部半蔵",
+          "name": "服部半蔵",
+          "raw_record": "102233",
+          "world_x": 1473,
+          "world_y": 792,
+          "class_code": 3,
+          "class_name": "武将",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 118,
+          "defense_df": 125,
+          "skill_kp": 112,
+          "hp_mp": 100,
+          "foot_s": 6,
+          "technique_code": 22,
+          "technique_name": "豪傑",
+          "special_codes_raw": "s1s2s3s8s10s11s19s15s20s17s21s22s26s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 9,
+        "slot": "m39",
+        "raw_record": "110571",
+        "x_code": 11,
+        "y_code": 5,
+        "world_x": 1437,
+        "world_y": 180,
+        "class_code": 7,
+        "class_name": "忍者",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m39",
+          "index": 9,
+          "name_raw": "飛加藤段蔵",
+          "name": "飛加藤段蔵",
+          "raw_record": "110571",
+          "world_x": 1437,
+          "world_y": 180,
+          "class_code": 7,
+          "class_name": "忍者",
+          "strategy_raw": 1,
+          "strategy_name": "突撃",
+          "combat_pw": 125,
+          "defense_df": 100,
+          "skill_kp": 125,
+          "hp_mp": 95,
+          "foot_s": 6,
+          "technique_code": 20,
+          "technique_name": "幻術",
+          "special_codes_raw": "s1s2s3s4s7s8s10s11s19s12s9s20s17s22s27s21s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 10,
+        "slot": "m40",
+        "raw_record": "090571",
+        "x_code": 9,
+        "y_code": 5,
+        "world_x": 1509,
+        "world_y": 180,
+        "class_code": 7,
+        "class_name": "忍者",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m40",
+          "index": 10,
+          "name_raw": "風魔小太郎",
+          "name": "風魔小太郎",
+          "raw_record": "090571",
+          "world_x": 1509,
+          "world_y": 180,
+          "class_code": 7,
+          "class_name": "忍者",
+          "strategy_raw": 1,
+          "strategy_name": "突撃",
+          "combat_pw": 120,
+          "defense_df": 120,
+          "skill_kp": 78,
+          "hp_mp": 100,
+          "foot_s": 5,
+          "technique_code": 27,
+          "technique_name": "結界",
+          "special_codes_raw": "s1s2s3s7s8s10s11s19s13s15s16s18s22s21s26s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 11,
+        "slot": "m41",
+        "raw_record": "101953",
+        "x_code": 10,
+        "y_code": 19,
+        "world_x": 1473,
+        "world_y": 684,
+        "class_code": 5,
+        "class_name": "軍師",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m41",
+          "index": 11,
+          "name_raw": "黒田官兵衛",
+          "name": "黒田官兵衛",
+          "raw_record": "101953",
+          "world_x": 1473,
+          "world_y": 684,
+          "class_code": 5,
+          "class_name": "軍師",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 71,
+          "defense_df": 85,
+          "skill_kp": 125,
+          "hp_mp": 82,
+          "foot_s": 3,
+          "technique_code": 10,
+          "technique_name": "炎術",
+          "special_codes_raw": "s1s2s3s8s19s9s13s17s21s29s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 12,
+        "slot": "m42",
+        "raw_record": "101353",
+        "x_code": 10,
+        "y_code": 13,
+        "world_x": 1473,
+        "world_y": 468,
+        "class_code": 5,
+        "class_name": "軍師",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m42",
+          "index": 12,
+          "name_raw": "竹中半兵衛",
+          "name": "竹中半兵衛",
+          "raw_record": "101353",
+          "world_x": 1473,
+          "world_y": 468,
+          "class_code": 5,
+          "class_name": "軍師",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 41,
+          "defense_df": 74,
+          "skill_kp": 125,
+          "hp_mp": 62,
+          "foot_s": 3,
+          "technique_code": 10,
+          "technique_name": "炎術",
+          "special_codes_raw": "s1s2s3s8s14s16s17s18s21s26s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 13,
+        "slot": "m43",
+        "raw_record": "101033",
+        "x_code": 10,
+        "y_code": 10,
+        "world_x": 1473,
+        "world_y": 360,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m43",
+          "index": 13,
+          "name_raw": "島左近　",
+          "name": "島左近",
+          "raw_record": "101033",
+          "world_x": 1473,
+          "world_y": 360,
+          "class_code": 3,
+          "class_name": "武将",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 110,
+          "defense_df": 85,
+          "skill_kp": 72,
+          "hp_mp": 113,
+          "foot_s": 4,
+          "technique_code": 22,
+          "technique_name": "豪傑",
+          "special_codes_raw": "s1s2s3s4s7s10s11s19s9s13s20s26s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 14,
+        "slot": "m44",
+        "raw_record": "141663",
+        "x_code": 14,
+        "y_code": 16,
+        "world_x": 1329,
+        "world_y": 576,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m44",
+          "index": 14,
+          "name_raw": "雑賀孫一",
+          "name": "雑賀孫一",
+          "raw_record": "141663",
+          "world_x": 1329,
+          "world_y": 576,
+          "class_code": 6,
+          "class_name": "鉄砲",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 91,
+          "defense_df": 82,
+          "skill_kp": 125,
+          "hp_mp": 101,
+          "foot_s": 5,
+          "technique_code": 17,
+          "technique_name": "砲撃",
+          "special_codes_raw": "s1s2s3s4s5s10s11s15s16s19s21s26s"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 15,
+        "slot": "m45",
+        "raw_record": "141563",
+        "x_code": 14,
+        "y_code": 15,
+        "world_x": 1329,
+        "world_y": 540,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m45",
+          "index": 15,
+          "name_raw": "雑賀衆壱",
+          "name": "雑賀衆壱",
+          "raw_record": "141563",
+          "world_x": 1329,
+          "world_y": 540,
+          "class_code": 6,
+          "class_name": "鉄砲",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 85,
+          "defense_df": 81,
+          "skill_kp": 95,
+          "hp_mp": 90,
+          "foot_s": 2,
+          "technique_code": 17,
+          "technique_name": "砲撃",
+          "special_codes_raw": "s2s5s10s11s19s18s21s22"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 16,
+        "slot": "m46",
+        "raw_record": "141764",
+        "x_code": 14,
+        "y_code": 17,
+        "world_x": 1329,
+        "world_y": 612,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m46",
+          "index": 16,
+          "name_raw": "雑賀衆弐",
+          "name": "雑賀衆弐",
+          "raw_record": "141764",
+          "world_x": 1329,
+          "world_y": 612,
+          "class_code": 6,
+          "class_name": "鉄砲",
+          "strategy_raw": 4,
+          "strategy_name": "待機",
+          "combat_pw": 85,
+          "defense_df": 81,
+          "skill_kp": 95,
+          "hp_mp": 90,
+          "foot_s": 2,
+          "technique_code": 17,
+          "technique_name": "砲撃",
+          "special_codes_raw": "s2s5s10s11s19s18s21s22"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 17,
+        "slot": "m47",
+        "raw_record": "071464",
+        "x_code": 7,
+        "y_code": 14,
+        "world_x": 1581,
+        "world_y": 504,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m47",
+          "index": 17,
+          "name_raw": "雑賀衆参",
+          "name": "雑賀衆参",
+          "raw_record": "071464",
+          "world_x": 1581,
+          "world_y": 504,
+          "class_code": 6,
+          "class_name": "鉄砲",
+          "strategy_raw": 4,
+          "strategy_name": "待機",
+          "combat_pw": 85,
+          "defense_df": 81,
+          "skill_kp": 95,
+          "hp_mp": 90,
+          "foot_s": 2,
+          "technique_code": 5,
+          "technique_name": "狙撃",
+          "special_codes_raw": "s2s5s10s11s19s18s21s22"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 18,
+        "slot": "m48",
+        "raw_record": "071764",
+        "x_code": 7,
+        "y_code": 17,
+        "world_x": 1581,
+        "world_y": 612,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m48",
+          "index": 18,
+          "name_raw": "雑賀衆肆",
+          "name": "雑賀衆肆",
+          "raw_record": "071764",
+          "world_x": 1581,
+          "world_y": 612,
+          "class_code": 6,
+          "class_name": "鉄砲",
+          "strategy_raw": 4,
+          "strategy_name": "待機",
+          "combat_pw": 85,
+          "defense_df": 81,
+          "skill_kp": 95,
+          "hp_mp": 90,
+          "foot_s": 2,
+          "technique_code": 5,
+          "technique_name": "狙撃",
+          "special_codes_raw": "s2s5s10s11s19s18s21s22"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 19,
+        "slot": "m49",
+        "raw_record": "071664",
+        "x_code": 7,
+        "y_code": 16,
+        "world_x": 1581,
+        "world_y": 576,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m49",
+          "index": 19,
+          "name_raw": "雑賀衆伍",
+          "name": "雑賀衆伍",
+          "raw_record": "071664",
+          "world_x": 1581,
+          "world_y": 576,
+          "class_code": 6,
+          "class_name": "鉄砲",
+          "strategy_raw": 4,
+          "strategy_name": "待機",
+          "combat_pw": 85,
+          "defense_df": 81,
+          "skill_kp": 95,
+          "hp_mp": 90,
+          "foot_s": 2,
+          "technique_code": 5,
+          "technique_name": "狙撃",
+          "special_codes_raw": "s2s5s10s11s19s18s21s22"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 20,
+        "slot": "m50",
+        "raw_record": "121663",
+        "x_code": 12,
+        "y_code": 16,
+        "world_x": 1401,
+        "world_y": 576,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m50",
+          "index": 20,
+          "name_raw": "筧十蔵　",
+          "name": "筧十蔵",
+          "raw_record": "121663",
+          "world_x": 1401,
+          "world_y": 576,
+          "class_code": 6,
+          "class_name": "鉄砲",
+          "strategy_raw": 3,
+          "strategy_name": "守備",
+          "combat_pw": 64,
+          "defense_df": 65,
+          "skill_kp": 88,
+          "hp_mp": 94,
+          "foot_s": 4,
+          "technique_code": null,
+          "technique_name": null,
+          "special_codes_raw": "s1s2s3s21s",
+          "missing_direct_assignments": [
+            "ac"
+          ]
+        },
+        "technique_resolution": "No direct ac assignment in pstch; remains chpr-generated."
+      },
+      {
+        "index": 21,
+        "slot": "m51",
+        "raw_record": "071864",
+        "x_code": 7,
+        "y_code": 18,
+        "world_x": 1581,
+        "world_y": 648,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m51",
+          "index": 21,
+          "name_raw": "雑賀衆陸",
+          "name": "雑賀衆陸",
+          "raw_record": "071864",
+          "world_x": 1581,
+          "world_y": 648,
+          "class_code": 6,
+          "class_name": "鉄砲",
+          "strategy_raw": 4,
+          "strategy_name": "待機",
+          "combat_pw": 85,
+          "defense_df": 81,
+          "skill_kp": 95,
+          "hp_mp": 90,
+          "foot_s": 2,
+          "technique_code": 5,
+          "technique_name": "狙撃",
+          "special_codes_raw": "s2s5s10s11s19s18s21s22"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 22,
+        "slot": "m52",
+        "raw_record": "071564",
+        "x_code": 7,
+        "y_code": 15,
+        "world_x": 1581,
+        "world_y": 540,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "famous",
+        "famous": {
+          "efm": 129,
+          "slot": "m52",
+          "index": 22,
+          "name_raw": "雑賀衆漆",
+          "name": "雑賀衆漆",
+          "raw_record": "071564",
+          "world_x": 1581,
+          "world_y": 540,
+          "class_code": 6,
+          "class_name": "鉄砲",
+          "strategy_raw": 4,
+          "strategy_name": "待機",
+          "combat_pw": 85,
+          "defense_df": 81,
+          "skill_kp": 95,
+          "hp_mp": 90,
+          "foot_s": 2,
+          "technique_code": 5,
+          "technique_name": "狙撃",
+          "special_codes_raw": "s2s5s10s11s19s18s21s22"
+        },
+        "technique_resolution": "fixed_by_pstch"
+      },
+      {
+        "index": 23,
+        "slot": "m53",
+        "raw_record": "072811",
+        "x_code": 7,
+        "y_code": 28,
+        "world_x": 1581,
+        "world_y": 1008,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 24,
+        "slot": "m54",
+        "raw_record": "121823",
+        "x_code": 12,
+        "y_code": 18,
+        "world_x": 1401,
+        "world_y": 648,
+        "class_code": 2,
+        "class_name": "弓兵",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 2,
+            "name": "弓矢",
+            "probability": 0.774
+          },
+          {
+            "code": 3,
+            "name": "遠射",
+            "probability": 0.2
+          },
+          {
+            "code": 15,
+            "name": "火矢",
+            "probability": 0.018199999999999997
+          },
+          {
+            "code": 16,
+            "name": "焙烙",
+            "probability": 0.0078
+          }
+        ]
+      },
+      {
+        "index": 25,
+        "slot": "m55",
+        "raw_record": "081734",
+        "x_code": 8,
+        "y_code": 17,
+        "world_x": 1545,
+        "world_y": 612,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 14,
+            "name": "号令",
+            "probability": 0.9938944444444445
+          },
+          {
+            "code": 22,
+            "name": "豪傑",
+            "probability": 0.004994444444444445
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 0.0011111111111111111
+          }
+        ]
+      },
+      {
+        "index": 26,
+        "slot": "m56",
+        "raw_record": "161640",
+        "x_code": 16,
+        "y_code": 16,
+        "world_x": 1257,
+        "world_y": 576,
+        "class_code": 4,
+        "class_name": "猛者",
+        "strategy_raw": 0,
+        "strategy_name": "乱戦",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 11,
+            "name": "旋風",
+            "probability": 0.747
+          },
+          {
+            "code": 23,
+            "name": "無双",
+            "probability": 0.249
+          },
+          {
+            "code": 25,
+            "name": "鬼神",
+            "probability": 0.004
+          }
+        ]
+      },
+      {
+        "index": 27,
+        "slot": "m57",
+        "raw_record": "121453",
+        "x_code": 12,
+        "y_code": 14,
+        "world_x": 1401,
+        "world_y": 504,
+        "class_code": 5,
+        "class_name": "軍師",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 6,
+            "name": "火遊",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 7,
+            "name": "火攻",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 8,
+            "name": "火計",
+            "probability": 0.019244289285714283
+          },
+          {
+            "code": 9,
+            "name": "業火",
+            "probability": 0.0022442892857142856
+          },
+          {
+            "code": 10,
+            "name": "炎術",
+            "probability": 1.2857142857142856e-05
+          },
+          {
+            "code": 18,
+            "name": "妖術",
+            "probability": 0.0094
+          },
+          {
+            "code": 19,
+            "name": "虚報",
+            "probability": 0.027917999999999995
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 9.985714285714286e-06
+          }
+        ]
+      },
+      {
+        "index": 28,
+        "slot": "m58",
+        "raw_record": "071964",
+        "x_code": 7,
+        "y_code": 19,
+        "world_x": 1581,
+        "world_y": 684,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 4,
+            "name": "射撃",
+            "probability": 0.796
+          },
+          {
+            "code": 5,
+            "name": "狙撃",
+            "probability": 0.2
+          },
+          {
+            "code": 17,
+            "name": "砲撃",
+            "probability": 0.004
+          }
+        ]
+      },
+      {
+        "index": 29,
+        "slot": "m59",
+        "raw_record": "070571",
+        "x_code": 7,
+        "y_code": 5,
+        "world_x": 1581,
+        "world_y": 180,
+        "class_code": 7,
+        "class_name": "忍者",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 12,
+            "name": "忍術",
+            "probability": 0.852687
+          },
+          {
+            "code": 13,
+            "name": "影走",
+            "probability": 0.127413
+          },
+          {
+            "code": 20,
+            "name": "幻術",
+            "probability": 0.0099
+          },
+          {
+            "code": 27,
+            "name": "結界",
+            "probability": 0.01
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "kind": "training",
+    "map_key": "x8y10",
+    "name": "修行場",
+    "formation_id": 24,
+    "level": 10,
+    "elv": 40,
+    "composition": {
+      "足軽": 12,
+      "弓兵": 2,
+      "武将": 4,
+      "猛者": 0,
+      "軍師": 6,
+      "鉄砲": 4,
+      "忍者": 2,
+      "騎馬": 0
+    },
+    "strategy_counts": {
+      "守備": 1,
+      "突撃": 27,
+      "待機": 2
+    },
+    "units": [
+      {
+        "index": 0,
+        "slot": "m30",
+        "raw_record": "111633",
+        "x_code": 11,
+        "y_code": 16,
+        "world_x": 1437,
+        "world_y": 576,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 3,
+        "strategy_name": "守備",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 14,
+            "name": "号令",
+            "probability": 0.9938944444444445
+          },
+          {
+            "code": 22,
+            "name": "豪傑",
+            "probability": 0.004994444444444445
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 0.0011111111111111111
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "slot": "m31",
+        "raw_record": "220771",
+        "x_code": 22,
+        "y_code": 7,
+        "world_x": 1041,
+        "world_y": 252,
+        "class_code": 7,
+        "class_name": "忍者",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 12,
+            "name": "忍術",
+            "probability": 0.852687
+          },
+          {
+            "code": 13,
+            "name": "影走",
+            "probability": 0.127413
+          },
+          {
+            "code": 20,
+            "name": "幻術",
+            "probability": 0.0099
+          },
+          {
+            "code": 27,
+            "name": "結界",
+            "probability": 0.01
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "slot": "m32",
+        "raw_record": "222671",
+        "x_code": 22,
+        "y_code": 26,
+        "world_x": 1041,
+        "world_y": 936,
+        "class_code": 7,
+        "class_name": "忍者",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 12,
+            "name": "忍術",
+            "probability": 0.852687
+          },
+          {
+            "code": 13,
+            "name": "影走",
+            "probability": 0.127413
+          },
+          {
+            "code": 20,
+            "name": "幻術",
+            "probability": 0.0099
+          },
+          {
+            "code": 27,
+            "name": "結界",
+            "probability": 0.01
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "slot": "m33",
+        "raw_record": "071564",
+        "x_code": 7,
+        "y_code": 15,
+        "world_x": 1581,
+        "world_y": 540,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 4,
+            "name": "射撃",
+            "probability": 0.796
+          },
+          {
+            "code": 5,
+            "name": "狙撃",
+            "probability": 0.2
+          },
+          {
+            "code": 17,
+            "name": "砲撃",
+            "probability": 0.004
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "slot": "m34",
+        "raw_record": "222211",
+        "x_code": 22,
+        "y_code": 22,
+        "world_x": 1041,
+        "world_y": 792,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "slot": "m35",
+        "raw_record": "071764",
+        "x_code": 7,
+        "y_code": 17,
+        "world_x": 1581,
+        "world_y": 612,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 4,
+        "strategy_name": "待機",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 4,
+            "name": "射撃",
+            "probability": 0.796
+          },
+          {
+            "code": 5,
+            "name": "狙撃",
+            "probability": 0.2
+          },
+          {
+            "code": 17,
+            "name": "砲撃",
+            "probability": 0.004
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "slot": "m36",
+        "raw_record": "221111",
+        "x_code": 22,
+        "y_code": 11,
+        "world_x": 1041,
+        "world_y": 396,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "slot": "m37",
+        "raw_record": "220811",
+        "x_code": 22,
+        "y_code": 8,
+        "world_x": 1041,
+        "world_y": 288,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "slot": "m38",
+        "raw_record": "222011",
+        "x_code": 22,
+        "y_code": 20,
+        "world_x": 1041,
+        "world_y": 720,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 9,
+        "slot": "m39",
+        "raw_record": "222511",
+        "x_code": 22,
+        "y_code": 25,
+        "world_x": 1041,
+        "world_y": 900,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 10,
+        "slot": "m40",
+        "raw_record": "221751",
+        "x_code": 22,
+        "y_code": 17,
+        "world_x": 1041,
+        "world_y": 612,
+        "class_code": 5,
+        "class_name": "軍師",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 6,
+            "name": "火遊",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 7,
+            "name": "火攻",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 8,
+            "name": "火計",
+            "probability": 0.019244289285714283
+          },
+          {
+            "code": 9,
+            "name": "業火",
+            "probability": 0.0022442892857142856
+          },
+          {
+            "code": 10,
+            "name": "炎術",
+            "probability": 1.2857142857142856e-05
+          },
+          {
+            "code": 18,
+            "name": "妖術",
+            "probability": 0.0094
+          },
+          {
+            "code": 19,
+            "name": "虚報",
+            "probability": 0.027917999999999995
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 9.985714285714286e-06
+          }
+        ]
+      },
+      {
+        "index": 11,
+        "slot": "m41",
+        "raw_record": "222451",
+        "x_code": 22,
+        "y_code": 24,
+        "world_x": 1041,
+        "world_y": 864,
+        "class_code": 5,
+        "class_name": "軍師",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 6,
+            "name": "火遊",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 7,
+            "name": "火攻",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 8,
+            "name": "火計",
+            "probability": 0.019244289285714283
+          },
+          {
+            "code": 9,
+            "name": "業火",
+            "probability": 0.0022442892857142856
+          },
+          {
+            "code": 10,
+            "name": "炎術",
+            "probability": 1.2857142857142856e-05
+          },
+          {
+            "code": 18,
+            "name": "妖術",
+            "probability": 0.0094
+          },
+          {
+            "code": 19,
+            "name": "虚報",
+            "probability": 0.027917999999999995
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 9.985714285714286e-06
+          }
+        ]
+      },
+      {
+        "index": 12,
+        "slot": "m42",
+        "raw_record": "201631",
+        "x_code": 20,
+        "y_code": 16,
+        "world_x": 1113,
+        "world_y": 576,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 14,
+            "name": "号令",
+            "probability": 0.9938944444444445
+          },
+          {
+            "code": 22,
+            "name": "豪傑",
+            "probability": 0.004994444444444445
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 0.0011111111111111111
+          }
+        ]
+      },
+      {
+        "index": 13,
+        "slot": "m43",
+        "raw_record": "220621",
+        "x_code": 22,
+        "y_code": 6,
+        "world_x": 1041,
+        "world_y": 216,
+        "class_code": 2,
+        "class_name": "弓兵",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 2,
+            "name": "弓矢",
+            "probability": 0.774
+          },
+          {
+            "code": 3,
+            "name": "遠射",
+            "probability": 0.2
+          },
+          {
+            "code": 15,
+            "name": "火矢",
+            "probability": 0.018199999999999997
+          },
+          {
+            "code": 16,
+            "name": "焙烙",
+            "probability": 0.0078
+          }
+        ]
+      },
+      {
+        "index": 14,
+        "slot": "m44",
+        "raw_record": "222721",
+        "x_code": 22,
+        "y_code": 27,
+        "world_x": 1041,
+        "world_y": 972,
+        "class_code": 2,
+        "class_name": "弓兵",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 2,
+            "name": "弓矢",
+            "probability": 0.774
+          },
+          {
+            "code": 3,
+            "name": "遠射",
+            "probability": 0.2
+          },
+          {
+            "code": 15,
+            "name": "火矢",
+            "probability": 0.018199999999999997
+          },
+          {
+            "code": 16,
+            "name": "焙烙",
+            "probability": 0.0078
+          }
+        ]
+      },
+      {
+        "index": 15,
+        "slot": "m45",
+        "raw_record": "201431",
+        "x_code": 20,
+        "y_code": 14,
+        "world_x": 1113,
+        "world_y": 504,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 14,
+            "name": "号令",
+            "probability": 0.9938944444444445
+          },
+          {
+            "code": 22,
+            "name": "豪傑",
+            "probability": 0.004994444444444445
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 0.0011111111111111111
+          }
+        ]
+      },
+      {
+        "index": 16,
+        "slot": "m46",
+        "raw_record": "221311",
+        "x_code": 22,
+        "y_code": 13,
+        "world_x": 1041,
+        "world_y": 468,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 17,
+        "slot": "m47",
+        "raw_record": "201831",
+        "x_code": 20,
+        "y_code": 18,
+        "world_x": 1113,
+        "world_y": 648,
+        "class_code": 3,
+        "class_name": "武将",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 14,
+            "name": "号令",
+            "probability": 0.9938944444444445
+          },
+          {
+            "code": 22,
+            "name": "豪傑",
+            "probability": 0.004994444444444445
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 0.0011111111111111111
+          }
+        ]
+      },
+      {
+        "index": 18,
+        "slot": "m48",
+        "raw_record": "221011",
+        "x_code": 22,
+        "y_code": 10,
+        "world_x": 1041,
+        "world_y": 360,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 19,
+        "slot": "m49",
+        "raw_record": "221511",
+        "x_code": 22,
+        "y_code": 15,
+        "world_x": 1041,
+        "world_y": 540,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 20,
+        "slot": "m50",
+        "raw_record": "221461",
+        "x_code": 22,
+        "y_code": 14,
+        "world_x": 1041,
+        "world_y": 504,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 4,
+            "name": "射撃",
+            "probability": 0.796
+          },
+          {
+            "code": 5,
+            "name": "狙撃",
+            "probability": 0.2
+          },
+          {
+            "code": 17,
+            "name": "砲撃",
+            "probability": 0.004
+          }
+        ]
+      },
+      {
+        "index": 21,
+        "slot": "m51",
+        "raw_record": "220511",
+        "x_code": 22,
+        "y_code": 5,
+        "world_x": 1041,
+        "world_y": 180,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 22,
+        "slot": "m52",
+        "raw_record": "221961",
+        "x_code": 22,
+        "y_code": 19,
+        "world_x": 1041,
+        "world_y": 684,
+        "class_code": 6,
+        "class_name": "鉄砲",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 4,
+            "name": "射撃",
+            "probability": 0.796
+          },
+          {
+            "code": 5,
+            "name": "狙撃",
+            "probability": 0.2
+          },
+          {
+            "code": 17,
+            "name": "砲撃",
+            "probability": 0.004
+          }
+        ]
+      },
+      {
+        "index": 23,
+        "slot": "m53",
+        "raw_record": "220951",
+        "x_code": 22,
+        "y_code": 9,
+        "world_x": 1041,
+        "world_y": 324,
+        "class_code": 5,
+        "class_name": "軍師",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 6,
+            "name": "火遊",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 7,
+            "name": "火攻",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 8,
+            "name": "火計",
+            "probability": 0.019244289285714283
+          },
+          {
+            "code": 9,
+            "name": "業火",
+            "probability": 0.0022442892857142856
+          },
+          {
+            "code": 10,
+            "name": "炎術",
+            "probability": 1.2857142857142856e-05
+          },
+          {
+            "code": 18,
+            "name": "妖術",
+            "probability": 0.0094
+          },
+          {
+            "code": 19,
+            "name": "虚報",
+            "probability": 0.027917999999999995
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 9.985714285714286e-06
+          }
+        ]
+      },
+      {
+        "index": 24,
+        "slot": "m54",
+        "raw_record": "222811",
+        "x_code": 22,
+        "y_code": 28,
+        "world_x": 1041,
+        "world_y": 1008,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 25,
+        "slot": "m55",
+        "raw_record": "221251",
+        "x_code": 22,
+        "y_code": 12,
+        "world_x": 1041,
+        "world_y": 432,
+        "class_code": 5,
+        "class_name": "軍師",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 6,
+            "name": "火遊",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 7,
+            "name": "火攻",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 8,
+            "name": "火計",
+            "probability": 0.019244289285714283
+          },
+          {
+            "code": 9,
+            "name": "業火",
+            "probability": 0.0022442892857142856
+          },
+          {
+            "code": 10,
+            "name": "炎術",
+            "probability": 1.2857142857142856e-05
+          },
+          {
+            "code": 18,
+            "name": "妖術",
+            "probability": 0.0094
+          },
+          {
+            "code": 19,
+            "name": "虚報",
+            "probability": 0.027917999999999995
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 9.985714285714286e-06
+          }
+        ]
+      },
+      {
+        "index": 26,
+        "slot": "m56",
+        "raw_record": "222151",
+        "x_code": 22,
+        "y_code": 21,
+        "world_x": 1041,
+        "world_y": 756,
+        "class_code": 5,
+        "class_name": "軍師",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 6,
+            "name": "火遊",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 7,
+            "name": "火攻",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 8,
+            "name": "火計",
+            "probability": 0.019244289285714283
+          },
+          {
+            "code": 9,
+            "name": "業火",
+            "probability": 0.0022442892857142856
+          },
+          {
+            "code": 10,
+            "name": "炎術",
+            "probability": 1.2857142857142856e-05
+          },
+          {
+            "code": 18,
+            "name": "妖術",
+            "probability": 0.0094
+          },
+          {
+            "code": 19,
+            "name": "虚報",
+            "probability": 0.027917999999999995
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 9.985714285714286e-06
+          }
+        ]
+      },
+      {
+        "index": 27,
+        "slot": "m57",
+        "raw_record": "222311",
+        "x_code": 22,
+        "y_code": 23,
+        "world_x": 1041,
+        "world_y": 828,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      },
+      {
+        "index": 28,
+        "slot": "m58",
+        "raw_record": "221651",
+        "x_code": 22,
+        "y_code": 16,
+        "world_x": 1041,
+        "world_y": 576,
+        "class_code": 5,
+        "class_name": "軍師",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 6,
+            "name": "火遊",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 7,
+            "name": "火攻",
+            "probability": 0.4705852892857142
+          },
+          {
+            "code": 8,
+            "name": "火計",
+            "probability": 0.019244289285714283
+          },
+          {
+            "code": 9,
+            "name": "業火",
+            "probability": 0.0022442892857142856
+          },
+          {
+            "code": 10,
+            "name": "炎術",
+            "probability": 1.2857142857142856e-05
+          },
+          {
+            "code": 18,
+            "name": "妖術",
+            "probability": 0.0094
+          },
+          {
+            "code": 19,
+            "name": "虚報",
+            "probability": 0.027917999999999995
+          },
+          {
+            "code": 24,
+            "name": "治癒",
+            "probability": 9.985714285714286e-06
+          }
+        ]
+      },
+      {
+        "index": 29,
+        "slot": "m59",
+        "raw_record": "221811",
+        "x_code": 22,
+        "y_code": 18,
+        "world_x": 1041,
+        "world_y": 648,
+        "class_code": 1,
+        "class_name": "足軽",
+        "strategy_raw": 1,
+        "strategy_name": "突撃",
+        "unit_kind": "generic",
+        "name_resolution": "chpr",
+        "stats_resolution": "chpr + elv",
+        "technique_resolution": "chpr",
+        "technique_probabilities": [
+          {
+            "code": 1,
+            "name": "槍撃",
+            "probability": 0.995
+          },
+          {
+            "code": 21,
+            "name": "槍術",
+            "probability": 0.005
+          }
+        ]
+      }
+    ]
+  }
+]

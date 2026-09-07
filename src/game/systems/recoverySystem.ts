@@ -1,4 +1,4 @@
-import { BASE_CONFIG, RECOVERY_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
+import { BASE_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
 import { battlefieldWorldPointToSource } from "../battlefieldLayout";
 import type { BattleBase, Soldier, Team } from "../types";
 import type { RandomSource } from "../stats/soldierStats";
@@ -15,7 +15,6 @@ import {
 } from "./battlefieldGeometry";
 import {
   applyFieldHospitalArrival,
-  applySupportHealingPulse,
   handleRetreatStateEntered,
   hasSpecialAbility,
   isAbilityActionCapable,
@@ -23,6 +22,7 @@ import {
 import { invalidateCombatTargetForAll } from "./combatTargetSystem";
 import { clearConfusion } from "./confusionSystem";
 import { SWF_COMBAT_FPS, swfLogicTicksToMs } from "./techniqueCombatProfiles";
+import { recordRecovery, recordRetreatTransition } from "./meritSystem";
 
 type Point = { x: number; y: number };
 
@@ -78,9 +78,10 @@ export const SWF_TREATMENT_SEARCH_MANHATTAN_UNITS = 760;
 export const TREATMENT_RECOVERY_LOCK_TICKS = 1;
 
 export function shouldEmergencyRetreat(soldier: Soldier, currentTime = 0): boolean {
+  const hpPercent = soldier.maxHp > 0 ? Math.floor(soldier.hp / soldier.maxHp * 100) : 0;
   return soldier.reactionState === "NONE" && soldier.state === "NORMAL"
     && currentTime >= soldier.abilityActionLockUntil
-    && soldier.hp > 0 && soldier.hp / soldier.maxHp <= RECOVERY_CONFIG.dangerHpRatio;
+    && soldier.hp > 0 && (hpPercent < 20 || soldier.hp < 6);
 }
 
 function setMoveTarget(soldier: Soldier, point: Point): void {
@@ -99,7 +100,8 @@ function treatmentDistanceInSwfUnits(a: Pick<Soldier, "x" | "y">, b: Pick<Soldie
 export function findNearestTreatmentHealer(patient: Soldier, soldiers: readonly Soldier[], currentTime = 0): Soldier | null {
   return soldiers.filter((candidate) => candidate !== patient && candidate.team === patient.team
     && hasSpecialAbility(candidate, "TREATMENT") && isAbilityActionCapable(candidate, currentTime)
-    && treatmentDistanceInSwfUnits(candidate, patient) < SWF_TREATMENT_SEARCH_MANHATTAN_UNITS)
+    && (patient.controller !== "player"
+      || treatmentDistanceInSwfUnits(candidate, patient) < SWF_TREATMENT_SEARCH_MANHATTAN_UNITS))
     .sort((a, b) => treatmentDistanceInSwfUnits(a, patient) - treatmentDistanceInSwfUnits(b, patient))[0] ?? null;
 }
 
@@ -107,10 +109,14 @@ export function calculateTreatmentHealAmount(patient: Pick<Soldier, "maxHp">): n
   return Math.floor(patient.maxHp * 0.2) + 2;
 }
 
-function completeTreatment(patient: Soldier, soldiers: readonly Soldier[], currentTime: number): void {
+function completeTreatment(patient: Soldier, healer: Soldier, currentTime: number): void {
   const amount = calculateTreatmentHealAmount(patient);
   const boost = hasSpecialAbility(patient, "RECOVERY_BOOST");
+  const beforeHp = patient.hp;
   patient.hp = Math.min(patient.maxHp, patient.hp + amount * (boost ? 2 : 1));
+  // tat() is the confirmed exception that immediately refreshes h after recovery.
+  patient.hpBarHp = patient.hp;
+  recordRecovery(healer, patient, patient.hp - beforeHp);
   patient.treatmentUsedSinceLastBaseVisit = true;
   patient.recoveryTargetKind = "BASE_GATE";
   patient.recoveryHealerId = null;
@@ -122,12 +128,12 @@ function completeTreatment(patient: Soldier, soldiers: readonly Soldier[], curre
   patient.abilityActionLockUntil = Math.max(patient.abilityActionLockUntil,
     currentTime + swfLogicTicksToMs(TREATMENT_RECOVERY_LOCK_TICKS));
   clearCombat(patient);
-  if (boost) applySupportHealingPulse(patient, soldiers, false);
 }
 
 export function startEmergencyRetreat(
   soldier: Soldier, bases?: readonly BattleBase[], soldiers: readonly Soldier[] = [], currentTime = 0,
 ): void {
+  if (soldier.state !== "EMERGENCY_RETREAT") soldier.temporaryRetreatCount += 1;
   clearConfusion(soldier, "EMERGENCY_RETREAT");
   soldier.state = "EMERGENCY_RETREAT";
   cancelAttack(soldier);
@@ -142,6 +148,7 @@ export function startEmergencyRetreat(
     const healer = findNearestTreatmentHealer(soldier, soldiers, currentTime);
     if (healer) { soldier.recoveryTargetKind = "HEALER"; soldier.recoveryHealerId = healer.id; }
   }
+  recordRetreatTransition(soldier, soldiers, soldier.recoveryTargetKind);
   if (soldiers.length) handleRetreatStateEntered(soldier, soldiers, currentTime);
   if (soldier.recoveryGate) setMoveTarget(soldier, getBaseGatePoint(base, soldier.recoveryGate, false));
   else { soldier.moveTargetX = null; soldier.moveTargetY = null; }
@@ -153,7 +160,7 @@ function applyTreatmentContact(soldier: Soldier, soldiers: readonly Soldier[], c
     && hasSpecialAbility(candidate, "TREATMENT") && isAbilityActionCapable(candidate, currentTime)
     && Math.hypot(candidate.x - soldier.x, candidate.y - soldier.y) <= SPECIAL_ABILITY_CONFIG.treatmentContactRadius);
   if (!healer) return false;
-  completeTreatment(soldier, soldiers, currentTime);
+  completeTreatment(soldier, healer, currentTime);
   return true;
 }
 
@@ -171,6 +178,10 @@ function enterHealing(
   soldier.recoveryGateEntered = true;
   soldier.treatmentUsedSinceLastBaseVisit = false;
   soldier.state = "HEALING";
+  soldier.facingX = soldier.team === "player" ? 1 : -1;
+  soldier.facingY = 0;
+  soldier.aimX = null;
+  soldier.aimY = null;
   invalidateCombatTargetForAll(soldier.id, soldiers);
   soldier.moveTargetX = null;
   soldier.moveTargetY = null;
@@ -200,7 +211,7 @@ export function updateEmergencyRetreat(
     if (healer) {
       setMoveTarget(soldier, healer);
       if (Math.hypot(healer.x - soldier.x, healer.y - soldier.y) <= SPECIAL_ABILITY_CONFIG.treatmentContactRadius) {
-        completeTreatment(soldier, soldiers, currentTime);
+        completeTreatment(soldier, healer, currentTime);
       }
       return;
     }
@@ -223,9 +234,10 @@ export function updateHealing(soldier: Soldier, deltaSeconds: number, bases?: re
   soldier.moveTargetX = null;
   soldier.moveTargetY = null;
   const base = ownBase(soldier.team, bases);
-  if (soldier.unitType === "TEPPOU" || soldier.unitType === "CAVALRY") {
-    soldier.facingX = soldier.team === "player" ? 1 : -1; soldier.facingY = 0; soldier.aimX = null; soldier.aimY = null;
-  }
+  soldier.facingX = soldier.team === "player" ? 1 : -1;
+  soldier.facingY = 0;
+  soldier.aimX = null;
+  soldier.aimY = null;
   const multiplier = hasSpecialAbility(soldier, "RECOVERY_BOOST") ? SPECIAL_ABILITY_CONFIG.recoveryBoostMultiplier : 1;
   const swfHealingPerUpdate = soldier.maxHp / 400;
   soldier.hp = Math.min(soldier.maxHp, soldier.hp + swfHealingPerUpdate * SWF_COMBAT_FPS * multiplier * deltaSeconds);

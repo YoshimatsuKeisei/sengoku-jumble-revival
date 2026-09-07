@@ -1,0 +1,290 @@
+﻿x,y,map_key,category_code,category_name,battle_kind,name,formation_id,formation_pool,level,elv,selectable_battle,unlock_condition,special_flag,level_rule
+0,0,x0y0,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+1,0,x1y0,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,0,x2y0,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,0,x3y0,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,0,x4y0,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+5,0,x5y0,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,0,x6y0,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+7,0,x7y0,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+8,0,x8y0,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+9,0,x9y0,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+10,0,x10y0,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+11,0,x11y0,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,0,x12y0,5,兵学舎,named,一向一揆,122,,6,20,True,,,
+13,0,x13y0,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,0,x14y0,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,0,x15y0,4,繁華街,named,前田慶次郎軍,118,,6,20,True,,,
+16,0,x16y0,6,武家屋敷,named,上杉景勝軍,114,,6,20,True,,,
+0,1,x0y1,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+1,1,x1y1,6,武家屋敷,named,毛利輝元軍,115,,5,15,True,,,
+2,1,x2y1,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,1,x3y1,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,1,x4y1,4,繁華街,generic,繁華街,,17..21 (uniform via floor(random*5)+17),4,10,True,,,
+5,1,x5y1,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,1,x6y1,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+7,1,x7y1,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+8,1,x8y1,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+9,1,x9y1,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+10,1,x10y1,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+11,1,x11y1,6,武家屋敷,generic,武家屋敷,,12..16 (uniform via floor(random*5)+12),4,10,True,,,
+12,1,x12y1,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,1,x13y1,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,1,x14y1,7,攻略目標の敵城,named,柴田勝家軍,125,,6,20,True,,,
+15,1,x15y1,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,1,x16y1,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+0,2,x0y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+1,2,x1y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,2,x2y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,2,x3y2,7,攻略目標の敵城,named,羽柴秀吉軍,127,,8,30,True,,,
+4,2,x4y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+5,2,x5y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,2,x6y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+7,2,x7y2,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+8,2,x8y2,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+9,2,x9y2,4,繁華街,generic,繁華街,,17..21 (uniform via floor(random*5)+17),4,10,True,,,
+10,2,x10y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+11,2,x11y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,2,x12y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,2,x13y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,2,x14y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,2,x15y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,2,x16y2,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+0,3,x0y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+1,3,x1y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,3,x2y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,3,x3y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,3,x4y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+5,3,x5y3,2,鉄砲鍛造所,named,稲富流砲術隊,107,,4,10,True,,,
+6,3,x6y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+7,3,x7y3,5,兵学舎,generic,兵学舎,38,,4,10,True,,,
+8,3,x8y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+9,3,x9y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+10,3,x10y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+11,3,x11y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,3,x12y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,3,x13y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,3,x14y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,3,x15y3,5,兵学舎,named,姉小路頼綱軍,99,,2,0,True,,,
+16,3,x16y3,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+0,4,x0y4,4,繁華街,named,宮本武蔵軍,119,,5,15,True,,,
+1,4,x1y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,4,x2y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,4,x3y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,4,x4y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+5,4,x5y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,4,x6y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+7,4,x7y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+8,4,x8y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+9,4,x9y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+10,4,x10y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+11,4,x11y4,2,鉄砲鍛造所,named,国友鉄砲隊,98,,3,5,True,,,
+12,4,x12y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,4,x13y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,4,x14y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,4,x15y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,4,x16y4,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+0,5,x0y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+1,5,x1y5,5,兵学舎,named,宇喜多秀家軍,112,,2,0,True,,,
+2,5,x2y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,5,x3y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,5,x4y5,4,繁華街,generic,繁華街,,17..21 (uniform via floor(random*5)+17),3,5,True,,,
+5,5,x5y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,5,x6y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+7,5,x7y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+8,5,x8y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+9,5,x9y5,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+10,5,x10y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+11,5,x11y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,5,x12y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,5,x13y5,4,繁華街,generic,繁華街,,17..21 (uniform via floor(random*5)+17),4,10,True,,,
+14,5,x14y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,5,x15y5,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,5,x16y5,3,忍の里,named,透波衆,121,,3,5,True,,,
+0,6,x0y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+1,6,x1y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,6,x2y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,6,x3y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,6,x4y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+5,6,x5y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,6,x6y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+7,6,x7y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+8,6,x8y6,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+9,6,x9y6,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+10,6,x10y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),6,20,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+11,6,x11y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,6,x12y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,6,x13y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,6,x14y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,6,x15y6,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,6,x16y6,5,兵学舎,named,真田昌幸軍,116,,5,15,True,,,
+0,7,x0y7,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+1,7,x1y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,7,x2y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,7,x3y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,7,x4y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+5,7,x5y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,7,x6y7,7,攻略目標の敵城,named,明智光秀軍,124,,5,15,True,,,
+7,7,x7y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+8,7,x8y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),6,20,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+9,7,x9y7,7,攻略目標の敵城,named,織田信長軍,128,,9,35,True,,,
+10,7,x10y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),6,20,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+11,7,x11y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,7,x12y7,6,武家屋敷,generic,武家屋敷,,12..16 (uniform via floor(random*5)+12),3,5,True,,,
+13,7,x13y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,7,x14y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,7,x15y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,7,x16y7,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+0,8,x0y8,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+1,8,x1y8,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+2,8,x2y8,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,8,x3y8,7,攻略目標の敵城,named,丹羽長秀軍,123,,3,5,True,,,
+4,8,x4y8,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+5,8,x5y8,5,兵学舎,named,足利義昭軍,113,,3,5,True,,,
+6,8,x6y8,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+7,8,x7y8,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+8,8,x8y8,0,織田家・雑軍（通常地点）,special_locked,裏戦国,129,,10,40,True,clrmap contains X#9#7X,,
+9,8,x9y8,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),7,25,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+10,8,x10y8,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),6,20,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+11,8,x11y8,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,8,x12y8,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,8,x13y8,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,8,x14y8,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,8,x15y8,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,8,x16y8,6,武家屋敷,named,武田勝頼軍,110,,4,10,True,,,
+0,9,x0y9,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+1,9,x1y9,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+2,9,x2y9,4,繁華街,named,堺衆,120,,4,10,True,,,
+3,9,x3y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,9,x4y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+5,9,x5y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,9,x6y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+7,9,x7y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+8,9,x8y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+9,9,x9y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+10,9,x10y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+11,9,x11y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),5,15,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,9,x12y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,9,x13y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,9,x14y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,9,x15y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,9,x16y9,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+0,10,x0y10,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+1,10,x1y10,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,10,x2y10,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,10,x3y10,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,10,x4y10,6,武家屋敷,named,筒井順慶軍,100,,2,0,True,,,
+5,10,x5y10,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,10,x6y10,3,忍の里,named,伊賀百地忍軍,104,,5,15,True,,,
+7,10,x7y10,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+8,10,x8y10,0,織田家・雑軍（通常地点）,training,修行場,24,,10,40,False,,skskbt=1,
+9,10,x9y10,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),4,10,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+10,10,x10y10,6,武家屋敷,generic,武家屋敷,,12..16 (uniform via floor(random*5)+12),2,0,True,,,
+11,10,x11y10,4,繁華街,generic,繁華街,,17..21 (uniform via floor(random*5)+17),3,5,True,,,
+12,10,x12y10,5,兵学舎,generic,兵学舎,38,,3,5,True,,,
+13,10,x13y10,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,10,x14y10,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,10,x15y10,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,10,x16y10,4,繁華街,generic,繁華街,,17..21 (uniform via floor(random*5)+17),3,5,True,,,
+0,11,x0y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+1,11,x1y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,11,x2y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,11,x3y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,11,x4y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+5,11,x5y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,11,x6y11,3,忍の里,named,伊賀藤林忍軍,103,,2,0,True,,,
+7,11,x7y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+8,11,x8y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+9,11,x9y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+10,11,x10y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+11,11,x11y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,11,x12y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,11,x13y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),3,5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,11,x14y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,11,x15y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,11,x16y11,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+0,12,x0y12,6,武家屋敷,generic,武家屋敷,,12..16 (uniform via floor(random*5)+12),3,5,True,,,
+1,12,x1y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,12,x2y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,12,x3y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,12,x4y12,5,兵学舎,named,松永久秀軍,102,,5,15,True,,,
+5,12,x5y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,12,x6y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+7,12,x7y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+8,12,x8y12,5,兵学舎,generic,兵学舎,38,,2,0,True,,,
+9,12,x9y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+10,12,x10y12,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+11,12,x11y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,12,x12y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,12,x13y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,12,x14y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),2,0,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,12,x15y12,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,12,x16y12,7,攻略目標の敵城,named,滝川一益軍,117,,4,10,True,,,
+0,13,x0y13,2,鉄砲鍛造所,named,雑賀衆,106,,6,20,True,,,
+1,13,x1y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,13,x2y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,13,x3y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,13,x4y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+5,13,x5y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,13,x6y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+7,13,x7y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+8,13,x8y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+9,13,x9y13,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+10,13,x10y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+11,13,x11y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,13,x12y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,13,x13y13,7,攻略目標の敵城,named,徳川家康軍,126,,7,25,True,,,
+14,13,x14y13,3,忍の里,named,服部半蔵軍,108,,4,10,True,,,
+15,13,x15y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,13,x16y13,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+0,14,x0y14,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+1,14,x1y14,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,14,x2y14,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,14,x3y14,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,14,x4y14,4,繁華街,generic,繁華街,,17..21 (uniform via floor(random*5)+17),2,0,True,,,
+5,14,x5y14,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,14,x6y14,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+7,14,x7y14,6,武家屋敷,generic,武家屋敷,,12..16 (uniform via floor(random*5)+12),1,-5,True,,,
+8,14,x8y14,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+9,14,x9y14,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+10,14,x10y14,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+11,14,x11y14,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+12,14,x12y14,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,14,x13y14,4,繁華街,generic,繁華街,,17..21 (uniform via floor(random*5)+17),3,5,True,,,
+14,14,x14y14,5,兵学舎,named,本多正信軍,109,,4,10,True,,,
+15,14,x15y14,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,14,x16y14,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+0,15,x0y15,4,繁華街,generic,繁華街,,17..21 (uniform via floor(random*5)+17),3,5,True,,,
+1,15,x1y15,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,15,x2y15,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,15,x3y15,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+4,15,x4y15,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+5,15,x5y15,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+6,15,x6y15,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+7,15,x7y15,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+8,15,x8y15,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+9,15,x9y15,4,繁華街,named,九鬼水軍,101,,2,0,True,,,
+10,15,x10y15,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+11,15,x11y15,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+12,15,x12y15,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+13,15,x13y15,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+14,15,x14y15,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+15,15,x15y15,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,15,x16y15,6,武家屋敷,named,北条氏政軍,111,,3,5,True,,,
+0,16,x0y16,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+1,16,x1y16,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+2,16,x2y16,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+3,16,x3y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+4,16,x4y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+5,16,x5y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+6,16,x6y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+7,16,x7y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+8,16,x8y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+9,16,x9y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+10,16,x10y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+11,16,x11y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+12,16,x12y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+13,16,x13y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+14,16,x14y16,1,通常戦闘地点から除外される地形/非通常セル,excluded,,,,,,False,,,
+15,16,x15y16,0,織田家・雑軍（通常地点）,generic,織田家・雑軍,,1..38 (uniform via floor(random*38)+1),1,-5,True,,,"d=max(|y-7|,|x-9|); d>5=>Lv1 else Lv=7-d; x9y8 forced Lv7"
+16,16,x16y16,3,忍の里,named,風魔忍軍,105,,6,20,True,,,

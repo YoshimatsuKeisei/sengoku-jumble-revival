@@ -7,6 +7,7 @@ import { getBaseAttackSurfaceRect } from "./battlefieldGeometry";
 import { damageBase } from "./baseSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { calculateBaseAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
+import { recordBaseAttack } from "./meritSystem";
 
 export interface SoldierPosition { x: number; y: number }
 
@@ -95,7 +96,8 @@ export function resolveBaseMovementContacts(
     const defenders = soldiers.filter((soldier) => soldier.team === base.team);
     const blocked = isBaseHitBlockedByFortify(attacker, defenders, random);
     if (!blocked) {
-      damageBase(base, calculateBaseAttackDamage(attacker));
+      const appliedDamage = damageBase(base, calculateBaseAttackDamage(attacker));
+      if (appliedDamage > 0) recordBaseAttack(attacker, base.isDestroyed);
       aggroBaseDefenders(defenders, attacker, currentTime);
     }
     applyBaseAttackBounce(attacker, base, defenders);

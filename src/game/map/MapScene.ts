@@ -24,6 +24,14 @@ import {
 } from "./mapUiModel";
 import { OnceTransitionGuard, createBattleIntroData, frameAtElapsed } from "./mapTransitionState";
 import { configureMapUiCamera, createAtlasButton, type AtlasButton } from "./mapUiRenderer";
+import {
+  createArmyGenerationModeControl,
+  type ArmyGenerationModeControl,
+} from "./armyGenerationModeControl";
+import {
+  INITIAL_PLAYER_MONEY,
+  INITIAL_PLAYER_TOTAL_STIPEND,
+} from "../systems/originalPlayerArmySystem";
 
 export interface MapSceneData {
   currentCellId?: string;
@@ -41,12 +49,19 @@ interface TrainingModalDisplay {
   openedAt: number;
 }
 
-const MAP_TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
+const MAP_DESCRIPTION_TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
   color: "#ffffff",
-  fontFamily: "sans-serif",
-  fontSize: "8px",
+  fontFamily: '"MS Mincho", "Yu Mincho", serif',
+  fontSize: "10px",
   stroke: "#000000",
   strokeThickness: 1,
+};
+
+const MAP_NUMBER_TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
+  color: "#ffffff",
+  fontFamily: '"MS Gothic", Meiryo, sans-serif',
+  fontSize: "11px",
+  align: "right",
 };
 
 export class MapScene extends Phaser.Scene {
@@ -67,13 +82,18 @@ export class MapScene extends Phaser.Scene {
   private levelUpTip: Phaser.GameObjects.Image | null = null;
   private trainingModal: TrainingModalDisplay | null = null;
   private startedAt = 0;
+  private armyModeControl: ArmyGenerationModeControl | null = null;
 
   constructor() {
     super("Map");
   }
 
   init(data?: MapSceneData): void {
-    this.dataState = data ?? {};
+    this.dataState = {
+      ...data,
+      money: data?.money ?? INITIAL_PLAYER_MONEY,
+      totalRank: data?.totalRank ?? INITIAL_PLAYER_TOTAL_STIPEND,
+    };
     this.transitionGuard = new OnceTransitionGuard();
     this.clearedCellIds = new Set(this.dataState.clearedCellIds ?? []);
     this.currentCell = getMapCell(this.dataState.currentCellId ?? DEFAULT_MAP_CELL_ID)
@@ -96,6 +116,11 @@ export class MapScene extends Phaser.Scene {
     this.createBottomUi();
     this.createNotices();
     this.updateBottomInfo(this.currentCell);
+    this.armyModeControl = createArmyGenerationModeControl();
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.armyModeControl?.destroy();
+      this.armyModeControl = null;
+    });
   }
 
   update(time: number): void {
@@ -156,24 +181,25 @@ export class MapScene extends Phaser.Scene {
       .setDepth(101);
     this.bottomLevel = createMapUiImage(this, "level_1", bottom.level.x, bottom.level.y).setDepth(101);
 
-    this.opponentText = this.add.text(bottom.dynamic_block.x, bottom.dynamic_block.y, "", MAP_TEXT_STYLE)
+    this.opponentText = this.add.text(bottom.dynamic_block.x, bottom.dynamic_block.y, "", {
+      ...MAP_DESCRIPTION_TEXT_STYLE,
+      align: "right",
+    })
       .setDepth(102)
-      .setFixedSize(205, 10);
-    this.descriptionText = this.add.text(bottom.dynamic_block.x, bottom.dynamic_block.y + 11, "", {
-      ...MAP_TEXT_STYLE,
-      fontSize: "7px",
-    }).setDepth(102).setFixedSize(205, 19);
+      .setFixedSize(80.5, 12);
+    this.descriptionText = this.add.text(183.3, bottom.dynamic_block.y, "", {
+      ...MAP_DESCRIPTION_TEXT_STYLE,
+      align: "left",
+    }).setDepth(102).setFixedSize(141.7, 20);
 
     this.add.text(bottom.money.x, bottom.money.y, String(this.dataState.money ?? 0), {
-      ...MAP_TEXT_STYLE,
+      ...MAP_NUMBER_TEXT_STYLE,
       fontSize: `${bottom.money.font_px}px`,
-      align: "right",
-    }).setOrigin(1, 0).setDepth(102);
+    }).setFixedSize(58.75, 14).setDepth(102);
     this.add.text(bottom.total_rank.x, bottom.total_rank.y, String(this.dataState.totalRank ?? 0), {
-      ...MAP_TEXT_STYLE,
+      ...MAP_NUMBER_TEXT_STYLE,
       fontSize: `${bottom.total_rank.font_px}px`,
-      align: "right",
-    }).setOrigin(1, 0).setDepth(102);
+    }).setFixedSize(58.75, 14).setDepth(102);
 
     for (const button of bottom.buttons) {
       const onPress = button.id === "formation"
@@ -241,7 +267,7 @@ export class MapScene extends Phaser.Scene {
     const levelAsset = cell.hover.level >= 10 ? "level_special" : `level_${cell.hover.level}`;
     const level = requireMapUiAsset(levelAsset);
     this.bottomLevel.setTexture(level.textureKey, level.frameKey);
-    this.opponentText.setText(`${cell.hover.opponent_army}　${cell.hover.leader}`);
+    this.opponentText.setText(cell.hover.opponent_army);
     this.descriptionText.setText(cell.description);
   }
 
@@ -291,7 +317,13 @@ export class MapScene extends Phaser.Scene {
   }
 
   private startBattleIntro(cell: MapCell): void {
-    this.transitionGuard.run(() => this.scene.start("BattleIntro", createBattleIntroData(toSelectedMapCell(cell))));
+    this.transitionGuard.run(() => this.scene.start("BattleIntro", createBattleIntroData(
+      toSelectedMapCell(cell),
+      {
+        money: this.dataState.money ?? INITIAL_PLAYER_MONEY,
+        totalRank: this.dataState.totalRank ?? INITIAL_PLAYER_TOTAL_STIPEND,
+      },
+    )));
   }
 
   private updateCurrentMarker(elapsedMs: number): void {

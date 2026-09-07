@@ -47,12 +47,12 @@ describe("Phase 3D normal parameters", () => {
     expect(calculateMoveSpeedFromFoot(1)).toBeLessThan(calculateMoveSpeedFromFoot(2));
   });
 
-  it("applies the player foot-3 minimum without changing stored foot", () => {
+  it("does not add a player-only foot minimum", () => {
     const player = createSoldier("p", "player", "player", 100, 100, "melee", stats({ foot: 1 }));
     const ai = createSoldier("a", "player", "ai", 100, 100, "melee", stats({ foot: 1 }));
-    expect(getEffectiveFoot(player)).toBe(3);
+    expect(getEffectiveFoot(player)).toBe(1);
     expect(player.stats.foot).toBe(1);
-    expect(getSoldierMoveSpeed(player)).toBe(80);
+    expect(getSoldierMoveSpeed(player)).toBe(calculateMoveSpeedFromFoot(1));
     expect(getSoldierMoveSpeed(ai)).toBe(calculateMoveSpeedFromFoot(1));
   });
 
@@ -124,7 +124,7 @@ describe("Phase 3D combat contest and defense", () => {
 
   it("calculates guard probability and bypasses non-normal damage kinds", () => {
     const defender = createSoldier("d", "enemy", "ai", 0, 0, "melee", stats({ defense: 100 }));
-    expect(getNormalGuardProbability(100)).toBe(0.75);
+    expect(getNormalGuardProbability(100)).toBe(0.5);
     expect(getNormalGuardProbability(-1)).toBe(0);
     expect(isDamageGuarded(defender, "NORMAL_ATTACK", () => 0.37)).toBe(true);
     expect(isDamageGuarded(defender, "NORMAL_ATTACK", () => 0.75)).toBe(false);

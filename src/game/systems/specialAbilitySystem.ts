@@ -3,13 +3,14 @@ import type { RandomSource } from "../stats/soldierStats";
 import type { AttackKind, CommonSpecialAbilityId, Soldier, Team } from "../types";
 import { cancelAttack } from "./attackRuntime";
 import { swfCellsToWorldX, swfCellsToWorldY, swfLogicTicksToMs } from "./techniqueCombatProfiles";
+import { recordRecovery, recordSmallRecoveryPulse } from "./meritSystem";
 
 export const COMMON_SPECIAL_ABILITY_POOL: readonly CommonSpecialAbilityId[] = [
   "RUSH", "SIEGE", "MIGHT", "DOUBLE_SPECIAL", "IRON_WALL", "FORESIGHT", "FINISHER", "RALLY_SPIRIT",
   "INSPIRE", "RECOVERY_BOOST", "TREATMENT", "FIELD_HOSPITAL", "TRAP", "FORTIFY", "HORO", "FLEET_FOOT",
 ];
 export const COMMON_SPECIAL_ABILITY_LABELS: Record<CommonSpecialAbilityId, string> = {
-  RUSH: "突進", SIEGE: "攻略", MIGHT: "将力", DOUBLE_SPECIAL: "連発", IRON_WALL: "鉄壁", FORESIGHT: "見切",
+  RUSH: "突進", SIEGE: "攻略", MIGHT: "膂力", DOUBLE_SPECIAL: "連発", IRON_WALL: "鉄壁", FORESIGHT: "見切",
   FINISHER: "討取", RALLY_SPIRIT: "奮起", INSPIRE: "鼓舞", RECOVERY_BOOST: "回復", TREATMENT: "治療",
   FIELD_HOSPITAL: "療所", TRAP: "仕掛", FORTIFY: "堅陣", HORO: "母衣", FLEET_FOOT: "逃足",
 };
@@ -72,13 +73,25 @@ export function rosterSlotDrawHasAbility(
   }
   return false;
 }
+export function drawRosterSlotAbilityHolder(
+  soldiers: readonly Soldier[], team: Team, ability: CommonSpecialAbilityId, draws: number, random: RandomSource,
+): Soldier | null {
+  const slots = getTeamRosterSlots(soldiers, team);
+  for (let attempt = 0; attempt < draws; attempt += 1) {
+    const selected = slots[randomSlotIndex(random)];
+    if (selected && hasSpecialAbility(selected, ability)) return selected;
+  }
+  return null;
+}
 export function countRosterSlotAbility(soldiers: readonly Soldier[], team: Team, ability: CommonSpecialAbilityId): number {
   return getTeamRosterSlots(soldiers, team).filter((slot) => slot && hasSpecialAbility(slot, ability)).length;
 }
 export function applyFieldHospitalArrival(patient: Soldier, soldiers: readonly Soldier[], random: RandomSource = Math.random): number {
-  if (!rosterSlotDrawHasAbility(soldiers, patient.team, "FIELD_HOSPITAL", 3, random)) return 0;
+  const holder = drawRosterSlotAbilityHolder(soldiers, patient.team, "FIELD_HOSPITAL", 3, random);
+  if (!holder) return 0;
   const amount = Math.min(SPECIAL_ABILITY_CONFIG.fieldHospitalHealAmount, patient.maxHp - patient.hp);
   patient.hp += amount;
+  recordRecovery(holder, patient, amount);
   return amount;
 }
 export function isInsideSupportRectangle(center: Pick<Soldier, "x" | "y">, target: Pick<Soldier, "x" | "y">): boolean {
@@ -95,6 +108,7 @@ export function applySupportHealingPulse(source: Soldier, soldiers: readonly Sol
     const amount = Math.min(requested, target.maxHp - target.hp);
     if (amount <= 0) continue;
     target.hp += amount;
+    recordSmallRecoveryPulse(source, target, amount);
     healed.push(target.id);
   }
   return healed;

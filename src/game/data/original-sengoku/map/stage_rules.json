@@ -1,0 +1,176 @@
+{
+  "source_functions": [
+    "mpst",
+    "mpcm"
+  ],
+  "grid": "17x17 coordinates x=0..16,y=0..16",
+  "categories": {
+    "0": "織田家・雑軍（通常地点）",
+    "1": "通常戦闘地点から除外される地形/非通常セル",
+    "2": "鉄砲鍛造所",
+    "3": "忍の里",
+    "4": "繁華街",
+    "5": "兵学舎",
+    "6": "武家屋敷",
+    "7": "攻略目標の敵城"
+  },
+  "category_coordinate_lists": {
+    "1": [
+      "x9y5",
+      "x6y0",
+      "x7y0",
+      "x8y0",
+      "x9y0",
+      "x10y0",
+      "x6y1",
+      "x7y1",
+      "x8y1",
+      "x9y1",
+      "x7y2",
+      "x8y2",
+      "x9y6",
+      "x8y6",
+      "x0y7",
+      "x0y8",
+      "x0y9",
+      "x1y8",
+      "x1y9",
+      "x3y16",
+      "x4y16",
+      "x5y16",
+      "x6y15",
+      "x6y16",
+      "x7y16",
+      "x9y13",
+      "x10y12",
+      "x9y14",
+      "x10y14",
+      "x10y15",
+      "x11y15",
+      "x10y16",
+      "x11y16",
+      "x9y16",
+      "x8y16",
+      "x12y16",
+      "x13y16",
+      "x14y16"
+    ],
+    "2": [
+      "x0y13",
+      "x11y4",
+      "x5y3"
+    ],
+    "3": [
+      "x6y10",
+      "x6y11",
+      "x16y5",
+      "x14y13",
+      "x16y16"
+    ],
+    "4": [
+      "x4y1",
+      "x9y2",
+      "x4y5",
+      "x15y0",
+      "x13y5",
+      "x2y9",
+      "x0y4",
+      "x0y15",
+      "x4y14",
+      "x9y15",
+      "x11y10",
+      "x13y14",
+      "x16y10"
+    ],
+    "5": [
+      "x1y5",
+      "x5y8",
+      "x8y12",
+      "x12y10",
+      "x14y14",
+      "x15y3",
+      "x4y12",
+      "x7y3",
+      "x16y6",
+      "x12y0"
+    ],
+    "6": [
+      "x4y10",
+      "x1y1",
+      "x10y10",
+      "x11y1",
+      "x16y15",
+      "x16y8",
+      "x0y12",
+      "x12y7",
+      "x16y0",
+      "x7y14"
+    ],
+    "7": [
+      "x9y7",
+      "x3y2",
+      "x14y1",
+      "x13y13",
+      "x3y8",
+      "x6y7",
+      "x16y12"
+    ]
+  },
+  "generic_rules": {
+    "plain": {
+      "label": "織田家・雑軍",
+      "formation_pool": [
+        1,
+        38
+      ],
+      "level": "Chebyshev distance from (9,7): d>5=>1 else 7-d; x9y8 forced 7"
+    },
+    "繁華街": {
+      "formation_pool": [
+        17,
+        21
+      ],
+      "default_level": 2,
+      "overrides": {
+        "x0y15": 3,
+        "x11y10": 3,
+        "x13y14": 3,
+        "x16y10": 3,
+        "x4y5": 3,
+        "x13y5": 4,
+        "x4y1": 4,
+        "x9y2": 4,
+        "x4y14": 2
+      }
+    },
+    "兵学舎": {
+      "formation_id": 38,
+      "default_level": 2,
+      "overrides": {
+        "x12y10": 3,
+        "x7y3": 4,
+        "x8y12": 2
+      }
+    },
+    "武家屋敷": {
+      "formation_pool": [
+        12,
+        16
+      ],
+      "default_level": 2,
+      "overrides": {
+        "x7y14": 1,
+        "x12y7": 3,
+        "x0y12": 3,
+        "x11y1": 4,
+        "x10y10": 2
+      },
+      "source_note": "mpcm bytecode contains a duplicate x12y7 check; first branch sets Lv3, so later duplicate is unreachable."
+    }
+  },
+  "level_adjustment": "elv = level*5 - 10",
+  "special_points": {
+    "x8y8": "裏戦国 formation129, internal level10/elv40, unlocked after final-castle progression condition",
+    "x8y10": "修行場 formation24, internal level10/elv40, skskbt=1"
+  }
+}

@@ -1,20 +1,11 @@
 import Phaser from "phaser";
 import { createMapUiImage, requireMapUiAsset } from "./mapUiAssets";
+import { configureSwfGameStage, SWF_STAGE_WIDTH } from "../stageLayout";
 
-export const MAP_UI_LOGICAL_SIZE = 380;
+export const MAP_UI_LOGICAL_SIZE = SWF_STAGE_WIDTH;
 
 export function configureMapUiCamera(scene: Phaser.Scene): void {
-  const viewportSize = Math.min(scene.scale.width, scene.scale.height);
-  const viewportX = (scene.scale.width - viewportSize) / 2;
-  const viewportY = (scene.scale.height - viewportSize) / 2;
-  scene.cameras.main
-    .setViewport(viewportX, viewportY, viewportSize, viewportSize)
-    .setZoom(viewportSize / MAP_UI_LOGICAL_SIZE)
-    // Phaser's scroll coordinate is based on the unzoomed camera center. A
-    // scroll of (0, 0) therefore shows only the lower-right part after zooming.
-    .centerOn(MAP_UI_LOGICAL_SIZE / 2, MAP_UI_LOGICAL_SIZE / 2)
-    .setRoundPixels(true)
-    .setBackgroundColor(0x000000);
+  configureSwfGameStage(scene);
 }
 
 export interface AtlasButton {

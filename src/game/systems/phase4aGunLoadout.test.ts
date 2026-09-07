@@ -62,7 +62,7 @@ describe("Phase 4A loadouts and gun specials", () => {
     expect(updateSpecialAttacks([attacker, far], [], createBattleBases(), 100, true)).toEqual([]);
     expect(attacker.specialReadyAt).toBe(0);
   });
-  it("deals one, bypasses normal defense, supports foresight, and has no knockback", () => {
+  it("deals one, bypasses non-ninja defense including foresight, and has no knockback", () => {
     const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, shooting);
     const target = createSoldier("t", "enemy", "ai", 100, 0); const x = target.x;
     const event = executeGunAttack(attacker, target, 0, () => 1, false);
@@ -71,7 +71,7 @@ describe("Phase 4A loadouts and gun specials", () => {
     expect(target.reactionState).toBe("HIT_STUN"); expect(target.x).toBe(x);
     const guarded = createSoldier("g", "enemy", "ai", 100, 0); guarded.specialAbilities = ["FORESIGHT"];
     attacker.specialReadyAt = 0; executeGunAttack(attacker, guarded, 0, () => 0, false);
-    expect(guarded.hp).toBe(guarded.maxHp); expect(guarded.combatFeedbackMarker).toBe("S");
+    expect(guarded.hp).toBe(guarded.maxHp - 1); expect(guarded.combatFeedbackMarker).toBe("H");
   });
   it("keeps the player cooldown separate and does not use a fixed delayed second shot", () => {
     expect(calculateSpecialCooldownMs(100)).toBeLessThan(calculateSpecialCooldownMs(0));

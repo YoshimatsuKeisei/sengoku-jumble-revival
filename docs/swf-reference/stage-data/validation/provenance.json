@@ -1,0 +1,10 @@
+{
+  "primary_source": "recovered sgjbgm.swf",
+  "swf_sha256": "47d397d98ed797e2e5e1f7f96c10ba9c3f93d3a3b54b45fbc61401a553c3399c",
+  "swf_size_bytes": 3814810,
+  "flash_version": 7,
+  "stage_size": "380x380",
+  "fps": 24,
+  "primary_avm1_functions": ["mpst", "mpcm", "fmdt", "shk", "chpr", "pstch"],
+  "precedence": "Recovered SWF v144 bytecode is primary. Community/wiki records are cross-check evidence only."
+}

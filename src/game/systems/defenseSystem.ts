@@ -16,8 +16,12 @@ export function isDamageGuarded(
   if (damageKind === "TRAP") return false;
   const soldier = "specialAbilities" in defender ? defender as Soldier : null;
   if (damageKind === "SPECIAL_ATTACK" && (!soldier || !hasSpecialAbility(soldier, "FORESIGHT"))) return false;
-  if (damageKind === "GUN_ATTACK" && attacker?.unitType === "TEPPOU" && soldier?.unitType === "NINJA") return false;
-  if (soldier && hasSpecialAbility(soldier, "HORO") && random() < DEFENSE_CONFIG.horoForcedGuardChance) return true;
+  // The original gun branch forces the defense roll high against every class
+  // except ninja. Ninja therefore still reaches HORO/the normal defense roll.
+  if (damageKind === "GUN_ATTACK" && attacker?.unitType === "TEPPOU" && soldier?.unitType !== "NINJA") return false;
+  const isRangedDefense = damageKind === "ARROW_ATTACK" || damageKind === "GUN_ATTACK";
+  if (soldier && isRangedDefense && hasSpecialAbility(soldier, "HORO")
+    && random() > 1 - DEFENSE_CONFIG.horoForcedGuardChance) return true;
   const defense = soldier ? getEffectiveDefenseForAttack(soldier, damageKind) : defender.stats.defense;
   return random() * DEFENSE_CONFIG.randomScale <= defense;
 }

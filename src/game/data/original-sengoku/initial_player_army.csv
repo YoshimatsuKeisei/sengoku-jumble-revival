@@ -1,0 +1,31 @@
+slot,name_generation,template_name_prefix_index,template_name_suffix_index,grid_x,grid_y,world_x,world_y,combat,defense,max_hp,skill,foot,class_code,class_name,strategy_code_runtime,strategy_name,technique_code,technique_name,roku,flags_s
+0,new-game randomized prefix/suffix,57,8,20,16,720,576,94,58,66,57,3,4,猛者,10,乱戦,23,無双,1088,s4 s18
+1,new-game randomized prefix/suffix,70,16,18,14,648,504,63,83,57,76,3,1,足軽,1,突撃,1,槍撃,492,s1 s20 s24
+2,new-game randomized prefix/suffix,5,0,18,18,648,648,72,49,46,51,2,1,足軽,1,突撃,1,槍撃,315,s1 s7 s14
+3,new-game randomized prefix/suffix,13,15,7,15,252,540,47,61,67,83,2,2,弓兵,14,待機,3,遠射,460,s1 s5
+4,new-game randomized prefix/suffix,41,0,12,20,432,720,89,67,66,74,3,1,足軽,8,迎撃,1,槍撃,630,s1 s3 s9 s16
+5,new-game randomized prefix/suffix,84,15,7,17,252,612,37,35,61,53,3,2,弓兵,14,待機,2,弓矢,228,s2 s5 s20
+6,new-game randomized prefix/suffix,65,10,12,12,432,432,71,57,61,62,3,1,足軽,8,迎撃,1,槍撃,632,s1 s9 s11 s20 s28
+7,new-game randomized prefix/suffix,27,8,19,13,684,468,70,51,51,54,2,1,足軽,1,突撃,1,槍撃,291,s1 s17 s23
+8,new-game randomized prefix/suffix,27,8,19,19,684,684,68,45,50,57,3,1,足軽,1,突撃,1,槍撃,336,s1 s5 s17 s20
+9,new-game randomized prefix/suffix,71,28,20,20,720,720,59,48,58,64,3,1,足軽,1,突撃,1,槍撃,402,s1 s5 s9 s26
+10,new-game randomized prefix/suffix,40,8,14,16,504,576,39,40,54,61,4,2,弓兵,14,待機,2,弓矢,308,s2 s6 s9 s19
+11,new-game randomized prefix/suffix,107,11,14,15,504,540,48,46,55,46,3,2,弓兵,3,守備,2,弓矢,246,s2 s4 s7 s11
+12,new-game randomized prefix/suffix,80,5,14,17,504,612,44,71,57,79,4,2,弓兵,3,守備,3,遠射,569,s1 s5 s16 s19
+13,new-game randomized prefix/suffix,41,5,8,14,288,504,43,82,57,65,3,2,弓兵,14,待機,3,遠射,413,s2 s25
+14,new-game randomized prefix/suffix,46,14,8,18,288,648,45,35,60,46,2,2,弓兵,14,待機,2,弓矢,161,s1 s24
+15,new-game randomized prefix/suffix,33,29,17,13,612,468,73,96,54,59,2,3,武将,1,突撃,14,号令,871,s1 s7 s14 s18 s23
+16,new-game randomized prefix/suffix,14,33,20,12,720,432,55,50,62,73,2,1,足軽,1,突撃,1,槍撃,390,s1 s7 s9 s14 s22
+17,new-game randomized prefix/suffix,82,24,17,19,612,684,60,85,53,46,2,3,武将,1,突撃,14,号令,532,s1 s26
+18,new-game randomized prefix/suffix,90,17,16,16,576,576,104,69,79,60,4,4,猛者,10,乱戦,11,旋風,1250,s4 s14 s24
+19,new-game randomized prefix/suffix,45,17,22,14,792,504,110,70,93,53,4,4,猛者,10,乱戦,11,旋風,1382,s4
+20,new-game randomized prefix/suffix,83,2,16,14,576,504,32,52,62,55,3,5,軍師,8,迎撃,6,火遊,343,s1 s3 s7
+21,new-game randomized prefix/suffix,62,25,12,13,432,468,37,71,59,80,2,5,軍師,8,迎撃,6,火遊,555,s2 s9 s20
+22,new-game randomized prefix/suffix,61,8,16,18,576,648,34,59,61,68,3,5,軍師,8,迎撃,7,火攻,520,s1 s3 s12
+23,new-game randomized prefix/suffix,47,0,19,10,684,360,88,88,6,63,5,7,忍者,1,突撃,12,忍術,1201,s1 s12 s24
+24,new-game randomized prefix/suffix,35,3,19,23,684,828,104,110,9,74,5,7,忍者,1,突撃,12,忍術,1700,s1 s14 s23
+25,new-game randomized prefix/suffix,4,23,17,11,612,396,50,69,60,61,1,6,鉄砲,14,待機,4,射撃,548,s2 s6 s20 s24
+26,new-game randomized prefix/suffix,107,0,17,22,612,792,28,37,49,56,2,6,鉄砲,14,待機,4,射撃,355,s5 s17 s22
+27,new-game randomized prefix/suffix,44,17,12,19,432,684,25,59,59,48,2,5,軍師,8,迎撃,7,火攻,349,s1 s4 s23
+28,new-game randomized prefix/suffix,12,4,11,16,396,576,51,88,48,52,2,3,武将,3,守備,14,号令,537,s1 s3
+29,new-game randomized prefix/suffix,41,9,22,18,792,648,91,63,65,63,3,4,猛者,10,乱戦,11,旋風,892,s4 s16 s23

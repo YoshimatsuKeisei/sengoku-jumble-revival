@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { getBattleIntroFrameState, getSilhouettesAtFrame } from "./battleIntroModel";
 import {
-  BattleIntroTransition,
   OnceTransitionGuard,
   createBattleIntroData,
   createBattleSceneData,
@@ -19,21 +18,15 @@ describe("map transition state", () => {
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
-  it("starts Battle exactly once at intro frame 96", () => {
-    const transition = new BattleIntroTransition();
-    const startBattle = vi.fn();
-    expect(transition.update(3_999, startBattle)).toBe(false);
-    expect(transition.update(4_000, startBattle)).toBe(true);
-    expect(transition.update(4_500, startBattle)).toBe(false);
-    expect(startBattle).toHaveBeenCalledTimes(1);
-  });
-
-  it("preserves only map selection context through Intro without battle configuration", () => {
-    const introData = createBattleIntroData(selection);
+  it("preserves selection and read-only economy context through Intro", () => {
+    const economy = { money: 3_000, totalRank: 17_996 };
+    const introData = createBattleIntroData(selection, economy);
     const battleData = createBattleSceneData(introData);
     expect(battleData.selectedMapCell).toEqual(selection);
-    expect(Object.keys(battleData)).toEqual(["selectedMapCell"]);
+    expect(battleData.economy).toEqual(economy);
+    expect(battleData.playIntro).toBe(true);
     expect(battleData.selectedMapCell).not.toBe(selection);
+    expect(battleData.economy).not.toBe(economy);
   });
 
   it("follows the SWF milestone visibility and discrete silhouette records", () => {

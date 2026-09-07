@@ -2,6 +2,7 @@ import { SOLDIER_RUNTIME_CONFIG } from "../config";
 import { createPrototypeStats } from "../stats/soldierStats";
 import type { ControllerType, Soldier, SoldierBaseStats, SoldierLoadout, Strategy, Team } from "../types";
 import { validateSoldierLoadout } from "../systems/unitLoadoutSystem";
+import { calculateSoldierStipend } from "../systems/stipendSystem";
 
 export function createSoldier(
   id: string,
@@ -16,7 +17,7 @@ export function createSoldier(
   const applied = loadout ? validateSoldierLoadout(loadout) : null;
   const finalStats = applied?.stats ?? stats;
   return {
-    id, unitType: applied?.unitType ?? "PROTOTYPE", technique: applied?.technique ?? "PROTOTYPE_AREA",
+    id, name: id, unitType: applied?.unitType ?? "PROTOTYPE", technique: applied?.technique ?? "PROTOTYPE_AREA",
     team, controller, strategy, state: "NORMAL", temporaryOrder: null, recoveryGate: null, recoveryGateEntered: false, x, y,
     strategyObjectiveKind: "ANCHOR",
     strategyObjectiveX: x,
@@ -48,6 +49,8 @@ export function createSoldier(
     specialReadyAt: 0,
     combatGauge: 0,
     combatGaugeUpdatedAt: null,
+    playerTechniqueGauge: controller === "player" ? 100 : 0,
+    playerTechniqueGaugeUpdatedAt: null,
     specialLockUntil: 0,
     abilityActionLockUntil: 0,
     trapStateUntil: 0,
@@ -56,6 +59,28 @@ export function createSoldier(
     nextSpecialWaveAt: null,
     specialAbilities: applied ? [...applied.specialAbilities] : [],
     rareSpecialAbilities: applied ? [...(applied.rareSpecialAbilities ?? [])] : [],
+    originalSpecialAbilityCodes: [],
+    merits: {
+      battleWins: 0,
+      battleLosses: 0,
+      repels: 0,
+      kills: 0,
+      soldierDamage: 0,
+      baseDamage: 0,
+      defense: 0,
+      recovery: 0,
+    },
+    temporaryRetreatCount: 0,
+    stipend: calculateSoldierStipend({
+      stats: finalStats,
+      maxHp: finalStats.maxHp,
+      unitType: applied?.unitType ?? "PROTOTYPE",
+      technique: applied?.technique ?? "PROTOTYPE_AREA",
+      specialAbilities: applied?.specialAbilities ?? [],
+      rareSpecialAbilities: applied?.rareSpecialAbilities ?? [],
+      originalSpecialAbilityCodes: [],
+    }),
+    lastDamageSourceId: null,
     pendingMoutaiSpecials: 0,
     moutaiTriggeredForRetreat: false,
     treatmentUsedSinceLastBaseVisit: false,
@@ -78,6 +103,7 @@ export function createSoldier(
     stats: { ...finalStats },
     hp: finalStats.maxHp,
     maxHp: finalStats.maxHp,
+    hpBarHp: finalStats.maxHp,
     attackRange: SOLDIER_RUNTIME_CONFIG.attackRange,
     attackCooldownMs: SOLDIER_RUNTIME_CONFIG.attackCooldownMs,
     lastAttackAt: -SOLDIER_RUNTIME_CONFIG.attackCooldownMs,

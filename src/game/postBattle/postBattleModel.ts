@@ -54,8 +54,8 @@ export function sortEnemyRows(
 ): PostBattleSoldierSnapshot[] {
   const rows = [...source];
   if (key === "reverse") return rows.reverse();
-  if (key === "cost") return rows;
   const value = (soldier: PostBattleSoldierSnapshot): number | string => {
+    if (key === "cost") return soldier.recruitCost;
     if (key === "hp") return soldier.maxHp;
     if (key === "skill") return soldier.skill;
     if (key === "attack") return soldier.attack;
@@ -78,7 +78,15 @@ export function sortMeritRows(
   key: MeritSortKey,
 ): PostBattleSoldierSnapshot[] {
   if (key === "reverse") return [...source].reverse();
-  // No trusted merit counters exist. Preserve source order rather than sorting
-  // on fabricated values.
-  return [...source];
+  const field: Record<Exclude<MeritSortKey, "reverse">, keyof PostBattleSoldierSnapshot["merits"]> = {
+    battle_win: "battleWins",
+    battle_loss: "battleLosses",
+    retreat: "repels",
+    kills: "kills",
+    soldier_attack: "soldierDamage",
+    base_attack: "baseDamage",
+    defense: "defense",
+    recovery: "recovery",
+  };
+  return [...source].sort((a, b) => b.merits[field[key]] - a.merits[field[key]]);
 }

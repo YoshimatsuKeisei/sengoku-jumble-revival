@@ -178,6 +178,7 @@ export const ACTION_BINDING_BY_TECHNIQUE = {
   GENERAL_COMMAND: { unitType: "admiral", actionCode: 14 },
   GENERAL_HEROIC: { unitType: "admiral", actionCode: 22 },
   GENERAL_HEAL: { unitType: "admiral", actionCode: 24 },
+  GENERAL_FURIOUS: { unitType: "admiral", actionCode: 28 },
   MOSA_SENPUU: { unitType: "mosa", actionCode: 11 },
   MOSA_MUSOU: { unitType: "mosa", actionCode: 23 },
   MOSA_KIJIN: { unitType: "mosa", actionCode: 25 },

@@ -3,7 +3,13 @@ import { REACTION_CONFIG } from "../config";
 import { createSoldier } from "../entities/Soldier";
 import { calculateMoveSpeedFromFoot } from "../stats/soldierStats";
 import type { Soldier, UnitTechnique } from "../types";
-import { advanceCombatGauge, beginTechniqueAction, COMBAT_GAUGE_UPDATE_INTERVAL_MS, hasTechniqueGauge } from "./combatGaugeSystem";
+import {
+  advanceCombatGauge,
+  beginTechniqueAction,
+  COMBAT_GAUGE_UPDATE_INTERVAL_MS,
+  PLAYER_TECHNIQUE_GAUGE_FRAME_MS,
+  hasTechniqueGauge,
+} from "./combatGaugeSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { getCombatWinProbability, resolveCombatContest } from "./normalCombatSystem";
 import { calculateNormalAttackDamage } from "./specialAbilitySystem";
@@ -11,6 +17,7 @@ import { updateSpecialAttacks } from "./specialAttackSystem";
 import { executeStrategistAttack } from "./strategistAttackSystem";
 import {
   getArrivalToleranceWorld,
+  getTechniqueAreaCenter,
   getTechniqueAreaWorld,
   getTechniqueProfile,
   getTechniqueRangeWorld,
@@ -32,9 +39,9 @@ function useTechnique(subject: Soldier, technique: UnitTechnique, unitType: Sold
 }
 
 describe("SWF combat/defense formulas", () => {
-  it("uses combat cubed only to choose the contact attacker", () => {
+  it("uses the linear combat ratio only to choose the contact attacker", () => {
     expect(getCombatWinProbability(100, 100)).toBe(0.5);
-    const weighted = 100 ** 3 / (100 ** 3 + 80 ** 3);
+    const weighted = 100 / (100 + 80);
     expect(getCombatWinProbability(100, 80)).toBeCloseTo(weighted, 12);
     const a = soldier("a");
     const b = soldier("b", "enemy"); b.stats.combat = 80;
@@ -64,16 +71,64 @@ describe("SWF combat/defense formulas", () => {
     expect(isDamageGuarded(target, "SPECIAL_ATTACK", () => 0.5)).toBe(true);
   });
 
-  it("applies HORO only to defense-checked attacks and lets guns bypass ninja defense", () => {
+  it("applies HORO to ninja gun defense while guns bypass other unit classes", () => {
     const target = soldier("target", "enemy"); target.specialAbilities = ["HORO"];
-    expect(isDamageGuarded(target, "NORMAL_ATTACK", () => 0.69)).toBe(true);
+    expect(isDamageGuarded(target, "NORMAL_ATTACK", () => 0.69)).toBe(false);
+    expect(isDamageGuarded(target, "ARROW_ATTACK", () => 0.69)).toBe(true);
     const gunner = useTechnique(soldier("gunner"), "TEPPOU_SHOOTING", "TEPPOU");
     target.unitType = "NINJA";
-    expect(isDamageGuarded(target, "GUN_ATTACK", () => { throw new Error("gun-vs-ninja must not roll defense"); }, gunner)).toBe(false);
+    expect(isDamageGuarded(target, "GUN_ATTACK", () => 0.69, gunner)).toBe(true);
+    target.unitType = "ASHIGARU";
+    expect(isDamageGuarded(target, "GUN_ATTACK", () => { throw new Error("gun-vs-non-ninja must not roll defense"); }, gunner)).toBe(false);
   });
 });
 
 describe("SWF skill gauges", () => {
+  it("advances the protagonist 0..100 gauge from kp/30 at SWF 24fps", () => {
+    const slow = createSoldier("slow", "player", "player", 100, 100);
+    const fast = createSoldier("fast", "player", "player", 100, 100);
+    slow.stats.skill = 50;
+    fast.stats.skill = 100;
+    slow.playerTechniqueGauge = 0;
+    fast.playerTechniqueGauge = 0;
+    advanceCombatGauge(slow, 0);
+    advanceCombatGauge(fast, 0);
+    advanceCombatGauge(slow, 1_000);
+    advanceCombatGauge(fast, 1_000);
+    expect(slow.playerTechniqueGauge).toBe(40);
+    expect(fast.playerTechniqueGauge).toBe(80);
+    advanceCombatGauge(fast, 2_000);
+    expect(fast.playerTechniqueGauge).toBe(100);
+  });
+
+  it("updates the protagonist gauge only on completed SWF frames", () => {
+    const player = createSoldier("p", "player", "player", 100, 100);
+    player.stats.skill = 60;
+    player.playerTechniqueGauge = 0;
+    advanceCombatGauge(player, 0);
+    advanceCombatGauge(player, PLAYER_TECHNIQUE_GAUGE_FRAME_MS - 0.001);
+    expect(player.playerTechniqueGauge).toBe(0);
+    advanceCombatGauge(player, PLAYER_TECHNIQUE_GAUGE_FRAME_MS);
+    expect(player.playerTechniqueGauge).toBe(2);
+  });
+
+  it("requires a full protagonist gauge and resets ordinary activations", () => {
+    const player = createSoldier("p", "player", "player", 100, 100);
+    player.playerTechniqueGauge = 99;
+    expect(beginTechniqueAction(player, 0, () => 1, true)).toBe(false);
+    player.playerTechniqueGauge = 100;
+    expect(beginTechniqueAction(player, 0, () => 1, true)).toBe(true);
+    expect(player.playerTechniqueGauge).toBe(0);
+  });
+
+  it("keeps the protagonist gauge only for confirmed DOUBLE_SPECIAL success", () => {
+    const player = createSoldier("p", "player", "player", 100, 100);
+    player.specialAbilities = ["DOUBLE_SPECIAL"];
+    player.playerTechniqueGauge = 100;
+    expect(beginTechniqueAction(player, 0, () => 0.399, true)).toBe(true);
+    expect(player.playerTechniqueGauge).toBe(100);
+  });
+
   it("requires ranged gauge to be strictly greater than 200", () => {
     const archer = useTechnique(soldier("archer"), "ARCHER_ARROW", "ARCHER");
     advanceCombatGauge(archer, 0);
@@ -146,6 +201,30 @@ describe("SWF technique profiles", () => {
   it("converts the basic and iron-wall knockbacks from SWF units", () => {
     expect(REACTION_CONFIG.knockbackDistance).toBe(swfUnitsToWorldX(10));
     expect(REACTION_CONFIG.ironWallGuardKnockbackDistance).toBe(swfUnitsToWorldX(5));
+  });
+
+  it("keeps the recovered fire offsets, tk=60 and horizontal Y correction in SWF units", () => {
+    const caster = useTechnique(soldier("fire"), "STRATEGIST_FIRE_ATTACK", "STRATEGIST");
+    caster.facingX = 1;
+    caster.facingY = 0;
+    expect(getTechniqueProfile(caster.technique)).toMatchObject({
+      forwardOffsetSwfUnits: 80,
+      horizontalYOffsetSwfUnits: -16,
+      activationRangeSwfUnits: 60,
+    });
+    expect(getTechniqueAreaCenter(caster.technique, caster)).toEqual({
+      x: caster.x + swfUnitsToWorldX(80),
+      y: caster.y + swfCellsToWorldY(-16 / 36),
+    });
+  });
+
+  it("retains the confirmed movement values for barrier and furious", () => {
+    expect(getTechniqueProfile("NINJA_BARRIER").selfAdvanceSwfUnits).toBe(16);
+    expect(getTechniqueProfile("GENERAL_FURIOUS")).toMatchObject({
+      actionLockTicks: 16,
+      selfAdvanceSwfUnits: 30,
+      edgeSelfAdvanceSwfUnits: 10,
+    });
   });
 
   it("rescans a spear technique once per wave instead of applying ten damage at activation", () => {

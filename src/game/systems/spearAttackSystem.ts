@@ -74,7 +74,7 @@ export function executeSpearAttack(attacker: Soldier, soldiers: Soldier[], obsta
     if (isDamageGuarded(target, "SPECIAL_ATTACK", random)) {
       target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; continue;
     }
-    const damage = calculateSuccessfulAttackDamage(attacker, target); applyDamage(target, damage);
+    const damage = calculateSuccessfulAttackDamage(attacker, target); applyDamage(target, damage, attacker);
     target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; hitIds.push(target.id);
     if (target.isDead) continue;
     let dx = facing.x; let dy = facing.y;

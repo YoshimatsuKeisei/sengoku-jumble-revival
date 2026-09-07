@@ -12,6 +12,7 @@ import { startHitReaction } from "./reactionSystem";
 import { calculateSuccessfulAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
 import { getTechniqueAreaCenter, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
+import { recordSmallRecoveryPulse } from "./meritSystem";
 
 export type NinjaActivationSource = "NORMAL" | "WAVE" | "BARRIER_FORCED" | "GENERAL_FORCED";
 export interface NinjaAttackEvent { kind: "NINJA"; attackerId: string; team: Team;
@@ -77,11 +78,13 @@ function applyBarrierSupport(attacker: Soldier, soldiers: Soldier[], obstacles: 
       if (ally.hp >= ally.maxHp) continue;
       const requested = 1 + Number(hasSpecialAbility(ally, "RECOVERY_BOOST"));
       const healed = Math.min(requested, ally.maxHp - ally.hp); ally.hp += healed;
+      recordSmallRecoveryPulse(attacker, ally, healed);
       if (healed > 0) healResults.push({ targetId: ally.id, amount: healed });
     }
     if (random() < 0.65 && attacker.hp < attacker.maxHp) {
       const requested = 1 + Number(hasSpecialAbility(attacker, "RECOVERY_BOOST"));
       const healed = Math.min(requested, attacker.maxHp - attacker.hp); attacker.hp += healed;
+      recordSmallRecoveryPulse(attacker, attacker, healed);
       if (healed > 0) healResults.push({ targetId: attacker.id, amount: healed });
     }
   } else {
@@ -107,7 +110,7 @@ export function executeNinjaAttack(attacker: Soldier, soldiers: Soldier[], obsta
       target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; continue;
     }
     const damage = calculateSuccessfulAttackDamage(attacker, target);
-    applyDamage(target, damage); victimIds.push(target.id);
+    applyDamage(target, damage, attacker); victimIds.push(target.id);
     target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
     if (bypass && !target.isDead) applyConfusion(target);
     if (!target.isDead) {

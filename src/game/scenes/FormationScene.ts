@@ -16,6 +16,11 @@ import {
   isSpriteUnitType,
 } from "../rendering/characterSprite";
 import {
+  preloadPostBattleAtlas,
+  registerPostBattleAtlasFrames,
+} from "../postBattle/postBattleAssets";
+import { createSoldierDetailDisplay } from "../rendering/soldierDetailRenderer";
+import {
   FORMATION_ATLAS,
   FORMATION_SOURCE_PARTS,
   createFormationAtlasImage,
@@ -25,22 +30,40 @@ import {
 } from "../rendering/formationAssets";
 import {
   FORMATION_TOOLBAR_Y,
+  createNormalFormationCameraAt,
   createFormationCameraState,
   formationStageToWorld,
+  formationWorldToStage,
+  panFormationCameraAtPointer,
   type FormationCameraState,
 } from "../formation/formationCamera";
 import {
+  FORMATION_GRID,
   formationGridToWorld,
   formationWorldToGrid,
+  getFormationFixedObstacleCells,
   isFormationGridCellInside,
 } from "../formation/formationGrid";
 import {
   cloneFormationState,
   commitFormationState,
   createWorkingFormationState,
+  loadFormationSlot,
   moveFormationSoldier,
+  saveFormationSlot,
   type FormationState,
 } from "../formation/formationState";
+import {
+  FORMATION_EXTRA_ASSETS,
+  formationExtraImage,
+  preloadFormationExtraAssets,
+  type FormationExtraAssetId,
+} from "../rendering/formationExtraAssets";
+import {
+  FORMATION_SAVE_DRAWER,
+  formationSaveDrawerY,
+  isFormationDoubleClick,
+} from "../formation/formationExtraUiModel";
 import { configureMapUiCamera } from "../map/mapUiRenderer";
 import type { MapSceneData } from "../map/MapScene";
 import type { Soldier } from "../types";
@@ -87,6 +110,7 @@ const toolbar = toolbarJson as unknown as ToolbarConfig;
 const formationScene = formationSceneJson as unknown as FormationSceneConfig;
 const FORMATION_PLAYER_BASE_OFFSET = { x: 56, y: 205 } as const;
 const FORMATION_FIXED_FENCE_SYMBOL_ID = 2650;
+const FORMATION_SWF_FRAME_MS = 1_000 / 24;
 const FALLBACK_TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
   color: "#ffffff",
   fontFamily: "sans-serif",
@@ -99,12 +123,26 @@ export class FormationScene extends Phaser.Scene {
   private roster: Soldier[] = [];
   private workingFormation!: FormationState;
   private entrySnapshot!: FormationState;
-  private formationCamera: FormationCameraState = createFormationCameraState("overview");
+  private formationCamera: FormationCameraState = createFormationCameraState("normal");
   private worldRoot!: Phaser.GameObjects.Container;
   private soldierViews = new Map<string, FormationSoldierView>();
   private leaderFlag: Phaser.GameObjects.Image | null = null;
   private activeDrag: ActiveFormationDrag | null = null;
   private atlasReady = false;
+  private overviewGrid: Phaser.GameObjects.Image | null = null;
+  private viewportSelector!: Phaser.GameObjects.Graphics;
+  private saveDrawer!: Phaser.GameObjects.Container;
+  private drawerToggle!: Phaser.GameObjects.Image;
+  private drawerClose!: Phaser.GameObjects.Image;
+  private drawerSlotObjects: Phaser.GameObjects.GameObject[] = [];
+  private drawerOpen = false;
+  private drawerAnimation: { opening: boolean; startedAt: number } | null = null;
+  private detailRoot: Phaser.GameObjects.Container | null = null;
+  private selectedDetailIndex = 0;
+  private lastSoldierClick: { id: string; at: number } | null = null;
+  private selectorStageX = 190;
+  private selectorStageY = 190;
+  private panAccumulatorMs = 0;
 
   constructor() {
     super("Formation");
@@ -112,12 +150,19 @@ export class FormationScene extends Phaser.Scene {
 
   init(data?: FormationSceneData): void {
     this.sceneData = data ?? {};
-    this.formationCamera = createFormationCameraState("overview");
+    this.formationCamera = createFormationCameraState("normal");
     this.activeDrag = null;
+    this.drawerOpen = false;
+    this.drawerAnimation = null;
+    this.detailRoot = null;
+    this.lastSoldierClick = null;
+    this.panAccumulatorMs = 0;
   }
 
   preload(): void {
     preloadFormationAssets(this);
+    preloadFormationExtraAssets(this);
+    preloadPostBattleAtlas(this);
     for (const layer of BATTLEFIELD_LAYER_DEFINITIONS.filter(
       (candidate) => candidate.kind === "tile" || candidate.id === "player-base",
     )) {
@@ -141,6 +186,12 @@ export class FormationScene extends Phaser.Scene {
       atlasFailureWarned = true;
       console.warn("Formation UI atlas failed to load; using the simple toolbar fallback.");
     }
+    registerPostBattleAtlasFrames(this);
+    for (const asset of Object.values(FORMATION_EXTRA_ASSETS)) {
+      if (this.textures.exists(asset.key)) {
+        this.textures.get(asset.key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
+    }
 
     const armySetup = loadStoredArmySetup();
     this.roster = createArmy("player", () => 0.5, {
@@ -154,9 +205,28 @@ export class FormationScene extends Phaser.Scene {
     this.createFormationWorld();
     this.createSoldierViews();
     this.createToolbar();
+    this.createOverviewSelector();
+    this.createSaveDrawer();
     this.applyFormationCamera();
     this.refreshSoldierViews();
     this.bindPointerLifecycle();
+  }
+
+  update(time: number, delta: number): void {
+    this.updateSaveDrawer(time);
+    if (this.detailRoot || this.activeDrag || this.formationCamera.mode !== "normal") return;
+    this.panAccumulatorMs += delta;
+    if (this.panAccumulatorMs < FORMATION_SWF_FRAME_MS) return;
+    const stage = this.input.activePointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2;
+    let next = this.formationCamera;
+    while (this.panAccumulatorMs >= FORMATION_SWF_FRAME_MS) {
+      next = panFormationCameraAtPointer(next, stage.x, stage.y);
+      this.panAccumulatorMs -= FORMATION_SWF_FRAME_MS;
+    }
+    if (next.centerX !== this.formationCamera.centerX || next.centerY !== this.formationCamera.centerY) {
+      this.formationCamera = next;
+      this.applyFormationCamera();
+    }
   }
 
   private createFormationWorld(): void {
@@ -195,6 +265,30 @@ export class FormationScene extends Phaser.Scene {
           .setDepth(layer.depth),
       );
     }
+
+    // Sprite2655 is a vector/shape overlay in the SWF, so it has no bitmap to
+    // extract. Recreate only its occupancy-driven dark regions at the exact
+    // SWF alpha; this does not invent any additional collision geometry.
+    const legalLeft = (FORMATION_GRID.gx_min - 0.5) * FORMATION_GRID.cell_size_world;
+    const legalRight = (FORMATION_GRID.gx_max + 0.5) * FORMATION_GRID.cell_size_world;
+    const legalTop = (FORMATION_GRID.gy_min - 0.5) * FORMATION_GRID.cell_size_world;
+    const legalBottom = (FORMATION_GRID.gy_max + 0.5) * FORMATION_GRID.cell_size_world;
+    const blockedOverlay = this.add.graphics().setDepth(95).fillStyle(0x000000, 0.3984375);
+    blockedOverlay
+      .fillRect(0, 0, worldWidth, legalTop)
+      .fillRect(0, legalBottom, worldWidth, Math.max(0, worldHeight - legalBottom))
+      .fillRect(0, legalTop, legalLeft, legalBottom - legalTop)
+      .fillRect(legalRight, legalTop, Math.max(0, worldWidth - legalRight), legalBottom - legalTop);
+    for (const key of getFormationFixedObstacleCells().keys()) {
+      const [gridX, gridY] = key.split(":").map(Number);
+      blockedOverlay.fillRect(
+        (gridX - 0.5) * FORMATION_GRID.cell_size_world,
+        (gridY - 0.5) * FORMATION_GRID.cell_size_world,
+        FORMATION_GRID.cell_size_world,
+        FORMATION_GRID.cell_size_world,
+      );
+    }
+    this.worldRoot.add(blockedOverlay);
   }
 
   private createSoldierViews(): void {
@@ -227,6 +321,13 @@ export class FormationScene extends Phaser.Scene {
       hitZone.on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, (pointer: Phaser.Input.Pointer) => {
         const stage = pointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2;
         if (stage.y >= FORMATION_TOOLBAR_Y) return;
+        const previous = this.lastSoldierClick;
+        this.lastSoldierClick = { id: soldier.id, at: this.time.now };
+        if (isFormationDoubleClick(previous, soldier.id, this.time.now)) {
+          this.activeDrag = null;
+          this.openSoldierDetail(this.roster.findIndex((candidate) => candidate.id === soldier.id));
+          return;
+        }
         this.beginDrag(soldier.id);
       });
       this.soldierViews.set(soldier.id, { soldier, display, hitZone });
@@ -267,7 +368,6 @@ export class FormationScene extends Phaser.Scene {
     const normal = requireFormationAsset(button.normal);
     const over = requireFormationAsset(button.over);
     const image = createFormationAtlasImage(this, button.normal, button.stage[0], button.stage[1]).setDepth(303);
-    if (button.id === "view") return;
     image.setInteractive(new Phaser.Geom.Rectangle(0, 0, button.size[0], button.size[1]), Phaser.Geom.Rectangle.Contains)
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => image.setTexture(over.textureKey, over.frameKey))
       .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => image.setTexture(normal.textureKey, normal.frameKey))
@@ -292,10 +392,8 @@ export class FormationScene extends Phaser.Scene {
         fixedWidth: 36,
         fixedHeight: 36,
       }).setDepth(303);
-      if (action !== "view") {
-        text.setInteractive({ useHandCursor: true })
-          .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => this.runToolbarAction(action));
-      }
+      text.setInteractive({ useHandCursor: true })
+        .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => this.runToolbarAction(action));
     }
   }
 
@@ -311,19 +409,243 @@ export class FormationScene extends Phaser.Scene {
       this.returnToMap();
       return;
     }
-    // Formation editing is intentionally fixed to the full overview.
+    this.toggleViewAtPointer(this.input.activePointer);
   }
 
   private returnToMap(): void {
     this.scene.start("Map", { ...this.sceneData.mapState });
   }
 
+  private createOverviewSelector(): void {
+    if (this.atlasReady) {
+      this.overviewGrid = createFormationAtlasImage(this, "overview_grid", 0, 0)
+        .setDepth(103)
+        .setVisible(this.formationCamera.mode === "overview");
+    }
+    this.viewportSelector = this.add.graphics().setDepth(105);
+    this.viewportSelector
+      .lineStyle(2, 0xffffff, 0.95)
+      .strokeCircle(0, 0, 67.5)
+      .lineStyle(1, 0x202020, 0.8)
+      .strokeCircle(0, 0, 65.5)
+      .setPosition(this.selectorStageX, this.selectorStageY)
+      .setVisible(this.formationCamera.mode === "overview");
+  }
+
+  private updateOverviewSelector(pointer: Phaser.Input.Pointer): void {
+    if (this.formationCamera.mode !== "overview" || this.detailRoot) return;
+    const stage = pointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2;
+    if (stage.x < 0 || stage.x > 380 || stage.y < 0 || stage.y >= FORMATION_TOOLBAR_Y) return;
+    this.selectorStageX = stage.x;
+    this.selectorStageY = stage.y;
+    this.viewportSelector.setPosition(stage.x, stage.y);
+  }
+
+  private toggleViewAtPointer(pointer: Phaser.Input.Pointer): void {
+    if (this.formationCamera.mode === "normal") {
+      const overview = createFormationCameraState("overview");
+      const selected = formationWorldToStage(
+        this.formationCamera.centerX,
+        this.formationCamera.centerY,
+        overview,
+      );
+      this.selectorStageX = selected.x;
+      this.selectorStageY = selected.y;
+      this.formationCamera = overview;
+      this.updateOverviewSelector(pointer);
+    } else {
+      this.updateOverviewSelector(pointer);
+      const selectedWorld = formationStageToWorld(
+        this.selectorStageX,
+        this.selectorStageY,
+        this.formationCamera,
+      );
+      this.formationCamera = createNormalFormationCameraAt(selectedWorld.x, selectedWorld.y);
+    }
+    const overviewVisible = this.formationCamera.mode === "overview";
+    this.overviewGrid?.setVisible(overviewVisible);
+    this.viewportSelector
+      .setPosition(this.selectorStageX, this.selectorStageY)
+      .setVisible(overviewVisible);
+    this.applyFormationCamera();
+  }
+
+  private createSaveDrawer(): void {
+    this.saveDrawer = this.add.container(
+      FORMATION_SAVE_DRAWER.x,
+      FORMATION_SAVE_DRAWER.closedY,
+    ).setDepth(310);
+    this.saveDrawer.add(formationExtraImage(this, "saveDrawerBg", 0, 0));
+    const labels = formationExtraImage(this, "slotLabels", 72, 3);
+    this.drawerSlotObjects.push(labels);
+    this.saveDrawer.add(labels);
+
+    for (let slot = 0; slot < 3; slot += 1) {
+      const x = 72 + slot * 71;
+      const load = this.createExtraButton(
+        "loadNormal", "loadActive", x, 21,
+        () => {
+          const loaded = loadFormationSlot(slot, this.roster);
+          if (!loaded) return;
+          this.workingFormation = loaded;
+          this.activeDrag = null;
+          this.refreshSoldierViews();
+        },
+      );
+      const save = this.createExtraButton(
+        "saveNormal", "saveActive", x + 34, 21,
+        () => saveFormationSlot(slot, this.workingFormation),
+      );
+      this.drawerSlotObjects.push(load, save);
+      this.saveDrawer.add([load, save]);
+    }
+
+    this.drawerToggle = this.createExtraButton(
+      "formationSaveNormal", "formationSaveActive", 4, 34,
+      () => this.setSaveDrawerOpen(true),
+    );
+    this.drawerClose = this.createExtraButton(
+      "closeNormal", "closeActive", 4, 34,
+      () => this.setSaveDrawerOpen(false),
+    ).setVisible(false);
+    this.saveDrawer.add([this.drawerToggle, this.drawerClose]);
+    this.setDrawerSlotInteractive(false);
+  }
+
+  private createExtraButton(
+    normalId: FormationExtraAssetId,
+    activeId: FormationExtraAssetId,
+    x: number,
+    y: number,
+    action: () => void,
+  ): Phaser.GameObjects.Image {
+    const image = formationExtraImage(this, normalId, x, y)
+      .setInteractive({ useHandCursor: true });
+    image
+      .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => image.setTexture(FORMATION_EXTRA_ASSETS[activeId].key))
+      .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => image.setTexture(FORMATION_EXTRA_ASSETS[normalId].key))
+      .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+        image.setTexture(FORMATION_EXTRA_ASSETS[activeId].key);
+        action();
+      });
+    return image;
+  }
+
+  private setDrawerSlotInteractive(enabled: boolean): void {
+    for (const object of this.drawerSlotObjects) {
+      if ("setVisible" in object) (object as Phaser.GameObjects.Image).setVisible(enabled);
+      if (!(object instanceof Phaser.GameObjects.Image) || !object.input) continue;
+      if (enabled) object.setInteractive({ useHandCursor: true });
+      else object.disableInteractive();
+    }
+  }
+
+  private setSaveDrawerOpen(open: boolean): void {
+    if (this.drawerAnimation?.opening === open || (!this.drawerAnimation && this.drawerOpen === open)) return;
+    this.drawerOpen = open;
+    this.drawerAnimation = { opening: open, startedAt: this.time.now };
+    this.drawerToggle.setVisible(!open);
+    this.drawerClose.setVisible(open);
+    this.setDrawerSlotInteractive(open);
+  }
+
+  private updateSaveDrawer(time: number): void {
+    if (!this.drawerAnimation) return;
+    const elapsed = time - this.drawerAnimation.startedAt;
+    this.saveDrawer.y = formationSaveDrawerY(elapsed, this.drawerAnimation.opening);
+    if (elapsed < 9 / 24 * 1_000) return;
+    this.saveDrawer.y = this.drawerAnimation.opening
+      ? FORMATION_SAVE_DRAWER.openY
+      : FORMATION_SAVE_DRAWER.closedY;
+    this.drawerAnimation = null;
+  }
+
+  private openSoldierDetail(index: number): void {
+    if (index < 0 || index >= this.roster.length) return;
+    this.closeSoldierDetail();
+    this.selectedDetailIndex = index;
+    const soldier = this.roster[index];
+    const root = this.add.container(0, 0).setDepth(500);
+    this.detailRoot = root;
+    root.add(createSoldierDetailDisplay(this, {
+      name: soldier.name,
+      unitType: soldier.unitType,
+      technique: soldier.technique,
+      strategy: soldier.strategy,
+      maxHp: soldier.maxHp,
+      skill: soldier.stats.skill,
+      speed: soldier.stats.foot,
+      attack: soldier.stats.combat,
+      defense: soldier.stats.defense,
+      stipend: soldier.stipend,
+      specialAbilities: soldier.specialAbilities,
+      rareSpecialAbilities: soldier.rareSpecialAbilities,
+    }, {
+      team: "player",
+      showGrowthLabel: false,
+      blockBackgroundInput: true,
+    }));
+
+    this.createDetailButton(root, "makeSelfNormal", "makeSelfActive", 100, 302, () => {
+      this.showDetailNotice(root, "操作兵変更は既存状態が未接続です");
+    }, "makeSelfLabel", 21, 6);
+    this.createDetailButton(root, "toFormationNormal", "toFormationActive", 151, 337, () => {
+      this.showDetailNotice(root, "兵士一覧画面は素材未収録です");
+    }, "toListLabel", 21, 6);
+    this.createDetailButton(root, "toFormationNormal", "toFormationActive", 61, 337, () => {
+      this.closeSoldierDetail();
+    }, "toFormationLabel", 21, 6);
+    this.createDetailButton(root, "previousNormal", "previousActive", 16, 337, () => {
+      if (this.selectedDetailIndex > 0) this.openSoldierDetail(this.selectedDetailIndex - 1);
+    });
+    this.createDetailButton(root, "nextNormal", "nextActive", 336, 337, () => {
+      if (this.selectedDetailIndex < this.roster.length - 1) this.openSoldierDetail(this.selectedDetailIndex + 1);
+    });
+  }
+
+  private createDetailButton(
+    root: Phaser.GameObjects.Container,
+    normal: FormationExtraAssetId,
+    active: FormationExtraAssetId,
+    x: number,
+    y: number,
+    action: () => void,
+    label?: FormationExtraAssetId,
+    labelX = 0,
+    labelY = 0,
+  ): void {
+    const button = this.createExtraButton(normal, active, x, y, action);
+    root.add(button);
+    if (label) root.add(formationExtraImage(this, label, x + labelX, y + labelY));
+  }
+
+  private showDetailNotice(root: Phaser.GameObjects.Container, message: string): void {
+    const notice = this.add.text(190, 290, message, {
+      ...FALLBACK_TEXT_STYLE,
+      backgroundColor: "#21170dcc",
+      align: "center",
+    }).setOrigin(0.5).setPadding(5, 3);
+    root.add(notice);
+    this.time.delayedCall(1_200, () => notice.destroy());
+  }
+
+  private closeSoldierDetail(): void {
+    this.detailRoot?.destroy(true);
+    this.detailRoot = null;
+  }
+
   private bindPointerLifecycle(): void {
-    this.input.on(Phaser.Input.Events.POINTER_MOVE, (pointer: Phaser.Input.Pointer) => this.updateDrag(pointer));
+    this.input.on(Phaser.Input.Events.POINTER_MOVE, (pointer: Phaser.Input.Pointer) => {
+      this.updateOverviewSelector(pointer);
+      this.updateDrag(pointer);
+    });
     this.input.on(Phaser.Input.Events.POINTER_UP, (pointer: Phaser.Input.Pointer) => this.endDrag(pointer));
     this.input.on("pointercancel", (pointer: Phaser.Input.Pointer) => this.cancelDrag(pointer));
     this.input.on("pointerupoutside", (pointer: Phaser.Input.Pointer) => this.cancelDrag(pointer));
     this.input.on("gameout", (pointer: Phaser.Input.Pointer) => this.cancelDrag(pointer));
+    this.input.on("wheel", (pointer: Phaser.Input.Pointer) => {
+      if (!this.detailRoot) this.toggleViewAtPointer(pointer);
+    });
   }
 
   private beginDrag(soldierId: string): void {
@@ -344,6 +666,9 @@ export class FormationScene extends Phaser.Scene {
     if (!this.activeDrag) return;
     const cell = this.pointerGridCell(pointer);
     if (!cell) return;
+    if (cell.gridX !== this.activeDrag.startGridX || cell.gridY !== this.activeDrag.startGridY) {
+      this.lastSoldierClick = null;
+    }
     const world = formationGridToWorld(cell.gridX, cell.gridY);
     const view = this.soldierViews.get(this.activeDrag.soldierId);
     if (!view) return;

@@ -11,6 +11,7 @@ import {
 import {
   clampFormationCamera,
   createFormationCameraState,
+  createNormalFormationCameraAt,
   formationStageToWorld,
   formationWorldToStage,
   panFormationCameraAtPointer,
@@ -71,5 +72,12 @@ describe("formation camera transform", () => {
     const camera = createFormationCameraState("normal");
     expect(panFormationCameraAtPointer(camera, 190, 350)).toEqual(camera);
     expect(panFormationCameraAtPointer(camera, 350, 190).centerX).toBe(407);
+  });
+
+  it("uses and clamps the overview selector world point when returning to normal view", () => {
+    expect(createNormalFormationCameraAt(500, 700)).toMatchObject({
+      mode: "normal", centerX: 500, centerY: 700, scale: 1,
+    });
+    expect(createNormalFormationCameraAt(999, 0)).toMatchObject({ centerX: 733, centerY: 270 });
   });
 });

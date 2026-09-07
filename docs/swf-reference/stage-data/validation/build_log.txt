@@ -1,0 +1,21 @@
+{
+  "formation_ids": 71,
+  "formation_id_ranges": [
+    "1..38",
+    "98..130"
+  ],
+  "named_map_stages": 31,
+  "famous_direct_records": 127,
+  "pstch_anomaly_count": 2,
+  "map_cells": 289,
+  "map_battle_kind_counts": {
+    "generic": 218,
+    "excluded": 38,
+    "named": 31,
+    "special_locked": 1,
+    "training": 1
+  }
+}
+anomalies [{'efm': 126, 'slot': 'm31', 'name': '本多忠勝', 'missing': ['ac'], 'note': 'Direct pstch assignments missing in recovered SWF; preserve as source anomaly, do not silently invent value.'}, {'efm': 129, 'slot': 'm50', 'name': '筧十蔵', 'missing': ['ac'], 'note': 'Direct pstch assignments missing in recovered SWF; preserve as source anomaly, do not silently invent value.'}]
+extended {"formation_ids": 71, "formation_id_ranges": ["1..38", "98..130"], "named_map_stages": 31, "famous_direct_records": 127, "pstch_anomaly_count": 2, "map_cells": 289, "map_battle_kind_counts": {"generic": 218, "excluded": 38, "named": 31, "special_locked": 1, "training": 1}, "technique_probability_rows": 28, "stat_level_rows": 80, "plain_override_formations": 38}
+resolved package additions done

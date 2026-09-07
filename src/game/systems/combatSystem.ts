@@ -1,5 +1,6 @@
 import type { Soldier } from "../types";
 import { clearConfusion } from "./confusionSystem";
+import { recordBattleOut, recordSoldierDamage } from "./meritSystem";
 
 export function isWithdrawn(soldier: Pick<Soldier, "hp" | "isDead">): boolean {
   return soldier.isDead || soldier.hp <= 0;
@@ -7,10 +8,20 @@ export function isWithdrawn(soldier: Pick<Soldier, "hp" | "isDead">): boolean {
 
 export const isOutOfBattle = isWithdrawn;
 
-export function applyDamage(target: Soldier, damage: number): void {
-  if (target.isDead) return;
-  target.hp = Math.max(0, target.hp - damage);
+export interface DamageApplicationResult {
+  appliedDamage: number;
+  battleOutStarted: boolean;
+}
+
+export function applyDamage(target: Soldier, damage: number, attacker?: Soldier): DamageApplicationResult {
+  if (target.isDead) return { appliedDamage: 0, battleOutStarted: false };
+  const beforeHp = target.hp;
+  target.hp = Math.max(0, target.hp - Math.max(0, damage));
+  target.hpBarHp = target.hp;
+  const appliedDamage = beforeHp - target.hp;
+  recordSoldierDamage(attacker, target, appliedDamage);
   if (target.hp === 0) {
+    recordBattleOut(attacker, target);
     target.activeSpecialTechnique = null;
     target.specialWavesRemaining = 0;
     target.nextSpecialWaveAt = null;
@@ -22,6 +33,10 @@ export function applyDamage(target: Soldier, damage: number): void {
     // `isDead` is retained as a legacy runtime flag. HP 0 means battle withdrawal.
     target.isDead = true;
     target.battleOutState = "EXITING";
+    target.facingX = target.team === "player" ? -1 : 1;
+    target.facingY = 0;
+    target.aimX = null;
+    target.aimY = null;
     target.targetId = null;
     target.engagementStartedAt = null;
     target.engagementOriginX = null;
@@ -47,5 +62,7 @@ export function applyDamage(target: Soldier, damage: number): void {
     target.moveTargetY = null;
     target.recoveryGate = null;
     target.recoveryGateEntered = false;
+    return { appliedDamage, battleOutStarted: true };
   }
+  return { appliedDamage, battleOutStarted: false };
 }

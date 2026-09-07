@@ -4,7 +4,7 @@ import { createPrototypeStats, type RandomSource } from "../stats/soldierStats";
 import type { Soldier, SoldierLoadout, Strategy, Team, TeamArmySetup, UnitTechnique } from "../types";
 import { COMMON_SPECIAL_ABILITY_POOL, createRandomCommonSpecialAbilities } from "../systems/specialAbilitySystem";
 import { TECHNIQUE_DEFINITIONS } from "../systems/unitLoadoutSystem";
-import { createDefaultTeamArmySetup, techniqueSlotsForTeam } from "../systems/armySetupSystem";
+import { createDefaultTeamArmySetup, createInitialPlayerTeamArmySetup, techniqueSlotsForTeam } from "../systems/armySetupSystem";
 import { createCavalryStats } from "../stats/cavalryStats";
 import { createArcherStats } from "../stats/archerStats";
 import { createAshigaruStats } from "../stats/ashigaruStats";
@@ -12,6 +12,8 @@ import { createNinjaStats } from "../stats/ninjaStats";
 import { createGeneralStats } from "../stats/generalStats";
 import { createStrategistStats } from "../stats/strategistStats";
 import { createMosaStats } from "../stats/mosaStats";
+import { refreshSoldierStipend } from "../systems/stipendSystem";
+import { createOriginalPlayerArmy, isInitialPlayerArmySetup } from "../systems/originalPlayerArmySystem";
 
 const STRATEGIES: Strategy[] = ["charge", "defend", "intercept", "melee", "wait"];
 
@@ -51,7 +53,14 @@ export function createArmy(team: Team, random: RandomSource = Math.random,
     initialPositions?: readonly ArmyInitialPosition[];
   } = {}): Soldier[] {
   const army: Soldier[] = [];
-  const teamSetup = options.armySetup ?? createDefaultTeamArmySetup();
+  const teamSetup = options.armySetup ?? (team === "player" ? createInitialPlayerTeamArmySetup() : createDefaultTeamArmySetup());
+  if (team === "player" && isInitialPlayerArmySetup(teamSetup)) {
+    return createOriginalPlayerArmy(random, {
+      playerAllCommonAbilities: options.playerAllCommonAbilities,
+      playerLoadout: options.playerLoadout,
+      initialPositions: options.initialPositions,
+    });
+  }
   const techniques = techniqueSlotsForTeam(teamSetup);
   if (team === "player" && options.playerLoadout) {
     const sameLimitedUnit = options.playerLoadout.unitType === "CAVALRY" ? techniques.indexOf("CAVALRY_CHARGE")
@@ -120,6 +129,7 @@ export function createArmy(team: Team, random: RandomSource = Math.random,
       }
     }
     if (soldier.unitType === "CAVALRY") soldier.strategy = "charge";
+    refreshSoldierStipend(soldier);
     army.push(soldier);
   }
   return army;

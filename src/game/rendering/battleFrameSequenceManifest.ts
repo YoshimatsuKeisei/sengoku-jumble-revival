@@ -9,6 +9,9 @@ export type BattleFrameSequenceId =
   | "command_retreat"
   | "command_charge"
   | "command_gather"
+  | "target_retreat"
+  | "target_charge"
+  | "target_gather"
   | "caster_muso_cyan"
   | "caster_oni_magenta"
   | "caster_kiba_magenta"
@@ -24,6 +27,7 @@ export interface BattleFrameSequenceDefinition {
   frameCount: number;
   fps: number;
   loop: boolean;
+  holdFrameIndex?: number;
 }
 
 const sourceUrls = import.meta.glob("../../../assets/battle/**/*.png", {
@@ -33,12 +37,15 @@ const sourceUrls = import.meta.glob("../../../assets/battle/**/*.png", {
 }) as Record<string, string>;
 
 const DEFINITIONS: readonly BattleFrameSequenceDefinition[] = [
-  { id: "critical_retreat", directory: "status-effects/critical_retreat/frames", frameCount: 9, fps: 24, loop: true },
+  { id: "critical_retreat", directory: "status-effects/critical_retreat/frames", frameCount: 9, fps: 24, loop: false, holdFrameIndex: 8 },
   { id: "battle_out_player", directory: "status-effects/battle-out/player", frameCount: 3, fps: 24, loop: true },
   { id: "battle_out_enemy", directory: "status-effects/battle-out/enemy", frameCount: 3, fps: 24, loop: true },
   { id: "command_retreat", directory: "player-commands/retreat", frameCount: 14, fps: 24, loop: false },
   { id: "command_charge", directory: "player-commands/charge", frameCount: 14, fps: 24, loop: false },
   { id: "command_gather", directory: "player-commands/gather", frameCount: 14, fps: 24, loop: false },
+  { id: "target_retreat", directory: "command_target_marks/A_shubi/frames", frameCount: 14, fps: 24, loop: false, holdFrameIndex: 4 },
+  { id: "target_charge", directory: "command_target_marks/S_ttgk/frames", frameCount: 14, fps: 24, loop: false, holdFrameIndex: 4 },
+  { id: "target_gather", directory: "command_target_marks/D_shugo/frames", frameCount: 14, fps: 24, loop: false, holdFrameIndex: 4 },
   { id: "caster_muso_cyan", directory: "special-attacks/caster_flash/fr_muso_cyan_shared", frameCount: 13, fps: 24, loop: false },
   { id: "caster_oni_magenta", directory: "special-attacks/caster_flash/fr_oni_magenta_technique", frameCount: 13, fps: 24, loop: false },
   { id: "caster_kiba_magenta", directory: "special-attacks/caster_flash/fr_kiba_magenta_technique", frameCount: 13, fps: 24, loop: false },
@@ -82,6 +89,9 @@ export function sampleBattleFrameSequence(id: BattleFrameSequenceId, elapsedMs: 
   const definition = getBattleFrameSequence(id);
   if (!definition) return null;
   const rawFrame = Math.floor(Math.max(0, elapsedMs) * definition.fps / 1000);
+  if (definition.holdFrameIndex !== undefined && rawFrame >= definition.holdFrameIndex) {
+    return { frameIndex: definition.holdFrameIndex, ended: false };
+  }
   const ended = !definition.loop && rawFrame >= definition.frameCount;
   return {
     frameIndex: definition.loop ? rawFrame % definition.frameCount : Math.min(rawFrame, definition.frameCount - 1),
@@ -89,16 +99,26 @@ export function sampleBattleFrameSequence(id: BattleFrameSequenceId, elapsedMs: 
   };
 }
 
-export function commandSequenceFor(order: Extract<TemporaryOrderType, "RETREAT" | "ADVANCE" | "RALLY">): BattleFrameSequenceId {
-  return order === "RETREAT" ? "command_retreat" : order === "ADVANCE" ? "command_charge" : "command_gather";
+export function commandSequenceFor(order: Extract<TemporaryOrderType, "DEFEND_ORDER" | "ADVANCE" | "RALLY">): BattleFrameSequenceId {
+  return order === "DEFEND_ORDER" ? "command_retreat" : order === "ADVANCE" ? "command_charge" : "command_gather";
 }
 
 export function battleOutSequenceFor(team: Team): BattleFrameSequenceId {
   return team === "player" ? "battle_out_player" : "battle_out_enemy";
 }
 
-export function shouldShowCriticalRetreat(soldier: Pick<Soldier, "isDead" | "state">): boolean {
-  return !soldier.isDead && (soldier.state === "EMERGENCY_RETREAT" || soldier.state === "HEALING");
+export function shouldShowCriticalRetreat(
+  soldier: Pick<Soldier, "isDead" | "state">,
+): boolean {
+  return !soldier.isDead
+    && (soldier.state === "EMERGENCY_RETREAT" || soldier.state === "HEALING");
+}
+
+export function shouldShowTreatmentHealerMark(healerId: string, soldiers: readonly Soldier[]): boolean {
+  return soldiers.some((patient) => !patient.isDead
+    && patient.state === "EMERGENCY_RETREAT"
+    && patient.recoveryTargetKind === "HEALER"
+    && patient.recoveryHealerId === healerId);
 }
 
 export function specialCasterSequencesFor(technique: UnitTechnique): readonly BattleFrameSequenceId[] {
@@ -106,6 +126,7 @@ export function specialCasterSequencesFor(technique: UnitTechnique): readonly Ba
     case "ASHIGARU_SPEAR_TECHNIQUE":
     case "MOSA_MUSOU": return ["caster_muso_cyan"];
     case "GENERAL_HEROIC": return ["caster_muso_cyan", "aux_gri"];
+    case "GENERAL_FURIOUS": return ["caster_oni_magenta", "aux_gri"];
     case "MOSA_KIJIN": return ["caster_oni_magenta"];
     case "CAVALRY_CHARGE": return ["caster_kiba_magenta"];
     default: return [];
@@ -113,6 +134,9 @@ export function specialCasterSequencesFor(technique: UnitTechnique): readonly Ba
 }
 
 export function temporaryOrderSequenceFor(order: TemporaryOrderType, team: Team): BattleFrameSequenceId | null {
+  if (order === "DEFEND_ORDER") return "target_retreat";
+  if (order === "ADVANCE") return "target_charge";
+  if (order === "RALLY") return "target_gather";
   if (order === "JINTO_CHARGE") return team === "player" ? "aux_charge_player" : "aux_charge_enemy";
   if (order === "NINJA_BARRIER_CHARGE") return team === "player" ? "aux_barrier_player" : "aux_barrier_enemy";
   return null;

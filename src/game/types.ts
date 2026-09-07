@@ -2,11 +2,11 @@ export type Team = "player" | "enemy";
 export type ControllerType = "player" | "ai";
 export type Strategy = "charge" | "defend" | "intercept" | "melee" | "wait";
 export type SoldierState = "NORMAL" | "EMERGENCY_RETREAT" | "HEALING" | "REJOINING";
-export type BattleOutState = "NONE" | "EXITING" | "DONE";
+export type BattleOutState = "NONE" | "EXITING" | "ENDING" | "DONE";
 export type TemporaryOrderType = "RETREAT" | "ADVANCE" | "DEFEND_ORDER" | "RALLY" | "NINJA_BARRIER_CHARGE" | "JINTO_CHARGE";
 export type BaseGate = "TOP" | "BOTTOM";
 export type UnitType = "PROTOTYPE" | "TEPPOU" | "CAVALRY" | "ARCHER" | "ASHIGARU" | "NINJA" | "GENERAL" | "STRATEGIST" | "MOSA";
-export type UnitTechnique = "PROTOTYPE_AREA" | "TEPPOU_SHOOTING" | "TEPPOU_SNIPING" | "TEPPOU_BOMBARDMENT" | "CAVALRY_CHARGE" | "ARCHER_ARROW" | "ARCHER_LONG_SHOT" | "ARCHER_FIRE_ARROW" | "ARCHER_HOROKU" | "ASHIGARU_SPEAR_STRIKE" | "ASHIGARU_SPEAR_TECHNIQUE" | "NINJA_NINJUTSU" | "NINJA_SHADOW_RUN" | "NINJA_GENJUTSU" | "NINJA_BARRIER" | "GENERAL_COMMAND" | "GENERAL_HEROIC" | "GENERAL_HEAL" | "STRATEGIST_FIRE_PLAY" | "STRATEGIST_FIRE_ATTACK" | "STRATEGIST_FIRE_PLAN" | "STRATEGIST_HELLFIRE" | "STRATEGIST_FLAME_ART" | "STRATEGIST_FALSE_REPORT" | "STRATEGIST_SORCERY" | "STRATEGIST_HEAL" | "MOSA_SENPUU" | "MOSA_MUSOU" | "MOSA_KIJIN";
+export type UnitTechnique = "PROTOTYPE_AREA" | "TEPPOU_SHOOTING" | "TEPPOU_SNIPING" | "TEPPOU_BOMBARDMENT" | "CAVALRY_CHARGE" | "ARCHER_ARROW" | "ARCHER_LONG_SHOT" | "ARCHER_FIRE_ARROW" | "ARCHER_HOROKU" | "ASHIGARU_SPEAR_STRIKE" | "ASHIGARU_SPEAR_TECHNIQUE" | "NINJA_NINJUTSU" | "NINJA_SHADOW_RUN" | "NINJA_GENJUTSU" | "NINJA_BARRIER" | "GENERAL_COMMAND" | "GENERAL_HEROIC" | "GENERAL_HEAL" | "GENERAL_FURIOUS" | "STRATEGIST_FIRE_PLAY" | "STRATEGIST_FIRE_ATTACK" | "STRATEGIST_FIRE_PLAN" | "STRATEGIST_HELLFIRE" | "STRATEGIST_FLAME_ART" | "STRATEGIST_FALSE_REPORT" | "STRATEGIST_SORCERY" | "STRATEGIST_HEAL" | "MOSA_SENPUU" | "MOSA_MUSOU" | "MOSA_KIJIN";
 export type DamageComponentKind = "DIRECT_SPECIAL" | "DIRECT_ARROW" | "FIRE" | "EXPLOSION";
 
 export interface TemporaryOrder {
@@ -55,6 +55,17 @@ export interface SoldierLoadout {
   specialAbilities: CommonSpecialAbilityId[];
   rareSpecialAbilities?: RareSpecialAbilityId[];
 }
+
+export interface SoldierMeritCounters {
+  battleWins: number;
+  battleLosses: number;
+  repels: number;
+  kills: number;
+  soldierDamage: number;
+  baseDamage: number;
+  defense: number;
+  recovery: number;
+}
 export interface TeamArmySetup {
   defaultStrategy: Strategy;
   techniqueCounts: Record<UnitTechnique, number>;
@@ -84,6 +95,7 @@ export interface BattleBase {
 
 export interface Soldier {
   id: string;
+  name: string;
   unitType: UnitType;
   technique: UnitTechnique;
   team: Team;
@@ -128,6 +140,8 @@ export interface Soldier {
   specialReadyAt: number;
   combatGauge: number;
   combatGaugeUpdatedAt: number | null;
+  playerTechniqueGauge: number;
+  playerTechniqueGaugeUpdatedAt: number | null;
   specialLockUntil: number;
   abilityActionLockUntil: number;
   trapStateUntil: number;
@@ -136,6 +150,16 @@ export interface Soldier {
   nextSpecialWaveAt: number | null;
   specialAbilities: CommonSpecialAbilityId[];
   rareSpecialAbilities: RareSpecialAbilityId[];
+  /** Raw sN codes retained from the original SWF when a normalized runtime ability is unavailable. */
+  originalSpecialAbilityCodes: number[];
+  /** Per-battle SWF rs* counters. Reset by constructing the battle Soldier. */
+  merits: SoldierMeritCounters;
+  /** Number of recoverable retreat entries this battle (mth/eth source). */
+  temporaryRetreatCount: number;
+  /** SWF-derived 禄高, recalculated after stats/loadout/abilities are finalized. */
+  stipend: number;
+  /** Last opposing source that actually reduced HP; used once for retreat credit. */
+  lastDamageSourceId: string | null;
   pendingMoutaiSpecials: number;
   moutaiTriggeredForRetreat: boolean;
   treatmentUsedSinceLastBaseVisit: boolean;
@@ -161,6 +185,8 @@ export interface Soldier {
   stats: SoldierBaseStats;
   hp: number;
   maxHp: number;
+  /** Last HP value pushed to the overhead h MovieClip; small sz recovery intentionally leaves it stale. */
+  hpBarHp: number;
   attackRange: number;
   attackCooldownMs: number;
   lastAttackAt: number;

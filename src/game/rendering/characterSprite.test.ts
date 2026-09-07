@@ -16,6 +16,7 @@ import {
   characterVariantForTeam,
   createCharacterVisualRuntime,
   directionFromFacing,
+  getBattleOutFrameIndex,
   getCharacterFrameIndex,
   getCharacterRenderConfig,
   getCharacterTextureKey,
@@ -100,6 +101,13 @@ describe("common character spritesheet contract", () => {
   it("keeps the archer baseline and only adjusts cavalry's measured foot origin", () => {
     expect(getCharacterRenderConfig("ARCHER")).toMatchObject(CHARACTER_RENDER_CONFIG);
     expect(getCharacterRenderConfig("CAVALRY").originY).toBe(102 / CHARACTER_FRAME_HEIGHT);
+  });
+
+  it("uses the closed-feet walk baseline in the team battle-out direction", () => {
+    expect(getBattleOutFrameIndex("player"))
+      .toBe(getCharacterFrameIndex("walk_1", "west"));
+    expect(getBattleOutFrameIndex("enemy"))
+      .toBe(getCharacterFrameIndex("walk_1", "east"));
   });
 });
 
