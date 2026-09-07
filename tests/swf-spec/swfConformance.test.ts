@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { battlefieldSourcePointToWorld } from "../../src/game/battlefieldLayout";
 import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
+import { createBattleBases } from "../../src/game/systems/baseSystem";
+import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 import { updateInvaderTrapMovement } from "../../src/game/systems/trapAbilitySystem";
 import movementSpec from "../../swf-spec/rules/movement.json";
 import abilitySpec from "../../swf-spec/rules/abilities.json";
@@ -48,6 +50,27 @@ describe("SWF conformance: confirmed rules", () => {
     invader.x += 1;
     const secondPrev = new Map([[invader.id, { x: xBeforeSecondMove, y: invader.y }]]);
     expect(updateInvaderTrapMovement([invader, ...defenders], secondPrev, 101, () => 0)).toEqual([]);
+  });
+
+  it("caps one successful DOUBLE_SPECIAL occurrence at two total activations", () => {
+    const rule = abilitySpec.rules.find((candidate) => candidate.id === "DOUBLE_SPECIAL_MAX_TWO_ACTIVATIONS");
+    expect(rule?.status).toBe("confirmed");
+    expect(rule?.expected.maxTotalActivationsPerSuccessfulProc).toBe(2);
+
+    const archer = unit("double-archer", "player", 520);
+    const enemy = unit("enemy", "enemy", 600);
+    archer.unitType = "ARCHER";
+    archer.technique = "ARCHER_ARROW";
+    archer.specialAbilities = ["DOUBLE_SPECIAL"];
+    archer.combatGauge = 250;
+    archer.combatGaugeUpdatedAt = 1_000;
+
+    let launches = 0;
+    for (const time of [1_000, 1_050, 1_100]) {
+      const events = updateSpecialAttacks([archer, enemy], [], createBattleBases(), time, false, () => 0);
+      launches += events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id).length;
+    }
+    expect(launches).toBeLessThanOrEqual(2);
   });
 });
 
