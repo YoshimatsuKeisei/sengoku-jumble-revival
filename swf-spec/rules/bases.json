@@ -6,6 +6,17 @@
       "category": "base",
       "expected": { "contactCausesDamageThenBounce": true, "mustNotOscillateAtBoundary": true },
       "evidence": { "reference": "evidence/base_contact.md" }
+    },
+    {
+      "id": "BASE_ATTACK_SURFACE_VERTICAL_SPAN",
+      "status": "unconfirmed",
+      "category": "base",
+      "expected": {
+        "swfVerticalSpan": null,
+        "runtimeTemporaryDamageCoreHeightRatio": 0.3,
+        "mustNotTreatTemporaryRatioAsSwfFact": true
+      },
+      "evidence": { "reference": "evidence/base_contact.md" }
     }
   ]
 }
