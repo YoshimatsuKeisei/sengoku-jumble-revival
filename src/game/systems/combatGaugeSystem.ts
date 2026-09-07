@@ -1,5 +1,6 @@
 import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier } from "../types";
+import { consumeDoubleSpecialRepeat, grantDoubleSpecialRepeat } from "./doubleSpecialState";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import {
   COMBAT_GAUGE_UPDATE_TICKS,
@@ -61,10 +62,16 @@ export function beginTechniqueAction(
     return true;
   }
 
-  const keepGauge = hasSpecialAbility(soldier, "DOUBLE_SPECIAL")
+  // A successful 連発 grants exactly one repeat. The repeat consumes that grant
+  // without rolling 連発 again, preventing a single proc from recursively becoming
+  // a third/fourth/etc. activation. Probability and gauge thresholds are unchanged.
+  const consumingRepeat = consumeDoubleSpecialRepeat(soldier);
+  const keepGauge = !consumingRepeat
+    && hasSpecialAbility(soldier, "DOUBLE_SPECIAL")
     && soldier.combatGauge <= 399 + soldier.stats.skill
     && random() < 0.4;
-  if (!keepGauge) {
+  if (keepGauge) grantDoubleSpecialRepeat(soldier);
+  else {
     if (isRangedGaugeTechnique(soldier)) soldier.combatGauge = Math.max(0, soldier.combatGauge - RANGED_GAUGE_THRESHOLD);
     else soldier.combatGauge = 0;
   }
