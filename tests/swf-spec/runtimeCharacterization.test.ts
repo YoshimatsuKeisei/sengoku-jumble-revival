@@ -89,4 +89,31 @@ describe("runtime characterization for major combat bugs", () => {
     resolveBaseAccessCollisions([attacker], bases);
     expect(attacker.x).toBe(rect.x - SOLDIER_RADIUS);
   });
+
+  it("currently traps off-core charge lanes in a no-damage base collision loop", () => {
+    const bases = createBattleBases();
+    const base = getBaseForTeam(bases, "enemy");
+    const rect = getBaseRect(base);
+    const surface = getBaseAttackSurfaceRect(base);
+    const attacker = unit("off-core-attacker", "player", 800);
+
+    // Stay inside the full base vertical span but immediately above the narrow
+    // attack surface. A charge unit preserves its current Y while advancing.
+    attacker.y = surface.y - SOLDIER_RADIUS - 2;
+    expect(attacker.y).toBeGreaterThan(rect.y);
+    expect(attacker.y).toBeLessThan(rect.y + rect.height);
+
+    const hpBefore = base.hp;
+    for (let tick = 0; tick < 3; tick += 1) {
+      attacker.x = rect.x - SOLDIER_RADIUS - 1;
+      const previous = captureSoldierPositions([attacker]);
+      attacker.x = rect.x + 1;
+      resolveBaseMovementContacts([attacker], bases, previous, tick, () => 0.99);
+      expect(base.hp).toBe(hpBefore);
+      expect(attacker.baseContactLockTicks).toBe(0);
+
+      resolveBaseAccessCollisions([attacker], bases);
+      expect(attacker.x).toBe(rect.x - SOLDIER_RADIUS);
+    }
+  });
 });
