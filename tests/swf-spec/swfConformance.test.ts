@@ -78,8 +78,9 @@ describe("SWF conformance: pending evidence", () => {
   it("does not silently promote inferred/unconfirmed major-bug rules", () => {
     expect(baseSpec.rules.find((candidate) => candidate.id === "BASE_CONTACT_BOUNCE_SEQUENCE")?.status).toBe("inferred");
     expect(baseSpec.rules.find((candidate) => candidate.id === "BASE_ATTACK_SURFACE_VERTICAL_SPAN")?.status).toBe("unconfirmed");
-    expect(commandSpec.rules[0].status).toBe("inferred");
-    expect(combatSpec.rules[0].status).toBe("unconfirmed");
+    expect(commandSpec.rules.find((candidate) => candidate.id === "GENERAL_SAME_TICK_DEDUPE")?.status).toBe("inferred");
+    expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH")?.status).toBe("unconfirmed");
+    expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_GAUGE_BANKING_LIMIT")?.status).toBe("unconfirmed");
   });
 
   it.todo("BASE_CONTACT_BOUNCE_SEQUENCE: add a gating scenario after SWF ordering/re-arm evidence is confirmed");
