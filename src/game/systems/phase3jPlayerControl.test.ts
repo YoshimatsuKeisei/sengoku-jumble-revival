@@ -6,7 +6,7 @@ import { COMMON_SPECIAL_ABILITY_POOL } from "./specialAbilitySystem";
 import { formatSoldierInspector, STRATEGY_LABELS, updateInspectorTarget } from "./soldierInspectorSystem";
 import { canPlayerContinueManualPursuitDuringWindup, canPlayerMoveInCurrentState, getSpecialGaugeProgress } from "./playerControlSystem";
 import { createBattleBases } from "./baseSystem";
-import { updateRecoveryStates } from "./recoverySystem";
+import { getSwfHealingSlotPosition, updateRecoveryStates } from "./recoverySystem";
 import { updateSpecialAttacks } from "./specialAttackSystem";
 
 describe("Phase 3J inspector and player controls", () => {
@@ -67,22 +67,24 @@ describe("Phase 3J inspector and player controls", () => {
     expect(player.recoveryTargetKind).toBe("HEALER");
     expect(player.moveTargetX).toBeNull();
   });
-  it("uses the same confirmed 999 -> healing -> p7 flow for the player-controlled soldier", () => {
+  it("uses the confirmed 999 -> roster-fixed p97 -> p7 flow for the player-controlled soldier", () => {
     const bases = createBattleBases();
     const tile = battlefieldSourcePointToWorld({ x: 216, y: 432 });
-    const player = createSoldier("p", "player", "player", tile.x, tile.y);
+    const player = createSoldier("player-0", "player", "player", tile.x, tile.y);
     player.state = "EMERGENCY_RETREAT";
     player.recoveryGate = "TOP";
     player.hp = 10;
     updateRecoveryStates([player], 0, bases, () => 1);
     expect(player.state).toBe("HEALING");
     expect(player.recoveryGate).toBe("TOP");
+    expect({ x: player.x, y: player.y }).toEqual(getSwfHealingSlotPosition(player));
+    expect(battlefieldWorldPointToSource(player)).toEqual({ x: 193, y: 600 });
 
     player.hp = player.maxHp;
     updateRecoveryStates([player], 1 / 24, bases, () => 1);
     expect(player.state).toBe("REJOINING");
     const target = battlefieldWorldPointToSource({ x: player.moveTargetX!, y: player.moveTargetY! });
-    expect(target).toEqual({ x: 346, y: 249 });
+    expect(target).toEqual({ x: 346, y: 946 });
   });
   it("never auto-fires player special and does not spend cooldown without a target", () => {
     const player = createSoldier("p", "player", "player", 100, 100);
