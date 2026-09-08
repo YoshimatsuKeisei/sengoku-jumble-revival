@@ -205,11 +205,15 @@ describe("hit reaction layer", () => {
     expect(target.knockbackRemainingDistance).toBe(REACTION_CONFIG.knockbackDistance);
   });
 
-  it("takes repeated damage during stun and dies immediately with cleared runtime", () => {
+  it("keeps fatal HP in HIT_STUN and finalizes death only when the reaction ends", () => {
     const { attacker, target } = pair();
     target.hp = 10;
     startHitReaction(target, attacker, 0);
     applyDamage(target, 10);
+    expect(target.hp).toBe(0);
+    expect(target.isDead).toBe(false);
+    expect(target.reactionState).toBe("HIT_STUN");
+    updateReactions([target], [], REACTION_CONFIG.hitStunMs, REACTION_CONFIG.hitStunMs);
     expect(target.isDead).toBe(true);
     expect(target.reactionState).toBe("NONE");
     expect(target.reactionEndsAt).toBeNull();
