@@ -1,6 +1,21 @@
 {
   "rules": [
     {
+      "id": "TRAP_RAW_HALF_BRANCH_AND_PORT_TRIGGER",
+      "status": "confirmed",
+      "category": "movement",
+      "expected": {
+        "rawSwfSourceCenterX": 900,
+        "rawSwfComparisonSpace": "swf-source",
+        "rawSwfContainsOpposingHalfEligibilityBranch": true,
+        "activePortTrigger": "new-enemy-fixed-fence-contact",
+        "activePortContactSource": "901..906 raw collision event with alpha-contact fallback",
+        "activePortUsesHalfBoundaryAsCollisionOrTrigger": false,
+        "activePortDecisionDate": "2026-09-07"
+      },
+      "evidence": { "reference": "evidence/trap_boundary.md" }
+    },
+    {
       "id": "BATTLEFIELD_COORDINATE_SPACES",
       "status": "confirmed",
       "category": "movement",
@@ -63,21 +78,6 @@
         "genericWorldCircleSeparationIsNotRawRule": true
       },
       "evidence": { "reference": "evidence/battlefield_coordinates_and_fence_routing.md" }
-    },
-    {
-      "id": "TRAP_RAW_HALF_BRANCH_AND_PORT_TRIGGER",
-      "status": "confirmed",
-      "category": "movement",
-      "expected": {
-        "rawSwfSourceCenterX": 900,
-        "rawSwfComparisonSpace": "swf-battle",
-        "rawSwfContainsOpposingHalfEligibilityBranch": true,
-        "activePortTrigger": "new-enemy-fixed-fence-contact",
-        "activePortContactSource": "901..906 raw collision event with alpha-contact fallback",
-        "activePortUsesHalfBoundaryAsCollisionOrTrigger": false,
-        "activePortDecisionDate": "2026-09-07"
-      },
-      "evidence": { "reference": "evidence/trap_boundary.md" }
     }
   ]
 }
