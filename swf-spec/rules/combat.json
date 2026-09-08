@@ -10,7 +10,9 @@
         "projectileChildSpriteId": 1002,
         "projectileInstanceName": "ya",
         "projectileChildInstancesPerDirectionalPose": 1,
-        "projectileChildTimelineFrames": 4,
+        "projectileChildTimelineFrames": 5,
+        "projectileVisualFrames": [2, 3, 4],
+        "projectileStopFrame": 5,
         "projectileChildLoops": false
       },
       "evidence": { "reference": "evidence/ranged_cycle.md" }

@@ -2,31 +2,38 @@
   "rules": [
     {
       "id": "NON_RANGED_SPECIAL_GAUGE_SEMANTICS",
-      "status": "unconfirmed",
+      "status": "confirmed",
       "category": "combat",
       "expected": {
-        "runtimeActivationThresholdExclusive": 400,
-        "runtimeCurrentNormalConsumption": "reset_to_zero",
-        "runtimeCurrentDoubleSpecialRetentionFormula": "combatGauge <= 399 + skill && random < 0.4",
-        "directSwfPostThresholdGaugeOperation": null,
-        "directSwfConsumptionRelativeToSpl": null,
-        "directSwfDoubleSpecialRetentionExpression": null,
-        "directSwfDoubleSpecialOverflowExpression": null,
-        "directSwfSpGateSemantics": null,
-        "mustNotMirrorConfirmedRangedRolloverByAnalogy": true,
-        "behaviorChangeRequiresRecoveredAvm1": true
+        "swfGaugeVariable": "kd",
+        "swfSkillIncrementVariable": "kp",
+        "gaugeStepAddsSkillBeforeThresholdCheck": true,
+        "activationThresholdExclusive": 400,
+        "requiresSpZero": true,
+        "normalGaugeOperationBeforeSpl": "reset_to_zero",
+        "doubleSpecialAbilityCode": "s21",
+        "doubleSpecialRetentionChance": 0.4,
+        "doubleSpecialRetentionInclusiveRandomBoundary": true,
+        "doubleSpecialRetentionMaximumExpression": "399 + kp",
+        "overflowForcesResetToZero": true,
+        "retentionKeepsGauge": true,
+        "splCalledAfterGaugeDecision": true,
+        "mustNotReRollRetentionInsideBeginTechniqueAction": true
       },
       "evidence": { "reference": "evidence/non_ranged_gauge.md" }
     },
     {
       "id": "COMBAT_GAUGE_UPDATE_INTERVAL",
-      "status": "unconfirmed",
+      "status": "confirmed",
       "category": "combat",
       "expected": {
-        "runtimeLogicTicks": 23,
-        "directSwfLogicTicks": null,
-        "mustNotTreatRuntimeValueAsConfirmedSwfConstant": true,
-        "behaviorChangeRequiresRecoveredAvm1SchedulerEvidence": true
+        "schedulerCounterVariable": "tc",
+        "initialCounter": 19,
+        "incrementsEveryEnterFrame": true,
+        "triggerCondition": "tc > 22",
+        "resetCounter": 0,
+        "steadyIntervalLogicTicks": 23,
+        "firstTriggerAfterLogicTicks": 4
       },
       "evidence": { "reference": "evidence/non_ranged_gauge.md" }
     }

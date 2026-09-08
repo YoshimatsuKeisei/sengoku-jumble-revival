@@ -1,13 +1,31 @@
-# Non-ranged special gauge evidence status
+# Non-ranged special gauge and scheduler — raw SWF re-audit
 
-This note deliberately separates the current reconstruction from directly recovered original-SWF evidence.
+Source fixed for this audit: `/mnt/data/sengoku_jumble_recovered.zip` → `sgjbgm.swf`, SHA-256 `47d397d98ed797e2e5e1f7f96c10ba9c3f93d3a3b54b45fbc61401a553c3399c`, 3,814,810 bytes, CWS, SWF v7, 24 fps. The SWF was directly decompressed and its AVM1 regenerated in the current runtime.
 
-The runtime currently treats non-ranged AI special gauge as ready only when `combatGauge > 400`. At action start, the current reconstruction normally resets the gauge to zero, while its DOUBLE_SPECIAL branch reuses a retention condition derived during the earlier combat migration. Those runtime choices are implementation state, not newly re-verified original behavior.
+## Non-ranged `scd()`
 
-The retained project records are insufficient to settle the original non-ranged `scd()` branch. Historical summaries conflict on the post-activation gauge operation: one describes a `spl()`-adjacent `kd -= 400` path, while another describes the ordinary non-ranged result as `kd = 0`. The raw `avm1_actions.json` / original `sgjbgm.swf` body that would distinguish those operations is not available in the current runtime. The exact non-ranged `s21` retention/overflow expression and the semantics of the `sp == 0` gate likewise have not been recovered to direct-instruction evidence here.
+The original `scd()` instruction sequence at `0x09c0..0x0aad` is unambiguous:
 
-Accordingly, no production behavior change is justified from those summaries. In particular, the confirmed ranged rule (`kd > 200`, threshold-time consumption, `399 + kp` overflow guard) must not be mirrored onto non-ranged units by analogy.
+- `kd = kd + kp`;
+- continue only for strict `kd > 400`;
+- additionally require `sp == 0`;
+- without `s21`, assign `kd = 0`;
+- with `s21`, overflow `kd > 399 + kp` forces `kd = 0`;
+- otherwise `Math.random() * 100 <= 40` preserves `kd`, while failure assigns `kd = 0`;
+- after the consume/retain decision, call `spl(unit)` exactly once.
 
-The existing reconstruction also schedules gauge processing with `COMBAT_GAUGE_UPDATE_TICKS = 23`. The current retained evidence does not independently re-derive that interval from original AVM1, so `23` remains a runtime value rather than a newly confirmed SWF constant.
+The previous `unconfirmed` entry was an audit error caused by not reopening the already-provided SWF. It is superseded by this direct instruction evidence.
 
-To promote either rule to `confirmed`, recover the original `scd()`/battle-update instruction sequence and record the relevant offsets/branches, including the exact post-threshold gauge operation, `s21` branch, `sp` gate, and scheduler call interval.
+The important ordering is that the gauge decision belongs to `scd()`. A reconstruction must not run a second independent 連発 random decision later inside `beginTechniqueAction()`.
+
+## Gauge scheduler
+
+The battle clip initializes `tc = 19`. Its EnterFrame ClipAction increments `tc` every frame, tests strict `tc > 22`, then resets `tc = 0` and calls `_parent.scd()`.
+
+Therefore:
+
+- steady-state `scd()` interval = 23 logic frames;
+- initial counter = 19;
+- first `scd()` after initialization occurs after 4 EnterFrame updates, not after a full 23-frame wait.
+
+This directly confirms the steady interval and also identifies an initial-phase difference in the reconstruction that previously initialized the timer from zero/null.
