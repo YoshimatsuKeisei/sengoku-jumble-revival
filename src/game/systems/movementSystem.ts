@@ -6,7 +6,7 @@ import { getPreferredApproachPoint } from "./engagementPositioningSystem";
 import { calculateRetreatMoveSpeed } from "./specialAbilitySystem";
 import { findGunTarget, getGunMovementDecision } from "./gunAttackSystem";
 import { findArrowTarget, getArrowMovementDecision } from "./arrowAttackSystem";
-import { clearStaleCombatTarget, isValidCombatTarget } from "./combatTargetSystem";
+import { clearStaleCombatTarget, isTrackableCombatTarget, isValidCombatTarget } from "./combatTargetSystem";
 import { getArrivalToleranceWorld, isWithinNormalContact } from "./techniqueCombatProfiles";
 import { getBaseAttackContactSegment } from "./battlefieldGeometry";
 
@@ -212,7 +212,7 @@ export function moveAiSoldiers(
     }
     if (soldier.targetId) {
       const selected = soldiers.find((candidate) => candidate.id === soldier.targetId);
-      if (!isValidCombatTarget(soldier, selected)) clearStaleCombatTarget(soldier);
+      if (!isTrackableCombatTarget(soldier, selected)) clearStaleCombatTarget(soldier);
     }
     const stateControlled = soldier.state === "EMERGENCY_RETREAT" || soldier.state === "REJOINING" || soldier.isConfused;
     const windupTarget = soldier.attackTargetKind === "SOLDIER"
@@ -235,7 +235,7 @@ export function moveAiSoldiers(
       continue;
     }
     const target = chasingRetreatWindup ? windupTarget : soldier.state === "NORMAL" && !soldier.temporaryOrder && soldier.targetId
-      ? soldiers.find((candidate) => candidate.id === soldier.targetId && isValidCombatTarget(soldier, candidate)) ?? null
+      ? soldiers.find((candidate) => candidate.id === soldier.targetId && isTrackableCombatTarget(soldier, candidate)) ?? null
       : null;
     if (soldier.state === "NORMAL" && soldier.unitType === "TEPPOU" && !chasingRetreatWindup) {
       const gunTarget = target ?? findGunTarget(soldier, soldiers);
