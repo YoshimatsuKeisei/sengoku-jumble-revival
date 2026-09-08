@@ -6,7 +6,7 @@ import { createBattleBases, getBaseForTeam } from "./baseSystem";
 import { applyDamage } from "./combatSystem";
 import { moveAiSoldiers, movePlayer } from "./movementSystem";
 import { updateRecoveryStates } from "./recoverySystem";
-import { clearReaction, startHitReaction, updateReactions } from "./reactionSystem";
+import { clearReaction, startHitReaction, SWF_HIT_REACTION_MS, updateReactions } from "./reactionSystem";
 import { startSoldierAttack, updateAttackStates } from "./attackSystem";
 import { issueAdvanceCommand, updateTemporaryOrders } from "./commandSystem";
 
@@ -69,7 +69,7 @@ describe("hit reaction layer", () => {
     startHitReaction(target, attacker, 0);
     moveAiSoldiers([target], 0.1);
     expect(target.x).toBe(120);
-    updateReactions([target], [], REACTION_CONFIG.hitStunMs, REACTION_CONFIG.hitStunMs);
+    updateReactions([target], [], SWF_HIT_REACTION_MS, SWF_HIT_REACTION_MS);
     moveAiSoldiers([target], 0.1);
     expect(target.x).toBeGreaterThan(120);
     expect(target.state).toBe("EMERGENCY_RETREAT");
@@ -87,7 +87,7 @@ describe("hit reaction layer", () => {
     updateRecoveryStates(soldiers, 0);
     expect(target.reactionState).toBe("HIT_STUN");
     expect(target.state).toBe("NORMAL");
-    updateReactions(soldiers, [], COMBAT_TIMING_CONFIG.attackWindupMs + REACTION_CONFIG.hitStunMs, REACTION_CONFIG.hitStunMs);
+    updateReactions(soldiers, [], COMBAT_TIMING_CONFIG.attackWindupMs + SWF_HIT_REACTION_MS, SWF_HIT_REACTION_MS);
     updateRecoveryStates(soldiers, 0);
     expect(target.reactionState).toBe("NONE");
     expect(target.state).toBe("EMERGENCY_RETREAT");
@@ -101,7 +101,7 @@ describe("hit reaction layer", () => {
     startHitReaction(target, attacker, 0);
     updateRecoveryStates([target], 1);
     expect(target.hp).toBe(hpBefore);
-    updateReactions([target], [], REACTION_CONFIG.hitStunMs, REACTION_CONFIG.hitStunMs);
+    updateReactions([target], [], SWF_HIT_REACTION_MS, SWF_HIT_REACTION_MS);
     updateRecoveryStates([target], 1);
     expect(target.hp).toBeGreaterThan(hpBefore);
     expect(target.state).toBe("HEALING");
@@ -153,8 +153,8 @@ describe("hit reaction layer", () => {
     const attacker = createSoldier("enemy", "enemy", "ai", 110, 100);
     issueAdvanceCommand(player, [player, target, attacker], 0);
     startHitReaction(target, attacker, 10);
-    updateReactions([target], [], 190, 180);
-    updateTemporaryOrders([target], player, 190);
+    updateReactions([target], [], SWF_HIT_REACTION_MS + 10, SWF_HIT_REACTION_MS);
+    updateTemporaryOrders([target], player, SWF_HIT_REACTION_MS + 10);
     expect(target.temporaryOrder?.type).toBe("ADVANCE");
   });
 
@@ -171,7 +171,7 @@ describe("hit reaction layer", () => {
     const { attacker, target } = pair();
     const startX = target.x;
     startHitReaction(target, attacker, 0);
-    updateReactions([target], [], REACTION_CONFIG.hitStunMs, REACTION_CONFIG.hitStunMs);
+    updateReactions([target], [], SWF_HIT_REACTION_MS, SWF_HIT_REACTION_MS);
     expect(target.x).toBeCloseTo(startX + REACTION_CONFIG.knockbackDistance);
     expect(target.y).toBe(100);
   });
@@ -181,7 +181,7 @@ describe("hit reaction layer", () => {
     const target = createSoldier("t", "player", "ai", 110, 100);
     const fence: BattleObstacle = { id: "f", type: "FENCE", x: 120, y: 80, width: 20, height: 40 };
     startHitReaction(target, attacker, 0);
-    updateReactions([target], [fence], REACTION_CONFIG.hitStunMs, REACTION_CONFIG.hitStunMs);
+    updateReactions([target], [fence], SWF_HIT_REACTION_MS, SWF_HIT_REACTION_MS);
     expect(target.x).toBeLessThanOrEqual(fence.x - 8);
   });
 
@@ -189,7 +189,7 @@ describe("hit reaction layer", () => {
     const attacker = createSoldier("a", "enemy", "ai", 20, 100);
     const target = createSoldier("t", "player", "ai", 8, 100);
     startHitReaction(target, attacker, 0);
-    updateReactions([target], [], REACTION_CONFIG.hitStunMs, REACTION_CONFIG.hitStunMs);
+    updateReactions([target], [], SWF_HIT_REACTION_MS, SWF_HIT_REACTION_MS);
     expect(target.x).toBe(8);
   });
 
@@ -199,7 +199,7 @@ describe("hit reaction layer", () => {
     const firstEnd = target.reactionEndsAt;
     const other = createSoldier("other", "enemy", "ai", 140, 100);
     startHitReaction(target, other, 100);
-    expect(target.reactionEndsAt).toBe(100 + REACTION_CONFIG.hitStunMs);
+    expect(target.reactionEndsAt).toBe(100 + SWF_HIT_REACTION_MS);
     expect(target.reactionEndsAt).toBeGreaterThan(firstEnd ?? 0);
     expect(target.knockbackDirectionX).toBeLessThan(0);
     expect(target.knockbackRemainingDistance).toBe(REACTION_CONFIG.knockbackDistance);
@@ -213,7 +213,7 @@ describe("hit reaction layer", () => {
     expect(target.hp).toBe(0);
     expect(target.isDead).toBe(false);
     expect(target.reactionState).toBe("HIT_STUN");
-    updateReactions([target], [], REACTION_CONFIG.hitStunMs, REACTION_CONFIG.hitStunMs);
+    updateReactions([target], [], SWF_HIT_REACTION_MS, SWF_HIT_REACTION_MS);
     expect(target.isDead).toBe(true);
     expect(target.reactionState).toBe("NONE");
     expect(target.reactionEndsAt).toBeNull();
@@ -225,7 +225,7 @@ describe("hit reaction layer", () => {
     startHitReaction(player, attacker, 0);
     movePlayer(player, 1, 0, 0.1);
     expect(player.x).toBe(120);
-    updateReactions([player], [], REACTION_CONFIG.hitStunMs, REACTION_CONFIG.hitStunMs);
+    updateReactions([player], [], SWF_HIT_REACTION_MS, SWF_HIT_REACTION_MS);
     movePlayer(player, 1, 0, 0.1);
     expect(player.x).toBeGreaterThan(120);
   });
