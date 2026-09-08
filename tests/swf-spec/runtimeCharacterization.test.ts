@@ -179,7 +179,7 @@ describe("runtime characterization for major combat bugs", () => {
     const baseRect = getBaseRect(base);
     const gateRect = getBaseUpperGateRect(base);
     const entryY = gateRect.y + gateRect.height + SOLDIER_RADIUS - 1;
-    const leftValidCenterX = gateRect.x + SOLDIER_RADIUS;
+    const rightValidCenterX = gateRect.x + gateRect.width - SOLDIER_RADIUS;
     const retreaters = [
       unit("retreat-crowd-a", "player", 300),
       unit("retreat-crowd-b", "player", 300),
@@ -188,7 +188,7 @@ describe("runtime characterization for major combat bugs", () => {
       soldier.state = "EMERGENCY_RETREAT";
       soldier.recoveryGate = "TOP";
       soldier.recoveryTargetKind = "BASE_GATE";
-      soldier.x = leftValidCenterX + 0.5 + index * 2;
+      soldier.x = rightValidCenterX - 2.5 + index * 2;
       soldier.y = entryY;
       expect(isPointInsideRect(soldier, baseRect)).toBe(true);
       expect(isPointWithinBaseGateSpan(soldier, base, "TOP")).toBe(true);
