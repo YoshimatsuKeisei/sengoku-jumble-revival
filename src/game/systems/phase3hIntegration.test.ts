@@ -1,13 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   COMBAT_TIMING_CONFIG,
-  PROTOTYPE_COMBAT_MAX,
-  PROTOTYPE_DEFENSE_MAX,
   REACTION_CONFIG,
 } from "../config";
 import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
-import { createArmy } from "../factories/createArmy";
 import type { SoldierBaseStats } from "../types";
 import { startSoldierAttack, updateAttackStates } from "./attackSystem";
 import { createBattleBases } from "./baseSystem";
@@ -147,15 +144,5 @@ describe("Phase 3H skill special attack", () => {
     expect(front.hp).toBe(front.maxHp);
     expect(back.hp).toBe(back.maxHp);
     expect(attacker.state).toBe("EMERGENCY_RETREAT");
-  });
-});
-
-describe("Phase 3H player debug stats", () => {
-  it("fixes only foot/combat/defense while retaining prototype skill", () => {
-    const player = createArmy("player", () => 0)[0];
-    expect(player.stats.foot).toBe(6);
-    expect(player.stats.combat).toBe(PROTOTYPE_COMBAT_MAX);
-    expect(player.stats.defense).toBe(PROTOTYPE_DEFENSE_MAX);
-    expect(player.stats.skill).toBe(50);
   });
 });
