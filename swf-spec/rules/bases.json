@@ -28,6 +28,17 @@
         "exactSwfVerticalSpanStillRequired": true
       },
       "evidence": { "reference": "evidence/base_contact.md" }
+    },
+    {
+      "id": "FRIENDLY_BASE_RETREAT_GATE_CONGESTION",
+      "status": "inferred",
+      "category": "base",
+      "expected": {
+        "retreatingSoldiersMustNotBePermanentlyRejectedByFriendlyBaseCollision": true,
+        "currentGateWidthSensitiveAdmissionIsRuntimeReconstruction": true,
+        "exactSwfGateEntrySemanticsStillRequired": true
+      },
+      "evidence": { "reference": "evidence/base_contact.md" }
     }
   ]
 }
