@@ -14,7 +14,7 @@ export const SWF_APPROACH_SPACING_UNITS = 24;
 export const SWF_NORMAL_KNOCKBACK_UNITS = 10;
 export const SWF_IRON_WALL_KNOCKBACK_UNITS = 5;
 export const SWF_RANGED_HOLD_MARGIN_UNITS = 10;
-export const SWF_RANGED_ACTION_TICKS = 8;
+export const SWF_RANGED_ACTION_TICKS = 10;
 
 export type TechniqueAreaShape =
   | "CONTACT"

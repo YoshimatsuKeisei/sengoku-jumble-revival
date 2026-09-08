@@ -154,6 +154,7 @@ export function updateSpecialAttacks(
   random: RandomSource = Math.random,
 ): SpecialAttackEvent[] {
   const events: SpecialAttackEvent[] = [];
+  const generalForcedRecipientsThisUpdate = new Set<string>();
   function dispatchForcedTechnique(recipient: Soldier, establishRangedAction = false): SpecialAttackEvent | null {
     if (isGunTechnique(recipient.technique)) {
       const target = findGunTarget(recipient, soldiers);
@@ -177,6 +178,8 @@ export function updateSpecialAttacks(
       : null;
   }
   const forceGeneralRecipient = (recipient: Soldier): boolean => {
+    if (generalForcedRecipientsThisUpdate.has(recipient.id)) return false;
+    generalForcedRecipientsThisUpdate.add(recipient.id);
     const event = dispatchForcedTechnique(recipient, true);
     if (event) events.push(event);
     return event !== null;

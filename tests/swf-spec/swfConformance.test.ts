@@ -75,11 +75,13 @@ describe("SWF conformance: confirmed rules", () => {
     expect(launches).toBeLessThanOrEqual(2);
   });
 
-  it("holds a fresh ranged activation for the confirmed SWF frames 41-48 interval", () => {
+  it("holds a fresh ranged activation for the confirmed SWF k=10 lock", () => {
     const rule = combatSpec.rules.find((candidate) => candidate.id === "RANGED_ACTION_FRAME_LOCK");
     expect(rule?.status).toBe("confirmed");
-    expect(rule?.expected.sourceFrameCount).toBe(8);
-    expect(rule?.expected.swfFps).toBe(24);
+    expect(rule?.expected.directionPoseCount).toBe(8);
+    expect(rule?.expected.mustNotInterpretDirectionFramesAsSequentialCadence).toBe(true);
+    expect(rule?.expected.actionLockVariable).toBe("k");
+    expect(rule?.expected.actionLockLogicTicks).toBe(10);
 
     const archer = unit("cycle-archer", "player", 520);
     const enemy = unit("enemy", "enemy", 600);
@@ -92,17 +94,17 @@ describe("SWF conformance: confirmed rules", () => {
     expect(first.filter((event) => event.kind === "ARROW")).toHaveLength(1);
 
     const beforeCycleEnd = updateSpecialAttacks(
-      [archer, enemy], [], createBattleBases(), 1_000 + swfLogicTicksToMs(7), false, () => 1,
+      [archer, enemy], [], createBattleBases(), 1_000 + swfLogicTicksToMs(9), false, () => 1,
     );
     expect(beforeCycleEnd.filter((event) => event.kind === "ARROW")).toHaveLength(0);
 
     const atCycleEnd = updateSpecialAttacks(
-      [archer, enemy], [], createBattleBases(), 1_000 + swfLogicTicksToMs(8), false, () => 1,
+      [archer, enemy], [], createBattleBases(), 1_000 + swfLogicTicksToMs(10), false, () => 1,
     );
     expect(atCycleEnd.filter((event) => event.kind === "ARROW")).toHaveLength(1);
   });
 
-  it("puts a GENERAL_COMMAND-forced ranged activation into the same confirmed SWF action interval", () => {
+  it("puts a GENERAL_COMMAND-forced ranged activation into the same confirmed SWF k=10 lock", () => {
     const rule = combatSpec.rules.find((candidate) => candidate.id === "RANGED_ACTION_FRAME_LOCK");
     expect(rule?.status).toBe("confirmed");
 
@@ -124,7 +126,7 @@ describe("SWF conformance: confirmed rules", () => {
     );
     const arrows = events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
     expect(arrows).toHaveLength(1);
-    expect(archer.specialLockUntil).toBe(1_000 + swfLogicTicksToMs(8));
+    expect(archer.specialLockUntil).toBe(1_000 + swfLogicTicksToMs(10));
     expect(archer.activeSpecialTechnique).toBe("ARCHER_ARROW");
   });
 
@@ -168,13 +170,10 @@ describe("SWF conformance: confirmed rules", () => {
   });
 });
 
-describe("SWF conformance: pending evidence", () => {
-  it("does not silently promote inferred/unconfirmed major-bug rules", () => {
-    expect(commandSpec.rules.find((candidate) => candidate.id === "GENERAL_SAME_TICK_DEDUPE")?.status).toBe("inferred");
-    expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH")?.status).toBe("unconfirmed");
+describe("SWF conformance: evidence status", () => {
+  it("keeps directly recovered command/launch rules confirmed and only the gauge limit unresolved", () => {
+    expect(commandSpec.rules.find((candidate) => candidate.id === "GENERAL_SAME_TICK_DEDUPE")?.status).toBe("confirmed");
+    expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH")?.status).toBe("confirmed");
     expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_GAUGE_BANKING_LIMIT")?.status).toBe("unconfirmed");
   });
-
-  it.todo("GENERAL_SAME_TICK_DEDUPE: add a gating same-update overlap scenario after SWF evidence is confirmed");
-  it.todo("RANGED_ATTACK_CYCLE_SINGLE_LAUNCH: add a gating projectile-count scenario after SWF cadence is confirmed");
 });
