@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - debug/swf-conformance
+      - debug/current-20260907-swf-integrated
     paths:
       - "src/**"
       - "tests/swf-spec/**"
@@ -33,6 +34,7 @@ jobs:
           src/game/systems/baseContactSystem.test.ts
           src/game/systems/baseGateRecoveryGeometry.test.ts
           src/game/systems/recoverySystem.test.ts
+          src/game/systems/swfIntegrationPreservation.test.ts
           src/game/systems/phase3eBattlefield.test.ts
           src/game/systems/phase3fFidelity.test.ts
           src/game/systems/phase3gFixes.test.ts
