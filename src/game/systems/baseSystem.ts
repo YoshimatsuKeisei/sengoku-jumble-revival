@@ -5,10 +5,13 @@ import {
   distanceToRect,
   getBaseAttackSurfaceRect,
 } from "./battlefieldGeometry";
+import { applyBaseAttackBounce } from "./baseAttackBounceSystem";
 import { applyForcedMovement } from "./movementSystem";
 import {
   getSwfBaseCollisionCodeAtWorld,
+  SWF_ENEMY_BASE_DAMAGE_TILE,
   SWF_ENEMY_RECOVERY_TILE,
+  SWF_PLAYER_BASE_DAMAGE_TILE,
   SWF_PLAYER_RECOVERY_TILE,
 } from "./swfBaseCollisionGrid";
 
@@ -68,16 +71,40 @@ function canPassRecoveryTile(soldier: Soldier, code: 998 | 999): boolean {
     || (soldier.team === "player" && code === SWF_PLAYER_RECOVERY_TILE);
 }
 
+function baseForDamageCode(bases: readonly BattleBase[], code: 996 | 997): BattleBase {
+  return getBaseForTeam(bases, code === SWF_ENEMY_BASE_DAMAGE_TILE ? "enemy" : "player");
+}
+
 /**
- * Resolve the SWF's 998/999 recovery-wall collision codes. The original does
- * not make the full reconstructed 189x400 base image a physical rectangle.
- * Matching retreat states may pass their own recovery tile; every other unit
- * receives the corresponding +/-6 source-unit collision response with k=10.
+ * Resolve the original 996..999 headquarters collision cells after movement.
+ *
+ * Direct AVM1 ordering in d():
+ * - 996 always arms outward fx = -10 - ekj*2 and k=10, then only player-side
+ *   attackers enter the enemy-base damage branch;
+ * - 997 mirrors that with +10 + mkj*2 and k=10, then only enemy-side attackers
+ *   enter the player-base damage branch;
+ * - 998/999 admit only the matching emergency-retreat states; every other unit
+ *   receives the +/-6 collision response and k=10.
+ *
+ * baseContactSystem already handles the hostile 996/997 damage case first. Its
+ * bounce normally moves that attacker out of the special cell, so this pass is
+ * the missing collision fallback for friendly units and otherwise-ineligible
+ * units. That closes the raw U-shaped headquarters barrier without inventing a
+ * full rectangular collider.
  */
-export function resolveBaseAccessCollisions(soldiers: Soldier[], _bases: readonly BattleBase[]): void {
+export function resolveBaseAccessCollisions(soldiers: Soldier[], bases: readonly BattleBase[]): void {
   for (const soldier of soldiers) {
     if (soldier.isDead) continue;
     const code = getSwfBaseCollisionCodeAtWorld(soldier);
+
+    if (code === SWF_ENEMY_BASE_DAMAGE_TILE || code === SWF_PLAYER_BASE_DAMAGE_TILE) {
+      const base = baseForDamageCode(bases, code);
+      const defenders = soldiers.filter((candidate) => candidate.team === base.team);
+      applyBaseAttackBounce(soldier, base, defenders);
+      soldier.baseContactLockTicks = Math.max(soldier.baseContactLockTicks, BASE_CONTACT_CONFIG.lockLogicUpdates);
+      continue;
+    }
+
     if (code !== SWF_ENEMY_RECOVERY_TILE && code !== SWF_PLAYER_RECOVERY_TILE) continue;
     if (canPassRecoveryTile(soldier, code)) continue;
 

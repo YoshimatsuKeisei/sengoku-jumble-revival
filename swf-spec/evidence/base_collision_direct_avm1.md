@@ -4,7 +4,13 @@ This evidence was recovered directly from the original `sgjbgm.swf` that was re-
 
 The regenerated AVM1 scan contains 389 `DoAction` blocks, matching the earlier recovery record. The main battle logic is action block 147, sprite 2456. This block contains the original battle messages including `が敵陣を攻略！`, `が敵陣を攻撃！`, `一時退避！`, `が戦線離脱！`, and `の療所効果！`.
 
-## Collision grid
+## Collision grid initialization
+
+Function `shk2` creates the full `f` collision grid before writing the special battlefield cells. It first creates 52 columns with 32 entries each and initializes the ordinary cells to `0`. It then writes `1000` to the outer battlefield boundary and writes the special base/fence codes.
+
+This is important for reconstruction: a zero-code point inside the rectangular bitmap crop is not itself a collision body. The headquarters is instead protected by the explicitly coded barrier cells below. The earlier integration error was **not** that the full bitmap rectangle needed to become solid; it was that runtime handling was implemented for 998/999 while the equally blocking 996/997 cells were left to the enemy-base damage path only. Friendly/ineligible soldiers could therefore cross their own central 996/997 wall.
+
+## Base collision cells
 
 The battle logic assigns `h = 36` and resolves movement collision by looking up the next position in a grid equivalent to `f[Math.round(nextX / h)][Math.round(nextY / h)]`. Function `shk2` initializes the special base/recovery collision cells.
 
@@ -18,15 +24,29 @@ Confirmed recovery/base-entry cells:
 - enemy-side recovery tile `998`: `(45,12..14)`, `(45,19..21)`, plus horizontal rows y=12 and y=21 for x=46..49;
 - player-side recovery tile `999`: `(6,12..14)`, `(6,19..21)`, plus horizontal rows y=12 and y=21 for x=2..5.
 
-Therefore the original final base-damage contact surface is the central y-cell band 15..18. The upper/lower front cells are recovery/wall collision cells, not additional base-damage cells. Earlier community strategy evidence about approaching from above/below describes the route taken to the base; it does not establish that the final upper/lower front contact itself deals base damage.
+Together, 996+998 and 997+999 form the original U-shaped headquarters collision barriers. The central y-cell band 15..18 is the damage portion; the upper/lower front cells are recovery/wall collision cells.
 
 The reconstruction's `damageCoreHeightRatio: 0.3` is not the original constant. The original behavior is grid-coded and should be represented by the confirmed 36-unit collision geometry instead of promoting the temporary ratio as an SWF fact.
 
-## Base contact ordering
+## 996 / 997 collision ordering and team gate
 
-In the main battle function `d`, collision code `996` first arms the contact response with `fx = -10 - ekj * 2` and `k = 10`, then executes the enemy-base damage/fortify path. Collision code `997` mirrors this with `fx = 10 + mkj * 2` and `k = 10`, then executes the player-base damage path.
+In the main battle function `d`, the collision switch is entered for every special collision value above 900.
 
-So the original base-contact branch establishes the bounce/contact state before damage resolution. The reconstruction's separate full-base-rectangle snapback pass is not the original base-contact mechanism.
+For `996`, the code unconditionally assigns:
+
+- `fx = -10 - ekj * 2`
+- `k = 10`
+
+**before** checking the soldier-side flag. Only when the soldier belongs to the side that can attack the enemy headquarters does execution continue into the enemy-base fortify/damage branch. A same-side or otherwise non-damaging soldier still receives the collision response and cannot simply walk through 996.
+
+Tile `997` mirrors this:
+
+- `fx = 10 + mkj * 2`
+- `k = 10`
+
+and only the opposing attacker proceeds to player-base damage. Thus 996/997 are collision wall cells first and damage cells second.
+
+For hostile base attacks, the reconstruction resolves the damage/contact branch in `baseContactSystem` first. The shared post-movement base-access pass must still reproduce the 996/997 collision fallback for friendly or otherwise ineligible units; omitting that fallback is what allowed ordinary troops into the headquarters during the 2026-09-09 regression.
 
 ## Emergency retreat and base entry
 
@@ -48,4 +68,4 @@ Collision tile `999` admits player retreat states 89/91/93 into healing state 97
 
 This directly contradicts the reconstruction behavior that continuously rechecks an alpha-derived visual gate X span and can eject an `EMERGENCY_RETREAT` soldier after crowd separation moves its center sideways. The original admission semantics are collision-tile/state based and include a dedicated entry-committed state before healing. No evidence was found that the original uses `BATTLEFIELD_BASE_GATE_SOURCE_RECTS` or any equivalent alpha-bound rectangle as a behavioral admission test.
 
-Accordingly, the current congestion reproduction is a reconstruction bug path, not original-game behavior. An original-faithful repair should model the confirmed collision-grid/state transition rather than merely widening the visual gate rectangles.
+Accordingly, the faithful runtime should model the complete 996/997/998/999 barrier and the confirmed recovery-state transitions. A full rectangular bitmap collider is not the original mechanism, but neither are 996/997 optional merely because their additional damage effect is team-gated.

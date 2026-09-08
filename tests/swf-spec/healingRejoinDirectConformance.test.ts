@@ -3,7 +3,7 @@ import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "..
 import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
 import { createBattleBases } from "../../src/game/systems/baseSystem";
-import { updateHealing, updateRejoining } from "../../src/game/systems/recoverySystem";
+import { getSwfHealingSlotPosition, updateHealing, updateRejoining } from "../../src/game/systems/recoverySystem";
 import baseSpec from "../../swf-spec/rules/bases.json";
 
 function unit(id: string, team: "player" | "enemy", sourceX: number, sourceY: number): Soldier {
@@ -27,10 +27,30 @@ describe("SWF conformance: field-hospital healing and rejoin", () => {
     expect(rule?.expected.healPerLogicUpdateMaxHpFraction).toBe(1 / 400);
     expect(rule?.expected.recoveryBoostMultiplier).toBe(2);
     expect(rule?.expected.exitRequiresHpStrictlyGreaterThanMaxHp).toBe(true);
+    expect(rule?.expected.healingPlacementRandomized).toBe(false);
     expect(rule?.expected.rejoinState).toBe(7);
     expect(rule?.expected.playerRejoinTargetX).toBe(346);
     expect(rule?.expected.enemyRejoinTargetX).toBe(1545);
     expect(rule?.expected.rejoinCompletionManhattanDistance).toEqual({ operator: "<", value: 50 });
+  });
+
+  it("places p97/p98 soldiers at the exact roster-fixed AVM1 hospital coordinates", () => {
+    const rule = baseSpec.rules.find((candidate) => candidate.id === "FIELD_HOSPITAL_HEAL_AND_REJOIN");
+    expect(rule?.expected.playerHealingGrid).toMatchObject({
+      baseX: 68, baseY: 480, columns: 6, rows: 5, columnStep: 25, rowStep: 60,
+      protagonistEffectiveIndex: 27, rawM27EffectiveIndex: 0,
+    });
+    expect(rule?.expected.enemyHealingGrid).toMatchObject({
+      baseX: 1647, baseY: 480, columns: 6, rows: 5, columnStep: 25, rowStep: 60,
+      localIndexExpression: "i-30",
+    });
+
+    const protagonist = createSoldier("player-0", "player", "player", 0, 0);
+    const player27 = createSoldier("player-27", "player", "ai", 0, 0);
+    const enemy29 = createSoldier("enemy-29", "enemy", "ai", 0, 0);
+    expect(battlefieldWorldPointToSource(getSwfHealingSlotPosition(protagonist))).toEqual({ x: 193, y: 600 });
+    expect(battlefieldWorldPointToSource(getSwfHealingSlotPosition(player27))).toEqual({ x: 68, y: 480 });
+    expect(battlefieldWorldPointToSource(getSwfHealingSlotPosition(enemy29))).toEqual({ x: 1772, y: 720 });
   });
 
   it("keeps player state 97 when healing lands exactly on max HP, then enters p7-equivalent rejoin on the next logic tick", () => {

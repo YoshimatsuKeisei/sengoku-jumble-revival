@@ -10,7 +10,9 @@
         "playerBaseDamageTileCode": 997,
         "swfContactStateK": 10,
         "bounceArmedBeforeDamageResolution": true,
-        "mustNotUseSeparateFullBaseSnapbackAsOriginalMechanism": true
+        "collisionResponseOccursBeforeTeamDamageGate": true,
+        "friendlyOrIneligibleUnitsStillCollideWith996997": true,
+        "fullBitmapRectangleColliderIsOriginalMechanism": false
       },
       "evidence": { "reference": "evidence/base_collision_direct_avm1.md" }
     },
@@ -35,7 +37,8 @@
         "centerOnlyDamageCollisionCells": true,
         "offCenterFrontCollisionCellsDealBaseDamage": false,
         "historicalUpperLowerRouteEvidenceDoesNotDefineFinalContactSurface": true,
-        "upperLowerFrontUsesRecoveryCollisionTiles": true
+        "upperLowerFrontUsesRecoveryCollisionTiles": true,
+        "damageAndRecoveryCellsTogetherFormHeadquartersBarrier": true
       },
       "evidence": { "reference": "evidence/base_collision_direct_avm1.md" }
     },
@@ -71,6 +74,26 @@
         "healPerLogicUpdateMaxHpFraction": 0.0025,
         "recoveryBoostMultiplier": 2,
         "exitRequiresHpStrictlyGreaterThanMaxHp": true,
+        "healingPlacementRandomized": false,
+        "playerHealingGrid": {
+          "baseX": 68,
+          "baseY": 480,
+          "columns": 6,
+          "rows": 5,
+          "columnStep": 25,
+          "rowStep": 60,
+          "protagonistEffectiveIndex": 27,
+          "rawM27EffectiveIndex": 0
+        },
+        "enemyHealingGrid": {
+          "baseX": 1647,
+          "baseY": 480,
+          "columns": 6,
+          "rows": 5,
+          "columnStep": 25,
+          "rowStep": 60,
+          "localIndexExpression": "i-30"
+        },
         "rejoinState": 7,
         "routeSplitY": 576,
         "playerRejoinTargetX": 346,

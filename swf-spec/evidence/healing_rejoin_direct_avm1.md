@@ -14,6 +14,27 @@ On each logic update the SWF performs:
 
 The exit check is strict. The branch continues healing while `hp <= mp`; it starts the rejoin sequence only after an update makes `hp > mp`. Therefore reaching exactly maximum HP does not leave state 97/98 until the following logic update. At exit, HP is clamped back to `mp`.
 
+## Deterministic field-hospital placement on entry
+
+A second direct audit of the state-97/state-98 entry blocks shows that the original does **not** choose an arbitrary or randomized free point in the headquarters. Healing positions are a deterministic six-column by five-row roster grid.
+
+Enemy state 98 uses local enemy roster index `j = i - 30`:
+
+- `x = 1647 + floor(j / 5) * 25`
+- `y = 480 + (j % 5) * 60`
+
+Player state 97 uses the player runtime index with the original protagonist swap:
+
+- ordinary player roster entries use their index directly;
+- raw `m27` is assigned effective index `0`;
+- raw `m200` (the player-controlled protagonist) is assigned effective index `27`;
+- `x = 68 + floor(effectiveIndex / 5) * 25`
+- `y = 480 + (effectiveIndex % 5) * 60`
+
+This yields 30 deterministic unique healing coordinates per team. In the TypeScript runtime, where the player-controlled protagonist is represented by `player-0` and the ordinary roster still contains `player-27`, the faithful mapping is protagonist -> effective 27 and `player-27` -> effective 0.
+
+The random reconstructed `chooseHealingSlotPosition()` behavior was therefore not an original-game rule and must not drive field-hospital placement.
+
 ## Transition to rejoin state 7
 
 Once the strict-over-max condition is met, the SWF sets `p = 7` rather than immediately restoring the normal behavior state.
@@ -36,4 +57,4 @@ State `7` checks Manhattan distance to the rejoin target:
 
 Only when that strict `< 50` condition is met does the SWF restore `p = pp` (the pre-recovery behavior state), clear the linked target, and call `ido` / `vc` to resume ordinary behavior and movement.
 
-This directly contradicts the reconstruction path that, on reaching maximum HP, teleports the soldier to an alpha-derived gate exterior and immediately sets the soldier to `NORMAL`. A faithful runtime should preserve a distinct rejoin phase corresponding to SWF state `7`, keep the strict-over-max exit timing, and use the confirmed source-space coordinates above.
+This directly contradicts the reconstruction path that, on reaching maximum HP, teleports the soldier to an alpha-derived gate exterior and immediately sets the soldier to `NORMAL`. A faithful runtime should preserve a distinct rejoin phase corresponding to SWF state `7`, keep the strict-over-max exit timing, use the confirmed source-space coordinates above, and place healing soldiers in the recovered roster-fixed hospital grid.

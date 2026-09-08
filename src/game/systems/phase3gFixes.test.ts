@@ -7,7 +7,6 @@ import { startSoldierAttack, updateAttackStates } from "./attackSystem";
 import { createBattleBases, getBaseForTeam, resolveBaseAccessCollisions } from "./baseSystem";
 import {
   getBaseDamageCoreRect,
-  getBaseHealingInteriorRect,
   getBaseLowerGateRect,
   getBaseRect,
   getBaseUpperGateRect,
@@ -16,7 +15,7 @@ import {
 import { getZoomAnchoredScroll } from "./cameraSystem";
 import { getPlayerMovementIntent, moveAiSoldiers } from "./movementSystem";
 import { updateNormalCombatContests } from "./normalCombatSystem";
-import { chooseHealingSlotPosition, startEmergencyRetreat, updateEmergencyRetreat, updateHealing } from "./recoverySystem";
+import { getSwfHealingSlotPosition, startEmergencyRetreat, updateEmergencyRetreat, updateHealing } from "./recoverySystem";
 import { getSwfBaseCollisionCodeAtWorld } from "./swfBaseCollisionGrid";
 
 function stats(foot: number, combat = 50): SoldierBaseStats {
@@ -92,28 +91,24 @@ describe("Phase 3G base access geometry", () => {
     expect(sourceTarget(soldier)).toEqual({ x: 70, y: 580 });
   });
 
-  it("snaps into a deterministic reconstructed healing slot only after confirmed tile 999 is reached", () => {
+  it("moves a confirmed tile-999 entrant to its exact raw roster healing slot", () => {
     const bases = createBattleBases();
-    const base = getBaseForTeam(bases, "player");
     const point = battlefieldSourcePointToWorld({ x: 216, y: 432 });
-    const soldier = createSoldier("s", "player", "ai", point.x, point.y);
+    const soldier = createSoldier("player-1", "player", "ai", point.x, point.y);
     soldier.state = "EMERGENCY_RETREAT";
     soldier.recoveryGate = "TOP";
     updateEmergencyRetreat(soldier, bases, () => 0.25, [soldier]);
-    const expected = chooseHealingSlotPosition(base, [], () => 0.25);
     expect(soldier.state).toBe("HEALING");
-    expect({ x: soldier.x, y: soldier.y }).toEqual(expected);
-    expect(isPointInsideRect(soldier, getBaseHealingInteriorRect(base))).toBe(true);
+    expect({ x: soldier.x, y: soldier.y }).toEqual(getSwfHealingSlotPosition(soldier));
   });
 
-  it("tries alternate deterministic healing candidates to reduce crowding", () => {
-    const base = createBattleBases()[0];
-    const occupied = createSoldier("h", "player", "ai", 0, 0);
-    Object.assign(occupied, chooseHealingSlotPosition(base, [], () => 0));
-    occupied.state = "HEALING";
-    const samples = [0, 0, 0.9, 0.9];
-    const chosen = chooseHealingSlotPosition(base, [occupied], () => samples.shift() ?? 0.9);
-    expect(Math.hypot(chosen.x - occupied.x, chosen.y - occupied.y)).toBeGreaterThanOrEqual(BASE_CONFIG.healingMinSpacing);
+  it("uses roster-fixed healing positions rather than random crowd-placement candidates", () => {
+    const first = createSoldier("player-1", "player", "ai", 0, 0);
+    const second = createSoldier("player-2", "player", "ai", 0, 0);
+    const firstSource = battlefieldWorldPointToSource(getSwfHealingSlotPosition(first));
+    const secondSource = battlefieldWorldPointToSource(getSwfHealingSlotPosition(second));
+    expect(firstSource).toEqual({ x: 68, y: 540 });
+    expect(secondSource).toEqual({ x: 68, y: 600 });
   });
 
   it("keeps a healing soldier stationary while HP changes below the p7 transition", () => {
@@ -132,7 +127,7 @@ describe("Phase 3G base access geometry", () => {
 });
 
 describe("Phase 3G SWF-coded base collision", () => {
-  it("does not project a soldier merely for occupying the reconstructed visual base rectangle", () => {
+  it("does not project a soldier merely for occupying a zero-code cell in the reconstructed visual base rectangle", () => {
     const bases = createBattleBases();
     const base = bases[0];
     const point = battlefieldSourcePointToWorld({ x: 180, y: 450 });
@@ -160,14 +155,16 @@ describe("Phase 3G SWF-coded base collision", () => {
     expect({ x: retreat.x, y: retreat.y }).toEqual(retreatBefore);
   });
 
-  it("does not use recovery-wall collision resolution on the separate 996 damage tile", () => {
+  it("applies the raw 996 collision bounce even when this pass is not resolving base damage", () => {
     const bases = createBattleBases();
     const point = battlefieldSourcePointToWorld({ x: 1605, y: 540 });
     const attacker = createSoldier("a", "player", "ai", point.x, point.y);
-    const before = { x: attacker.x, y: attacker.y };
+    const before = battlefieldWorldPointToSource(attacker);
     expect(getSwfBaseCollisionCodeAtWorld(attacker)).toBe(996);
     resolveBaseAccessCollisions([attacker], bases);
-    expect({ x: attacker.x, y: attacker.y }).toEqual(before);
+    const after = battlefieldWorldPointToSource(attacker);
+    expect(after.x - before.x).toBeCloseTo(-10, 6);
+    expect(attacker.baseContactLockTicks).toBe(10);
   });
 
   it("keeps the six independent field fences vertical and excludes base fences", () => {

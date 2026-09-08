@@ -1,14 +1,11 @@
-import { BASE_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
+import { SPECIAL_ABILITY_CONFIG } from "../config";
 import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import type { BattleBase, Soldier, Team } from "../types";
 import type { RandomSource } from "../stats/soldierStats";
 import { clearEngagement } from "./aiSystem";
 import { cancelAttack } from "./attackRuntime";
 import { createBattleBase, getBaseForTeam } from "./baseSystem";
-import {
-  getBaseHealingInteriorRect,
-  getPreferredRejoinPoint,
-} from "./battlefieldGeometry";
+import { getPreferredRejoinPoint } from "./battlefieldGeometry";
 import {
   applyFieldHospitalArrival,
   applySupportHealingPulse,
@@ -44,6 +41,17 @@ const SWF_REJOIN_TOP_INTERIOR_Y = 397;
 const SWF_REJOIN_BOTTOM_INTERIOR_Y = 782;
 const SWF_REJOIN_COMPLETION_MANHATTAN = 50;
 
+// Direct AVM1 field-hospital placement. Player p97 uses 68 + floor(i/5)*25,
+// enemy p98 uses 1647 + floor((i-30)/5)*25, and both use rows spaced by 60.
+// The original swaps m200 into effective slot 27 and m27 into effective slot 0.
+export const SWF_PLAYER_HEALING_GRID_X = 68;
+export const SWF_ENEMY_HEALING_GRID_X = 1647;
+export const SWF_HEALING_GRID_Y = 480;
+export const SWF_HEALING_COLUMN_STEP = 25;
+export const SWF_HEALING_ROW_STEP = 60;
+export const SWF_HEALING_ROWS = 5;
+export const SWF_PLAYER_CONTROLLER_HEALING_INDEX = 27;
+
 function ownBase(team: Team, bases?: readonly BattleBase[]): BattleBase {
   return bases ? getBaseForTeam(bases, team) : createBattleBase(team);
 }
@@ -58,38 +66,34 @@ export function rejoinPointFor(team: Team, y?: number, bases?: readonly BattleBa
   return getPreferredRejoinPoint({ id: team, y: y ?? base.y, recoveryGate: y !== undefined && y < base.y ? "TOP" : "BOTTOM" }, base);
 }
 
-export function chooseHealingSlotPosition(
-  base: BattleBase,
-  healingSoldiers: readonly Soldier[],
-  random: RandomSource = Math.random,
+function parseRuntimeRosterIndex(soldier: Pick<Soldier, "id">): number {
+  const match = soldier.id.match(/-(\d+)$/);
+  const parsed = match ? Number(match[1]) : 0;
+  return Number.isInteger(parsed) && parsed >= 0 && parsed < 30 ? parsed : 0;
+}
+
+export function getSwfHealingRosterIndex(
+  soldier: Pick<Soldier, "id" | "team" | "controller">,
+): number {
+  const index = parseRuntimeRosterIndex(soldier as Pick<Soldier, "id">);
+  if (soldier.team !== "player") return index;
+  if (soldier.controller === "player") return SWF_PLAYER_CONTROLLER_HEALING_INDEX;
+  if (index === SWF_PLAYER_CONTROLLER_HEALING_INDEX) return 0;
+  return index;
+}
+
+/** Exact deterministic p97/p98 healing position recovered from the raw AVM1. */
+export function getSwfHealingSlotPosition(
+  soldier: Pick<Soldier, "id" | "team" | "controller">,
 ): Point {
-  const rect = getBaseHealingInteriorRect(base);
-  const spacing = BASE_CONFIG.healingMinSpacing;
-  const columns = Math.floor(rect.width / spacing) + 1;
-  const rows = Math.floor(rect.height / spacing) + 1;
-  const startColumn = Math.min(columns - 1, Math.floor(Math.max(0, Math.min(0.999999999, random())) * columns));
-  const startRow = Math.min(rows - 1, Math.floor(Math.max(0, Math.min(0.999999999, random())) * rows));
-  const startIndex = startRow * columns + startColumn;
-  let fallback = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
-  let fallbackClearance = Number.NEGATIVE_INFINITY;
-  for (let offset = 0; offset < columns * rows; offset += 1) {
-    const index = (startIndex + offset) % (columns * rows);
-    const column = index % columns;
-    const row = Math.floor(index / columns);
-    const candidate = {
-      x: Math.min(rect.x + rect.width, rect.x + column * spacing),
-      y: Math.min(rect.y + rect.height, rect.y + row * spacing),
-    };
-    const clearance = healingSoldiers.length
-      ? Math.min(...healingSoldiers.map((other) => Math.hypot(candidate.x - other.x, candidate.y - other.y)))
-      : Number.POSITIVE_INFINITY;
-    if (clearance >= spacing) return candidate;
-    if (clearance > fallbackClearance) {
-      fallback = candidate;
-      fallbackClearance = clearance;
-    }
-  }
-  return fallback;
+  const index = getSwfHealingRosterIndex(soldier);
+  const column = Math.floor(index / SWF_HEALING_ROWS);
+  const row = index % SWF_HEALING_ROWS;
+  return battlefieldSourcePointToWorld({
+    x: (soldier.team === "player" ? SWF_PLAYER_HEALING_GRID_X : SWF_ENEMY_HEALING_GRID_X)
+      + column * SWF_HEALING_COLUMN_STEP,
+    y: SWF_HEALING_GRID_Y + row * SWF_HEALING_ROW_STEP,
+  });
 }
 
 export const SWF_TREATMENT_SEARCH_MANHATTAN_UNITS = 760;
@@ -260,15 +264,13 @@ function applyTreatmentContact(soldier: Soldier, soldiers: readonly Soldier[], c
 
 function enterHealing(
   soldier: Soldier,
-  base: BattleBase,
+  _base: BattleBase,
   gate: "TOP" | "BOTTOM",
   soldiers: readonly Soldier[],
   random: RandomSource,
 ): void {
   soldier.recoveryGate = gate;
-  const occupied = soldiers.filter((other) => other !== soldier && other.team === soldier.team && other.state === "HEALING");
-  const slot = chooseHealingSlotPosition(base, occupied, random);
-  Object.assign(soldier, slot);
+  Object.assign(soldier, getSwfHealingSlotPosition(soldier));
   soldier.recoveryGateEntered = true;
   setRecoveryEntryCommitted(soldier, false);
   soldier.treatmentUsedSinceLastBaseVisit = false;
