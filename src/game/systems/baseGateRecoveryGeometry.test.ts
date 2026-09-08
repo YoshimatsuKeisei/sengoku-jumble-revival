@@ -42,7 +42,14 @@ describe("direct SWF headquarters collision barrier", () => {
     expect(Math.sign(after.x - before.x)).toBe(sign);
     expect(Math.abs(after.x - before.x)).toBeGreaterThanOrEqual(10 - 1e-6);
     expect(soldier.baseContactLockTicks).toBe(10);
-    expect(getSwfBaseCollisionCodeAtWorld(soldier)).not.toBe(code);
+
+    // Ten source units need not cross a 36-unit rounded lookup cell in one
+    // response. The important invariant is that k=10 prevents the runtime
+    // from applying another instant bounce while that lock is still active.
+    const locked = { x: soldier.x, y: soldier.y };
+    resolveBaseAccessCollisions([soldier], bases);
+    expect({ x: soldier.x, y: soldier.y }).toEqual(locked);
+    expect(soldier.baseContactLockTicks).toBe(10);
   });
 
   it("admits matching retreat through 999 but blocks a normal unit on the same cell", () => {
