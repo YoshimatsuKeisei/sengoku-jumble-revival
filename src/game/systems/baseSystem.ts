@@ -91,17 +91,22 @@ function baseForDamageCode(bases: readonly BattleBase[], code: 996 | 997): Battl
  * the missing collision fallback for friendly units and otherwise-ineligible
  * units. That closes the raw U-shaped headquarters barrier without inventing a
  * full rectangular collider.
+ *
+ * While k/baseContactLockTicks is active, the raw collision branch is locked.
+ * Do not re-apply the immediate reconstruction bounce every render/update just
+ * because a 10-source-unit response still leaves the center in the same 36-unit
+ * lookup cell.
  */
 export function resolveBaseAccessCollisions(soldiers: Soldier[], bases: readonly BattleBase[]): void {
   for (const soldier of soldiers) {
-    if (soldier.isDead) continue;
+    if (soldier.isDead || soldier.baseContactLockTicks > 0) continue;
     const code = getSwfBaseCollisionCodeAtWorld(soldier);
 
     if (code === SWF_ENEMY_BASE_DAMAGE_TILE || code === SWF_PLAYER_BASE_DAMAGE_TILE) {
       const base = baseForDamageCode(bases, code);
       const defenders = soldiers.filter((candidate) => candidate.team === base.team);
       applyBaseAttackBounce(soldier, base, defenders);
-      soldier.baseContactLockTicks = Math.max(soldier.baseContactLockTicks, BASE_CONTACT_CONFIG.lockLogicUpdates);
+      soldier.baseContactLockTicks = BASE_CONTACT_CONFIG.lockLogicUpdates;
       continue;
     }
 
@@ -110,6 +115,6 @@ export function resolveBaseAccessCollisions(soldiers: Soldier[], bases: readonly
 
     const directionX = code === SWF_ENEMY_RECOVERY_TILE ? -1 : 1;
     applyForcedMovement(soldier, directionX, 0, battlefieldSourceDistanceToWorldX(6));
-    soldier.baseContactLockTicks = Math.max(soldier.baseContactLockTicks, BASE_CONTACT_CONFIG.lockLogicUpdates);
+    soldier.baseContactLockTicks = BASE_CONTACT_CONFIG.lockLogicUpdates;
   }
 }
