@@ -2,9 +2,15 @@ import { REACTION_CONFIG, STRATEGY_AI_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { AttackKind, BattleObstacle, Soldier } from "../types";
 import { cancelAttack } from "./attackRuntime";
-import { applyForcedMovement } from "./movementSystem";
 import { startEngagement } from "./aiSystem";
+import { finalizeFatalDamage } from "./combatSystem";
+import { invalidateCombatTargetForAll } from "./combatTargetSystem";
+import { applyForcedMovement } from "./movementSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
+import { swfLogicTicksToMs } from "./techniqueCombatProfiles";
+
+export const SWF_HIT_REACTION_TICKS = 10;
+export const SWF_HIT_REACTION_MS = swfLogicTicksToMs(SWF_HIT_REACTION_TICKS);
 
 function fallbackDirection(attacker: Soldier, target: Soldier): { x: number; y: number } {
   let hash = 0;
@@ -34,8 +40,8 @@ export function startHitReaction(
   const rushIgnoresRetarget = target.strategy === "charge"
     && hasSpecialAbility(target, "RUSH")
     && attackKind !== "NORMAL_ATTACK"
-    && random() < STRATEGY_AI_CONFIG.rushRetargetIgnoreChance;
-  if (canRetaliate && !rushIgnoresRetarget) startEngagement(target, attacker, currentTime);
+    && random() <= STRATEGY_AI_CONFIG.rushRetargetIgnoreChance;
+  if (canRetaliate && !rushIgnoresRetarget && target.hp > 0) startEngagement(target, attacker, currentTime);
   cancelAttack(target);
   target.activeSpecialTechnique = null;
   target.specialWavesRemaining = 0;
@@ -47,7 +53,7 @@ export function startHitReaction(
   else { dx /= length; dy /= length; }
   target.reactionState = "HIT_STUN";
   target.reactionStartedAt = currentTime;
-  target.reactionEndsAt = currentTime + REACTION_CONFIG.hitStunMs;
+  target.reactionEndsAt = currentTime + SWF_HIT_REACTION_MS;
   target.knockbackDirectionX = dx;
   target.knockbackDirectionY = dy;
   target.knockbackRemainingDistance = Math.max(0, knockbackDistance);
@@ -60,8 +66,11 @@ export function updateReaction(
   deltaMs: number,
 ): void {
   if (soldier.isDead) { clearReaction(soldier); return; }
-  if (soldier.reactionState !== "HIT_STUN" || soldier.reactionEndsAt === null) return;
-  const proportionalStep = REACTION_CONFIG.knockbackDistance * Math.max(0, deltaMs) / REACTION_CONFIG.hitStunMs;
+  if (soldier.reactionState !== "HIT_STUN" || soldier.reactionEndsAt === null) {
+    if (soldier.hp <= 0) finalizeFatalDamage(soldier);
+    return;
+  }
+  const proportionalStep = REACTION_CONFIG.knockbackDistance * Math.max(0, deltaMs) / SWF_HIT_REACTION_MS;
   const step = currentTime >= soldier.reactionEndsAt
     ? soldier.knockbackRemainingDistance
     : Math.min(soldier.knockbackRemainingDistance, proportionalStep);
@@ -69,7 +78,10 @@ export function updateReaction(
     applyForcedMovement(soldier, soldier.knockbackDirectionX, soldier.knockbackDirectionY, step, obstacles);
     soldier.knockbackRemainingDistance = Math.max(0, soldier.knockbackRemainingDistance - step);
   }
-  if (currentTime >= soldier.reactionEndsAt) clearReaction(soldier);
+  if (currentTime >= soldier.reactionEndsAt) {
+    clearReaction(soldier);
+    if (soldier.hp <= 0) finalizeFatalDamage(soldier);
+  }
 }
 
 export function updateReactions(
@@ -80,5 +92,9 @@ export function updateReactions(
   battleEnded = false,
 ): void {
   if (battleEnded) return;
-  for (const soldier of soldiers) updateReaction(soldier, obstacles, currentTime, deltaMs);
+  for (const soldier of soldiers) {
+    const wasDead = soldier.isDead;
+    updateReaction(soldier, obstacles, currentTime, deltaMs);
+    if (!wasDead && soldier.isDead) invalidateCombatTargetForAll(soldier.id, soldiers);
+  }
 }
