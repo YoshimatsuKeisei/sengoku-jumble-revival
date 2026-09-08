@@ -100,6 +100,32 @@ describe("SWF conformance: confirmed rules", () => {
     );
     expect(atCycleEnd.filter((event) => event.kind === "ARROW")).toHaveLength(1);
   });
+
+  it("puts a GENERAL_COMMAND-forced ranged activation into the same confirmed SWF action interval", () => {
+    const rule = combatSpec.rules.find((candidate) => candidate.id === "RANGED_ACTION_FRAME_LOCK");
+    expect(rule?.status).toBe("confirmed");
+
+    const generalA = unit("general-a", "player", 500);
+    const generalB = unit("general-b", "player", 510);
+    const archer = unit("forced-archer", "player", 520);
+    const enemy = unit("enemy", "enemy", 600);
+    generalA.unitType = generalB.unitType = "GENERAL";
+    generalA.technique = generalB.technique = "GENERAL_COMMAND";
+    generalA.combatGauge = generalB.combatGauge = 10_000;
+    generalA.combatGaugeUpdatedAt = generalB.combatGaugeUpdatedAt = 1_000;
+    archer.unitType = "ARCHER";
+    archer.technique = "ARCHER_ARROW";
+    archer.combatGauge = 0;
+    archer.combatGaugeUpdatedAt = 1_000;
+
+    const events = updateSpecialAttacks(
+      [generalA, generalB, archer, enemy], [], createBattleBases(), 1_000, false, () => 1,
+    );
+    const arrows = events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
+    expect(arrows).toHaveLength(1);
+    expect(archer.specialLockUntil).toBe(1_000 + swfLogicTicksToMs(8));
+    expect(archer.activeSpecialTechnique).toBe("ARCHER_ARROW");
+  });
 });
 
 describe("SWF conformance: pending evidence", () => {
