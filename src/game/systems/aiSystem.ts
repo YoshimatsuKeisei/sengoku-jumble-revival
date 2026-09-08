@@ -8,7 +8,7 @@ import {
 import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier, StrategyObjectiveKind, Team } from "../types";
 import { clearApproachRuntime } from "./engagementPositioningSystem";
-import { isValidCombatTarget } from "./combatTargetSystem";
+import { isTrackableCombatTarget, isValidCombatTarget } from "./combatTargetSystem";
 import { getNormalContactBounds } from "./techniqueCombatProfiles";
 
 export function distanceBetween(a: Pick<Soldier, "x" | "y">, b: Pick<Soldier, "x" | "y">): number {
@@ -69,8 +69,10 @@ function setStrategyObjective(soldier: Soldier, kind: StrategyObjectiveKind, x: 
 
 function clearInvalidEngagement(soldier: Soldier, soldiers: Soldier[]): Soldier | null {
   const current = targetById(soldier, soldiers);
-  if (soldier.targetId && !isValidCombatTarget(soldier, current)) clearEngagement(soldier);
-  return isValidCombatTarget(soldier, current) ? current : null;
+  // Raw l is retained while a newly fatal target is still in its k reaction.
+  // Only tiky()/led(), mapped to isDead + global invalidation, releases it.
+  if (soldier.targetId && !isTrackableCombatTarget(soldier, current)) clearEngagement(soldier);
+  return isTrackableCombatTarget(soldier, current) ? current : null;
 }
 
 function beginNearestEngagement(soldier: Soldier, soldiers: Soldier[], range: number, currentTime: number): void {
