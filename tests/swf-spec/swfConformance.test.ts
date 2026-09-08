@@ -133,6 +133,7 @@ describe("SWF conformance: pending evidence", () => {
     expect(baseSpec.rules.find((candidate) => candidate.id === "BASE_CONTACT_BOUNCE_SEQUENCE")?.status).toBe("inferred");
     expect(baseSpec.rules.find((candidate) => candidate.id === "BASE_ATTACK_SURFACE_VERTICAL_SPAN")?.status).toBe("unconfirmed");
     expect(baseSpec.rules.find((candidate) => candidate.id === "BASE_ATTACK_OFF_CENTER_LANES_EXIST")?.status).toBe("inferred");
+    expect(baseSpec.rules.find((candidate) => candidate.id === "FRIENDLY_BASE_RETREAT_GATE_CONGESTION")?.status).toBe("inferred");
     expect(commandSpec.rules.find((candidate) => candidate.id === "GENERAL_SAME_TICK_DEDUPE")?.status).toBe("inferred");
     expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH")?.status).toBe("unconfirmed");
     expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_GAUGE_BANKING_LIMIT")?.status).toBe("unconfirmed");
@@ -140,6 +141,7 @@ describe("SWF conformance: pending evidence", () => {
 
   it.todo("BASE_CONTACT_BOUNCE_SEQUENCE: add a gating scenario after SWF ordering/re-arm evidence is confirmed");
   it.todo("BASE_ATTACK_OFF_CENTER_LANES_EXIST: promote only after direct SWF hit-test evidence defines the attackable span");
+  it.todo("FRIENDLY_BASE_RETREAT_GATE_CONGESTION: promote only after direct SWF gate-entry/collision evidence is recovered");
   it.todo("GENERAL_SAME_TICK_DEDUPE: add a gating same-update overlap scenario after SWF evidence is confirmed");
   it.todo("RANGED_ATTACK_CYCLE_SINGLE_LAUNCH: add a gating projectile-count scenario after SWF cadence is confirmed");
 });
