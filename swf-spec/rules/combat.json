@@ -33,12 +33,24 @@
     },
     {
       "id": "RANGED_GAUGE_BANKING_LIMIT",
-      "status": "unconfirmed",
+      "status": "confirmed",
       "category": "combat",
       "expected": {
-        "swfGaugeMaximum": null,
-        "runtimeCurrentlyUnbounded": true,
-        "mustNotInventGaugeCapWithoutEvidence": true
+        "swfGaugeVariable": "kd",
+        "swfSkillIncrementVariable": "kp",
+        "rangedCharacterCodes": [2, 6],
+        "gaugeStepAddsSkillBeforeThresholdCheck": true,
+        "activationThresholdExclusive": 200,
+        "normalThresholdConsumption": 200,
+        "doubleSpecialAbilityCode": "s21",
+        "doubleSpecialRetentionChance": 0.4,
+        "doubleSpecialRetentionInclusiveRandomBoundary": true,
+        "doubleSpecialRetentionMaximumExpression": "399 + kp",
+        "overflowForcesConsumption": true,
+        "consumptionOccursBeforeRangeAndActionLockChecks": true,
+        "explicitHardCap": null,
+        "arbitraryUnboundedBankingAllowed": false,
+        "mustNotInventFixedCap": true
       },
       "evidence": { "reference": "evidence/ranged_cycle.md" }
     }
