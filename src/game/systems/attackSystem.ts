@@ -57,7 +57,9 @@ function resolveSoldierHit(attacker: Soldier, soldiers: Soldier[], currentTime: 
         : SPECIAL_ABILITY_CONFIG.guardKnockbackDistance);
     return;
   }
-  const damage = calculateNormalAttackDamage(attacker, target); applyDamage(target, damage, attacker);
+  const damage = calculateNormalAttackDamage(attacker, target);
+  // Raw normal contact establishes k=10 even when this hit makes HP fatal.
+  applyDamage(target, damage, attacker, true);
   target.combatFeedbackMarker = "H";
   target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
   if (!target.isDead) startHitReaction(target, attacker, currentTime, undefined, random, "NORMAL_ATTACK");
