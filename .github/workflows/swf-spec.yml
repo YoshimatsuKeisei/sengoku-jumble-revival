@@ -28,7 +28,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Base and recovery regression tests
+      - name: Base, recovery, and movement regression tests
         run: >-
           npx vitest run
           src/game/systems/baseContactSystem.test.ts
@@ -40,6 +40,7 @@ jobs:
           src/game/systems/phase3gFixes.test.ts
           src/game/systems/phase3hIntegration.test.ts
           src/game/systems/phase3jPlayerControl.test.ts
+          src/game/systems/obstacleAvoidance.test.ts
           --reporter=verbose
       - name: Strategy regression tests
         run: >-
