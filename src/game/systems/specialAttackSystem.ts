@@ -154,12 +154,21 @@ export function updateSpecialAttacks(
   random: RandomSource = Math.random,
 ): SpecialAttackEvent[] {
   const events: SpecialAttackEvent[] = [];
-  function dispatchForcedTechnique(recipient: Soldier): SpecialAttackEvent | null {
-    return isGunTechnique(recipient.technique)
-      ? (() => { const target = findGunTarget(recipient, soldiers); return target ? executeGunAttack(recipient, target, currentTime, random, false, soldiers) : null; })()
-      : isArrowTechnique(recipient.technique)
-      ? (() => { const target = findArrowTarget(recipient, soldiers); return target ? executeArrowAttack(recipient, target, currentTime, random, false) : null; })()
-      : recipient.technique === "CAVALRY_CHARGE" ? executeCavalryCharge(recipient, soldiers, obstacles, bases, currentTime, random, { consumeCooldown: false })
+  const generalForcedRecipientsThisUpdate = new Set<string>();
+  function dispatchForcedTechnique(recipient: Soldier, establishRangedAction = false): SpecialAttackEvent | null {
+    if (isGunTechnique(recipient.technique)) {
+      const target = findGunTarget(recipient, soldiers);
+      if (!target) return null;
+      if (establishRangedAction && !beginTechniqueAction(recipient, currentTime, random, false)) return null;
+      return executeGunAttack(recipient, target, currentTime, random, false, soldiers);
+    }
+    if (isArrowTechnique(recipient.technique)) {
+      const target = findArrowTarget(recipient, soldiers);
+      if (!target) return null;
+      if (establishRangedAction && !beginTechniqueAction(recipient, currentTime, random, false)) return null;
+      return executeArrowAttack(recipient, target, currentTime, random, false);
+    }
+    return recipient.technique === "CAVALRY_CHARGE" ? executeCavalryCharge(recipient, soldiers, obstacles, bases, currentTime, random, { consumeCooldown: false })
       : isSpearTechnique(recipient.technique) ? executeSpearAttack(recipient, soldiers, obstacles, bases, currentTime, random, false)
       : isNinjaTechnique(recipient.technique) ? executeNinjaAttack(recipient, soldiers, obstacles, bases, currentTime, random, "GENERAL_FORCED")
       : isGeneralTechnique(recipient.technique) ? executeGeneralAttack(recipient, soldiers, obstacles, bases, currentTime, random, false, forceGeneralRecipient)
@@ -169,14 +178,10 @@ export function updateSpecialAttacks(
       : null;
   }
   const forceGeneralRecipient = (recipient: Soldier): boolean => {
-    // General-forced techniques ignore gauge consumption, not the one-action
-    // runtime guard. Without this guard a recipient could fire here and then
-    // fire again from its autonomous branch later in this same update.
-    if (recipient.isDead || recipient.hp <= 0 || recipient.state !== "NORMAL"
-      || recipient.reactionState !== "NONE" || recipient.combatActionState !== "IDLE"
-      || recipient.activeSpecialTechnique !== null || currentTime < recipient.specialLockUntil) return false;
-    const event = dispatchForcedTechnique(recipient);
-    if (event && beginTechniqueAction(recipient, currentTime, random, false)) events.push(event);
+    if (generalForcedRecipientsThisUpdate.has(recipient.id)) return false;
+    generalForcedRecipientsThisUpdate.add(recipient.id);
+    const event = dispatchForcedTechnique(recipient, true);
+    if (event) events.push(event);
     return event !== null;
   };
 
@@ -197,7 +202,7 @@ export function updateSpecialAttacks(
   };
 
   for (const attacker of soldiers) {
-    const autonomousDecisionTick = advanceCombatGauge(attacker, currentTime);
+    advanceCombatGauge(attacker, currentTime, random);
     while (attacker.pendingMoutaiSpecials > 0) {
       attacker.pendingMoutaiSpecials -= 1;
       if (!beginTechniqueAction(attacker, currentTime, random, false)) continue;
@@ -216,7 +221,6 @@ export function updateSpecialAttacks(
       }
     }
     clearTechniqueActionIfComplete(attacker, currentTime);
-    if (attacker.controller === "ai" && !autonomousDecisionTick) continue;
     if (!canUseSpecial(attacker, currentTime)) continue;
     if (!hasBattleActivationContext(attacker, soldiers)) continue;
     if (attacker.controller === "player" && !playerRequested) continue;
