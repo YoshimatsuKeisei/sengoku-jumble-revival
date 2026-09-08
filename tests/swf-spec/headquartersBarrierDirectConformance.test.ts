@@ -20,15 +20,23 @@ describe("SWF conformance: complete 996..999 headquarters barrier", () => {
   ] as const)("prevents a same-side %s soldier from walking through its own central base wall", (team, sourceX, sourceY, code, expectedDeltaX) => {
     const point = battlefieldSourcePointToWorld({ x: sourceX, y: sourceY });
     const soldier = createSoldier(`${team}-friendly-wall`, team, "ai", point.x, point.y);
+    const bases = createBattleBases();
     expect(getSwfBaseCollisionCodeAtWorld(soldier)).toBe(code);
     const before = battlefieldWorldPointToSource(soldier);
 
-    resolveBaseAccessCollisions([soldier], createBattleBases());
+    resolveBaseAccessCollisions([soldier], bases);
 
     const after = battlefieldWorldPointToSource(soldier);
     expect(after.x - before.x).toBeCloseTo(expectedDeltaX, 6);
     expect(soldier.baseContactLockTicks).toBe(10);
-    expect(getSwfBaseCollisionCodeAtWorld(soldier)).not.toBe(code);
+
+    // Raw k=10 locks the collision response. The 10-unit fx response can still
+    // leave the center in the same rounded 36-unit cell, but it must not be
+    // applied repeatedly while the lock is active.
+    const locked = { x: soldier.x, y: soldier.y };
+    resolveBaseAccessCollisions([soldier], bases);
+    expect({ x: soldier.x, y: soldier.y }).toEqual(locked);
+    expect(soldier.baseContactLockTicks).toBe(10);
   });
 
   it("keeps recovery-wall admission exclusive to the matching retreat state", () => {
