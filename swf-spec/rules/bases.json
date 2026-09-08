@@ -60,6 +60,29 @@
         "mustModelPreHealingEntryCommittedState": true
       },
       "evidence": { "reference": "evidence/base_collision_direct_avm1.md" }
+    },
+    {
+      "id": "FIELD_HOSPITAL_HEAL_AND_REJOIN",
+      "status": "confirmed",
+      "category": "base",
+      "expected": {
+        "playerHealingState": 97,
+        "enemyHealingState": 98,
+        "healPerLogicUpdateMaxHpFraction": 0.0025,
+        "recoveryBoostMultiplier": 2,
+        "exitRequiresHpStrictlyGreaterThanMaxHp": true,
+        "rejoinState": 7,
+        "routeSplitY": 576,
+        "playerRejoinTargetX": 346,
+        "enemyRejoinTargetX": 1545,
+        "topInteriorYOnExit": 397,
+        "bottomInteriorYOnExit": 782,
+        "topRejoinTargetY": 249,
+        "bottomRejoinTargetY": 946,
+        "rejoinCompletionManhattanDistance": { "operator": "<", "value": 50 },
+        "returnsToPreRecoveryBehaviorAfterRejoin": true
+      },
+      "evidence": { "reference": "evidence/healing_rejoin_direct_avm1.md" }
     }
   ]
 }
