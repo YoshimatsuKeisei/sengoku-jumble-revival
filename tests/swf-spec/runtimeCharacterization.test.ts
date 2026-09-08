@@ -5,7 +5,6 @@ import type { Soldier } from "../../src/game/types";
 import {
   getBaseRect,
   isPointInsideRect,
-  isPointWithinBaseGateSpan,
 } from "../../src/game/systems/battlefieldGeometry";
 import { createBattleBases, getBaseForTeam, resolveBaseAccessCollisions } from "../../src/game/systems/baseSystem";
 import { COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
@@ -96,7 +95,7 @@ describe("runtime characterization for major combat bugs", () => {
     expect(archer.combatGauge).toBe(100);
   });
 
-  it("no longer treats the reconstructed full base image rectangle as a generic collision body", () => {
+  it("restores the 2026-09-07 visual-base access guard for zero-code gaps", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "enemy");
     const soldier = unit("visual-base-only", "player", 1600, 450);
@@ -105,19 +104,20 @@ describe("runtime characterization for major combat bugs", () => {
     expect(isPointInsideRect(soldier, getBaseRect(base))).toBe(true);
     expect(getSwfBaseCollisionCodeAtWorld(soldier)).toBeNull();
     resolveBaseAccessCollisions([soldier], bases);
-    expect({ x: soldier.x, y: soldier.y }).toEqual(before);
+    expect(isPointInsideRect(soldier, getBaseRect(base))).toBe(false);
+    expect({ x: soldier.x, y: soldier.y }).not.toEqual(before);
   });
 
-  it("does not eject an own-base retreating soldier merely for leaving an alpha-derived visual gate span", () => {
+  it("preserves an entry-committed own-base retreat while the visual guard blocks normal soldiers", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "player");
-    const retreating = unit("visual-gate-span-only", "player", 180, 450);
+    const retreating = unit("committed-retreat", "player", 180, 450);
     retreating.state = "EMERGENCY_RETREAT";
     retreating.recoveryGate = "TOP";
+    (retreating as Soldier & { recoveryEntryCommitted?: boolean }).recoveryEntryCommitted = true;
     const before = { x: retreating.x, y: retreating.y };
 
     expect(isPointInsideRect(retreating, getBaseRect(base))).toBe(true);
-    expect(isPointWithinBaseGateSpan(retreating, base, "TOP")).toBe(false);
     expect(getSwfBaseCollisionCodeAtWorld(retreating)).toBeNull();
     resolveBaseAccessCollisions([retreating], bases);
     expect({ x: retreating.x, y: retreating.y }).toEqual(before);
