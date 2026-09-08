@@ -1,0 +1,41 @@
+name: Current SWF integration
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - debug/current-swf-conformance
+    paths:
+      - "src/**"
+      - ".github/workflows/current-swf-integration.yml"
+
+concurrency:
+  group: current-swf-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Movement and base-line regression
+        run: >-
+          npx vitest run
+          src/game/systems/movementRegression.test.ts
+          src/game/systems/baseContactSystem.test.ts
+          --reporter=verbose
+      - name: Combat and recovery regression
+        run: >-
+          npx vitest run
+          src/game/systems/attackSystem.test.ts
+          src/game/systems/reactionSystem.test.ts
+          src/game/systems/recoverySystem.test.ts
+          src/game/systems/swfCombatRules.test.ts
+          --reporter=verbose
