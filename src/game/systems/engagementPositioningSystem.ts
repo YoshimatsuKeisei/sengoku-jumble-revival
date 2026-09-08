@@ -1,9 +1,15 @@
 import { BATTLEFIELD_CONFIG, CLOSE_COMBAT_POSITIONING_CONFIG, SOLDIER_RADIUS } from "../config";
+import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import type { BattleObstacle, Soldier } from "../types";
-import { getApproachSpacingWorld } from "./techniqueCombatProfiles";
+import { getApproachSpacingWorld, SWF_APPROACH_SPACING_UNITS } from "./techniqueCombatProfiles";
 
 export interface ApproachPoint { x: number; y: number }
 
+/** Raw d() only runs its local separation branch when both source-axis deltas are strictly below 20. */
+export const SWF_CLOSE_ENGAGEMENT_AXIS_THRESHOLD_UNITS = 20;
+
+// Legacy helpers are retained for compatibility with older callers/tests, but the
+// active pursuit pipeline no longer uses persistent sector slots or jitter.
 function hashText(text: string): number {
   let hash = 0;
   for (const character of text) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
@@ -82,20 +88,40 @@ export function clearApproachRuntime(soldier: Soldier): void {
   soldier.preferredApproachTargetId = null;
 }
 
+/**
+ * Raw d() close correction. Outside the <20-by-<20 source-space overlap window,
+ * ordinary pursuit follows l._x/l._y directly instead of reserving a slot.
+ */
+export function getRawCloseEngagementPoint(
+  soldier: Soldier,
+  target: Soldier,
+  obstacles: readonly BattleObstacle[] = [],
+): ApproachPoint | null {
+  if (soldier.controller !== "ai" || soldier.targetId !== target.id) return null;
+  const source = battlefieldWorldPointToSource(soldier);
+  const targetSource = battlefieldWorldPointToSource(target);
+  const dx = targetSource.x - source.x;
+  const dy = targetSource.y - source.y;
+  if (Math.abs(dx) >= SWF_CLOSE_ENGAGEMENT_AXIS_THRESHOLD_UNITS
+    || Math.abs(dy) >= SWF_CLOSE_ENGAGEMENT_AXIS_THRESHOLD_UNITS) return null;
+
+  const length = Math.hypot(dx, dy);
+  const ux = length > 0 ? dx / length : 1;
+  const uy = length > 0 ? dy / length : 0;
+  const point = battlefieldSourcePointToWorld({
+    x: targetSource.x - ux * SWF_APPROACH_SPACING_UNITS,
+    y: targetSource.y - uy * SWF_APPROACH_SPACING_UNITS,
+  });
+  return isApproachPointValid(point, obstacles) ? point : null;
+}
+
 export function getPreferredApproachPoint(
   soldier: Soldier,
   target: Soldier,
-  soldiers: Soldier[],
+  _soldiers: Soldier[],
   obstacles: readonly BattleObstacle[],
 ): ApproachPoint | null {
-  if (soldier.controller !== "ai" || soldier.targetId !== target.id) return null;
-  let point = soldier.preferredApproachTargetId === target.id ? computeApproachPoint(soldier, target) : null;
-  if (!point || !isApproachPointValid(point, obstacles)) {
-    const angle = chooseApproachAngle(soldier, target, soldiers, obstacles);
-    if (angle === null) { clearApproachRuntime(soldier); return null; }
-    soldier.preferredApproachAngle = angle;
-    soldier.preferredApproachTargetId = target.id;
-    point = computeApproachPoint(soldier, target, angle);
-  }
-  return point;
+  // Do not retain the old soft-sector runtime in the active SWF-conformant path.
+  clearApproachRuntime(soldier);
+  return getRawCloseEngagementPoint(soldier, target, obstacles);
 }
