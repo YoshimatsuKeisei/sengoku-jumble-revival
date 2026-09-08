@@ -265,6 +265,8 @@ function enterHealing(
   setRecoveryEntryCommitted(soldier, false);
   soldier.treatmentUsedSinceLastBaseVisit = false;
   soldier.state = "HEALING";
+  // Retained as a defensive fallback for directly injected/debug healing states.
+  // Normal SWF routing releases pursuers earlier at the p93/p94 entry commit.
   invalidateCombatTargetForAll(soldier.id, soldiers);
   soldier.moveTargetX = null;
   soldier.moveTargetY = null;
@@ -307,6 +309,10 @@ export function updateEmergencyRetreat(
   if (!isRecoveryEntryCommitted(soldier) && shouldCommitSwfRecoveryEntry(soldier)) {
     setRecoveryEntryCommitted(soldier, true);
     setSwfInnerRecoveryTarget(soldier);
+    // Raw p91/p92 -> p93/p94 transition calls led(self) here, not when the
+    // soldier later reaches healing p97/p98. Pursuit therefore survives the
+    // initial retreat but is released exactly when base entry is committed.
+    invalidateCombatTargetForAll(soldier.id, soldiers);
     return;
   }
 

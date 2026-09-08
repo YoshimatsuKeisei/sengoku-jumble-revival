@@ -55,6 +55,47 @@
         "mustNotInventFixedCap": true
       },
       "evidence": { "reference": "evidence/ranged_cycle.md" }
+    },
+    {
+      "id": "NORMAL_CONTACT_CONTEST",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "contactAxisBoundsExclusiveSourceUnits": 32,
+        "combatRawVariable": "pw2",
+        "combatWeightVariable": "pw",
+        "combatWeightExpression": "pow(rawCombat, 3)",
+        "attackSideProbabilityExpression": "pwA / (pwA + pwB)",
+        "atckMode": 0,
+        "targetReferenceVariable": "l",
+        "engagementStateExpression": "pp + 20",
+        "defenderNormalContactHasModeZeroRetargetFallback": true,
+        "rushChargeAttackerRetargetRequiresRandomPercentGreaterThan": 70,
+        "rushChargeAttackerKeepPriorTargetInclusiveAt70": true,
+        "participantsEvaluatedIndependently": true
+      },
+      "evidence": { "reference": "evidence/normal_melee_combat.md" }
+    },
+    {
+      "id": "NORMAL_PURSUIT_LIFECYCLE",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "dynamicTargetCoordinates": true,
+        "standaloneMaximumChaseDistance": null,
+        "closeAxisThresholdExclusive": 20,
+        "closeSpacingSourceUnits": 24,
+        "persistentSectorSlots": false,
+        "crowdJitter": false,
+        "rangedHoldMarginSourceUnits": 10,
+        "fatalHitReactionLogicTicks": 10,
+        "deathState": 99,
+        "deathReleaseFunction": "led",
+        "deathReleaseRestoresStateExpression": "p = pp",
+        "retreatRemainsPursuableBeforeEntryCommit": true,
+        "retreatReleaseStates": [93, 94]
+      },
+      "evidence": { "reference": "evidence/normal_melee_combat.md" }
     }
   ]
 }

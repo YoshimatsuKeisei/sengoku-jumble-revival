@@ -4,6 +4,7 @@ import type { AttackKind, BattleObstacle, Soldier } from "../types";
 import { cancelAttack } from "./attackRuntime";
 import { startEngagement } from "./aiSystem";
 import { finalizeFatalDamage } from "./combatSystem";
+import { invalidateCombatTargetForAll } from "./combatTargetSystem";
 import { applyForcedMovement } from "./movementSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import { swfLogicTicksToMs } from "./techniqueCombatProfiles";
@@ -39,7 +40,9 @@ export function startHitReaction(
   const rushIgnoresRetarget = target.strategy === "charge"
     && hasSpecialAbility(target, "RUSH")
     && attackKind !== "NORMAL_ATTACK"
-    && random() < STRATEGY_AI_CONFIG.rushRetargetIgnoreChance;
+    // Raw test is random*100 > 70 for retargeting, so exactly 70 belongs to
+    // the 70% keep-prior-target branch as well.
+    && random() <= STRATEGY_AI_CONFIG.rushRetargetIgnoreChance;
   if (canRetaliate && !rushIgnoresRetarget && target.hp > 0) startEngagement(target, attacker, currentTime);
   cancelAttack(target);
   target.activeSpecialTechnique = null;
@@ -91,5 +94,11 @@ export function updateReactions(
   battleEnded = false,
 ): void {
   if (battleEnded) return;
-  for (const soldier of soldiers) updateReaction(soldier, obstacles, currentTime, deltaMs);
+  for (const soldier of soldiers) {
+    const wasDead = soldier.isDead;
+    updateReaction(soldier, obstacles, currentTime, deltaMs);
+    // Raw tiky() sets p=99 and immediately calls led(), which clears every
+    // pursuer whose l points at the dead unit. Do that in the same reaction pass.
+    if (!wasDead && soldier.isDead) invalidateCombatTargetForAll(soldier.id, soldiers);
+  }
 }
