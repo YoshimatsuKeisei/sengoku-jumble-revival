@@ -77,11 +77,13 @@
       "category": "strategy",
       "expected": {
         "randomOpponentSlotCount": { "player": 30, "enemy": 29 },
+        "enemySelectionExcludesPlayerControlledM200": true,
         "roamX": { "floorRandomMultiplier": 1211, "offset": 334 },
         "roamY": { "floorRandomMultiplier": 409, "offset": 359 },
         "roamArrivalManhattanExclusive": 150,
         "invalidSelectedSlotFallsBackToRoam": true,
-        "afterLostTargetReturnsToBaseMeleeSelection": true
+        "afterLostTargetReturnsToBaseMeleeSelection": true,
+        "evaluatedEveryBattleLogicFrameInD": true
       },
       "evidence": { "reference": "evidence/strategy_actions.md" }
     },
@@ -107,7 +109,8 @@
         "sharedWithCombatGaugeScd": true,
         "initialCounter": 19,
         "firstTriggerLogicTicks": 4,
-        "subsequentIntervalLogicTicks": 23
+        "subsequentIntervalLogicTicks": 23,
+        "meleeBaseAndRoamStatesUsePerLogicFrameD": true
       },
       "evidence": { "reference": "evidence/strategy_actions.md" }
     }

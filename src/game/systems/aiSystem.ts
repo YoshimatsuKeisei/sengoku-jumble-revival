@@ -138,6 +138,12 @@ function updateDefenderPursuitObjective(defender: Soldier, target: Soldier): voi
   setStrategyObjective(defender, "SEEK_COMBAT", destination.x, destination.y);
 }
 
+function setInitialChargeObjective(soldier: Soldier): void {
+  const source = battlefieldWorldPointToSource(soldier);
+  const target = battlefieldSourcePointToWorld({ x: soldier.team === "player" ? 1600 : 0, y: source.y });
+  setStrategyObjective(soldier, "ENEMY_SIDE", target.x, target.y);
+}
+
 export function updateChargeAI(soldier: Soldier, soldiers: Soldier[], _currentTime = 0): void {
   const source = battlefieldWorldPointToSource(soldier);
   let target = { x: soldier.team === "player" ? 1600 : 0, y: source.y };
@@ -244,24 +250,92 @@ export function isAtAnchor(soldier: Soldier): boolean {
   return Math.hypot(soldier.x - soldier.anchorX, soldier.y - soldier.anchorY) <= 4;
 }
 
-export function updateAiTargets(soldiers: Soldier[], currentTime = 0, random: RandomSource = Math.random): void {
+const SWF_STRATEGY_LOGIC_TICK_MS = 1000 / 24;
+const SWF_STRATEGY_SCD_INITIAL_COUNTER = 19;
+let strategyClockOwner: Soldier | null = null;
+let strategyClockLastTime = 0;
+let strategyClockAccumulator = 0;
+let strategyScdCounter = SWF_STRATEGY_SCD_INITIAL_COUNTER;
+let initializedStrategy = new WeakMap<Soldier, Soldier["strategy"]>();
+
+function resetStrategyClock(owner: Soldier | null, currentTime: number): void {
+  strategyClockOwner = owner;
+  strategyClockLastTime = currentTime;
+  strategyClockAccumulator = 0;
+  strategyScdCounter = SWF_STRATEGY_SCD_INITIAL_COUNTER;
+  initializedStrategy = new WeakMap<Soldier, Soldier["strategy"]>();
+}
+
+function canRunNormalStrategy(soldier: Soldier, currentTime: number): boolean {
+  return !soldier.isDead && !soldier.isConfused && soldier.controller === "ai" && soldier.reactionState === "NONE"
+    && currentTime >= soldier.abilityActionLockUntil && soldier.state === "NORMAL" && !soldier.temporaryOrder;
+}
+
+function initializeStrategy(soldier: Soldier): void {
+  const prior = initializedStrategy.get(soldier);
+  if (prior === soldier.strategy) return;
+  initializedStrategy.set(soldier, soldier.strategy);
+  if (prior !== undefined && soldier.targetId) clearEngagement(soldier);
+  switch (soldier.strategy) {
+    case "charge": setInitialChargeObjective(soldier); break;
+    case "defend": setStrategyObjective(soldier, "ANCHOR", soldier.anchorX, soldier.anchorY); break;
+    case "intercept": setStrategyObjective(soldier, "INTERCEPT_POINT", soldier.anchorX, soldier.anchorY); break;
+    case "wait": setStrategyObjective(soldier, "ANCHOR", soldier.anchorX, soldier.anchorY); break;
+    case "melee": break;
+  }
+}
+
+function runScdStrategyPass(soldiers: Soldier[], currentTime: number): void {
   for (const soldier of soldiers) {
-    if (soldier.isDead || soldier.isConfused || soldier.controller !== "ai" || soldier.reactionState !== "NONE"
-      || currentTime < soldier.abilityActionLockUntil
-      || soldier.state !== "NORMAL" || (soldier.temporaryOrder && soldier.temporaryOrder.type !== "DEFEND_ORDER")) continue;
-    if (soldier.temporaryOrder?.type === "DEFEND_ORDER") {
-      const current = targetById(soldier, soldiers);
-      if (current && isValidCombatTarget(soldier, current) && distanceBetween(soldier, current) <= COMMAND_CONFIG.defendRadius) continue;
-      if (current) clearEngagement(soldier);
-      beginNearestEngagement(soldier, soldiers, COMMAND_CONFIG.defendRadius, currentTime);
-      continue;
-    }
+    if (!canRunNormalStrategy(soldier, currentTime) || soldier.strategy === "melee") continue;
     switch (soldier.strategy) {
       case "charge": updateChargeAI(soldier, soldiers, currentTime); break;
       case "defend": updateDefendAI(soldier, soldiers, currentTime); break;
       case "intercept": updateInterceptAI(soldier, soldiers, currentTime); break;
-      case "melee": updateMeleeAI(soldier, soldiers, currentTime, random); break;
       case "wait": updateWaitAI(soldier, soldiers, currentTime); break;
+    }
+  }
+}
+
+function runMeleeLogicPass(soldiers: Soldier[], currentTime: number, random: RandomSource): void {
+  for (const soldier of soldiers) {
+    if (canRunNormalStrategy(soldier, currentTime) && soldier.strategy === "melee") {
+      updateMeleeAI(soldier, soldiers, currentTime, random);
+    }
+  }
+}
+
+function updateDefendOrders(soldiers: Soldier[], currentTime: number): void {
+  for (const soldier of soldiers) {
+    if (soldier.isDead || soldier.isConfused || soldier.controller !== "ai" || soldier.reactionState !== "NONE"
+      || currentTime < soldier.abilityActionLockUntil || soldier.state !== "NORMAL"
+      || soldier.temporaryOrder?.type !== "DEFEND_ORDER") continue;
+    const current = targetById(soldier, soldiers);
+    if (current && isValidCombatTarget(soldier, current) && distanceBetween(soldier, current) <= COMMAND_CONFIG.defendRadius) continue;
+    if (current) clearEngagement(soldier);
+    beginNearestEngagement(soldier, soldiers, COMMAND_CONFIG.defendRadius, currentTime);
+  }
+}
+
+export function updateAiTargets(soldiers: Soldier[], currentTime = 0, random: RandomSource = Math.random): void {
+  const owner = soldiers[0] ?? null;
+  if (strategyClockOwner !== owner || currentTime < strategyClockLastTime) resetStrategyClock(owner, currentTime);
+
+  for (const soldier of soldiers) if (canRunNormalStrategy(soldier, currentTime)) initializeStrategy(soldier);
+  updateDefendOrders(soldiers, currentTime);
+
+  strategyClockAccumulator += Math.max(0, currentTime - strategyClockLastTime);
+  strategyClockLastTime = currentTime;
+  const logicTicks = Math.floor(strategyClockAccumulator / SWF_STRATEGY_LOGIC_TICK_MS + 1e-9);
+  if (logicTicks <= 0) return;
+  strategyClockAccumulator -= logicTicks * SWF_STRATEGY_LOGIC_TICK_MS;
+
+  for (let tick = 0; tick < logicTicks; tick += 1) {
+    runMeleeLogicPass(soldiers, currentTime, random);
+    strategyScdCounter += 1;
+    if (strategyScdCounter > 22) {
+      runScdStrategyPass(soldiers, currentTime);
+      strategyScdCounter = 0;
     }
   }
 }
