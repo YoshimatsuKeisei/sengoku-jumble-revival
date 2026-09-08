@@ -1,5 +1,5 @@
 import { BASE_CONFIG, RECOVERY_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
-import { battlefieldWorldPointToSource } from "../battlefieldLayout";
+import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import type { BattleBase, Soldier, Team } from "../types";
 import type { RandomSource } from "../stats/soldierStats";
 import { clearEngagement } from "./aiSystem";
@@ -11,7 +11,6 @@ import {
   getPreferredBaseGate,
   getPreferredRejoinPoint,
   hasClearedBaseGateBoundary,
-  hasReachedBaseGateApproach,
 } from "./battlefieldGeometry";
 import {
   applyFieldHospitalArrival,
@@ -21,10 +20,25 @@ import {
   isAbilityActionCapable,
 } from "./specialAbilitySystem";
 import { invalidateCombatTargetForAll } from "./combatTargetSystem";
-import { clearConfusion } from "./confusionSystem";
 import { SWF_COMBAT_FPS, swfLogicTicksToMs } from "./techniqueCombatProfiles";
+import {
+  getSwfBaseCollisionCodeAtWorld,
+  SWF_ENEMY_RECOVERY_TILE,
+  SWF_PLAYER_RECOVERY_TILE,
+} from "./swfBaseCollisionGrid";
 
 type Point = { x: number; y: number };
+type RecoveryEntryRuntime = Soldier & { recoveryEntryCommitted?: boolean };
+
+const SWF_RECOVERY_ROUTE_SPLIT_Y = 576;
+const SWF_PLAYER_OUTER_X = 140;
+const SWF_ENEMY_OUTER_X = 1735;
+const SWF_RECOVERY_TOP_Y = 249;
+const SWF_RECOVERY_BOTTOM_Y = 946;
+const SWF_PLAYER_ENTRY_COMMIT_X = 232;
+const SWF_ENEMY_ENTRY_COMMIT_X = 1612;
+const SWF_PLAYER_INNER_POINT = { x: 70, y: 580 } as const;
+const SWF_ENEMY_INNER_POINT = { x: 1825, y: 580 } as const;
 
 function ownBase(team: Team, bases?: readonly BattleBase[]): BattleBase {
   return bases ? getBaseForTeam(bases, team) : createBattleBase(team);
@@ -96,6 +110,54 @@ function treatmentDistanceInSwfUnits(a: Pick<Soldier, "x" | "y">, b: Pick<Soldie
   return Math.abs(sourceA.x - sourceB.x) + Math.abs(sourceA.y - sourceB.y);
 }
 
+function isRecoveryEntryCommitted(soldier: Soldier): boolean {
+  return Boolean((soldier as RecoveryEntryRuntime).recoveryEntryCommitted);
+}
+
+function setRecoveryEntryCommitted(soldier: Soldier, committed: boolean): void {
+  (soldier as RecoveryEntryRuntime).recoveryEntryCommitted = committed;
+}
+
+function swfRecoveryRouteForSourceY(sourceY: number): { gate: "TOP" | "BOTTOM"; y: number } {
+  return sourceY > SWF_RECOVERY_ROUTE_SPLIT_Y
+    ? { gate: "BOTTOM", y: SWF_RECOVERY_BOTTOM_Y }
+    : { gate: "TOP", y: SWF_RECOVERY_TOP_Y };
+}
+
+function setSwfSourceMoveTarget(soldier: Soldier, sourceX: number, sourceY: number): void {
+  setMoveTarget(soldier, battlefieldSourcePointToWorld({ x: sourceX, y: sourceY }));
+}
+
+function setSwfOuterRecoveryTarget(soldier: Soldier): void {
+  const source = battlefieldWorldPointToSource(soldier);
+  const route = swfRecoveryRouteForSourceY(source.y);
+  soldier.recoveryGate = route.gate;
+  setSwfSourceMoveTarget(
+    soldier,
+    soldier.team === "player" ? SWF_PLAYER_OUTER_X : SWF_ENEMY_OUTER_X,
+    route.y,
+  );
+}
+
+function shouldCommitSwfRecoveryEntry(soldier: Soldier): boolean {
+  const sourceX = battlefieldWorldPointToSource(soldier).x;
+  return soldier.team === "player"
+    ? sourceX < SWF_PLAYER_ENTRY_COMMIT_X
+    : sourceX > SWF_ENEMY_ENTRY_COMMIT_X;
+}
+
+function setSwfInnerRecoveryTarget(soldier: Soldier): void {
+  const point = soldier.team === "player" ? SWF_PLAYER_INNER_POINT : SWF_ENEMY_INNER_POINT;
+  setSwfSourceMoveTarget(soldier, point.x, point.y);
+}
+
+function isOnOwnSwfRecoveryTile(soldier: Soldier): boolean {
+  const code = getSwfBaseCollisionCodeAtWorld(soldier);
+  return soldier.team === "player"
+    ? code === SWF_PLAYER_RECOVERY_TILE
+    : code === SWF_ENEMY_RECOVERY_TILE;
+}
+
 export function findNearestTreatmentHealer(patient: Soldier, soldiers: readonly Soldier[], currentTime = 0): Soldier | null {
   return soldiers.filter((candidate) => candidate !== patient && candidate.team === patient.team
     && hasSpecialAbility(candidate, "TREATMENT") && isAbilityActionCapable(candidate, currentTime)
@@ -118,6 +180,8 @@ function completeTreatment(patient: Soldier, soldiers: readonly Soldier[], curre
   patient.moveTargetX = null;
   patient.moveTargetY = null;
   patient.recoveryGate = null;
+  patient.recoveryGateEntered = false;
+  setRecoveryEntryCommitted(patient, false);
   patient.moutaiTriggeredForRetreat = false;
   patient.abilityActionLockUntil = Math.max(patient.abilityActionLockUntil,
     currentTime + swfLogicTicksToMs(TREATMENT_RECOVERY_LOCK_TICKS));
@@ -133,9 +197,9 @@ export function startEmergencyRetreat(
   cancelAttack(soldier);
   soldier.temporaryOrder = null;
   clearCombat(soldier);
-  const base = ownBase(soldier.team, bases);
-  soldier.recoveryGate = soldier.controller === "player" ? null : getPreferredBaseGate(soldier, base);
+  soldier.recoveryGate = null;
   soldier.recoveryGateEntered = false;
+  setRecoveryEntryCommitted(soldier, false);
   soldier.recoveryTargetKind = "BASE_GATE";
   soldier.recoveryHealerId = null;
   if (!soldier.treatmentUsedSinceLastBaseVisit) {
@@ -143,7 +207,7 @@ export function startEmergencyRetreat(
     if (healer) { soldier.recoveryTargetKind = "HEALER"; soldier.recoveryHealerId = healer.id; }
   }
   if (soldiers.length) handleRetreatStateEntered(soldier, soldiers, currentTime);
-  if (soldier.recoveryGate) setMoveTarget(soldier, getBaseGatePoint(base, soldier.recoveryGate, false));
+  if (soldier.recoveryTargetKind === "BASE_GATE") setSwfOuterRecoveryTarget(soldier);
   else { soldier.moveTargetX = null; soldier.moveTargetY = null; }
 }
 
@@ -169,6 +233,7 @@ function enterHealing(
   const slot = chooseHealingSlotPosition(base, occupied, random);
   Object.assign(soldier, slot);
   soldier.recoveryGateEntered = true;
+  setRecoveryEntryCommitted(soldier, false);
   soldier.treatmentUsedSinceLastBaseVisit = false;
   soldier.state = "HEALING";
   invalidateCombatTargetForAll(soldier.id, soldiers);
@@ -186,14 +251,8 @@ export function updateEmergencyRetreat(
 ): void {
   const base = ownBase(soldier.team, bases);
   clearCombat(soldier);
-  if (soldier.controller === "player") {
-    if (applyTreatmentContact(soldier, soldiers, currentTime)) return;
-    const preferredGate = getPreferredBaseGate(soldier, base);
-    const gate = hasClearedBaseGateBoundary(soldier, base, preferredGate, "ENTER") ? preferredGate : null;
-    if (!gate) { soldier.moveTargetX = null; soldier.moveTargetY = null; return; }
-    enterHealing(soldier, base, gate, soldiers, random);
-    return;
-  }
+
+  if (applyTreatmentContact(soldier, soldiers, currentTime)) return;
   if (soldier.recoveryTargetKind === "HEALER") {
     const healer = soldiers.find((candidate) => candidate.id === soldier.recoveryHealerId
       && candidate.team === soldier.team && hasSpecialAbility(candidate, "TREATMENT") && isAbilityActionCapable(candidate, currentTime));
@@ -204,18 +263,30 @@ export function updateEmergencyRetreat(
       }
       return;
     }
-    soldier.recoveryTargetKind = "BASE_GATE"; soldier.recoveryHealerId = null;
+    soldier.recoveryTargetKind = "BASE_GATE";
+    soldier.recoveryHealerId = null;
+    setRecoveryEntryCommitted(soldier, false);
   }
-  const gate = soldier.recoveryGate ?? getPreferredBaseGate(soldier, base);
-  soldier.recoveryGate = gate;
-  if (hasClearedBaseGateBoundary(soldier, base, gate, "ENTER")) {
+
+  if (isOnOwnSwfRecoveryTile(soldier)) {
+    const source = battlefieldWorldPointToSource(soldier);
+    const gate = soldier.recoveryGate ?? swfRecoveryRouteForSourceY(source.y).gate;
     enterHealing(soldier, base, gate, soldiers, random);
     return;
   }
-  const exterior = getBaseGatePoint(base, gate, false);
-  setMoveTarget(soldier, hasReachedBaseGateApproach(soldier, base, gate)
-    ? getBaseGatePoint(base, gate, true)
-    : exterior);
+
+  if (!isRecoveryEntryCommitted(soldier) && shouldCommitSwfRecoveryEntry(soldier)) {
+    setRecoveryEntryCommitted(soldier, true);
+    setSwfInnerRecoveryTarget(soldier);
+    return;
+  }
+
+  if (isRecoveryEntryCommitted(soldier)) {
+    setSwfInnerRecoveryTarget(soldier);
+    return;
+  }
+
+  setSwfOuterRecoveryTarget(soldier);
 }
 
 export function updateHealing(soldier: Soldier, deltaSeconds: number, bases?: readonly BattleBase[]): void {
@@ -240,6 +311,7 @@ export function updateHealing(soldier: Soldier, deltaSeconds: number, bases?: re
     soldier.moveTargetY = null;
     soldier.recoveryGate = null;
     soldier.recoveryGateEntered = false;
+    setRecoveryEntryCommitted(soldier, false);
     soldier.moutaiTriggeredForRetreat = false;
   }
 }
@@ -257,6 +329,7 @@ export function updateRejoining(soldier: Soldier, bases?: readonly BattleBase[])
     soldier.moveTargetY = null;
     soldier.recoveryGate = null;
     soldier.recoveryGateEntered = false;
+    setRecoveryEntryCommitted(soldier, false);
   }
 }
 
