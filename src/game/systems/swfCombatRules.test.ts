@@ -74,15 +74,17 @@ describe("SWF combat/defense formulas", () => {
 });
 
 describe("SWF skill gauges", () => {
-  it("requires ranged gauge to be strictly greater than 200", () => {
+  it("processes ranged kd strictly above 200 and keeps the same-pass trigger after subtracting 200", () => {
     const archer = useTechnique(soldier("archer"), "ARCHER_ARROW", "ARCHER");
     advanceCombatGauge(archer, 0);
-    advanceCombatGauge(archer, COMBAT_GAUGE_UPDATE_INTERVAL_MS * 2 + 0.01);
+    advanceCombatGauge(archer, COMBAT_GAUGE_UPDATE_INTERVAL_MS * 2 + 0.01, () => 1);
     expect(archer.combatGauge).toBe(200);
     expect(hasTechniqueGauge(archer)).toBe(false);
-    advanceCombatGauge(archer, COMBAT_GAUGE_UPDATE_INTERVAL_MS * 3 + 0.01);
-    expect(archer.combatGauge).toBe(300);
+    advanceCombatGauge(archer, COMBAT_GAUGE_UPDATE_INTERVAL_MS * 3 + 0.01, () => 1);
+    expect(archer.combatGauge).toBe(100);
     expect(hasTechniqueGauge(archer)).toBe(true);
+    expect(beginTechniqueAction(archer, COMBAT_GAUGE_UPDATE_INTERVAL_MS * 3 + 0.01, () => 1, true)).toBe(true);
+    expect(archer.combatGauge).toBe(100);
   });
 
   it("requires non-ranged special gauge to be strictly greater than 400", () => {
@@ -95,14 +97,27 @@ describe("SWF skill gauges", () => {
     expect(hasTechniqueGauge(ninja)).toBe(true);
   });
 
-  it("uses 40% DOUBLE_SPECIAL gauge retention with the overflow guard", () => {
+  it("uses the direct ranged s21 retention and 399+kp overflow guard", () => {
     const gunner = useTechnique(soldier("gunner"), "TEPPOU_SHOOTING", "TEPPOU");
     gunner.specialAbilities = ["DOUBLE_SPECIAL"];
-    gunner.combatGauge = 300;
-    expect(beginTechniqueAction(gunner, 0, () => 0.399, true)).toBe(true);
+    gunner.combatGauge = 200;
+    gunner.combatGaugeUpdatedAt = 0;
+    const first = COMBAT_GAUGE_UPDATE_INTERVAL_MS + 0.01;
+    advanceCombatGauge(gunner, first, () => 0.4);
     expect(gunner.combatGauge).toBe(300);
-    gunner.activeSpecialTechnique = null; gunner.specialLockUntil = 0; gunner.combatGauge = 500;
-    expect(beginTechniqueAction(gunner, 1, () => 0, true)).toBe(true);
+    expect(hasTechniqueGauge(gunner)).toBe(true);
+    expect(beginTechniqueAction(gunner, first, () => 1, true)).toBe(true);
+    expect(gunner.combatGauge).toBe(300);
+
+    gunner.activeSpecialTechnique = null;
+    gunner.specialLockUntil = 0;
+    gunner.combatGauge = 400;
+    gunner.combatGaugeUpdatedAt = first;
+    const second = COMBAT_GAUGE_UPDATE_INTERVAL_MS * 2 + 0.02;
+    advanceCombatGauge(gunner, second, () => 0);
+    expect(gunner.combatGauge).toBe(300);
+    expect(hasTechniqueGauge(gunner)).toBe(true);
+    expect(beginTechniqueAction(gunner, second, () => 0, true)).toBe(true);
     expect(gunner.combatGauge).toBe(300);
   });
 });

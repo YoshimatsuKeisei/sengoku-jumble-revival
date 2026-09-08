@@ -12,11 +12,38 @@ import {
 
 export const COMBAT_GAUGE_UPDATE_INTERVAL_MS = swfLogicTicksToMs(COMBAT_GAUGE_UPDATE_TICKS);
 
+/**
+ * The original ranged scd() routine consumes/retains kd when the gauge-processing
+ * step crosses 200, before range/k/state checks. A crossing therefore grants an
+ * attack opportunity for that same processing pass even if the stored kd has
+ * already rolled back below 200. Keep that transient opportunity outside Soldier.
+ */
+const pendingRangedGaugeTrigger = new WeakSet<Soldier>();
+
 export function isRangedGaugeTechnique(soldier: Pick<Soldier, "technique">): boolean {
   return soldier.technique.startsWith("ARCHER_") || soldier.technique.startsWith("TEPPOU_");
 }
 
-export function advanceCombatGauge(soldier: Soldier, currentTime: number): void {
+function processRangedGaugeStep(soldier: Soldier, random: RandomSource): boolean {
+  soldier.combatGauge += soldier.stats.skill;
+  if (soldier.combatGauge <= RANGED_GAUGE_THRESHOLD) return false;
+
+  const retainsGauge = hasSpecialAbility(soldier, "DOUBLE_SPECIAL")
+    && soldier.combatGauge <= 399 + soldier.stats.skill
+    && random() * 100 <= 40;
+  if (!retainsGauge) {
+    soldier.combatGauge = Math.max(0, soldier.combatGauge - RANGED_GAUGE_THRESHOLD);
+  }
+  return true;
+}
+
+export function advanceCombatGauge(
+  soldier: Soldier,
+  currentTime: number,
+  random: RandomSource = Math.random,
+): void {
+  // A SWF scd() attack opportunity does not survive until a later processing pass.
+  pendingRangedGaugeTrigger.delete(soldier);
   if (soldier.controller !== "ai" || soldier.isDead || soldier.hp <= 0) return;
   if (soldier.state !== "NORMAL") {
     soldier.combatGaugeUpdatedAt = currentTime;
@@ -28,13 +55,27 @@ export function advanceCombatGauge(soldier: Soldier, currentTime: number): void 
   }
   const intervals = Math.floor((currentTime - soldier.combatGaugeUpdatedAt) / COMBAT_GAUGE_UPDATE_INTERVAL_MS);
   if (intervals <= 0) return;
-  soldier.combatGauge += intervals * soldier.stats.skill;
+
+  if (isRangedGaugeTechnique(soldier)) {
+    let crossedThreshold = false;
+    // Usually one interval is processed per game update. Iterate catch-up intervals
+    // so kd itself still follows the SWF rollover rule instead of becoming a bank.
+    for (let interval = 0; interval < intervals; interval += 1) {
+      crossedThreshold = processRangedGaugeStep(soldier, random) || crossedThreshold;
+    }
+    if (crossedThreshold) pendingRangedGaugeTrigger.add(soldier);
+  } else {
+    // Non-ranged scd() has additional sp-state ordering. Preserve the existing
+    // reconstruction until that separate branch is promoted with direct evidence.
+    soldier.combatGauge += intervals * soldier.stats.skill;
+  }
   soldier.combatGaugeUpdatedAt += intervals * COMBAT_GAUGE_UPDATE_INTERVAL_MS;
 }
 
 export function hasTechniqueGauge(soldier: Soldier): boolean {
   if (soldier.controller === "player") return true;
-  return soldier.combatGauge > (isRangedGaugeTechnique(soldier) ? RANGED_GAUGE_THRESHOLD : SPECIAL_GAUGE_THRESHOLD);
+  if (isRangedGaugeTechnique(soldier)) return pendingRangedGaugeTrigger.has(soldier);
+  return soldier.combatGauge > SPECIAL_GAUGE_THRESHOLD;
 }
 
 export function beginTechniqueAction(
@@ -62,19 +103,22 @@ export function beginTechniqueAction(
     return true;
   }
 
-  // A successful 連発 grants exactly one repeat. The repeat consumes that grant
-  // without rolling 連発 again, preventing a single proc from recursively becoming
-  // a third/fourth/etc. activation. Probability and gauge thresholds are unchanged.
+  if (isRangedGaugeTechnique(soldier)) {
+    // scd() has already applied kd += kp and its consume/retain decision before
+    // range/k/state checks. Successful execution must not consume kd a second time.
+    pendingRangedGaugeTrigger.delete(soldier);
+    return true;
+  }
+
+  // Non-ranged DOUBLE_SPECIAL remains on the pre-existing reconstruction path
+  // until its separate scd() branch is migrated with dedicated conformance tests.
   const consumingRepeat = consumeDoubleSpecialRepeat(soldier);
   const keepGauge = !consumingRepeat
     && hasSpecialAbility(soldier, "DOUBLE_SPECIAL")
     && soldier.combatGauge <= 399 + soldier.stats.skill
     && random() < 0.4;
   if (keepGauge) grantDoubleSpecialRepeat(soldier);
-  else {
-    if (isRangedGaugeTechnique(soldier)) soldier.combatGauge = Math.max(0, soldier.combatGauge - RANGED_GAUGE_THRESHOLD);
-    else soldier.combatGauge = 0;
-  }
+  else soldier.combatGauge = 0;
   return true;
 }
 

@@ -3,7 +3,7 @@ import { battlefieldSourcePointToWorld } from "../../src/game/battlefieldLayout"
 import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
 import { createBattleBases } from "../../src/game/systems/baseSystem";
-import { COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
+import { advanceCombatGauge, COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 import combatSpec from "../../swf-spec/rules/combat.json";
 
@@ -60,11 +60,11 @@ describe("SWF conformance: direct ranged scd gauge rollover", () => {
     subject.combatGaugeUpdatedAt = 0;
 
     const first = COMBAT_GAUGE_UPDATE_INTERVAL_MS + 1;
-    expect(updateSpecialAttacks([subject], [], createBattleBases(), first, false, () => 0.4)).toEqual([]);
+    advanceCombatGauge(subject, first, () => 0.4);
     expect(subject.combatGauge).toBe(300);
 
     const second = COMBAT_GAUGE_UPDATE_INTERVAL_MS * 2 + 1;
-    expect(updateSpecialAttacks([subject], [], createBattleBases(), second, false, () => 0.400001)).toEqual([]);
+    advanceCombatGauge(subject, second, () => 0.400001);
     expect(subject.combatGauge).toBe(200);
   });
 

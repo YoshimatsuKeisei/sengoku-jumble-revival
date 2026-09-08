@@ -68,7 +68,7 @@ describe("runtime characterization for major combat bugs", () => {
     expect(archer.combatGauge).toBe(gaugeBefore);
   });
 
-  it("keeps banked ranged gauge but no longer dumps it as a sub-cycle rapid burst", () => {
+  it("rolls idle ranged gauge at each confirmed threshold opportunity instead of banking it for a later burst", () => {
     const archer = unit("banked-archer", "player", 520);
     const enemy = unit("enemy", "enemy", 900);
     archer.unitType = "ARCHER";
@@ -79,16 +79,19 @@ describe("runtime characterization for major combat bugs", () => {
 
     const bankedAt = COMBAT_GAUGE_UPDATE_INTERVAL_MS * 10 + 1;
     expect(updateSpecialAttacks([archer, enemy], [], createBattleBases(), bankedAt, false, () => 1)).toEqual([]);
-    expect(archer.combatGauge).toBe(1_000);
+    expect(archer.combatGauge).toBe(200);
 
     enemy.x = unit("range-marker", "enemy", 600).x;
-    let arrows = 0;
-    for (const offset of [0, 50, 100, 150, 200]) {
-      const events = updateSpecialAttacks([archer, enemy], [], createBattleBases(), bankedAt + offset, false, () => 1);
-      arrows += events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id).length;
-    }
-    expect(arrows).toBe(1);
-    expect(archer.combatGauge).toBe(800);
+    const beforeNextGaugeStep = updateSpecialAttacks(
+      [archer, enemy], [], createBattleBases(), bankedAt + 200, false, () => 1,
+    );
+    expect(beforeNextGaugeStep.filter((event) => event.kind === "ARROW")).toHaveLength(0);
+    expect(archer.combatGauge).toBe(200);
+
+    const nextGaugeStep = COMBAT_GAUGE_UPDATE_INTERVAL_MS * 11 + 1;
+    const events = updateSpecialAttacks([archer, enemy], [], createBattleBases(), nextGaugeStep, false, () => 1);
+    expect(events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id)).toHaveLength(1);
+    expect(archer.combatGauge).toBe(100);
   });
 
   it("no longer treats the reconstructed full base image rectangle as a generic collision body", () => {

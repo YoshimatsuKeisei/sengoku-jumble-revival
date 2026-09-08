@@ -4,6 +4,7 @@ import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
 import { captureSoldierPositions, resolveBaseMovementContacts } from "../../src/game/systems/baseContactSystem";
 import { createBattleBases, getBaseForTeam } from "../../src/game/systems/baseSystem";
+import { beginTechniqueAction, COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 import { updateInvaderTrapMovement } from "../../src/game/systems/trapAbilitySystem";
@@ -63,9 +64,10 @@ describe("SWF conformance: confirmed rules", () => {
     const enemy = unit("enemy", "enemy", 600);
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
+    archer.stats.skill = 100;
     archer.specialAbilities = ["DOUBLE_SPECIAL"];
-    archer.combatGauge = 250;
-    archer.combatGaugeUpdatedAt = 1_000;
+    archer.combatGauge = 200;
+    archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
 
     let launches = 0;
     for (const time of [1_000, 1_050, 1_100]) {
@@ -87,21 +89,15 @@ describe("SWF conformance: confirmed rules", () => {
     const enemy = unit("enemy", "enemy", 600);
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
-    archer.combatGauge = 1_000;
-    archer.combatGaugeUpdatedAt = 1_000;
+    archer.stats.skill = 100;
+    archer.combatGauge = 200;
+    archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
 
     const first = updateSpecialAttacks([archer, enemy], [], createBattleBases(), 1_000, false, () => 1);
     expect(first.filter((event) => event.kind === "ARROW")).toHaveLength(1);
-
-    const beforeCycleEnd = updateSpecialAttacks(
-      [archer, enemy], [], createBattleBases(), 1_000 + swfLogicTicksToMs(9), false, () => 1,
-    );
-    expect(beforeCycleEnd.filter((event) => event.kind === "ARROW")).toHaveLength(0);
-
-    const atCycleEnd = updateSpecialAttacks(
-      [archer, enemy], [], createBattleBases(), 1_000 + swfLogicTicksToMs(10), false, () => 1,
-    );
-    expect(atCycleEnd.filter((event) => event.kind === "ARROW")).toHaveLength(1);
+    expect(archer.specialLockUntil).toBe(1_000 + swfLogicTicksToMs(10));
+    expect(beginTechniqueAction(archer, 1_000 + swfLogicTicksToMs(9), () => 1, false)).toBe(false);
+    expect(beginTechniqueAction(archer, 1_000 + swfLogicTicksToMs(10), () => 1, false)).toBe(true);
   });
 
   it("puts a GENERAL_COMMAND-forced ranged activation into the same confirmed SWF k=10 lock", () => {
@@ -171,9 +167,10 @@ describe("SWF conformance: confirmed rules", () => {
 });
 
 describe("SWF conformance: evidence status", () => {
-  it("keeps directly recovered command/launch rules confirmed and only the gauge limit unresolved", () => {
+  it("keeps the directly recovered command, launch, lock, and ranged gauge rules confirmed", () => {
     expect(commandSpec.rules.find((candidate) => candidate.id === "GENERAL_SAME_TICK_DEDUPE")?.status).toBe("confirmed");
     expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH")?.status).toBe("confirmed");
-    expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_GAUGE_BANKING_LIMIT")?.status).toBe("unconfirmed");
+    expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_ACTION_FRAME_LOCK")?.status).toBe("confirmed");
+    expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_GAUGE_BANKING_LIMIT")?.status).toBe("confirmed");
   });
 });

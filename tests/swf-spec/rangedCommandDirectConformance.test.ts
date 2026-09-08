@@ -3,6 +3,7 @@ import { battlefieldSourcePointToWorld } from "../../src/game/battlefieldLayout"
 import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
 import { createBattleBases } from "../../src/game/systems/baseSystem";
+import { beginTechniqueAction, COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 import commandSpec from "../../swf-spec/rules/commands.json";
@@ -60,21 +61,15 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     const enemy = unit("enemy", "enemy", 600);
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
-    archer.combatGauge = 1_000;
-    archer.combatGaugeUpdatedAt = 1_000;
+    archer.stats.skill = 100;
+    archer.combatGauge = 200;
+    archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
 
     const first = updateSpecialAttacks([archer, enemy], [], createBattleBases(), 1_000, false, () => 1);
     expect(first.filter((event) => event.kind === "ARROW")).toHaveLength(1);
-
-    const atNine = updateSpecialAttacks(
-      [archer, enemy], [], createBattleBases(), 1_000 + swfLogicTicksToMs(9), false, () => 1,
-    );
-    expect(atNine.filter((event) => event.kind === "ARROW")).toHaveLength(0);
-
-    const atTen = updateSpecialAttacks(
-      [archer, enemy], [], createBattleBases(), 1_000 + swfLogicTicksToMs(10), false, () => 1,
-    );
-    expect(atTen.filter((event) => event.kind === "ARROW")).toHaveLength(1);
+    expect(archer.specialLockUntil).toBe(1_000 + swfLogicTicksToMs(10));
+    expect(beginTechniqueAction(archer, 1_000 + swfLogicTicksToMs(9), () => 1, false)).toBe(false);
+    expect(beginTechniqueAction(archer, 1_000 + swfLogicTicksToMs(10), () => 1, false)).toBe(true);
   });
 
   it("emits one ranged launch event for one fresh ranged spl-equivalent activation", () => {
@@ -82,11 +77,13 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     const enemy = unit("single-enemy", "enemy", 600);
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
-    archer.combatGauge = 250;
-    archer.combatGaugeUpdatedAt = 1_000;
+    archer.stats.skill = 100;
+    archer.combatGauge = 200;
+    archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
 
     const events = updateSpecialAttacks([archer, enemy], [], createBattleBases(), 1_000, false, () => 1);
     expect(events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id)).toHaveLength(1);
+    expect(archer.combatGauge).toBe(100);
   });
 
   it("collapses two same-update general commands to one forced activation for a non-ranged recipient", () => {
