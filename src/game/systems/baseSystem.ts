@@ -1,13 +1,16 @@
-import { BASE_CONFIG, BATTLEFIELD_CONFIG, SOLDIER_RADIUS } from "../config";
-import { BATTLEFIELD_BASE_WORLD_RECTS } from "../battlefieldLayout";
+import { BASE_CONFIG, BASE_CONTACT_CONFIG, SOLDIER_RADIUS } from "../config";
+import { BATTLEFIELD_BASE_WORLD_RECTS, battlefieldSourceDistanceToWorldX } from "../battlefieldLayout";
 import type { BattleBase, Soldier, Team } from "../types";
 import {
   distanceToRect,
   getBaseAttackSurfaceRect,
-  getBaseRect,
-  isPointInsideRect,
-  isPointWithinBaseGateSpan,
 } from "./battlefieldGeometry";
+import { applyForcedMovement } from "./movementSystem";
+import {
+  getSwfBaseCollisionCodeAtWorld,
+  SWF_ENEMY_RECOVERY_TILE,
+  SWF_PLAYER_RECOVERY_TILE,
+} from "./swfBaseCollisionGrid";
 
 export function createBattleBase(team: Team): BattleBase {
   const rect = BATTLEFIELD_BASE_WORLD_RECTS[team];
@@ -38,11 +41,12 @@ export function getEnemyBase(bases: readonly BattleBase[], team: Team): BattleBa
   return getBaseForTeam(bases, team === "player" ? "enemy" : "player");
 }
 
+/** Legacy read-only proximity helper. Damage itself is resolved from the SWF collision grid. */
 export function distanceToBaseEdge(soldier: Soldier, base: BattleBase): number {
   return distanceToRect(soldier, getBaseAttackSurfaceRect(base));
 }
 
-/** Read-only proximity helper retained for callers/tests; damage is resolved only by baseContactSystem. */
+/** Read-only compatibility helper; the active damage path lives in baseContactSystem. */
 export function canAttackEnemyBase(soldier: Soldier, enemyBase: BattleBase): boolean {
   if (soldier.isDead || soldier.team === enemyBase.team || soldier.state !== "NORMAL") return false;
   if (enemyBase.isDestroyed || enemyBase.hp <= 0) return false;
@@ -56,36 +60,27 @@ export function damageBase(base: BattleBase, damage: number = BASE_CONFIG.damage
   if (base.hp === 0) base.isDestroyed = true;
 }
 
-function canOccupyOwnBase(soldier: Soldier, base: BattleBase): boolean {
-  if (soldier.team !== base.team) return false;
-  if (soldier.state === "HEALING" || soldier.state === "REJOINING") return true;
+function canPassRecoveryTile(soldier: Soldier, code: 998 | 999): boolean {
   if (soldier.state !== "EMERGENCY_RETREAT") return false;
-  return soldier.recoveryGate
-    ? isPointWithinBaseGateSpan(soldier, base, soldier.recoveryGate)
-    : isPointWithinBaseGateSpan(soldier, base, "TOP") || isPointWithinBaseGateSpan(soldier, base, "BOTTOM");
+  return (soldier.team === "enemy" && code === SWF_ENEMY_RECOVERY_TILE)
+    || (soldier.team === "player" && code === SWF_PLAYER_RECOVERY_TILE);
 }
 
-export function resolveBaseAccessCollisions(soldiers: Soldier[], bases: readonly BattleBase[]): void {
+/**
+ * Resolve the SWF's 998/999 recovery-wall collision codes. The original does
+ * not make the full reconstructed 189x400 base image a physical rectangle.
+ * Matching retreat states may pass their own recovery tile; every other unit
+ * receives the corresponding +/-6 source-unit collision response with k=10.
+ */
+export function resolveBaseAccessCollisions(soldiers: Soldier[], _bases: readonly BattleBase[]): void {
   for (const soldier of soldiers) {
     if (soldier.isDead) continue;
-    for (const base of bases) {
-      if (canOccupyOwnBase(soldier, base)) continue;
-      const rect = getBaseRect(base);
-      if (!isPointInsideRect(soldier, rect)) continue;
-      const distances = {
-        left: rect.x <= 0 ? Number.POSITIVE_INFINITY : Math.abs(soldier.x - rect.x),
-        right: rect.x + rect.width >= BATTLEFIELD_CONFIG.width
-          ? Number.POSITIVE_INFINITY
-          : Math.abs(rect.x + rect.width - soldier.x),
-        top: Math.abs(soldier.y - rect.y),
-        bottom: Math.abs(rect.y + rect.height - soldier.y),
-      };
-      const nearest = (Object.keys(distances) as Array<keyof typeof distances>)
-        .reduce((best, side) => distances[side] < distances[best] ? side : best, "left");
-      if (nearest === "left") soldier.x = rect.x - SOLDIER_RADIUS;
-      else if (nearest === "right") soldier.x = rect.x + rect.width + SOLDIER_RADIUS;
-      else if (nearest === "top") soldier.y = rect.y - SOLDIER_RADIUS;
-      else soldier.y = rect.y + rect.height + SOLDIER_RADIUS;
-    }
+    const code = getSwfBaseCollisionCodeAtWorld(soldier);
+    if (code !== SWF_ENEMY_RECOVERY_TILE && code !== SWF_PLAYER_RECOVERY_TILE) continue;
+    if (canPassRecoveryTile(soldier, code)) continue;
+
+    const directionX = code === SWF_ENEMY_RECOVERY_TILE ? -1 : 1;
+    applyForcedMovement(soldier, directionX, 0, battlefieldSourceDistanceToWorldX(6));
+    soldier.baseContactLockTicks = Math.max(soldier.baseContactLockTicks, BASE_CONTACT_CONFIG.lockLogicUpdates);
   }
 }

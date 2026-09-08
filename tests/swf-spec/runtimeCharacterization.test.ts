@@ -1,21 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { SOLDIER_RADIUS } from "../../src/game/config";
-import { battlefieldSourcePointToWorld } from "../../src/game/battlefieldLayout";
+import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../../src/game/battlefieldLayout";
 import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
-import { captureSoldierPositions, resolveBaseMovementContacts } from "../../src/game/systems/baseContactSystem";
 import {
-  getBaseAttackSurfaceRect,
-  getBaseGatePoint,
   getBaseRect,
-  getBaseUpperGateRect,
   isPointInsideRect,
   isPointWithinBaseGateSpan,
 } from "../../src/game/systems/battlefieldGeometry";
 import { createBattleBases, getBaseForTeam, resolveBaseAccessCollisions } from "../../src/game/systems/baseSystem";
 import { COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
-import { moveAiSoldiers, separateSoldiers } from "../../src/game/systems/movementSystem";
-import { updateRecoveryStates } from "../../src/game/systems/recoverySystem";
+import { getSwfBaseCollisionCodeAtWorld } from "../../src/game/systems/swfBaseCollisionGrid";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 
 function unit(id: string, team: "player" | "enemy", sourceX: number, sourceY = 450): Soldier {
@@ -30,8 +24,8 @@ function ready(soldier: Soldier): Soldier {
 }
 
 /**
- * These tests describe the current reconstruction runtime only. They are not
- * SWF-conformance gates until the corresponding rule is promoted to confirmed.
+ * These tests describe the current reconstruction runtime only. Confirmed SWF
+ * behavior is gated separately by swfConformance.test.ts.
  */
 describe("runtime characterization for major combat bugs", () => {
   it("uses the confirmed ranged action lock to collapse two same-update general-forced shots into one", () => {
@@ -93,128 +87,47 @@ describe("runtime characterization for major combat bugs", () => {
       const events = updateSpecialAttacks([archer, enemy], [], createBattleBases(), bankedAt + offset, false, () => 1);
       arrows += events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id).length;
     }
-    // Gauge banking remains intentionally unchanged because its SWF cap/carry-over
-    // semantics are still unconfirmed. The confirmed eight-frame action span now
-    // prevents the former four-shot ~150 ms dump.
     expect(arrows).toBe(1);
     expect(archer.combatGauge).toBe(800);
   });
 
-  it("currently turns base re-entry during the contact lock into rectangle snapback without another hit", () => {
+  it("no longer treats the reconstructed full base image rectangle as a generic collision body", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "enemy");
-    const surface = getBaseAttackSurfaceRect(base);
-    const rect = getBaseRect(base);
-    const attacker = unit("base-attacker", "player", 800);
-    attacker.x = surface.x - SOLDIER_RADIUS - 1;
-    attacker.y = surface.y + surface.height / 2;
-    const crossing = captureSoldierPositions([attacker]);
-    attacker.x = surface.x - SOLDIER_RADIUS + 1;
+    const soldier = unit("visual-base-only", "player", 1600, 450);
+    const before = { x: soldier.x, y: soldier.y };
 
-    resolveBaseMovementContacts([attacker], bases, crossing, 0, () => 0.99);
-    const hpAfterFirstHit = base.hp;
-    const lockAfterFirstHit = attacker.baseContactLockTicks;
-    expect(lockAfterFirstHit).toBeGreaterThan(0);
-
-    const beforeReentry = new Map([[attacker.id, { x: rect.x - SOLDIER_RADIUS, y: attacker.y }]]);
-    attacker.x = rect.x + 1;
-    resolveBaseMovementContacts([attacker], bases, beforeReentry, 1, () => 0.99);
-    expect(base.hp).toBe(hpAfterFirstHit);
-    expect(attacker.baseContactLockTicks).toBe(lockAfterFirstHit - 1);
-
-    resolveBaseAccessCollisions([attacker], bases);
-    expect(attacker.x).toBe(rect.x - SOLDIER_RADIUS);
+    expect(isPointInsideRect(soldier, getBaseRect(base))).toBe(true);
+    expect(getSwfBaseCollisionCodeAtWorld(soldier)).toBeNull();
+    resolveBaseAccessCollisions([soldier], bases);
+    expect({ x: soldier.x, y: soldier.y }).toEqual(before);
   });
 
-  it("currently traps off-core charge lanes in a no-damage base collision loop", () => {
-    const bases = createBattleBases();
-    const base = getBaseForTeam(bases, "enemy");
-    const rect = getBaseRect(base);
-    const surface = getBaseAttackSurfaceRect(base);
-    const attacker = unit("off-core-attacker", "player", 800);
-
-    attacker.y = surface.y - SOLDIER_RADIUS - 2;
-    expect(attacker.y).toBeGreaterThan(rect.y);
-    expect(attacker.y).toBeLessThan(rect.y + rect.height);
-
-    const hpBefore = base.hp;
-    for (let tick = 0; tick < 3; tick += 1) {
-      attacker.x = rect.x - SOLDIER_RADIUS - 1;
-      const previous = captureSoldierPositions([attacker]);
-      attacker.x = rect.x + 1;
-      resolveBaseMovementContacts([attacker], bases, previous, tick, () => 0.99);
-      expect(base.hp).toBe(hpBefore);
-      expect(attacker.baseContactLockTicks).toBe(0);
-
-      resolveBaseAccessCollisions([attacker], bases);
-      expect(attacker.x).toBe(rect.x - SOLDIER_RADIUS);
-    }
-  });
-
-  it("currently ejects a retreating soldier that is shifted sideways outside its friendly gate span", () => {
+  it("does not eject an own-base retreating soldier merely for leaving an alpha-derived visual gate span", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "player");
-    const rect = getBaseRect(base);
-    const retreating = unit("retreat-gate-congestion", "player", 300);
+    const retreating = unit("visual-gate-span-only", "player", 180, 450);
     retreating.state = "EMERGENCY_RETREAT";
     retreating.recoveryGate = "TOP";
+    const before = { x: retreating.x, y: retreating.y };
 
-    const interior = getBaseGatePoint(base, "TOP", true);
-    retreating.y = interior.y;
-    const candidateXs = Array.from({ length: 21 }, (_, index) => rect.x + SOLDIER_RADIUS + 1
-      + (rect.width - 2 * (SOLDIER_RADIUS + 1)) * index / 20);
-    const shiftedX = candidateXs.find((x) => !isPointWithinBaseGateSpan({ x, y: retreating.y }, base, "TOP"));
-    expect(shiftedX).toBeDefined();
-    retreating.x = shiftedX!;
-    expect(isPointInsideRect(retreating, rect)).toBe(true);
+    expect(isPointInsideRect(retreating, getBaseRect(base))).toBe(true);
     expect(isPointWithinBaseGateSpan(retreating, base, "TOP")).toBe(false);
-
+    expect(getSwfBaseCollisionCodeAtWorld(retreating)).toBeNull();
     resolveBaseAccessCollisions([retreating], bases);
-    expect(isPointInsideRect(retreating, rect)).toBe(false);
+    expect({ x: retreating.x, y: retreating.y }).toEqual(before);
   });
 
-  it("can turn same-gate retreat crowding into separation-driven friendly-base ejection", () => {
+  it("applies the original +6 source-unit response when a non-retreater hits player recovery tile 999", () => {
     const bases = createBattleBases();
-    const base = getBaseForTeam(bases, "player");
-    const baseRect = getBaseRect(base);
-    const gateRect = getBaseUpperGateRect(base);
-    const entryY = gateRect.y + gateRect.height + SOLDIER_RADIUS - 1;
-    const rightValidCenterX = gateRect.x + gateRect.width - SOLDIER_RADIUS;
-    const retreaters = [
-      unit("retreat-crowd-a", "player", 300),
-      unit("retreat-crowd-b", "player", 300),
-    ];
-    for (const [index, soldier] of retreaters.entries()) {
-      soldier.state = "EMERGENCY_RETREAT";
-      soldier.recoveryGate = "TOP";
-      soldier.recoveryTargetKind = "BASE_GATE";
-      soldier.x = rightValidCenterX - 2.5 + index * 2;
-      soldier.y = entryY;
-      expect(isPointInsideRect(soldier, baseRect)).toBe(true);
-      expect(isPointWithinBaseGateSpan(soldier, base, "TOP")).toBe(true);
-    }
+    const soldier = unit("player-recovery-wall", "player", 216, 432);
+    expect(getSwfBaseCollisionCodeAtWorld(soldier)).toBe(999);
+    const sourceBefore = battlefieldWorldPointToSource(soldier);
 
-    // Mirror the relevant BattleScene ordering: recovery targeting -> movement ->
-    // base contact -> soldier separation -> friendly-base access collision.
-    updateRecoveryStates(retreaters, 1 / 60, bases, () => 1, 1_000);
-    const beforeMovement = captureSoldierPositions(retreaters);
-    moveAiSoldiers(retreaters, 0.001, [], 1_000, bases);
-    resolveBaseMovementContacts(retreaters, bases, beforeMovement, 1_000, () => 1);
-    expect(retreaters.every((soldier) => isPointWithinBaseGateSpan(soldier, base, "TOP"))).toBe(true);
-
-    separateSoldiers(retreaters);
-    const displaced = retreaters.find((soldier) => isPointInsideRect(soldier, baseRect)
-      && !isPointWithinBaseGateSpan(soldier, base, "TOP"));
-    expect(displaced).toBeDefined();
-
-    resolveBaseAccessCollisions(retreaters, bases);
-    expect(isPointInsideRect(displaced!, baseRect)).toBe(false);
-    expect(displaced!.state).toBe("EMERGENCY_RETREAT");
-    expect(displaced!.recoveryGate).toBe("TOP");
-
-    updateRecoveryStates(retreaters, 1 / 60, bases, () => 1, 1_016);
-    expect(displaced!.moveTargetX).not.toBeNull();
-    expect(displaced!.moveTargetY).not.toBeNull();
-    expect(displaced!.recoveryGate).toBe("TOP");
+    resolveBaseAccessCollisions([soldier], bases);
+    const sourceAfter = battlefieldWorldPointToSource(soldier);
+    expect(sourceAfter.x - sourceBefore.x).toBeCloseTo(6, 6);
+    expect(sourceAfter.y).toBeCloseTo(sourceBefore.y, 6);
+    expect(soldier.baseContactLockTicks).toBe(10);
   });
 });
