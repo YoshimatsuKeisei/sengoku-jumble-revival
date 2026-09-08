@@ -27,6 +27,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Full regression tests
+        run: npm test
       - name: SWF conformance tests
         run: npx vitest run tests/swf-spec --reporter=verbose
       - name: Machine-readable SWF result
