@@ -63,7 +63,7 @@ describe("runtime characterization for major combat bugs", () => {
     expect(archer.specialLockUntil).toBeGreaterThan(1_000);
   });
 
-  it("currently dumps banked ranged gauge as a rapid burst when a target enters range", () => {
+  it("keeps banked ranged gauge but no longer dumps it as a sub-cycle rapid burst", () => {
     const archer = unit("banked-archer", "player", 520);
     const enemy = unit("enemy", "enemy", 900);
     archer.unitType = "ARCHER";
@@ -82,10 +82,11 @@ describe("runtime characterization for major combat bugs", () => {
       const events = updateSpecialAttacks([archer, enemy], [], createBattleBases(), bankedAt + offset, false, () => 1);
       arrows += events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id).length;
     }
-    // Strict >200 readiness means 1000 drains as 1000→800→600→400→200,
-    // yielding four launches in roughly 150 ms before the fifth check is blocked.
-    expect(arrows).toBe(4);
-    expect(archer.combatGauge).toBe(200);
+    // Gauge banking remains intentionally unchanged because its SWF cap/carry-over
+    // semantics are still unconfirmed. The confirmed eight-frame action span now
+    // prevents the former four-shot ~150 ms dump.
+    expect(arrows).toBe(1);
+    expect(archer.combatGauge).toBe(800);
   });
 
   it("currently turns base re-entry during the contact lock into rectangle snapback without another hit", () => {
