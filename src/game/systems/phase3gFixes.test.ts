@@ -127,11 +127,27 @@ describe("Phase 3G base access geometry", () => {
 });
 
 describe("Phase 3G SWF-coded base collision", () => {
-  it("does not project a soldier merely for occupying a zero-code cell in the reconstructed visual base rectangle", () => {
+  it("restores the 2026-09-07 access guard for zero-code visual-base gaps", () => {
     const bases = createBattleBases();
     const base = bases[0];
     const point = battlefieldSourcePointToWorld({ x: 180, y: 450 });
     const soldier = createSoldier("visual-only", "player", "ai", point.x, point.y);
+    const before = { x: soldier.x, y: soldier.y };
+    expect(isPointInsideRect(soldier, getBaseRect(base))).toBe(true);
+    expect(getSwfBaseCollisionCodeAtWorld(soldier)).toBeNull();
+    resolveBaseAccessCollisions([soldier], bases);
+    expect(isPointInsideRect(soldier, getBaseRect(base))).toBe(false);
+    expect({ x: soldier.x, y: soldier.y }).not.toEqual(before);
+  });
+
+  it("does not eject an entry-committed own-base retreat from a zero-code interior cell", () => {
+    const bases = createBattleBases();
+    const base = bases[0];
+    const point = battlefieldSourcePointToWorld({ x: 180, y: 450 });
+    const soldier = createSoldier("committed-retreat", "player", "ai", point.x, point.y);
+    soldier.state = "EMERGENCY_RETREAT";
+    soldier.recoveryGate = "TOP";
+    (soldier as typeof soldier & { recoveryEntryCommitted?: boolean }).recoveryEntryCommitted = true;
     const before = { x: soldier.x, y: soldier.y };
     expect(isPointInsideRect(soldier, getBaseRect(base))).toBe(true);
     expect(getSwfBaseCollisionCodeAtWorld(soldier)).toBeNull();
