@@ -1,10 +1,17 @@
 {
   "rules": [
     {
-      "id": "TRAP_HALF_BOUNDARY_SOURCE_X",
+      "id": "TRAP_RAW_HALF_BRANCH_AND_PORT_TRIGGER",
       "status": "confirmed",
       "category": "movement",
-      "expected": { "sourceCenterX": 900, "comparisonSpace": "swf-source" },
+      "expected": {
+        "rawSwfSourceCenterX": 900,
+        "rawSwfComparisonSpace": "swf-source",
+        "rawSwfContainsOpposingHalfEligibilityBranch": true,
+        "activePortTrigger": "new-enemy-fixed-fence-contact",
+        "activePortUsesHalfBoundaryAsCollisionOrTrigger": false,
+        "activePortDecisionDate": "2026-09-07"
+      },
       "evidence": { "reference": "evidence/trap_boundary.md" }
     }
   ]
