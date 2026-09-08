@@ -1,5 +1,6 @@
-import { BATTLEFIELD_CONFIG, COMMAND_CONFIG, STRATEGY_AI_CONFIG } from "../config";
+import { COMMAND_CONFIG } from "../config";
 import {
+  BATTLEFIELD_SOURCE_TO_WORLD,
   BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY,
   BATTLEFIELD_STRATEGY_WORLD_GEOMETRY,
   battlefieldSourcePointToWorld,
@@ -9,7 +10,6 @@ import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier, StrategyObjectiveKind, Team } from "../types";
 import { clearApproachRuntime } from "./engagementPositioningSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
-import { getNormalContactBounds } from "./techniqueCombatProfiles";
 
 export function distanceBetween(a: Pick<Soldier, "x" | "y">, b: Pick<Soldier, "x" | "y">): number {
   return Math.hypot(a.x - b.x, a.y - b.y);
@@ -82,18 +82,42 @@ export function getEnemyEffectiveX(enemy: Pick<Soldier, "x" | "velocityX">): num
   return enemy.x + enemy.velocityX;
 }
 
+function sourceVelocity(soldier: Pick<Soldier, "velocityX" | "velocityY">): { x: number; y: number } {
+  return {
+    x: soldier.velocityX / BATTLEFIELD_SOURCE_TO_WORLD.scaleX,
+    y: soldier.velocityY / BATTLEFIELD_SOURCE_TO_WORLD.scaleY,
+  };
+}
+
+function projectedStrategyCandidate(defender: Soldier, candidate: Soldier): { x: number; y: number } | null {
+  if (!isValidCombatTarget(defender, candidate) || candidate.state === "EMERGENCY_RETREAT") return null;
+  const source = battlefieldWorldPointToSource(candidate);
+  if (defender.team === "enemy" && source.x >= 1615) return null;
+  const velocity = sourceVelocity(candidate);
+  const unengagedAiBias = candidate.targetId === null && candidate.controller === "ai"
+    ? (defender.team === "player" ? -200 : 200)
+    : 0;
+  const projected = {
+    x: source.x + velocity.x * 8 + unengagedAiBias,
+    y: source.y + velocity.y * 50,
+  };
+  return projected.y > 324 && projected.y < 841 ? projected : null;
+}
+
 export function findFrontmostInvader(defender: Soldier, soldiers: Soldier[], thresholdX: number): Soldier | null {
-  const candidates = soldiers.filter((candidate) => isValidCombatTarget(defender, candidate));
-  if (candidates.length === 0) return null;
-  const frontmost = candidates.reduce((best, candidate) => {
-    const candidateX = getEnemyEffectiveX(candidate);
-    const bestX = getEnemyEffectiveX(best);
-    return defender.team === "player" ? (candidateX < bestX ? candidate : best) : (candidateX > bestX ? candidate : best);
-  });
-  const effectiveX = getEnemyEffectiveX(frontmost);
+  const thresholdSourceX = battlefieldWorldPointToSource({ x: thresholdX, y: 0 }).x;
+  let best: { soldier: Soldier; projectedX: number } | null = null;
+  for (const candidate of soldiers) {
+    const projected = projectedStrategyCandidate(defender, candidate);
+    if (!projected) continue;
+    if (!best || (defender.team === "player" ? projected.x < best.projectedX : projected.x > best.projectedX)) {
+      best = { soldier: candidate, projectedX: projected.x };
+    }
+  }
+  if (!best) return null;
   return defender.team === "player"
-    ? (effectiveX <= thresholdX ? frontmost : null)
-    : (effectiveX >= thresholdX ? frontmost : null);
+    ? (best.projectedX <= thresholdSourceX ? best.soldier : null)
+    : (best.projectedX >= thresholdSourceX ? best.soldier : null);
 }
 
 function teamThreshold(team: Team, kind: "defend" | "intercept"): number {
@@ -101,49 +125,58 @@ function teamThreshold(team: Team, kind: "defend" | "intercept"): number {
 }
 
 function updateDefenderPursuitObjective(defender: Soldier, target: Soldier): void {
-  const enemyPassedDefender = (target.x - defender.x) * (defender.team === "player" ? 1 : -1) < 0;
-  const verticallySeparated = Math.abs(target.y - defender.y) > getNormalContactBounds().y;
-  if (!enemyPassedDefender && !verticallySeparated) return;
-  setStrategyObjective(
-    defender,
-    "SEEK_COMBAT",
-    Math.max(0, Math.min(BATTLEFIELD_CONFIG.width, target.x + target.velocityX * STRATEGY_AI_CONFIG.defendPredictionTicks)),
-    Math.max(0, Math.min(BATTLEFIELD_CONFIG.height, target.y + target.velocityY * STRATEGY_AI_CONFIG.defendPredictionTicks)),
-  );
+  const defenderSource = battlefieldWorldPointToSource(defender);
+  const targetSource = battlefieldWorldPointToSource(target);
+  const velocity = sourceVelocity(target);
+  const enemyPassedDefender = (targetSource.x - defenderSource.x) * (defender.team === "player" ? 1 : -1) < 0;
+  const verticallySeparated = Math.abs(targetSource.y - defenderSource.y) > 250;
+  const predictionTicks = enemyPassedDefender || verticallySeparated ? 30 : 1;
+  const destination = battlefieldSourcePointToWorld({
+    x: targetSource.x + velocity.x * predictionTicks,
+    y: targetSource.y + velocity.y * predictionTicks,
+  });
+  setStrategyObjective(defender, "SEEK_COMBAT", destination.x, destination.y);
 }
 
 export function updateChargeAI(soldier: Soldier, soldiers: Soldier[], _currentTime = 0): void {
-  setStrategyObjective(
-    soldier,
-    "ENEMY_SIDE",
-    BATTLEFIELD_STRATEGY_WORLD_GEOMETRY.chargeDestinationX[soldier.team],
-    soldier.y,
-  );
+  const source = battlefieldWorldPointToSource(soldier);
+  let target = { x: soldier.team === "player" ? 1600 : 0, y: source.y };
+  if (soldier.team === "player") {
+    if (source.x > 1442) target = { x: 1662, y: 574 };
+    else if (source.x > 1207) target = { x: 1607, y: 574 };
+  } else {
+    if (source.x < 390) target = { x: 200, y: 574 };
+    else if (source.x < 634) target = { x: 234, y: 574 };
+  }
+  const world = battlefieldSourcePointToWorld(target);
+  setStrategyObjective(soldier, "ENEMY_SIDE", world.x, world.y);
   clearInvalidEngagement(soldier, soldiers);
-  // Retaliation and explicit combat events may assign a target. Charge itself
-  // never performs proactive nearest-enemy acquisition.
+  // Raw p1/p2 do not proactively acquire a combat target. Contact/retaliation
+  // can still put the soldier into the corresponding pp+20 engagement state.
 }
 
 export function updateDefendAI(soldier: Soldier, soldiers: Soldier[], currentTime = 0): void {
   setStrategyObjective(soldier, "ANCHOR", soldier.anchorX, soldier.anchorY);
-  const current = clearInvalidEngagement(soldier, soldiers);
-  if (current) {
-    updateDefenderPursuitObjective(soldier, current);
+  clearInvalidEngagement(soldier, soldiers);
+  const target = findFrontmostInvader(soldier, soldiers, teamThreshold(soldier.team, "defend"));
+  if (!target) {
+    if (soldier.targetId) clearEngagement(soldier);
     return;
   }
-  const target = findFrontmostInvader(soldier, soldiers, teamThreshold(soldier.team, "defend"));
-  if (target) {
-    startEngagement(soldier, target, currentTime);
-    updateDefenderPursuitObjective(soldier, target);
-  }
+  startEngagement(soldier, target, currentTime);
+  updateDefenderPursuitObjective(soldier, target);
 }
 
 export function updateInterceptAI(soldier: Soldier, soldiers: Soldier[], currentTime = 0): void {
   setStrategyObjective(soldier, "INTERCEPT_POINT", soldier.anchorX, soldier.anchorY);
-  const current = clearInvalidEngagement(soldier, soldiers);
-  if (current) return;
+  clearInvalidEngagement(soldier, soldiers);
   const target = findFrontmostInvader(soldier, soldiers, teamThreshold(soldier.team, "intercept"));
-  if (target) startEngagement(soldier, target, currentTime);
+  if (!target) {
+    if (soldier.targetId) clearEngagement(soldier);
+    return;
+  }
+  startEngagement(soldier, target, currentTime);
+  setStrategyObjective(soldier, "SEEK_COMBAT", target.x, target.y);
 }
 
 function randomIndex(length: number, random: RandomSource): number {
@@ -153,8 +186,8 @@ function randomIndex(length: number, random: RandomSource): number {
 function setRandomMeleeObjective(soldier: Soldier, random: RandomSource): void {
   const source = BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.meleeRoamRect;
   const point = battlefieldSourcePointToWorld({
-    x: source.x + random() * source.width,
-    y: source.y + random() * source.height,
+    x: Math.floor(random() * source.width) + source.x,
+    y: Math.floor(random() * source.height) + source.y,
   });
   setStrategyObjective(soldier, "RANDOM_ROAM", point.x, point.y);
 }
@@ -167,9 +200,10 @@ function hasReachedRandomMeleeObjective(soldier: Soldier): boolean {
 }
 
 function selectRandomMeleeTarget(soldier: Soldier, soldiers: Soldier[], currentTime: number, random: RandomSource): void {
-  const enemySlots = soldiers.filter((candidate) => candidate.team !== soldier.team && candidate !== soldier);
+  const enemySlots = soldiers.filter((candidate) => candidate.team !== soldier.team && candidate !== soldier
+    && !(soldier.team === "enemy" && candidate.controller === "player"));
   const selected = enemySlots.length > 0 ? enemySlots[randomIndex(enemySlots.length, random)] : null;
-  if (isValidCombatTarget(soldier, selected)) {
+  if (isValidCombatTarget(soldier, selected) && selected.state !== "EMERGENCY_RETREAT") {
     startEngagement(soldier, selected, currentTime);
     setStrategyObjective(soldier, "SEEK_COMBAT", selected.x, selected.y);
   } else {
@@ -191,26 +225,23 @@ export function updateMeleeAI(
       return;
     }
   }
-  const hadTarget = soldier.targetId !== null;
   const current = clearInvalidEngagement(soldier, soldiers);
   if (current) return;
-  if (hadTarget) {
-    setRandomMeleeObjective(soldier, random);
-    return;
-  }
   if (soldier.strategyObjectiveKind === "RANDOM_ROAM" && !hasReachedRandomMeleeObjective(soldier)) return;
+  // Raw p10/p11 immediately samples another opponent slot after a lost target.
+  // It roams only when that selected slot is unusable.
   selectRandomMeleeTarget(soldier, soldiers, currentTime, random);
 }
 
 export function updateWaitAI(soldier: Soldier, soldiers: Soldier[], _currentTime = 0): void {
   setStrategyObjective(soldier, "ANCHOR", soldier.anchorX, soldier.anchorY);
   clearInvalidEngagement(soldier, soldiers);
-  // Wait never acquires a target proactively. Retaliation targets are retained
-  // until invalid, after which this objective returns the unit to its anchor.
+  // Raw p14/p15 never proactively assign persistent l. Ranged wait units can
+  // still fire through the separate local tk/atck scan, and retaliation may pursue.
 }
 
 export function isAtAnchor(soldier: Soldier): boolean {
-  return Math.hypot(soldier.x - soldier.anchorX, soldier.y - soldier.anchorY) <= STRATEGY_AI_CONFIG.returnRadius;
+  return Math.hypot(soldier.x - soldier.anchorX, soldier.y - soldier.anchorY) <= 4;
 }
 
 export function updateAiTargets(soldiers: Soldier[], currentTime = 0, random: RandomSource = Math.random): void {
