@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { RECOVERY_CONFIG } from "../config";
 import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import { updateAiTargets } from "./aiSystem";
@@ -17,15 +16,30 @@ import {
 } from "./recoverySystem";
 
 describe("recovery state system", () => {
-  it("starts emergency retreat at the temporary danger threshold and clears combat", () => {
+  it("starts emergency retreat below the current confirmed threshold and clears combat", () => {
     const unit = createSoldier("p", "player", "ai", 100, 500, "defend");
-    unit.hp = unit.maxHp * RECOVERY_CONFIG.dangerHpRatio;
+    unit.maxHp = 100;
+    unit.hp = 19;
     unit.targetId = "enemy";
     expect(shouldEmergencyRetreat(unit)).toBe(true);
     updateRecoveryStates([unit], 0);
     expect(unit.state).toBe("EMERGENCY_RETREAT");
     expect(unit.targetId).toBeNull();
     expect(unit.strategy).toBe("defend");
+  });
+
+  it("uses floor(percent)<20 OR HP<6, while HP0 is battle-out only", () => {
+    const unit = createSoldier("p", "player", "ai", 0, 0);
+    unit.maxHp = 100;
+    unit.hp = 20;
+    expect(shouldEmergencyRetreat(unit)).toBe(false);
+    unit.maxHp = 20;
+    unit.hp = 5;
+    expect(shouldEmergencyRetreat(unit)).toBe(true);
+    unit.hp = 6;
+    expect(shouldEmergencyRetreat(unit)).toBe(false);
+    unit.hp = 0;
+    expect(shouldEmergencyRetreat(unit)).toBe(false);
   });
 
   it("does not run strategy targeting during emergency retreat", () => {
@@ -114,7 +128,7 @@ describe("recovery state system", () => {
     const unit = createSoldier("p", "player", "ai", 0, 0);
     const attacker = createSoldier("e", "enemy", "ai", 10, 0);
     startEmergencyRetreat(unit);
-    applyDamage(unit, unit.maxHp);
+    applyDamage(unit, unit.maxHp, attacker);
     startHitReaction(unit, attacker, 0);
     updateRecoveryStates([unit], 0);
     expect(unit.isDead).toBe(false);
