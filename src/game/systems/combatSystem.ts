@@ -14,11 +14,16 @@ export interface DamageApplicationResult {
 }
 
 /**
- * Raw damage changes HP immediately, but a newly fatal normal hit does not enter
- * death state p99 until the k reaction lock has completed. Cleanup is separated
- * into finalizeFatalDamage() so the reaction system can preserve that ordering.
+ * Raw damage changes HP immediately. A newly fatal hit only waits for death when
+ * the caller is about to establish the k reaction lock (normal melee) or when a
+ * HIT_STUN is already active. Other HP-zero paths with k==0 finalize immediately.
  */
-export function applyDamage(target: Soldier, damage: number, attacker?: Soldier): DamageApplicationResult {
+export function applyDamage(
+  target: Soldier,
+  damage: number,
+  attacker?: Soldier,
+  deferFatalForReaction = false,
+): DamageApplicationResult {
   if (target.isDead) return { appliedDamage: 0, battleOutStarted: false };
   const beforeHp = target.hp;
   target.hp = Math.max(0, target.hp - Math.max(0, damage));
@@ -26,7 +31,10 @@ export function applyDamage(target: Soldier, damage: number, attacker?: Soldier)
   const appliedDamage = beforeHp - target.hp;
   recordSoldierDamage(attacker, target, appliedDamage);
   const becameFatal = beforeHp > 0 && target.hp === 0;
-  if (becameFatal) recordBattleOut(attacker, target);
+  if (becameFatal) {
+    recordBattleOut(attacker, target);
+    if (!deferFatalForReaction && target.reactionState !== "HIT_STUN") finalizeFatalDamage(target);
+  }
   return { appliedDamage, battleOutStarted: becameFatal };
 }
 
