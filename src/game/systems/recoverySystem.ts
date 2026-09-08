@@ -114,7 +114,6 @@ function completeTreatment(patient: Soldier, healer: Soldier, currentTime: numbe
   const boost = hasSpecialAbility(patient, "RECOVERY_BOOST");
   const beforeHp = patient.hp;
   patient.hp = Math.min(patient.maxHp, patient.hp + amount * (boost ? 2 : 1));
-  // tat() is the confirmed exception that immediately refreshes h after recovery.
   patient.hpBarHp = patient.hp;
   recordRecovery(healer, patient, patient.hp - beforeHp);
   patient.treatmentUsedSinceLastBaseVisit = true;
@@ -182,6 +181,8 @@ function enterHealing(
   soldier.facingY = 0;
   soldier.aimX = null;
   soldier.aimY = null;
+  // Defensive fallback for directly injected/debug healing. Normal AI retreat
+  // releases persistent pursuers earlier when the interior-entry leg is committed.
   invalidateCombatTargetForAll(soldier.id, soldiers);
   soldier.moveTargetX = null;
   soldier.moveTargetY = null;
@@ -202,6 +203,7 @@ export function updateEmergencyRetreat(
     const preferredGate = getPreferredBaseGate(soldier, base);
     const gate = hasClearedBaseGateBoundary(soldier, base, preferredGate, "ENTER") ? preferredGate : null;
     if (!gate) { soldier.moveTargetX = null; soldier.moveTargetY = null; return; }
+    invalidateCombatTargetForAll(soldier.id, soldiers);
     enterHealing(soldier, base, gate, soldiers, random);
     return;
   }
@@ -224,9 +226,14 @@ export function updateEmergencyRetreat(
     return;
   }
   const exterior = getBaseGatePoint(base, gate, false);
-  setMoveTarget(soldier, hasReachedBaseGateApproach(soldier, base, gate)
-    ? getBaseGatePoint(base, gate, true)
-    : exterior);
+  const entryCommitted = hasReachedBaseGateApproach(soldier, base, gate);
+  if (entryCommitted && !soldier.recoveryGateEntered) {
+    // Reconstruction equivalent of raw p91/p92 -> p93/p94: outer retreat is
+    // still pursuable, then led(self) releases all pursuers at entry commit.
+    soldier.recoveryGateEntered = true;
+    invalidateCombatTargetForAll(soldier.id, soldiers);
+  }
+  setMoveTarget(soldier, entryCommitted ? getBaseGatePoint(base, gate, true) : exterior);
 }
 
 export function updateHealing(soldier: Soldier, deltaSeconds: number, bases?: readonly BattleBase[]): void {
