@@ -35,3 +35,5 @@ jobs:
         run: npx vitest run src/game/systems/recoverySystem.test.ts --reporter=verbose
       - name: SWF combat regression
         run: npx vitest run src/game/systems/swfCombatRules.test.ts --reporter=verbose
+      - name: Full test suite
+        run: npm test
