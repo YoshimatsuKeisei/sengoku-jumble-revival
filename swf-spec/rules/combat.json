@@ -2,9 +2,17 @@
   "rules": [
     {
       "id": "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH",
-      "status": "unconfirmed",
+      "status": "confirmed",
       "category": "combat",
-      "expected": { "projectileLaunchesPerAttackCycle": 1 },
+      "expected": {
+        "projectileLaunchesPerAttackCycle": 1,
+        "attackResolutionCallsPerSuccessfulSpl": 1,
+        "projectileChildSpriteId": 1002,
+        "projectileInstanceName": "ya",
+        "projectileChildInstancesPerDirectionalPose": 1,
+        "projectileChildTimelineFrames": 4,
+        "projectileChildLoops": false
+      },
       "evidence": { "reference": "evidence/ranged_cycle.md" }
     },
     {
@@ -12,11 +20,14 @@
       "status": "confirmed",
       "category": "combat",
       "expected": {
-        "sourceFrameStart": 41,
-        "sourceFrameEnd": 48,
-        "sourceFrameCount": 8,
-        "swfFps": 24,
-        "minimumFreshActivationIntervalTicks": 8
+        "directionPoseSourceFrameStart": 41,
+        "directionPoseSourceFrameEnd": 48,
+        "directionPoseCount": 8,
+        "directionPoseSelection": "gotoAndStop(fi + 40)",
+        "mustNotInterpretDirectionFramesAsSequentialCadence": true,
+        "actionLockVariable": "k",
+        "actionLockLogicTicks": 10,
+        "minimumFreshActivationIntervalTicks": 10
       },
       "evidence": { "reference": "evidence/ranged_cycle.md" }
     },

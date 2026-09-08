@@ -1,26 +1,41 @@
 # Ranged attack cycle evidence
 
-The machine-gun symptom had several independently reproducible runtime paths: repeated GENERAL_COMMAND forcing, a forced shot followed by the recipient's own gauge-driven shot in the same update, rapid draining of a large banked ranged gauge after a target enters range, and the former recursive DOUBLE_SPECIAL chain.
+Source: original `sgjbgm.swf`, SHA-256 `47d397d98ed797e2e5e1f7f96c10ba9c3f93d3a3b54b45fbc61401a553c3399c` (3,814,810 bytes, CWS, SWF v7, 24 fps). The cadence and launch statements below come directly from regenerated AVM1 (`spl`, `atck`, battle update `d`) and the extracted character/effect timelines.
 
-## Confirmed SWF ranged action span
+## Important correction: frames 41-48 are directions, not elapsed attack frames
 
-The SWF-derived runtime manifest `assets/effect/runtime/action_effect_map.json` identifies its action-name source as the SWF root `act` array. Its ranged entries are marked `confidence: confirmed` and map all currently implemented archer and teppou attacks to character action frames `41-48`:
+The earlier reconstruction interpreted character frames `41-48` as an eight-frame animation interval and used that as an eight-tick action lock. Direct AVM1 disproves that interpretation.
 
-- archer: 弓矢 (2), 遠射 (3), 火矢 (15), 焙烙 (16)
-- teppou: 射撃 (4), 狙撃 (5), 砲撃 (17)
+For the common ranged branch (archer codes 2/3/15/16 and teppou codes 4/5/17), `spl()` stores the facing index `fi` and selects the character pose with:
 
-The SWF runs at 24 fps. Frames 41 through 48 inclusive therefore form an eight-frame ranged action interval. The reconstruction's technique action lock represents the period in which a fresh technique activation cannot begin, so a fresh ranged activation must not be admitted again before those eight SWF frames have elapsed. This establishes `RANGED_ACTION_FRAME_LOCK` as confirmed without inventing a separate cooldown value.
+`gotoAndStop(fi + 40)`
 
-GENERAL_COMMAND-forced archer/teppou attacks still execute the same ranged technique and therefore enter the same confirmed frames 41-48 action interval. The forced activation may remain gauge/cooldown-free while still establishing the physical action lock. This removes two reconstruction-only machine-gun paths without assuming anything about command-level same-tick deduplication: two generals can no longer make one ranged recipient begin two firing actions in the same update, and a forced ranged shot can no longer be immediately followed by the recipient's own gauge-driven ranged action in that update.
+`fi` is the eight-direction facing index, so source frames 41 through 48 are eight **directional attack poses**. They are not played sequentially at 24 fps and cannot establish an eight-tick cadence by themselves.
 
-This does not establish whether two simultaneous GENERAL_COMMAND events are themselves deduplicated by the original SWF for every recipient type. `GENERAL_SAME_TICK_DEDUPE` therefore remains inferred. It also does not establish the exact projectile spawn frame within 41-48, so `RANGED_ATTACK_CYCLE_SINGLE_LAUNCH` remains unconfirmed as a separate claim.
+## Confirmed original ranged lock: `k = 10`
 
-## Gauge banking
+The same ranged `spl()` branch requires all of the following before resolving the shot, including `k == 0`. It calls `atck()` exactly once for that successful activation. During the attack resolution, the SWF sets the attacker's `k = 10`.
 
-The banked-gauge path comes from the combat-gauge migration introduced at commit `492f09613a4017476b0e3664f9b84ee1fd7e7374`: every 23 SWF logic ticks the AI adds `skill` to `combatGauge`; ranged readiness is strictly `> 200`; a normal ranged activation subtracts 200; and no maximum/clamp is applied. A ranged unit with no target in technique range therefore keeps accumulating gauge.
+The main battle updater `d()` checks `k` before ordinary action logic. When `k != 0`, ordinary action processing is skipped, and the updater decrements `k` by one. This makes the next fresh ranged activation available only after the ten-step `k` lock has elapsed. The reconstruction's ranged action lock therefore needs to model **10 SWF logic ticks**, not the previous guessed value of 8.
 
-The earlier reconstruction could dump a skill-100 archer's banked gauge from 1000 to 200 with four launches in roughly 150 ms. After applying the confirmed eight-frame action span, the same short observation window admits only the first launch; gauge banking itself is intentionally left unchanged because the SWF maximum/carry-over semantics remain unrecovered.
+## One ranged activation resolves one shot
 
-Therefore `RANGED_GAUGE_BANKING_LIMIT` remains unconfirmed and no arbitrary cap should be introduced.
+All seven currently implemented ranged technique codes converge on the same `spl()` ranged branch. One successful branch execution contains one call to `atck()`; there is no loop that invokes `atck()` repeatedly for that activation.
 
-Arrow projectile lifetime itself is less suspicious: the current projectile updater returns `active: false` after impact and BattleScene removes that projectile, so the same arrow is not normally retained to deal impact damage every subsequent frame.
+The extracted visual timeline independently matches that cardinality. Archer Sprite `1033` and teppou Sprite `1982` use the same projectile child Sprite `1002`, instance name `ya`. Across directional poses 41-48, the display list contains one active `ya` instance for the selected pose. Some source frames remove/re-place it at another depth as the directional artwork changes, but the resulting pose contains one projectile child rather than multiple concurrent projectile instances.
+
+Sprite 1002 itself is a non-looping four-frame effect:
+
+- SWF frame 1: transparent;
+- frames 2-4: bitmap 996, 998, 1000;
+- `loop = false`.
+
+Therefore `RANGED_ATTACK_CYCLE_SINGLE_LAUNCH` is confirmed as one ranged attack resolution/projectile launch per successful `spl()` activation. The four-frame child visual is playback of that one projectile effect, not four launches.
+
+## GENERAL_COMMAND interaction
+
+General command eventually calls the recipient's own `spl()` through the original `fr.kb` callback. A commanded archer/teppou therefore uses the same `k == 0` gate and the same `k = 10` post-attack lock. The command can bypass the recipient's gauge trigger while still being subject to the physical/action state that prevents immediate repeated ranged resolution.
+
+## Gauge banking remains unresolved
+
+The reconstruction currently accumulates AI combat gauge and does not clamp a banked ranged gauge. The direct evidence above establishes launch cardinality and the `k=10` action cadence, but it does not yet establish the original maximum/carry-over rule for the reconstruction's gauge abstraction. `RANGED_GAUGE_BANKING_LIMIT` therefore remains `unconfirmed`; no arbitrary cap should be introduced.

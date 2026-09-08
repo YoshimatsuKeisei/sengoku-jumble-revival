@@ -2,9 +2,19 @@
   "rules": [
     {
       "id": "GENERAL_SAME_TICK_DEDUPE",
-      "status": "inferred",
+      "status": "confirmed",
       "category": "command",
-      "expected": { "maxForcedActivationsPerSoldierPerTick": 1 },
+      "expected": {
+        "maxForcedActivationsPerSoldierPerTick": 1,
+        "swfMode": 4,
+        "recipientGeneralCharacterCodeExcluded": 3,
+        "recipientRequiresSpZero": true,
+        "effectSelectorSpriteId": 800,
+        "effectSelectorLabel": "kb",
+        "forcedCallbackSpriteId": 671,
+        "forcedCallbackFrame": 13,
+        "forcedCallbackFunction": "spl"
+      },
       "evidence": { "reference": "evidence/general_same_tick.md" }
     }
   ]
