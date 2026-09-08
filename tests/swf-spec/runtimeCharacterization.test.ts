@@ -4,7 +4,13 @@ import { battlefieldSourcePointToWorld } from "../../src/game/battlefieldLayout"
 import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
 import { captureSoldierPositions, resolveBaseMovementContacts } from "../../src/game/systems/baseContactSystem";
-import { getBaseAttackSurfaceRect, getBaseRect } from "../../src/game/systems/battlefieldGeometry";
+import {
+  getBaseAttackSurfaceRect,
+  getBaseGatePoint,
+  getBaseRect,
+  isPointInsideRect,
+  isPointWithinBaseGateSpan,
+} from "../../src/game/systems/battlefieldGeometry";
 import { createBattleBases, getBaseForTeam, resolveBaseAccessCollisions } from "../../src/game/systems/baseSystem";
 import { COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
@@ -140,5 +146,27 @@ describe("runtime characterization for major combat bugs", () => {
       resolveBaseAccessCollisions([attacker], bases);
       expect(attacker.x).toBe(rect.x - SOLDIER_RADIUS);
     }
+  });
+
+  it("currently ejects a retreating soldier that is shifted sideways outside its friendly gate span", () => {
+    const bases = createBattleBases();
+    const base = getBaseForTeam(bases, "player");
+    const rect = getBaseRect(base);
+    const retreating = unit("retreat-gate-congestion", "player", 300);
+    retreating.state = "EMERGENCY_RETREAT";
+    retreating.recoveryGate = "TOP";
+
+    const interior = getBaseGatePoint(base, "TOP", true);
+    retreating.y = interior.y;
+    const candidateXs = Array.from({ length: 21 }, (_, index) => rect.x + SOLDIER_RADIUS + 1
+      + (rect.width - 2 * (SOLDIER_RADIUS + 1)) * index / 20);
+    const shiftedX = candidateXs.find((x) => !isPointWithinBaseGateSpan({ x, y: retreating.y }, base, "TOP"));
+    expect(shiftedX).toBeDefined();
+    retreating.x = shiftedX!;
+    expect(isPointInsideRect(retreating, rect)).toBe(true);
+    expect(isPointWithinBaseGateSpan(retreating, base, "TOP")).toBe(false);
+
+    resolveBaseAccessCollisions([retreating], bases);
+    expect(isPointInsideRect(retreating, rect)).toBe(false);
   });
 });
