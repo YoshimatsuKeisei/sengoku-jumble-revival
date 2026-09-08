@@ -36,6 +36,9 @@
       "expected": {
         "retreatingSoldiersMustNotBePermanentlyRejectedByFriendlyBaseCollision": true,
         "currentGateWidthSensitiveAdmissionIsRuntimeReconstruction": true,
+        "visualGateRectsDerivedFromAlphaBounds": true,
+        "swfBehavioralAdmissionSpan": null,
+        "mustNotEquateVisualCorridorWithBehavioralCollision": true,
         "exactSwfGateEntrySemanticsStillRequired": true
       },
       "evidence": { "reference": "evidence/base_contact.md" }
