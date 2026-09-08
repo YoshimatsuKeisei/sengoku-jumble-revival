@@ -78,13 +78,16 @@ describe("Phase 3J inspector and player controls", () => {
     expect(player.state).toBe("HEALING");
     expect(player.recoveryGate).toBe("TOP");
     expect({ x: player.x, y: player.y }).toEqual(getSwfHealingSlotPosition(player));
-    expect(battlefieldWorldPointToSource(player)).toEqual({ x: 193, y: 600 });
+    const healingSource = battlefieldWorldPointToSource(player);
+    expect(healingSource.x).toBeCloseTo(193, 6);
+    expect(healingSource.y).toBeCloseTo(600, 6);
 
     player.hp = player.maxHp;
     updateRecoveryStates([player], 1 / 24, bases, () => 1);
     expect(player.state).toBe("REJOINING");
     const target = battlefieldWorldPointToSource({ x: player.moveTargetX!, y: player.moveTargetY! });
-    expect(target).toEqual({ x: 346, y: 946 });
+    expect(target.x).toBeCloseTo(346, 6);
+    expect(target.y).toBeCloseTo(946, 6);
   });
   it("never auto-fires player special and does not spend cooldown without a target", () => {
     const player = createSoldier("p", "player", "player", 100, 100);
