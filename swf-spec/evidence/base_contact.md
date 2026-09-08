@@ -13,6 +13,16 @@ The SWF-derived `assets/bases/base_reconstruction_manifest.json` verifies the vi
 
 This confirms the physical/visual base rectangle, but it does **not** prove that every Y position along that 400-pixel height is an attackable damage surface. The runtime currently derives a much smaller attack surface from `damageCoreHeightRatio: 0.3` plus `frontSegmentDepth: 14`.
 
-The 0.3 ratio is not an SWF-confirmed value. In repository history at commit `1ffbbc384e7be1891b1aea0a51e45c2255a7d0a4`, `BASE_CONFIG` is explicitly introduced under the comment `Temporary v1 base combat values; only base destruction as an instant result is confirmed.` Therefore the current central-30% attack span must not be treated as an original-game fact or used as a hard conformance gate. Conversely, the confirmed 189x400 visual rectangle alone is not sufficient evidence to replace the attack surface with the full rectangle.
+The 0.3 ratio is not an SWF-confirmed value. In repository history at commit `1ffbbc384e7be1891b1aea0a51e45c2255a7d0a4`, `BASE_CONFIG` is explicitly introduced under the comment `Temporary v1 base combat values; only base destruction as an instant result is confirmed.` The later terrain-layout migration at commit `e3f74e95f7983fae6a6d6c45acb92c98eba564c6` replaced the earlier provisional distance-based base attack flow with the current movement-contact model. The central-30% surface therefore belongs to the reconstruction history, not to a recovered original-game constant.
 
-The exact SWF attack-surface vertical span, ordering, and contact re-arm semantics still need direct AVM1 evidence. Therefore the anti-oscillation expectation remains inferred and the vertical attack span remains unconfirmed. Neither may justify arbitrary timing, distance, steering, or hitbox changes until direct SWF evidence is recovered.
+## Historical gameplay evidence for off-center attacks
+
+Two independent community gameplay references describe attacking the enemy base from upper/lower approaches rather than only through its center. The Sengoku Jumble strategy wiki FAQ recommends sending the high-durability ninja trio from the top and bottom to avoid central defenders and explicitly describes the result as attempting a base attack. The formation guide likewise discusses concentrating charge ninjas on the upper or lower side for base-attack routes. These are behavioral observations of the original game rather than AVM1 source evidence.
+
+References:
+- https://w.atwiki.jp/sengokujanburu/pages/24.html
+- https://w.atwiki.jp/sengokujanburu/pages/289.html
+
+This is strong evidence against treating the current central 30% as the only attackable vertical lane, so `BASE_ATTACK_OFF_CENTER_LANES_EXIST` is recorded as `inferred`. It is deliberately **not** promoted to `confirmed`: the references do not reveal the exact vertical hit-test extent, boundary coordinates, contact ordering, or re-arm timing. They therefore cannot justify replacing 0.3 with an arbitrary full-height ratio.
+
+The exact SWF attack-surface vertical span, ordering, and contact re-arm semantics still need direct AVM1 evidence. `BASE_ATTACK_SURFACE_VERTICAL_SPAN` remains unconfirmed, and neither the historical behavior references nor the 189x400 visual rectangle may be converted into an invented exact hitbox.
