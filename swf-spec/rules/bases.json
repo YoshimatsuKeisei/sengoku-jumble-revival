@@ -2,51 +2,64 @@
   "rules": [
     {
       "id": "BASE_CONTACT_BOUNCE_SEQUENCE",
-      "status": "inferred",
+      "status": "confirmed",
       "category": "base",
-      "expected": { "contactCausesDamageThenBounce": true, "mustNotOscillateAtBoundary": true },
-      "evidence": { "reference": "evidence/base_contact.md" }
+      "expected": {
+        "swfCollisionGridSize": 36,
+        "enemyBaseDamageTileCode": 996,
+        "playerBaseDamageTileCode": 997,
+        "swfContactStateK": 10,
+        "bounceArmedBeforeDamageResolution": true,
+        "mustNotUseSeparateFullBaseSnapbackAsOriginalMechanism": true
+      },
+      "evidence": { "reference": "evidence/base_collision_direct_avm1.md" }
     },
     {
       "id": "BASE_ATTACK_SURFACE_VERTICAL_SPAN",
-      "status": "unconfirmed",
+      "status": "confirmed",
       "category": "base",
       "expected": {
-        "swfVerticalSpan": null,
+        "swfCollisionGridSize": 36,
+        "enemyBaseDamageCells": { "xIndex": 45, "yIndices": [15, 16, 17, 18], "tileCode": 996 },
+        "playerBaseDamageCells": { "xIndex": 6, "yIndices": [15, 16, 17, 18], "tileCode": 997 },
         "runtimeTemporaryDamageCoreHeightRatio": 0.3,
-        "mustNotTreatTemporaryRatioAsSwfFact": true
+        "mustReplaceTemporaryRatioWithSwfGridGeometry": true
       },
-      "evidence": { "reference": "evidence/base_contact.md" }
+      "evidence": { "reference": "evidence/base_collision_direct_avm1.md" }
     },
     {
       "id": "BASE_ATTACK_OFF_CENTER_LANES_EXIST",
-      "status": "inferred",
+      "status": "confirmed",
       "category": "base",
       "expected": {
-        "centerOnlyAttackSurface": false,
-        "offCenterApproachesCanProduceBaseAttacks": true,
-        "exactSwfVerticalSpanStillRequired": true
+        "centerOnlyDamageCollisionCells": true,
+        "offCenterFrontCollisionCellsDealBaseDamage": false,
+        "historicalUpperLowerRouteEvidenceDoesNotDefineFinalContactSurface": true,
+        "upperLowerFrontUsesRecoveryCollisionTiles": true
       },
-      "evidence": { "reference": "evidence/base_contact.md" }
+      "evidence": { "reference": "evidence/base_collision_direct_avm1.md" }
     },
     {
       "id": "FRIENDLY_BASE_RETREAT_GATE_CONGESTION",
-      "status": "inferred",
+      "status": "confirmed",
       "category": "base",
       "expected": {
-        "retreatingSoldiersMustNotBePermanentlyRejectedByFriendlyBaseCollision": true,
-        "currentGateWidthSensitiveAdmissionIsRuntimeReconstruction": true,
-        "visualGateRectsDerivedFromAlphaBounds": true,
-        "runtimeCrowdSeparationCanEjectEnteringRetreater": true,
-        "runtimeEjectedRetreaterRetargetsSameGate": true,
-        "runtimeGateEdgeBehaviorIsAsymmetric": true,
-        "runtimeHasNoDistinctGateEntryInProgressState": true,
-        "recoveryGateEnteredOnlyBecomesTrueAfterHealingTransition": true,
-        "swfBehavioralAdmissionSpan": null,
-        "mustNotEquateVisualCorridorWithBehavioralCollision": true,
-        "exactSwfGateEntrySemanticsStillRequired": true
+        "swfCollisionGridSize": 36,
+        "playerRecoveryTileCode": 999,
+        "enemyRecoveryTileCode": 998,
+        "playerRetreatStates": [89, 91, 93],
+        "enemyRetreatStates": [89, 92, 94],
+        "playerEntryCommittedState": 93,
+        "enemyEntryCommittedState": 94,
+        "playerHealingState": 97,
+        "enemyHealingState": 98,
+        "playerEntryCommitThresholdX": { "operator": "<", "value": 232 },
+        "enemyEntryCommitThresholdX": { "operator": ">", "value": 1612 },
+        "visualGateRectsUsedForAdmission": false,
+        "selectedGateSpanRecheckedAfterEntryCommit": false,
+        "mustModelPreHealingEntryCommittedState": true
       },
-      "evidence": { "reference": "evidence/base_contact.md" }
+      "evidence": { "reference": "evidence/base_collision_direct_avm1.md" }
     }
   ]
 }

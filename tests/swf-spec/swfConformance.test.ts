@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { battlefieldSourcePointToWorld } from "../../src/game/battlefieldLayout";
 import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
-import { createBattleBases } from "../../src/game/systems/baseSystem";
+import { captureSoldierPositions, resolveBaseMovementContacts } from "../../src/game/systems/baseContactSystem";
+import { createBattleBases, getBaseForTeam } from "../../src/game/systems/baseSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 import { updateInvaderTrapMovement } from "../../src/game/systems/trapAbilitySystem";
@@ -126,22 +127,54 @@ describe("SWF conformance: confirmed rules", () => {
     expect(archer.specialLockUntil).toBe(1_000 + swfLogicTicksToMs(8));
     expect(archer.activeSpecialTechnique).toBe("ARCHER_ARROW");
   });
+
+  it("uses the confirmed 36-unit SWF collision cells for base damage", () => {
+    const contactRule = baseSpec.rules.find((candidate) => candidate.id === "BASE_CONTACT_BOUNCE_SEQUENCE");
+    const surfaceRule = baseSpec.rules.find((candidate) => candidate.id === "BASE_ATTACK_SURFACE_VERTICAL_SPAN");
+    const laneRule = baseSpec.rules.find((candidate) => candidate.id === "BASE_ATTACK_OFF_CENTER_LANES_EXIST");
+    expect(contactRule?.status).toBe("confirmed");
+    expect(contactRule?.expected.swfCollisionGridSize).toBe(36);
+    expect(surfaceRule?.status).toBe("confirmed");
+    expect(surfaceRule?.expected.enemyBaseDamageCells.yIndices).toEqual([15, 16, 17, 18]);
+    expect(laneRule?.status).toBe("confirmed");
+    expect(laneRule?.expected.offCenterFrontCollisionCellsDealBaseDamage).toBe(false);
+
+    const bases = createBattleBases();
+    const enemyBase = getBaseForTeam(bases, "enemy");
+    const attacker = unit("swf-grid-base-attacker", "player", 1595, 540);
+    const previous = captureSoldierPositions([attacker]);
+    const enteredCell = battlefieldSourcePointToWorld({ x: 1605, y: 540 });
+    attacker.x = enteredCell.x;
+    attacker.y = enteredCell.y;
+
+    const hpBefore = enemyBase.hp;
+    resolveBaseMovementContacts([attacker], bases, previous, 1_000, () => 1);
+    expect(enemyBase.hp).toBe(hpBefore - 1);
+    expect(attacker.baseContactLockTicks).toBe(10);
+  });
+
+  it("records the confirmed SWF retreat entry-commit states instead of visual gate-span admission", () => {
+    const rule = baseSpec.rules.find((candidate) => candidate.id === "FRIENDLY_BASE_RETREAT_GATE_CONGESTION");
+    expect(rule?.status).toBe("confirmed");
+    expect(rule?.expected.playerRecoveryTileCode).toBe(999);
+    expect(rule?.expected.enemyRecoveryTileCode).toBe(998);
+    expect(rule?.expected.playerEntryCommittedState).toBe(93);
+    expect(rule?.expected.enemyEntryCommittedState).toBe(94);
+    expect(rule?.expected.playerHealingState).toBe(97);
+    expect(rule?.expected.enemyHealingState).toBe(98);
+    expect(rule?.expected.visualGateRectsUsedForAdmission).toBe(false);
+    expect(rule?.expected.selectedGateSpanRecheckedAfterEntryCommit).toBe(false);
+    expect(rule?.expected.mustModelPreHealingEntryCommittedState).toBe(true);
+  });
 });
 
 describe("SWF conformance: pending evidence", () => {
   it("does not silently promote inferred/unconfirmed major-bug rules", () => {
-    expect(baseSpec.rules.find((candidate) => candidate.id === "BASE_CONTACT_BOUNCE_SEQUENCE")?.status).toBe("inferred");
-    expect(baseSpec.rules.find((candidate) => candidate.id === "BASE_ATTACK_SURFACE_VERTICAL_SPAN")?.status).toBe("unconfirmed");
-    expect(baseSpec.rules.find((candidate) => candidate.id === "BASE_ATTACK_OFF_CENTER_LANES_EXIST")?.status).toBe("inferred");
-    expect(baseSpec.rules.find((candidate) => candidate.id === "FRIENDLY_BASE_RETREAT_GATE_CONGESTION")?.status).toBe("inferred");
     expect(commandSpec.rules.find((candidate) => candidate.id === "GENERAL_SAME_TICK_DEDUPE")?.status).toBe("inferred");
     expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH")?.status).toBe("unconfirmed");
     expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_GAUGE_BANKING_LIMIT")?.status).toBe("unconfirmed");
   });
 
-  it.todo("BASE_CONTACT_BOUNCE_SEQUENCE: add a gating scenario after SWF ordering/re-arm evidence is confirmed");
-  it.todo("BASE_ATTACK_OFF_CENTER_LANES_EXIST: promote only after direct SWF hit-test evidence defines the attackable span");
-  it.todo("FRIENDLY_BASE_RETREAT_GATE_CONGESTION: promote only after direct SWF gate-entry/collision evidence is recovered");
   it.todo("GENERAL_SAME_TICK_DEDUPE: add a gating same-update overlap scenario after SWF evidence is confirmed");
   it.todo("RANGED_ATTACK_CYCLE_SINGLE_LAUNCH: add a gating projectile-count scenario after SWF cadence is confirmed");
 });
