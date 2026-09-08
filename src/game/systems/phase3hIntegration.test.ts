@@ -5,12 +5,12 @@ import {
   PROTOTYPE_DEFENSE_MAX,
   REACTION_CONFIG,
 } from "../config";
+import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import { createArmy } from "../factories/createArmy";
 import type { SoldierBaseStats } from "../types";
 import { startSoldierAttack, updateAttackStates } from "./attackSystem";
-import { createBattleBases, getBaseForTeam } from "./baseSystem";
-import { getBaseGatePoint } from "./battlefieldGeometry";
+import { createBattleBases } from "./baseSystem";
 import { getNormalGuardProbability, isDamageGuarded } from "./defenseSystem";
 import { updateHealing } from "./recoverySystem";
 import { getTechniqueAreaWorld } from "./techniqueCombatProfiles";
@@ -26,30 +26,32 @@ function stats(skill = 50, defense = 50): SoldierBaseStats {
 }
 
 describe("Phase 3H healing", () => {
-  it("uses the SWF maxHp/400 per update healing rate", () => {
+  it("uses the SWF maxHp/400 per update healing rate while still below the p7 transition", () => {
     const soldier = createSoldier("h", "player", "ai", 0, 0);
     soldier.state = "HEALING";
     soldier.hp -= 10;
+    const before = soldier.hp;
     updateHealing(soldier, 0.5);
     const healingPerSecond = soldier.maxHp / 400 * 24;
-    expect(soldier.hp).toBeCloseTo(soldier.maxHp - 10 + healingPerSecond * 0.5);
-    updateHealing(soldier, 5);
-    expect(soldier.hp).toBeCloseTo(Math.min(soldier.maxHp, soldier.maxHp - 10 + healingPerSecond * 5.5));
+    expect(soldier.hp).toBeCloseTo(before + healingPerSecond * 0.5);
+    expect(soldier.state).toBe("HEALING");
   });
 
-  it.each(["TOP", "BOTTOM"] as const)("snaps through the stored %s gate and returns directly to NORMAL", (gate) => {
-    const bases = createBattleBases();
-    const base = getBaseForTeam(bases, "player");
-    const soldier = createSoldier(`h-${gate}`, "player", "ai", base.x, base.y);
+  it.each([
+    ["TOP", 500, 397, 249],
+    ["BOTTOM", 600, 782, 946],
+  ] as const)("enters p7-equivalent rejoin through the confirmed %s route", (gate, sourceY, interiorY, targetY) => {
+    const start = battlefieldSourcePointToWorld({ x: 100, y: sourceY });
+    const soldier = createSoldier(`h-${gate}`, "player", "ai", start.x, start.y);
     soldier.state = "HEALING";
     soldier.recoveryGate = gate;
     soldier.recoveryGateEntered = true;
-    soldier.hp = soldier.maxHp - 0.5;
-    updateHealing(soldier, 0.5, bases);
-    expect({ x: soldier.x, y: soldier.y }).toEqual(getBaseGatePoint(base, gate, false));
-    expect(soldier.state).toBe("NORMAL");
-    expect(soldier.moveTargetX).toBeNull();
-    expect(soldier.recoveryGate).toBeNull();
+    soldier.hp = soldier.maxHp;
+    updateHealing(soldier, 1 / 24, createBattleBases());
+    expect(soldier.state).toBe("REJOINING");
+    expect(battlefieldWorldPointToSource(soldier).y).toBeCloseTo(interiorY, 6);
+    const target = battlefieldWorldPointToSource({ x: soldier.moveTargetX!, y: soldier.moveTargetY! });
+    expect(target).toEqual({ x: 346, y: targetY });
   });
 });
 

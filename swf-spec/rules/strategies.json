@@ -1,0 +1,118 @@
+{
+  "rules": [
+    {
+      "id": "STRATEGY_STATE_CODES",
+      "status": "confirmed",
+      "category": "strategy",
+      "expected": {
+        "charge": { "player": 1, "enemy": 2 },
+        "defend": { "player": 3, "enemy": 4 },
+        "intercept": { "player": 8, "enemy": 9 },
+        "melee": { "player": 10, "enemy": 11 },
+        "wait": { "player": 14, "enemy": 15 },
+        "specialDutySelectable": false,
+        "specialDutyNormalStateCode": null
+      },
+      "evidence": { "reference": "evidence/strategy_actions.md" }
+    },
+    {
+      "id": "STRATEGY_CHARGE_ROUTE",
+      "status": "confirmed",
+      "category": "strategy",
+      "expected": {
+        "playerInitialTargetX": 1600,
+        "enemyInitialTargetX": 0,
+        "playerApproach": { "afterX": 1207, "targetX": 1607, "targetY": 574, "deepAfterX": 1442, "deepTargetX": 1662 },
+        "enemyApproach": { "beforeX": 634, "targetX": 234, "targetY": 574, "deepBeforeX": 390, "deepTargetX": 200 },
+        "proactiveEnemySelection": false
+      },
+      "evidence": { "reference": "evidence/strategy_actions.md" }
+    },
+    {
+      "id": "STRATEGY_DEFEND_FRONT",
+      "status": "confirmed",
+      "category": "strategy",
+      "expected": {
+        "playerThresholdX": 434,
+        "enemyThresholdX": 1445,
+        "returnsToInitialDxDyWhenIdle": true,
+        "retargetsFrontmostOnScdWhileEngaged": true,
+        "longPredictionTicks": 30,
+        "shortPredictionTicks": 1,
+        "longPredictionVerticalDelta": 250,
+        "longPredictionWhenEnemyPassedDefender": true
+      },
+      "evidence": { "reference": "evidence/strategy_actions.md" }
+    },
+    {
+      "id": "STRATEGY_INTERCEPT_FRONT",
+      "status": "confirmed",
+      "category": "strategy",
+      "expected": {
+        "playerThresholdX": 834,
+        "enemyThresholdX": 1045,
+        "returnsToInitialDxDyWhenIdle": true,
+        "retargetsFrontmostOnScdWhileEngaged": true,
+        "engagedTargetUsesCurrentCoordinates": true
+      },
+      "evidence": { "reference": "evidence/strategy_actions.md" }
+    },
+    {
+      "id": "STRATEGY_FRONTMOST_SCAN",
+      "status": "confirmed",
+      "category": "strategy",
+      "expected": {
+        "velocityProjectionXTicks": 8,
+        "velocityProjectionYTicks": 50,
+        "unengagedFrontBias": 200,
+        "eligibleProjectedYExclusiveMin": 324,
+        "eligibleProjectedYExclusiveMax": 841,
+        "eligibleStateMustBeBelowP90": true
+      },
+      "evidence": { "reference": "evidence/strategy_actions.md" }
+    },
+    {
+      "id": "STRATEGY_MELEE_RANDOM",
+      "status": "confirmed",
+      "category": "strategy",
+      "expected": {
+        "randomOpponentSlotCount": { "player": 30, "enemy": 29 },
+        "enemySelectionExcludesPlayerControlledM200": true,
+        "roamX": { "floorRandomMultiplier": 1211, "offset": 334 },
+        "roamY": { "floorRandomMultiplier": 409, "offset": 359 },
+        "roamArrivalManhattanExclusive": 150,
+        "invalidSelectedSlotFallsBackToRoam": true,
+        "afterLostTargetReturnsToBaseMeleeSelection": true,
+        "evaluatedEveryBattleLogicFrameInD": true
+      },
+      "evidence": { "reference": "evidence/strategy_actions.md" }
+    },
+    {
+      "id": "STRATEGY_WAIT_ANCHOR",
+      "status": "confirmed",
+      "category": "strategy",
+      "expected": {
+        "returnsToInitialDxDy": true,
+        "stationaryStates": { "player": -14, "enemy": -15 },
+        "proactivePursuitTarget": false,
+        "rangedClassesUseLocalTkCellScanInScd": true,
+        "localScanAssignsPersistentL": false,
+        "retaliationMayCreateNormalPursuitState": true
+      },
+      "evidence": { "reference": "evidence/strategy_actions.md" }
+    },
+    {
+      "id": "STRATEGY_SCD_TIMING",
+      "status": "confirmed",
+      "category": "strategy",
+      "expected": {
+        "sharedWithCombatGaugeScd": true,
+        "initialCounter": 19,
+        "firstTriggerLogicTicks": 4,
+        "subsequentIntervalLogicTicks": 23,
+        "meleeBaseAndRoamStatesUsePerLogicFrameD": true
+      },
+      "evidence": { "reference": "evidence/strategy_actions.md" }
+    }
+  ]
+}

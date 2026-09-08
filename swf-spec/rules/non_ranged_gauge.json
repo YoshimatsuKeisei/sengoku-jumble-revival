@@ -1,0 +1,41 @@
+{
+  "rules": [
+    {
+      "id": "NON_RANGED_SPECIAL_GAUGE_SEMANTICS",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "swfGaugeVariable": "kd",
+        "swfSkillIncrementVariable": "kp",
+        "gaugeStepAddsSkillBeforeThresholdCheck": true,
+        "activationThresholdExclusive": 400,
+        "requiresSpZero": true,
+        "normalGaugeOperationBeforeSpl": "reset_to_zero",
+        "doubleSpecialAbilityCode": "s21",
+        "doubleSpecialRetentionChance": 0.4,
+        "doubleSpecialRetentionInclusiveRandomBoundary": true,
+        "doubleSpecialRetentionMaximumExpression": "399 + kp",
+        "overflowForcesResetToZero": true,
+        "retentionKeepsGauge": true,
+        "splCalledAfterGaugeDecision": true,
+        "mustNotReRollRetentionInsideBeginTechniqueAction": true
+      },
+      "evidence": { "reference": "evidence/non_ranged_gauge.md" }
+    },
+    {
+      "id": "COMBAT_GAUGE_UPDATE_INTERVAL",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "schedulerCounterVariable": "tc",
+        "initialCounter": 19,
+        "incrementsEveryEnterFrame": true,
+        "triggerCondition": "tc > 22",
+        "resetCounter": 0,
+        "steadyIntervalLogicTicks": 23,
+        "firstTriggerAfterLogicTicks": 4
+      },
+      "evidence": { "reference": "evidence/non_ranged_gauge.md" }
+    }
+  ]
+}
