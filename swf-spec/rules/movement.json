@@ -1,14 +1,79 @@
 {
   "rules": [
     {
+      "id": "BATTLEFIELD_COORDINATE_SPACES",
+      "status": "confirmed",
+      "category": "movement",
+      "expected": {
+        "avm1BattleSpace": "Sprite2456",
+        "bitmapLocalSpace": "Bitmap226",
+        "bitmapSwfOrigin": { "x": 53, "y": 149 },
+        "bitmapLocalFromSwf": "bitmap=(swf.x-53, swf.y-149)",
+        "runtimeWorldFromBitmap": "scale bitmap 1736x885 to world 2400x900",
+        "mustNotTreatRawSwfAndBitmapLocalAsSameCoordinates": true
+      },
+      "evidence": { "reference": "evidence/battlefield_coordinates_and_fence_routing.md" }
+    },
+    {
+      "id": "FIXED_FENCE_COLLISION_GRID",
+      "status": "confirmed",
+      "category": "movement",
+      "expected": {
+        "gridSizeSourceUnits": 36,
+        "lookup": "f[round(x/36)][round(y/36)]",
+        "fences": [
+          { "code": 901, "xIndex": 15, "yIndices": [14, 15, 16, 17], "id": "player-vanguard" },
+          { "code": 902, "xIndex": 18, "yIndices": [21, 22, 23, 24], "id": "player-lower" },
+          { "code": 903, "xIndex": 18, "yIndices": [8, 9, 10, 11], "id": "player-upper" },
+          { "code": 904, "xIndex": 33, "yIndices": [8, 9, 10, 11], "id": "enemy-upper" },
+          { "code": 905, "xIndex": 33, "yIndices": [21, 22, 23, 24], "id": "enemy-lower" },
+          { "code": 906, "xIndex": 36, "yIndices": [14, 15, 16, 17], "id": "enemy-vanguard" }
+        ],
+        "collisionUsesSoldierCenterGridLookup": true,
+        "alphaBoundingBoxIsNotAuthoritativePhysics": true
+      },
+      "evidence": { "reference": "evidence/battlefield_coordinates_and_fence_routing.md" }
+    },
+    {
+      "id": "FIXED_FENCE_VC3_ROUTING",
+      "status": "confirmed",
+      "category": "movement",
+      "expected": {
+        "function": "vc3",
+        "turnRadians": 1.5,
+        "routeSplitExpression": "smy[code-900]+70",
+        "smyByCode": { "901": 504, "902": 756, "903": 288, "904": 288, "905": 756, "906": 504 },
+        "impactLockTicks": 10,
+        "routeTicks": 20,
+        "impactHorizontalVelocityExpression": "fx=-2*x",
+        "impactVelocityDecayPerTick": 0.7,
+        "speculativeLookAheadSteering": false,
+        "persistentTargetMayRemainDuringRouting": true
+      },
+      "evidence": { "reference": "evidence/battlefield_coordinates_and_fence_routing.md" }
+    },
+    {
+      "id": "UNIT_CONTACT_SPACING",
+      "status": "confirmed",
+      "category": "movement",
+      "expected": {
+        "axisThresholdExclusiveSourceUnits": 32,
+        "spacingSourceUnits": 24,
+        "candidateMustHaveCollisionCode": 0,
+        "genericWorldCircleSeparationIsNotRawRule": true
+      },
+      "evidence": { "reference": "evidence/battlefield_coordinates_and_fence_routing.md" }
+    },
+    {
       "id": "TRAP_RAW_HALF_BRANCH_AND_PORT_TRIGGER",
       "status": "confirmed",
       "category": "movement",
       "expected": {
         "rawSwfSourceCenterX": 900,
-        "rawSwfComparisonSpace": "swf-source",
+        "rawSwfComparisonSpace": "swf-battle",
         "rawSwfContainsOpposingHalfEligibilityBranch": true,
         "activePortTrigger": "new-enemy-fixed-fence-contact",
+        "activePortContactSource": "901..906 raw collision event with alpha-contact fallback",
         "activePortUsesHalfBoundaryAsCollisionOrTrigger": false,
         "activePortDecisionDate": "2026-09-07"
       },
