@@ -1,4 +1,4 @@
-import { BASE_CONFIG, RECOVERY_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
+import { BASE_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
 import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import type { BattleBase, Soldier, Team } from "../types";
 import type { RandomSource } from "../stats/soldierStats";
@@ -96,9 +96,10 @@ export const SWF_TREATMENT_SEARCH_MANHATTAN_UNITS = 760;
 export const TREATMENT_RECOVERY_LOCK_TICKS = 1;
 
 export function shouldEmergencyRetreat(soldier: Soldier, currentTime = 0): boolean {
+  const hpPercent = soldier.maxHp > 0 ? Math.floor(soldier.hp / soldier.maxHp * 100) : 0;
   return soldier.reactionState === "NONE" && soldier.state === "NORMAL"
     && currentTime >= soldier.abilityActionLockUntil
-    && soldier.hp > 0 && soldier.hp / soldier.maxHp <= RECOVERY_CONFIG.dangerHpRatio;
+    && soldier.hp > 0 && (hpPercent < 20 || soldier.hp < 6);
 }
 
 function setMoveTarget(soldier: Soldier, point: Point): void {
