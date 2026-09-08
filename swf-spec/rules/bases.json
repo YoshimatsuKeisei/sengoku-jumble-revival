@@ -17,6 +17,17 @@
         "mustNotTreatTemporaryRatioAsSwfFact": true
       },
       "evidence": { "reference": "evidence/base_contact.md" }
+    },
+    {
+      "id": "BASE_ATTACK_OFF_CENTER_LANES_EXIST",
+      "status": "inferred",
+      "category": "base",
+      "expected": {
+        "centerOnlyAttackSurface": false,
+        "offCenterApproachesCanProduceBaseAttacks": true,
+        "exactSwfVerticalSpanStillRequired": true
+      },
+      "evidence": { "reference": "evidence/base_contact.md" }
     }
   ]
 }
