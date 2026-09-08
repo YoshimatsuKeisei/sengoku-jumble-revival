@@ -16,7 +16,7 @@ import {
   updateMeleeAI,
   updateWaitAI,
 } from "./aiSystem";
-import { startHitReaction } from "./reactionSystem";
+import { clearReaction, startHitReaction } from "./reactionSystem";
 
 function sourceUnit(
   id: string,
@@ -50,13 +50,14 @@ describe("raw-SWF strategy objective and temporary engagement lifecycle", () => 
     expect(unit.strategyObjectiveKind).toBe("ENEMY_SIDE");
   });
 
-  it("RUSH maps to 突進 behavior and ignores charge retaliation on the confirmed 70% branch", () => {
+  it("RUSH ignores eligible non-contact charge retargeting on the confirmed 70% branch, never normal contact", () => {
     const unit = sourceUnit("p", "player", 100, 500, "charge");
     const enemy = sourceUnit("e", "enemy", 110, 500);
     unit.specialAbilities = ["RUSH"];
-    startHitReaction(unit, enemy, 0, 0, () => 0.69);
+    startHitReaction(unit, enemy, 0, 0, () => 0.69, "GUN_ATTACK");
     expect(unit.targetId).toBeNull();
-    startHitReaction(unit, enemy, 1, 0, () => 0.70);
+    clearReaction(unit);
+    startHitReaction(unit, enemy, 1, 0, () => 0, "NORMAL_ATTACK");
     expect(unit.targetId).toBe(enemy.id);
   });
 
@@ -65,9 +66,9 @@ describe("raw-SWF strategy objective and temporary engagement lifecycle", () => 
     const defender = sourceUnit("d", "player", 300, 500, "defend");
     const biased = sourceUnit("biased", "enemy", 600, 500, "charge");
     updateDefendAI(defender, [defender, biased], 0);
-    expect(defender.targetId).toBe(biased.id); // 600 - 200 = 400 <= 434
+    expect(defender.targetId).toBe(biased.id);
 
-    biased.targetId = "already-engaged"; // raw l != -1 removes the -200 bias
+    biased.targetId = "already-engaged";
     updateDefendAI(defender, [defender, biased], 1);
     expect(defender.targetId).toBeNull();
     expect([defender.moveTargetX, defender.moveTargetY]).toEqual([defender.anchorX, defender.anchorY]);
@@ -79,7 +80,6 @@ describe("raw-SWF strategy objective and temporary engagement lifecycle", () => 
     const candidate = sourceUnit("front", "enemy", 700, 500, "charge");
     updateDefendAI(defend, [defend, intercept, candidate], 0);
     updateInterceptAI(intercept, [defend, intercept, candidate], 0);
-    // Projected X is 500: outside 守備 434, inside 迎撃 834.
     expect(defend.targetId).toBeNull();
     expect(intercept.targetId).toBe(candidate.id);
     candidate.isDead = true;
