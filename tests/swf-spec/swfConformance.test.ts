@@ -4,6 +4,7 @@ import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
 import { createBattleBases } from "../../src/game/systems/baseSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
+import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 import { updateInvaderTrapMovement } from "../../src/game/systems/trapAbilitySystem";
 import movementSpec from "../../swf-spec/rules/movement.json";
 import abilitySpec from "../../swf-spec/rules/abilities.json";
@@ -71,6 +72,33 @@ describe("SWF conformance: confirmed rules", () => {
       launches += events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id).length;
     }
     expect(launches).toBeLessThanOrEqual(2);
+  });
+
+  it("holds a fresh ranged activation for the confirmed SWF frames 41-48 interval", () => {
+    const rule = combatSpec.rules.find((candidate) => candidate.id === "RANGED_ACTION_FRAME_LOCK");
+    expect(rule?.status).toBe("confirmed");
+    expect(rule?.expected.sourceFrameCount).toBe(8);
+    expect(rule?.expected.swfFps).toBe(24);
+
+    const archer = unit("cycle-archer", "player", 520);
+    const enemy = unit("enemy", "enemy", 600);
+    archer.unitType = "ARCHER";
+    archer.technique = "ARCHER_ARROW";
+    archer.combatGauge = 1_000;
+    archer.combatGaugeUpdatedAt = 1_000;
+
+    const first = updateSpecialAttacks([archer, enemy], [], createBattleBases(), 1_000, false, () => 1);
+    expect(first.filter((event) => event.kind === "ARROW")).toHaveLength(1);
+
+    const beforeCycleEnd = updateSpecialAttacks(
+      [archer, enemy], [], createBattleBases(), 1_000 + swfLogicTicksToMs(7), false, () => 1,
+    );
+    expect(beforeCycleEnd.filter((event) => event.kind === "ARROW")).toHaveLength(0);
+
+    const atCycleEnd = updateSpecialAttacks(
+      [archer, enemy], [], createBattleBases(), 1_000 + swfLogicTicksToMs(8), false, () => 1,
+    );
+    expect(atCycleEnd.filter((event) => event.kind === "ARROW")).toHaveLength(1);
   });
 });
 
