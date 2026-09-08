@@ -20,6 +20,7 @@ import {
   isAbilityActionCapable,
 } from "./specialAbilitySystem";
 import { invalidateCombatTargetForAll } from "./combatTargetSystem";
+import { clearConfusion } from "./confusionSystem";
 import { SWF_COMBAT_FPS, swfLogicTicksToMs } from "./techniqueCombatProfiles";
 import {
   getSwfBaseCollisionCodeAtWorld,
