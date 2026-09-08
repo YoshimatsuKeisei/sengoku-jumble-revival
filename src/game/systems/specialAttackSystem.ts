@@ -154,7 +154,9 @@ export function updateSpecialAttacks(
   random: RandomSource = Math.random,
 ): SpecialAttackEvent[] {
   const events: SpecialAttackEvent[] = [];
-  function dispatchForcedTechnique(recipient: Soldier): SpecialAttackEvent | null {
+  function dispatchForcedTechnique(recipient: Soldier, establishRangedAction = false): SpecialAttackEvent | null {
+    const ranged = isGunTechnique(recipient.technique) || isArrowTechnique(recipient.technique);
+    if (establishRangedAction && ranged && !beginTechniqueAction(recipient, currentTime, random, false)) return null;
     return isGunTechnique(recipient.technique)
       ? (() => { const target = findGunTarget(recipient, soldiers); return target ? executeGunAttack(recipient, target, currentTime, random, false, soldiers) : null; })()
       : isArrowTechnique(recipient.technique)
@@ -169,7 +171,7 @@ export function updateSpecialAttacks(
       : null;
   }
   const forceGeneralRecipient = (recipient: Soldier): boolean => {
-    const event = dispatchForcedTechnique(recipient);
+    const event = dispatchForcedTechnique(recipient, true);
     if (event) events.push(event);
     return event !== null;
   };
