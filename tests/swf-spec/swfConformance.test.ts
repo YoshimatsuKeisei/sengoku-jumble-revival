@@ -55,26 +55,13 @@ describe("SWF conformance: confirmed rules", () => {
     expect(updateInvaderTrapMovement([invader, ...defenders], secondPrev, 101, () => 0)).toEqual([]);
   });
 
-  it("caps one successful DOUBLE_SPECIAL occurrence at two total activations", () => {
-    const rule = abilitySpec.rules.find((candidate) => candidate.id === "DOUBLE_SPECIAL_MAX_TWO_ACTIVATIONS");
-    expect(rule?.status).toBe("confirmed");
-    expect(rule?.expected.maxTotalActivationsPerSuccessfulProc).toBe(2);
-
-    const archer = unit("double-archer", "player", 520);
-    const enemy = unit("enemy", "enemy", 600);
-    archer.unitType = "ARCHER";
-    archer.technique = "ARCHER_ARROW";
-    archer.stats.skill = 100;
-    archer.specialAbilities = ["DOUBLE_SPECIAL"];
-    archer.combatGauge = 200;
-    archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
-
-    let launches = 0;
-    for (const time of [1_000, 1_050, 1_100]) {
-      const events = updateSpecialAttacks([archer, enemy], [], createBattleBases(), time, false, () => 0);
-      launches += events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id).length;
-    }
-    expect(launches).toBeLessThanOrEqual(2);
+  it("keeps ranged and non-ranged 連発 as separate confirmed scd retention rules", () => {
+    const nonRanged = abilitySpec.rules.find((candidate) => candidate.id === "NON_RANGED_DOUBLE_SPECIAL_RETENTION");
+    const ranged = abilitySpec.rules.find((candidate) => candidate.id === "RANGED_DOUBLE_SPECIAL_RETENTION");
+    expect(nonRanged?.status).toBe("confirmed");
+    expect(nonRanged?.expected.mustNotImplementImmediateRecursiveRepeat).toBe(true);
+    expect(ranged?.status).toBe("confirmed");
+    expect(ranged?.expected.globalMaximumTwoActivations).toBe(false);
   });
 
   it("holds a fresh ranged activation for the confirmed SWF k=10 lock", () => {

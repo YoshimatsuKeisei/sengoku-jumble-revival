@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { REACTION_CONFIG } from "../../src/game/config";
 import { createSoldier } from "../../src/game/entities/Soldier";
 import { applyDamage } from "../../src/game/systems/combatSystem";
 import {
@@ -8,7 +7,7 @@ import {
   COMBAT_GAUGE_UPDATE_INTERVAL_MS,
   hasTechniqueGauge,
 } from "../../src/game/systems/combatGaugeSystem";
-import { startHitReaction, updateReaction } from "../../src/game/systems/reactionSystem";
+import { startHitReaction, SWF_HIT_REACTION_MS, updateReaction } from "../../src/game/systems/reactionSystem";
 import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 import abilitySpec from "../../swf-spec/rules/abilities.json";
 import combatSpec from "../../swf-spec/rules/combat.json";
@@ -115,7 +114,7 @@ describe("raw sgjbgm.swf re-audit corrections", () => {
     const target = nonRanged("target");
     target.hp = 1;
 
-    expect(REACTION_CONFIG.hitStunMs).toBeCloseTo(swfLogicTicksToMs(10));
+    expect(SWF_HIT_REACTION_MS).toBeCloseTo(swfLogicTicksToMs(10));
     applyDamage(target, 1);
     expect(target.hp).toBe(0);
     expect(target.isDead).toBe(false);

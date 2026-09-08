@@ -38,7 +38,7 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
       projectileChildSpriteId: 1002,
       projectileInstanceName: "ya",
       projectileChildInstancesPerDirectionalPose: 1,
-      projectileChildTimelineFrames: 4,
+      projectileChildTimelineFrames: 5,
       projectileChildLoops: false,
     });
   });

@@ -6,6 +6,7 @@ import { updateAiTargets } from "./aiSystem";
 import { applyDamage } from "./combatSystem";
 import { updateAttackStates } from "./attackSystem";
 import { createBattleBases } from "./baseSystem";
+import { startHitReaction, SWF_HIT_REACTION_MS, updateReaction } from "./reactionSystem";
 import {
   shouldEmergencyRetreat,
   startEmergencyRetreat,
@@ -109,11 +110,16 @@ describe("recovery state system", () => {
     expect(unit.state).toBe("HEALING");
   });
 
-  it("can die normally while retreating", () => {
+  it("finishes the SWF hit reaction before death while retreating", () => {
     const unit = createSoldier("p", "player", "ai", 0, 0);
+    const attacker = createSoldier("e", "enemy", "ai", 10, 0);
     startEmergencyRetreat(unit);
     applyDamage(unit, unit.maxHp);
-    updateRecoveryStates([unit], 1);
+    startHitReaction(unit, attacker, 0);
+    updateRecoveryStates([unit], 0);
+    expect(unit.isDead).toBe(false);
+    expect(unit.reactionState).toBe("HIT_STUN");
+    updateReaction(unit, [], SWF_HIT_REACTION_MS, SWF_HIT_REACTION_MS);
     expect(unit.isDead).toBe(true);
     expect(unit.hp).toBe(0);
   });

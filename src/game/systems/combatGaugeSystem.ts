@@ -1,6 +1,5 @@
 import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier } from "../types";
-import { consumeDoubleSpecialRepeat, grantDoubleSpecialRepeat } from "./doubleSpecialState";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import {
   COMBAT_GAUGE_UPDATE_TICKS,
@@ -10,15 +9,17 @@ import {
   swfLogicTicksToMs,
 } from "./techniqueCombatProfiles";
 
+export const COMBAT_GAUGE_INITIAL_COUNTER = 19;
+export const COMBAT_GAUGE_FIRST_TRIGGER_TICKS = COMBAT_GAUGE_UPDATE_TICKS - COMBAT_GAUGE_INITIAL_COUNTER;
 export const COMBAT_GAUGE_UPDATE_INTERVAL_MS = swfLogicTicksToMs(COMBAT_GAUGE_UPDATE_TICKS);
 
 /**
- * The original ranged scd() routine consumes/retains kd when the gauge-processing
- * step crosses 200, before range/k/state checks. A crossing therefore grants an
- * attack opportunity for that same processing pass even if the stored kd has
- * already rolled back below 200. Keep that transient opportunity outside Soldier.
+ * Original scd() produces a one-pass activation opportunity. The stored kd may
+ * already have been consumed/reset by the time spl() is reached, so readiness
+ * for that pass must be tracked separately from the displayed/stored gauge.
  */
 const pendingRangedGaugeTrigger = new WeakSet<Soldier>();
+const pendingNonRangedGaugeTrigger = new WeakSet<Soldier>();
 
 export function isRangedGaugeTechnique(soldier: Pick<Soldier, "technique">): boolean {
   return soldier.technique.startsWith("ARCHER_") || soldier.technique.startsWith("TEPPOU_");
@@ -37,51 +38,77 @@ function processRangedGaugeStep(soldier: Soldier, random: RandomSource): boolean
   return true;
 }
 
+function processNonRangedGaugeStep(soldier: Soldier, random: RandomSource): boolean {
+  soldier.combatGauge += soldier.stats.skill;
+  if (soldier.combatGauge <= SPECIAL_GAUGE_THRESHOLD) return false;
+
+  // Original non-ranged scd() also requires sp == 0. activeSpecialTechnique is
+  // the reconstruction's closest explicit equivalent to that special-action state.
+  if (soldier.activeSpecialTechnique !== null) return false;
+
+  const retainsGauge = hasSpecialAbility(soldier, "DOUBLE_SPECIAL")
+    && soldier.combatGauge <= 399 + soldier.stats.skill
+    && random() * 100 <= 40;
+  if (!retainsGauge) soldier.combatGauge = 0;
+  return true;
+}
+
+function completedIntervals(currentTime: number, previousTime: number): number {
+  const ratio = (currentTime - previousTime) / COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+  // Source timing is integer-frame based. Runtime milliseconds are fractional at
+  // 24 fps, so absorb only floating-point roundoff at exact frame boundaries.
+  return Math.floor(ratio + 1e-9);
+}
+
 export function advanceCombatGauge(
   soldier: Soldier,
   currentTime: number,
   random: RandomSource = Math.random,
 ): void {
-  // A SWF scd() attack opportunity does not survive until a later processing pass.
   pendingRangedGaugeTrigger.delete(soldier);
+  pendingNonRangedGaugeTrigger.delete(soldier);
   if (soldier.controller !== "ai" || soldier.isDead || soldier.hp <= 0) return;
   if (soldier.state !== "NORMAL") {
     soldier.combatGaugeUpdatedAt = currentTime;
     return;
   }
+
   if (soldier.combatGaugeUpdatedAt === null) {
-    soldier.combatGaugeUpdatedAt = currentTime;
-    return;
+    // The original battle clip starts tc at 19 and calls scd when tc becomes 23.
+    // Seed the runtime clock 19 logic frames behind so the first trigger is after 4.
+    soldier.combatGaugeUpdatedAt = currentTime - swfLogicTicksToMs(COMBAT_GAUGE_INITIAL_COUNTER);
   }
-  const intervals = Math.floor((currentTime - soldier.combatGaugeUpdatedAt) / COMBAT_GAUGE_UPDATE_INTERVAL_MS);
+
+  const intervals = completedIntervals(currentTime, soldier.combatGaugeUpdatedAt);
   if (intervals <= 0) return;
 
+  let crossedThreshold = false;
   if (isRangedGaugeTechnique(soldier)) {
-    let crossedThreshold = false;
-    // Usually one interval is processed per game update. Iterate catch-up intervals
-    // so kd itself still follows the SWF rollover rule instead of becoming a bank.
     for (let interval = 0; interval < intervals; interval += 1) {
       crossedThreshold = processRangedGaugeStep(soldier, random) || crossedThreshold;
     }
     if (crossedThreshold) pendingRangedGaugeTrigger.add(soldier);
   } else {
-    // Non-ranged scd() has additional sp-state ordering. Preserve the existing
-    // reconstruction until that separate branch is promoted with direct evidence.
-    soldier.combatGauge += intervals * soldier.stats.skill;
+    for (let interval = 0; interval < intervals; interval += 1) {
+      crossedThreshold = processNonRangedGaugeStep(soldier, random) || crossedThreshold;
+    }
+    if (crossedThreshold) pendingNonRangedGaugeTrigger.add(soldier);
   }
+
   soldier.combatGaugeUpdatedAt += intervals * COMBAT_GAUGE_UPDATE_INTERVAL_MS;
 }
 
 export function hasTechniqueGauge(soldier: Soldier): boolean {
   if (soldier.controller === "player") return true;
-  if (isRangedGaugeTechnique(soldier)) return pendingRangedGaugeTrigger.has(soldier);
-  return soldier.combatGauge > SPECIAL_GAUGE_THRESHOLD;
+  return isRangedGaugeTechnique(soldier)
+    ? pendingRangedGaugeTrigger.has(soldier)
+    : pendingNonRangedGaugeTrigger.has(soldier);
 }
 
 export function beginTechniqueAction(
   soldier: Soldier,
   currentTime: number,
-  random: RandomSource,
+  _random: RandomSource,
   consumeGauge: boolean,
 ): boolean {
   if (soldier.isDead || soldier.hp <= 0 || soldier.state !== "NORMAL" || soldier.reactionState !== "NONE"
@@ -103,22 +130,10 @@ export function beginTechniqueAction(
     return true;
   }
 
-  if (isRangedGaugeTechnique(soldier)) {
-    // scd() has already applied kd += kp and its consume/retain decision before
-    // range/k/state checks. Successful execution must not consume kd a second time.
-    pendingRangedGaugeTrigger.delete(soldier);
-    return true;
-  }
-
-  // Non-ranged DOUBLE_SPECIAL remains on the pre-existing reconstruction path
-  // until its separate scd() branch is migrated with dedicated conformance tests.
-  const consumingRepeat = consumeDoubleSpecialRepeat(soldier);
-  const keepGauge = !consumingRepeat
-    && hasSpecialAbility(soldier, "DOUBLE_SPECIAL")
-    && soldier.combatGauge <= 399 + soldier.stats.skill
-    && random() < 0.4;
-  if (keepGauge) grantDoubleSpecialRepeat(soldier);
-  else soldier.combatGauge = 0;
+  // Both AI gauge branches already made their consume/retain decision inside scd().
+  // Action start must consume only the transient opportunity and never re-roll s21.
+  if (isRangedGaugeTechnique(soldier)) pendingRangedGaugeTrigger.delete(soldier);
+  else pendingNonRangedGaugeTrigger.delete(soldier);
   return true;
 }
 
