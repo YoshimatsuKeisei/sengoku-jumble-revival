@@ -6,11 +6,8 @@ import { clearEngagement } from "./aiSystem";
 import { cancelAttack } from "./attackRuntime";
 import { createBattleBase, getBaseForTeam } from "./baseSystem";
 import {
-  getBaseGatePoint,
   getBaseHealingInteriorRect,
-  getPreferredBaseGate,
   getPreferredRejoinPoint,
-  hasClearedBaseGateBoundary,
 } from "./battlefieldGeometry";
 import {
   applyFieldHospitalArrival,
@@ -40,6 +37,11 @@ const SWF_PLAYER_ENTRY_COMMIT_X = 232;
 const SWF_ENEMY_ENTRY_COMMIT_X = 1612;
 const SWF_PLAYER_INNER_POINT = { x: 70, y: 580 } as const;
 const SWF_ENEMY_INNER_POINT = { x: 1825, y: 580 } as const;
+const SWF_PLAYER_REJOIN_X = 346;
+const SWF_ENEMY_REJOIN_X = 1545;
+const SWF_REJOIN_TOP_INTERIOR_Y = 397;
+const SWF_REJOIN_BOTTOM_INTERIOR_Y = 782;
+const SWF_REJOIN_COMPLETION_MANHATTAN = 50;
 
 function ownBase(team: Team, bases?: readonly BattleBase[]): BattleBase {
   return bases ? getBaseForTeam(bases, team) : createBattleBase(team);
@@ -125,6 +127,12 @@ function swfRecoveryRouteForSourceY(sourceY: number): { gate: "TOP" | "BOTTOM"; 
     : { gate: "TOP", y: SWF_RECOVERY_TOP_Y };
 }
 
+function swfRejoinRouteForSourceY(sourceY: number): { gate: "TOP" | "BOTTOM"; interiorY: number; targetY: number } {
+  return sourceY < SWF_RECOVERY_ROUTE_SPLIT_Y
+    ? { gate: "TOP", interiorY: SWF_REJOIN_TOP_INTERIOR_Y, targetY: SWF_RECOVERY_TOP_Y }
+    : { gate: "BOTTOM", interiorY: SWF_REJOIN_BOTTOM_INTERIOR_Y, targetY: SWF_RECOVERY_BOTTOM_Y };
+}
+
 function setSwfSourceMoveTarget(soldier: Soldier, sourceX: number, sourceY: number): void {
   setMoveTarget(soldier, battlefieldSourcePointToWorld({ x: sourceX, y: sourceY }));
 }
@@ -157,6 +165,26 @@ function isOnOwnSwfRecoveryTile(soldier: Soldier): boolean {
   return soldier.team === "player"
     ? code === SWF_PLAYER_RECOVERY_TILE
     : code === SWF_ENEMY_RECOVERY_TILE;
+}
+
+function beginSwfRejoin(soldier: Soldier): void {
+  const source = battlefieldWorldPointToSource(soldier);
+  const route = swfRejoinRouteForSourceY(source.y);
+  const repositioned = battlefieldSourcePointToWorld({ x: source.x, y: route.interiorY });
+  soldier.x = repositioned.x;
+  soldier.y = repositioned.y;
+  soldier.state = "REJOINING";
+  soldier.recoveryGate = route.gate;
+  soldier.recoveryGateEntered = false;
+  setRecoveryEntryCommitted(soldier, false);
+  soldier.recoveryTargetKind = "BASE_GATE";
+  soldier.recoveryHealerId = null;
+  soldier.moutaiTriggeredForRetreat = false;
+  setSwfSourceMoveTarget(
+    soldier,
+    soldier.team === "player" ? SWF_PLAYER_REJOIN_X : SWF_ENEMY_REJOIN_X,
+    route.targetY,
+  );
 }
 
 export function findNearestTreatmentHealer(patient: Soldier, soldiers: readonly Soldier[], currentTime = 0): Soldier | null {
@@ -290,48 +318,46 @@ export function updateEmergencyRetreat(
   setSwfOuterRecoveryTarget(soldier);
 }
 
-export function updateHealing(soldier: Soldier, deltaSeconds: number, bases?: readonly BattleBase[]): void {
+export function updateHealing(soldier: Soldier, deltaSeconds: number, _bases?: readonly BattleBase[]): void {
   clearCombat(soldier);
   soldier.moveTargetX = null;
   soldier.moveTargetY = null;
-  const base = ownBase(soldier.team, bases);
   if (soldier.unitType === "TEPPOU" || soldier.unitType === "CAVALRY") {
-    soldier.facingX = soldier.team === "player" ? 1 : -1; soldier.facingY = 0; soldier.aimX = null; soldier.aimY = null;
+    soldier.facingX = soldier.team === "player" ? 1 : -1;
+    soldier.facingY = 0;
+    soldier.aimX = null;
+    soldier.aimY = null;
   }
   const multiplier = hasSpecialAbility(soldier, "RECOVERY_BOOST") ? SPECIAL_ABILITY_CONFIG.recoveryBoostMultiplier : 1;
   const swfHealingPerUpdate = soldier.maxHp / 400;
-  soldier.hp = Math.min(soldier.maxHp, soldier.hp + swfHealingPerUpdate * SWF_COMBAT_FPS * multiplier * deltaSeconds);
-  if (soldier.hp >= soldier.maxHp) {
-    soldier.hp = soldier.maxHp;
-    const gate = soldier.recoveryGate ?? getPreferredBaseGate(soldier, base);
-    const exit = getBaseGatePoint(base, gate, false);
-    soldier.x = exit.x;
-    soldier.y = exit.y;
-    soldier.state = "NORMAL";
-    soldier.moveTargetX = null;
-    soldier.moveTargetY = null;
-    soldier.recoveryGate = null;
-    soldier.recoveryGateEntered = false;
-    setRecoveryEntryCommitted(soldier, false);
-    soldier.moutaiTriggeredForRetreat = false;
-  }
+  soldier.hp += swfHealingPerUpdate * SWF_COMBAT_FPS * multiplier * deltaSeconds;
+  if (soldier.hp <= soldier.maxHp) return;
+
+  soldier.hp = soldier.maxHp;
+  beginSwfRejoin(soldier);
 }
 
-export function updateRejoining(soldier: Soldier, bases?: readonly BattleBase[]): void {
-  const base = ownBase(soldier.team, bases);
-  const rejoinPoint = getPreferredRejoinPoint(soldier, base);
+export function updateRejoining(soldier: Soldier, _bases?: readonly BattleBase[]): void {
   clearCombat(soldier);
-  setMoveTarget(soldier, rejoinPoint);
-  const gate = soldier.recoveryGate ?? getPreferredBaseGate(soldier, base);
+  const source = battlefieldWorldPointToSource(soldier);
+  const gate = soldier.recoveryGate ?? (source.y < SWF_RECOVERY_ROUTE_SPLIT_Y ? "TOP" : "BOTTOM");
   soldier.recoveryGate = gate;
-  if (hasClearedBaseGateBoundary(soldier, base, gate, "EXIT")) {
-    soldier.state = "NORMAL";
-    soldier.moveTargetX = null;
-    soldier.moveTargetY = null;
-    soldier.recoveryGate = null;
-    soldier.recoveryGateEntered = false;
-    setRecoveryEntryCommitted(soldier, false);
-  }
+  const targetSource = {
+    x: soldier.team === "player" ? SWF_PLAYER_REJOIN_X : SWF_ENEMY_REJOIN_X,
+    y: gate === "TOP" ? SWF_RECOVERY_TOP_Y : SWF_RECOVERY_BOTTOM_Y,
+  };
+  setSwfSourceMoveTarget(soldier, targetSource.x, targetSource.y);
+  const manhattan = Math.abs(targetSource.x - source.x) + Math.abs(targetSource.y - source.y);
+  if (manhattan >= SWF_REJOIN_COMPLETION_MANHATTAN) return;
+
+  soldier.state = "NORMAL";
+  soldier.moveTargetX = null;
+  soldier.moveTargetY = null;
+  soldier.recoveryGate = null;
+  soldier.recoveryGateEntered = false;
+  setRecoveryEntryCommitted(soldier, false);
+  soldier.recoveryTargetKind = "BASE_GATE";
+  soldier.recoveryHealerId = null;
 }
 
 export function updateRecoveryStates(
