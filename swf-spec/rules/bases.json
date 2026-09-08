@@ -12,7 +12,10 @@
         "bounceArmedBeforeDamageResolution": true,
         "collisionResponseOccursBeforeTeamDamageGate": true,
         "friendlyOrIneligibleUnitsStillCollideWith996997": true,
-        "fullBitmapRectangleColliderIsOriginalMechanism": false
+        "fullBitmapRectangleColliderIsOriginalMechanism": false,
+        "activePortRetains20260907VisualBaseAccessGuard": true,
+        "activePortVisualGuardAppliesToZeroCodeGaps": true,
+        "activePortEntryCommittedRecoveryBypassesVisualGuard": true
       },
       "evidence": { "reference": "evidence/base_collision_direct_avm1.md" }
     },
