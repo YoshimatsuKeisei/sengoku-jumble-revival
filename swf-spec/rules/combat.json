@@ -8,6 +8,19 @@
       "evidence": { "reference": "evidence/ranged_cycle.md" }
     },
     {
+      "id": "RANGED_ACTION_FRAME_LOCK",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "sourceFrameStart": 41,
+        "sourceFrameEnd": 48,
+        "sourceFrameCount": 8,
+        "swfFps": 24,
+        "minimumFreshActivationIntervalTicks": 8
+      },
+      "evidence": { "reference": "evidence/ranged_cycle.md" }
+    },
+    {
       "id": "RANGED_GAUGE_BANKING_LIMIT",
       "status": "unconfirmed",
       "category": "combat",
