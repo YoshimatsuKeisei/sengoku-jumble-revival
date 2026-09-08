@@ -1,0 +1,34 @@
+{
+  "rules": [
+    {
+      "id": "NON_RANGED_SPECIAL_GAUGE_SEMANTICS",
+      "status": "unconfirmed",
+      "category": "combat",
+      "expected": {
+        "runtimeActivationThresholdExclusive": 400,
+        "runtimeCurrentNormalConsumption": "reset_to_zero",
+        "runtimeCurrentDoubleSpecialRetentionFormula": "combatGauge <= 399 + skill && random < 0.4",
+        "directSwfPostThresholdGaugeOperation": null,
+        "directSwfConsumptionRelativeToSpl": null,
+        "directSwfDoubleSpecialRetentionExpression": null,
+        "directSwfDoubleSpecialOverflowExpression": null,
+        "directSwfSpGateSemantics": null,
+        "mustNotMirrorConfirmedRangedRolloverByAnalogy": true,
+        "behaviorChangeRequiresRecoveredAvm1": true
+      },
+      "evidence": { "reference": "evidence/non_ranged_gauge.md" }
+    },
+    {
+      "id": "COMBAT_GAUGE_UPDATE_INTERVAL",
+      "status": "unconfirmed",
+      "category": "combat",
+      "expected": {
+        "runtimeLogicTicks": 23,
+        "directSwfLogicTicks": null,
+        "mustNotTreatRuntimeValueAsConfirmedSwfConstant": true,
+        "behaviorChangeRequiresRecoveredAvm1SchedulerEvidence": true
+      },
+      "evidence": { "reference": "evidence/non_ranged_gauge.md" }
+    }
+  ]
+}
