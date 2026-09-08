@@ -2,7 +2,7 @@
 
 Current reconstruction resolves a movement crossing against the base attack surface, applies base damage/fortify handling, then applies an outward bounce. A separate base-access collision pass can also push a soldier out of the base rectangle.
 
-Runtime characterization now demonstrates two independent oscillation paths:
+Runtime characterization now demonstrates two independent enemy-base oscillation paths:
 
 1. after a valid base hit, the 10-update contact lock allows movement to re-enter the base without another hit, after which the separate base-access collision pass snaps the soldier back out;
 2. a soldier whose Y lies inside the full base rectangle but outside the current narrow attack surface can repeatedly cross into the base, deal no damage, and be snapped back to the same exterior boundary without ever arming the base-contact lock.
@@ -25,4 +25,12 @@ References:
 
 This is strong evidence against treating the current central 30% as the only attackable vertical lane, so `BASE_ATTACK_OFF_CENTER_LANES_EXIST` is recorded as `inferred`. It is deliberately **not** promoted to `confirmed`: the references do not reveal the exact vertical hit-test extent, boundary coordinates, contact ordering, or re-arm timing. They therefore cannot justify replacing 0.3 with an arbitrary full-height ratio.
 
-The exact SWF attack-surface vertical span, ordering, and contact re-arm semantics still need direct AVM1 evidence. `BASE_ATTACK_SURFACE_VERTICAL_SPAN` remains unconfirmed, and neither the historical behavior references nor the 189x400 visual rectangle may be converted into an invented exact hitbox.
+## Friendly-base retreat gate congestion
+
+The reconstruction has a separate possible congestion path for soldiers retreating into their own base. AI retreat currently chooses one of two reconstructed gates (`TOP` or `BOTTOM`), moves first toward an exterior gate point and then toward an interior point, and changes to `HEALING` only after it has cleared the gate boundary.
+
+The base-access collision system allows an `EMERGENCY_RETREAT` soldier to occupy its own base only while its current X coordinate remains inside the selected gate span. If crowd separation, obstacle resolution, or another movement correction shifts a retreating soldier sideways outside that span while it is entering the base rectangle, the same generic base-access collision pass can classify it as not allowed inside and eject it back out of the rectangle. This creates a distinct candidate mechanism for the reported friendly-base entrance pile-up. It is not the same mechanism as the enemy-base off-core attack loop, although both involve the generic base rectangle collision pass.
+
+The current two-gate geometry and its exact admission semantics are reconstruction behavior. No direct AVM1 evidence has yet established that the original SWF used these exact gate rectangles, the same X-span test, or the same collision ordering. Therefore `FRIENDLY_BASE_RETREAT_GATE_CONGESTION` is recorded as `inferred` and must not be used to hard-gate or redesign recovery behavior until the original gate-entry logic is recovered. A runtime characterization test documents the present failure mechanism without treating it as original-game fact.
+
+The exact SWF attack-surface vertical span, base-contact ordering/re-arm semantics, and friendly-base gate-entry semantics still need direct AVM1 evidence. `BASE_ATTACK_SURFACE_VERTICAL_SPAN` remains unconfirmed, and neither historical behavior references nor the 189x400 visual rectangle may be converted into an invented exact hitbox.
