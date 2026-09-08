@@ -35,5 +35,29 @@ jobs:
         run: npx vitest run src/game/systems/recoverySystem.test.ts --reporter=verbose
       - name: SWF combat regression
         run: npx vitest run src/game/systems/swfCombatRules.test.ts --reporter=verbose
+      - name: Diagnose systems A-H
+        continue-on-error: true
+        shell: bash
+        run: |
+          files=$(find src/game/systems -maxdepth 1 -name '*.test.ts' -printf '%f\n' | sort | awk 'tolower(substr($0,1,1)) >= "a" && tolower(substr($0,1,1)) <= "h" {print "src/game/systems/" $0}')
+          test -z "$files" || npx vitest run $files --reporter=verbose
+      - name: Diagnose systems I-P
+        continue-on-error: true
+        shell: bash
+        run: |
+          files=$(find src/game/systems -maxdepth 1 -name '*.test.ts' -printf '%f\n' | sort | awk 'tolower(substr($0,1,1)) >= "i" && tolower(substr($0,1,1)) <= "p" {print "src/game/systems/" $0}')
+          test -z "$files" || npx vitest run $files --reporter=verbose
+      - name: Diagnose systems Q-Z
+        continue-on-error: true
+        shell: bash
+        run: |
+          files=$(find src/game/systems -maxdepth 1 -name '*.test.ts' -printf '%f\n' | sort | awk 'tolower(substr($0,1,1)) >= "q" && tolower(substr($0,1,1)) <= "z" {print "src/game/systems/" $0}')
+          test -z "$files" || npx vitest run $files --reporter=verbose
+      - name: Diagnose non-system game tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          files=$(find src/game -name '*.test.ts' ! -path 'src/game/systems/*' | sort)
+          test -z "$files" || npx vitest run $files --reporter=verbose
       - name: Full test suite
         run: npm test
