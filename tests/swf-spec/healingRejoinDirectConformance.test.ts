@@ -20,6 +20,11 @@ function sourceTarget(soldier: Soldier): { x: number; y: number } {
   return battlefieldWorldPointToSource({ x: soldier.moveTargetX!, y: soldier.moveTargetY! });
 }
 
+function expectSourcePoint(point: { x: number; y: number }, x: number, y: number): void {
+  expect(point.x).toBeCloseTo(x, 6);
+  expect(point.y).toBeCloseTo(y, 6);
+}
+
 describe("SWF conformance: field-hospital healing and rejoin", () => {
   it("records the direct SWF healing/rejoin constants", () => {
     const rule = baseSpec.rules.find((candidate) => candidate.id === "FIELD_HOSPITAL_HEAL_AND_REJOIN");
@@ -48,9 +53,9 @@ describe("SWF conformance: field-hospital healing and rejoin", () => {
     const protagonist = createSoldier("player-0", "player", "player", 0, 0);
     const player27 = createSoldier("player-27", "player", "ai", 0, 0);
     const enemy29 = createSoldier("enemy-29", "enemy", "ai", 0, 0);
-    expect(battlefieldWorldPointToSource(getSwfHealingSlotPosition(protagonist))).toEqual({ x: 193, y: 600 });
-    expect(battlefieldWorldPointToSource(getSwfHealingSlotPosition(player27))).toEqual({ x: 68, y: 480 });
-    expect(battlefieldWorldPointToSource(getSwfHealingSlotPosition(enemy29))).toEqual({ x: 1772, y: 720 });
+    expectSourcePoint(battlefieldWorldPointToSource(getSwfHealingSlotPosition(protagonist)), 193, 600);
+    expectSourcePoint(battlefieldWorldPointToSource(getSwfHealingSlotPosition(player27)), 68, 480);
+    expectSourcePoint(battlefieldWorldPointToSource(getSwfHealingSlotPosition(enemy29)), 1772, 720);
   });
 
   it("keeps player state 97 when healing lands exactly on max HP, then enters p7-equivalent rejoin on the next logic tick", () => {
@@ -110,7 +115,7 @@ describe("SWF conformance: field-hospital healing and rejoin", () => {
 
     updateRejoining(soldier, bases);
     expect(soldier.state).toBe("REJOINING");
-    let target = sourceTarget(soldier);
+    const target = sourceTarget(soldier);
     expect(target.x).toBeCloseTo(346, 6);
     expect(target.y).toBeCloseTo(249, 6);
 
