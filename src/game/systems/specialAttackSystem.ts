@@ -155,13 +155,19 @@ export function updateSpecialAttacks(
 ): SpecialAttackEvent[] {
   const events: SpecialAttackEvent[] = [];
   function dispatchForcedTechnique(recipient: Soldier, establishRangedAction = false): SpecialAttackEvent | null {
-    const ranged = isGunTechnique(recipient.technique) || isArrowTechnique(recipient.technique);
-    if (establishRangedAction && ranged && !beginTechniqueAction(recipient, currentTime, random, false)) return null;
-    return isGunTechnique(recipient.technique)
-      ? (() => { const target = findGunTarget(recipient, soldiers); return target ? executeGunAttack(recipient, target, currentTime, random, false, soldiers) : null; })()
-      : isArrowTechnique(recipient.technique)
-      ? (() => { const target = findArrowTarget(recipient, soldiers); return target ? executeArrowAttack(recipient, target, currentTime, random, false) : null; })()
-      : recipient.technique === "CAVALRY_CHARGE" ? executeCavalryCharge(recipient, soldiers, obstacles, bases, currentTime, random, { consumeCooldown: false })
+    if (isGunTechnique(recipient.technique)) {
+      const target = findGunTarget(recipient, soldiers);
+      if (!target) return null;
+      if (establishRangedAction && !beginTechniqueAction(recipient, currentTime, random, false)) return null;
+      return executeGunAttack(recipient, target, currentTime, random, false, soldiers);
+    }
+    if (isArrowTechnique(recipient.technique)) {
+      const target = findArrowTarget(recipient, soldiers);
+      if (!target) return null;
+      if (establishRangedAction && !beginTechniqueAction(recipient, currentTime, random, false)) return null;
+      return executeArrowAttack(recipient, target, currentTime, random, false);
+    }
+    return recipient.technique === "CAVALRY_CHARGE" ? executeCavalryCharge(recipient, soldiers, obstacles, bases, currentTime, random, { consumeCooldown: false })
       : isSpearTechnique(recipient.technique) ? executeSpearAttack(recipient, soldiers, obstacles, bases, currentTime, random, false)
       : isNinjaTechnique(recipient.technique) ? executeNinjaAttack(recipient, soldiers, obstacles, bases, currentTime, random, "GENERAL_FORCED")
       : isGeneralTechnique(recipient.technique) ? executeGeneralAttack(recipient, soldiers, obstacles, bases, currentTime, random, false, forceGeneralRecipient)
