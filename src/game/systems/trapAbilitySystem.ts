@@ -15,7 +15,11 @@ function fixedFenceOwner(fence: BattleObstacle): Team | null {
   return null;
 }
 
-function isTouchingFence(soldier: Soldier, fence: BattleObstacle): boolean {
+function isTouchingFence(soldier: Soldier, fence: BattleObstacle, currentTime: number): boolean {
+  // A raw 901..906 collision records the exact grid fence on the movement
+  // runtime. Use that event first so TRAP does not depend on a slightly offset
+  // bitmap alpha rectangle. The alpha contact remains a compatibility fallback.
+  if (soldier.avoidanceObstacleId === fence.id && currentTime < soldier.avoidanceUntil) return true;
   const x = Math.max(fence.x, Math.min(soldier.x, fence.x + fence.width));
   const y = Math.max(fence.y, Math.min(soldier.y, fence.y + fence.height));
   return Math.hypot(soldier.x - x, soldier.y - y) <= SOLDIER_RADIUS + 0.5;
@@ -38,8 +42,9 @@ function applyTrapEffect(invader: Soldier, currentTime: number, fences: readonly
 }
 
 /**
- * Checks TRAP only when a soldier starts touching an enemy-owned fixed fence.
- * Remaining in enemy territory or remaining in contact never re-rolls it.
+ * Checks TRAP when movement makes a new contact with an enemy-owned fixed
+ * fence. Raw 901..906 collision events are authoritative; remaining on the
+ * same contact never re-rolls it.
  */
 export function updateEnemyFenceTrapContacts(
   soldiers: Soldier[], fences: readonly BattleObstacle[], currentTime: number,
@@ -50,7 +55,7 @@ export function updateEnemyFenceTrapContacts(
     if (invader.isDead || invader.hp <= 0) continue;
     const touching = fences.filter((fence) => {
       const owner = fixedFenceOwner(fence);
-      return owner !== null && owner !== invader.team && isTouchingFence(invader, fence);
+      return owner !== null && owner !== invader.team && isTouchingFence(invader, fence, currentTime);
     });
     const previousIds = new Set(invader.touchingEnemyFenceIds);
     invader.touchingEnemyFenceIds = touching.map((fence) => fence.id);
