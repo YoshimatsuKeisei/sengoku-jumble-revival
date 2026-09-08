@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { RECOVERY_CONFIG } from "../config";
 import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import { updateAiTargets } from "./aiSystem";
@@ -17,9 +16,9 @@ import {
 } from "./recoverySystem";
 
 describe("recovery state system", () => {
-  it("starts emergency retreat at the temporary danger threshold and clears combat", () => {
+  it("starts emergency retreat below the SWF danger threshold and clears combat", () => {
     const unit = createSoldier("p", "player", "ai", 100, 500, "defend");
-    unit.hp = unit.maxHp * RECOVERY_CONFIG.dangerHpRatio;
+    unit.hp = unit.maxHp * 0.19;
     unit.targetId = "enemy";
     expect(shouldEmergencyRetreat(unit)).toBe(true);
     updateRecoveryStates([unit], 0);

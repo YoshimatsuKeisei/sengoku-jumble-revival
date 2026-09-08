@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { BATTLE_OBSTACLES, SOLDIER_RADIUS } from "../../src/game/config";
 import { battlefieldSourcePointToWorld } from "../../src/game/battlefieldLayout";
 import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
@@ -7,7 +8,7 @@ import { createBattleBases, getBaseForTeam } from "../../src/game/systems/baseSy
 import { beginTechniqueAction, COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
-import { updateInvaderTrapMovement } from "../../src/game/systems/trapAbilitySystem";
+import { updateEnemyFenceTrapContacts } from "../../src/game/systems/trapAbilitySystem";
 import movementSpec from "../../swf-spec/rules/movement.json";
 import abilitySpec from "../../swf-spec/rules/abilities.json";
 import baseSpec from "../../swf-spec/rules/bases.json";
@@ -28,31 +29,33 @@ function trapRoster(): Soldier[] {
 }
 
 describe("SWF conformance: confirmed rules", () => {
-  it("keeps the TRAP half boundary in SWF source coordinates", () => {
+  it("keeps the confirmed source-space center metadata without reintroducing territory-only TRAP rolls", () => {
     expect(movementSpec.rules[0].status).toBe("confirmed");
     expect(movementSpec.rules[0].expected.sourceCenterX).toBe(900);
+    expect(movementSpec.rules[0].expected.comparisonSpace).toBe("swf-source");
 
     const defenders = trapRoster();
     const safe = unit("safe", "player", 899);
-    const safePrev = new Map([[safe.id, { x: safe.x - 1, y: safe.y }]]);
-    expect(updateInvaderTrapMovement([safe, ...defenders], safePrev, 100, () => 0)).toEqual([]);
-
     const invader = unit("invader", "player", 901);
-    const invadedPrev = new Map([[invader.id, { x: invader.x - 1, y: invader.y }]]);
-    expect(updateInvaderTrapMovement([invader, ...defenders], invadedPrev, 100, () => 0)).toEqual([invader.id]);
+    expect(updateEnemyFenceTrapContacts([safe, ...defenders], BATTLE_OBSTACLES, 100, () => 0)).toEqual([]);
+    expect(updateEnemyFenceTrapContacts([invader, ...defenders], BATTLE_OBSTACLES, 100, () => 0)).toEqual([]);
   });
 
-  it("does not redraw TRAP while the confirmed trap state is active", () => {
+  it("does not redraw TRAP while the confirmed trap state/contact is active", () => {
     expect(abilitySpec.rules[0].status).toBe("confirmed");
     const defenders = trapRoster();
-    const invader = unit("invader", "player", 901);
-    const firstPrev = new Map([[invader.id, { x: invader.x - 1, y: invader.y }]]);
-    expect(updateInvaderTrapMovement([invader, ...defenders], firstPrev, 100, () => 0)).toEqual([invader.id]);
+    const fence = BATTLE_OBSTACLES.find((candidate) => candidate.id === "enemy-upper")!;
+    const invader = createSoldier("invader", "player", "ai",
+      fence.x - SOLDIER_RADIUS, fence.y + fence.height / 2);
+    let draws = 0;
+    const drawZero = () => { draws += 1; return 0; };
+    expect(updateEnemyFenceTrapContacts([invader, ...defenders], BATTLE_OBSTACLES, 100, drawZero)).toEqual([invader.id]);
+    const drawsAfterFirst = draws;
 
-    const xBeforeSecondMove = invader.x;
-    invader.x += 1;
-    const secondPrev = new Map([[invader.id, { x: xBeforeSecondMove, y: invader.y }]]);
-    expect(updateInvaderTrapMovement([invader, ...defenders], secondPrev, 101, () => 0)).toEqual([]);
+    invader.x = fence.x - SOLDIER_RADIUS;
+    invader.y = fence.y + fence.height / 2;
+    expect(updateEnemyFenceTrapContacts([invader, ...defenders], BATTLE_OBSTACLES, 101, drawZero)).toEqual([]);
+    expect(draws).toBe(drawsAfterFirst);
   });
 
   it("keeps ranged and non-ranged 連発 as separate confirmed scd retention rules", () => {

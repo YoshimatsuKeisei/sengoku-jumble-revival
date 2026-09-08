@@ -1,4 +1,4 @@
-import { BASE_CONFIG, RECOVERY_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
+import { BASE_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
 import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import type { BattleBase, Soldier, Team } from "../types";
 import type { RandomSource } from "../stats/soldierStats";
@@ -96,9 +96,10 @@ export const SWF_TREATMENT_SEARCH_MANHATTAN_UNITS = 760;
 export const TREATMENT_RECOVERY_LOCK_TICKS = 1;
 
 export function shouldEmergencyRetreat(soldier: Soldier, currentTime = 0): boolean {
+  const hpPercent = soldier.maxHp > 0 ? Math.floor(soldier.hp / soldier.maxHp * 100) : 0;
   return soldier.reactionState === "NONE" && soldier.state === "NORMAL"
     && currentTime >= soldier.abilityActionLockUntil
-    && soldier.hp > 0 && soldier.hp / soldier.maxHp <= RECOVERY_CONFIG.dangerHpRatio;
+    && soldier.hp > 0 && (hpPercent < 20 || soldier.hp < 6);
 }
 
 function setMoveTarget(soldier: Soldier, point: Point): void {
@@ -271,8 +272,6 @@ function enterHealing(
   setRecoveryEntryCommitted(soldier, false);
   soldier.treatmentUsedSinceLastBaseVisit = false;
   soldier.state = "HEALING";
-  // Retained as a defensive fallback for directly injected/debug healing states.
-  // Normal SWF routing releases pursuers earlier at the p93/p94 entry commit.
   invalidateCombatTargetForAll(soldier.id, soldiers);
   soldier.moveTargetX = null;
   soldier.moveTargetY = null;
@@ -288,7 +287,6 @@ export function updateEmergencyRetreat(
 ): void {
   const base = ownBase(soldier.team, bases);
   clearCombat(soldier);
-
   if (applyTreatmentContact(soldier, soldiers, currentTime)) return;
   if (soldier.recoveryTargetKind === "HEALER") {
     const healer = soldiers.find((candidate) => candidate.id === soldier.recoveryHealerId
@@ -304,29 +302,22 @@ export function updateEmergencyRetreat(
     soldier.recoveryHealerId = null;
     setRecoveryEntryCommitted(soldier, false);
   }
-
   if (isOnOwnSwfRecoveryTile(soldier)) {
     const source = battlefieldWorldPointToSource(soldier);
     const gate = soldier.recoveryGate ?? swfRecoveryRouteForSourceY(source.y).gate;
     enterHealing(soldier, base, gate, soldiers, random);
     return;
   }
-
   if (!isRecoveryEntryCommitted(soldier) && shouldCommitSwfRecoveryEntry(soldier)) {
     setRecoveryEntryCommitted(soldier, true);
     setSwfInnerRecoveryTarget(soldier);
-    // Raw p91/p92 -> p93/p94 transition calls led(self) here, not when the
-    // soldier later reaches healing p97/p98. Pursuit therefore survives the
-    // initial retreat but is released exactly when base entry is committed.
     invalidateCombatTargetForAll(soldier.id, soldiers);
     return;
   }
-
   if (isRecoveryEntryCommitted(soldier)) {
     setSwfInnerRecoveryTarget(soldier);
     return;
   }
-
   setSwfOuterRecoveryTarget(soldier);
 }
 
@@ -344,7 +335,6 @@ export function updateHealing(soldier: Soldier, deltaSeconds: number, _bases?: r
   const swfHealingPerUpdate = soldier.maxHp / 400;
   soldier.hp += swfHealingPerUpdate * SWF_COMBAT_FPS * multiplier * deltaSeconds;
   if (soldier.hp <= soldier.maxHp) return;
-
   soldier.hp = soldier.maxHp;
   beginSwfRejoin(soldier);
 }
@@ -361,7 +351,6 @@ export function updateRejoining(soldier: Soldier, _bases?: readonly BattleBase[]
   setSwfSourceMoveTarget(soldier, targetSource.x, targetSource.y);
   const manhattan = Math.abs(targetSource.x - source.x) + Math.abs(targetSource.y - source.y);
   if (manhattan >= SWF_REJOIN_COMPLETION_MANHATTAN) return;
-
   soldier.state = "NORMAL";
   soldier.moveTargetX = null;
   soldier.moveTargetY = null;
