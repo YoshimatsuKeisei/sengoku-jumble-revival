@@ -1,0 +1,101 @@
+{
+  "rules": [
+    {
+      "id": "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "projectileLaunchesPerAttackCycle": 1,
+        "attackResolutionCallsPerSuccessfulSpl": 1,
+        "projectileChildSpriteId": 1002,
+        "projectileInstanceName": "ya",
+        "projectileChildInstancesPerDirectionalPose": 1,
+        "projectileChildTimelineFrames": 5,
+        "projectileVisualFrames": [2, 3, 4],
+        "projectileStopFrame": 5,
+        "projectileChildLoops": false
+      },
+      "evidence": { "reference": "evidence/ranged_cycle.md" }
+    },
+    {
+      "id": "RANGED_ACTION_FRAME_LOCK",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "directionPoseSourceFrameStart": 41,
+        "directionPoseSourceFrameEnd": 48,
+        "directionPoseCount": 8,
+        "directionPoseSelection": "gotoAndStop(fi + 40)",
+        "mustNotInterpretDirectionFramesAsSequentialCadence": true,
+        "actionLockVariable": "k",
+        "actionLockLogicTicks": 10,
+        "minimumFreshActivationIntervalTicks": 10
+      },
+      "evidence": { "reference": "evidence/ranged_cycle.md" }
+    },
+    {
+      "id": "RANGED_GAUGE_BANKING_LIMIT",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "swfGaugeVariable": "kd",
+        "swfSkillIncrementVariable": "kp",
+        "rangedCharacterCodes": [2, 6],
+        "gaugeStepAddsSkillBeforeThresholdCheck": true,
+        "activationThresholdExclusive": 200,
+        "normalThresholdConsumption": 200,
+        "doubleSpecialAbilityCode": "s21",
+        "doubleSpecialRetentionChance": 0.4,
+        "doubleSpecialRetentionInclusiveRandomBoundary": true,
+        "doubleSpecialRetentionMaximumExpression": "399 + kp",
+        "overflowForcesConsumption": true,
+        "consumptionOccursBeforeRangeAndActionLockChecks": true,
+        "explicitHardCap": null,
+        "arbitraryUnboundedBankingAllowed": false,
+        "mustNotInventFixedCap": true
+      },
+      "evidence": { "reference": "evidence/ranged_cycle.md" }
+    },
+    {
+      "id": "NORMAL_CONTACT_CONTEST",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "contactAxisBoundsExclusiveSourceUnits": 32,
+        "combatRawVariable": "pw2",
+        "combatWeightVariable": "pw",
+        "combatWeightExpression": "pow(rawCombat, 3)",
+        "attackSideProbabilityExpression": "pwA / (pwA + pwB)",
+        "atckMode": 0,
+        "targetReferenceVariable": "l",
+        "engagementStateExpression": "pp + 20",
+        "defenderNormalContactHasModeZeroRetargetFallback": true,
+        "rushChargeAttackerRetargetRequiresRandomPercentGreaterThan": 70,
+        "rushChargeAttackerKeepPriorTargetInclusiveAt70": true,
+        "participantsEvaluatedIndependently": true
+      },
+      "evidence": { "reference": "evidence/normal_melee_combat.md" }
+    },
+    {
+      "id": "NORMAL_PURSUIT_LIFECYCLE",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "dynamicTargetCoordinates": true,
+        "standaloneMaximumChaseDistance": null,
+        "closeAxisThresholdExclusive": 20,
+        "closeSpacingSourceUnits": 24,
+        "persistentSectorSlots": false,
+        "crowdJitter": false,
+        "rangedHoldMarginSourceUnits": 10,
+        "fatalHitReactionLogicTicks": 10,
+        "deathState": 99,
+        "deathReleaseFunction": "led",
+        "deathReleaseRestoresStateExpression": "p = pp",
+        "retreatRemainsPursuableBeforeEntryCommit": true,
+        "retreatReleaseStates": [93, 94]
+      },
+      "evidence": { "reference": "evidence/normal_melee_combat.md" }
+    }
+  ]
+}

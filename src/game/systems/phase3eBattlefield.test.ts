@@ -1,23 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { BASE_CONFIG, BATTLEFIELD_CONFIG, CAMERA_CONFIG, MOVEMENT_SPEED_CONFIG, SOLDIER_RADIUS } from "../config";
-import { BATTLEFIELD_BASE_WORLD_RECTS } from "../battlefieldLayout";
+import { BATTLEFIELD_BASE_WORLD_RECTS, battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import { calculateMoveSpeedFromFoot } from "../stats/soldierStats";
 import { captureSoldierPositions, resolveBaseMovementContacts } from "./baseContactSystem";
 import { createBattleBases, distanceToBaseEdge, getBaseForTeam } from "./baseSystem";
 import {
   getBaseDamageCoreRect,
-  getBaseAttackSurfaceRect,
-  getBaseGatePoint,
   getBaseHealingInteriorRect,
   getBaseRect,
-  getBaseUpperGateRect,
   getTeamForwardSign,
   isInsideFriendlyBaseHealingArea,
 } from "./battlefieldGeometry";
 import { clampCameraZoom, getCameraZoomLimits, getFollowScroll, visibleWorldWidth } from "./cameraSystem";
 import { updateTemporaryOrder } from "./commandSystem";
-import { recoveryDestinationFor, rejoinPointFor, startEmergencyRetreat, updateEmergencyRetreat, updateHealing } from "./recoverySystem";
+import { recoveryDestinationFor, startEmergencyRetreat, updateEmergencyRetreat, updateHealing, updateRejoining } from "./recoverySystem";
 
 describe("Phase 3E horizontal battlefield", () => {
   it("is wider than it is tall and places bases at opposite sides", () => {
@@ -56,7 +53,7 @@ describe("Phase 3E linear foot speed", () => {
 });
 
 describe("Phase 3E rectangular base geometry", () => {
-  it("uses the manifest-derived world rectangles for both bases", () => {
+  it("uses the manifest-derived world rectangles for both visual bases", () => {
     const [player, enemy] = createBattleBases();
     for (const [base, expected] of [[player, BATTLEFIELD_BASE_WORLD_RECTS.player], [enemy, BATTLEFIELD_BASE_WORLD_RECTS.enemy]] as const) {
       const actual = getBaseRect(base);
@@ -67,7 +64,7 @@ describe("Phase 3E rectangular base geometry", () => {
     }
   });
 
-  it("derives a centered damage core using full width and 30% height", () => {
+  it("retains the legacy reconstructed 30% visual damage core as layout geometry only", () => {
     const base = getBaseForTeam(createBattleBases(), "enemy");
     const core = getBaseDamageCoreRect(base);
     expect(core.width).toBe(BASE_CONFIG.frontSegmentDepth);
@@ -75,7 +72,7 @@ describe("Phase 3E rectangular base geometry", () => {
     expect(core.y + core.height / 2).toBe(base.y);
   });
 
-  it("distinguishes the healing rectangle from the damage core", () => {
+  it("distinguishes the reconstructed healing rectangle from the visual damage core", () => {
     const base = getBaseForTeam(createBattleBases(), "player");
     const rect = getBaseRect(base);
     const healingRect = getBaseHealingInteriorRect(base);
@@ -86,58 +83,64 @@ describe("Phase 3E rectangular base geometry", () => {
     expect(distanceToBaseEdge(enemy, base)).toBeGreaterThan(SOLDIER_RADIUS);
   });
 
-  it("allows base damage only when movement crosses the central contact surface", () => {
+  it("allows base damage only when movement enters the confirmed 996 collision tile", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "enemy");
-    const surface = getBaseAttackSurfaceRect(base);
-    const attacker = createSoldier("a", "player", "ai", surface.x - SOLDIER_RADIUS - 1, base.y);
+    const outside = battlefieldSourcePointToWorld({ x: 1595, y: 540 });
+    const inside = battlefieldSourcePointToWorld({ x: 1605, y: 540 });
+    const attacker = createSoldier("a", "player", "ai", outside.x, outside.y);
     const previous = captureSoldierPositions([attacker]);
-    attacker.x = surface.x - SOLDIER_RADIUS + 1;
+    Object.assign(attacker, inside);
     resolveBaseMovementContacts([attacker], bases, previous, 0, () => 0.99);
     expect(base.hp).toBe(base.maxHp - 1);
   });
 });
 
 describe("Phase 3E base healing", () => {
-  it("targets the friendly base and enters healing inside it", () => {
+  it("targets the friendly retreat route and enters healing on confirmed tile 999", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "player");
-    const soldier = createSoldier("s", "player", "ai", base.x, base.y - 100);
+    const start = battlefieldSourcePointToWorld({ x: 500, y: 500 });
+    const soldier = createSoldier("s", "player", "ai", start.x, start.y);
     startEmergencyRetreat(soldier, bases);
     expect(recoveryDestinationFor("player", bases)).toEqual({ x: base.x, y: base.y });
-    const gate = soldier.recoveryGate!;
-    Object.assign(soldier, getBaseGatePoint(base, gate, false));
-    updateEmergencyRetreat(soldier, bases);
-    expect(soldier.state).toBe("EMERGENCY_RETREAT");
-    Object.assign(soldier, getBaseGatePoint(base, gate, true));
+    const initialTarget = battlefieldWorldPointToSource({ x: soldier.moveTargetX!, y: soldier.moveTargetY! });
+    expect(initialTarget).toEqual({ x: 140, y: 249 });
+
+    Object.assign(soldier, battlefieldSourcePointToWorld({ x: 216, y: 432 }));
     updateEmergencyRetreat(soldier, bases);
     expect(soldier.state).toBe("HEALING");
   });
 
-  it("heals at the SWF maxHp/400 per update rate and caps at max HP", () => {
-    const soldier = createSoldier("s", "player", "ai", 0, 0);
+  it("heals at maxHp/400 per SWF logic update and uses strict over-max transition to p7", () => {
+    const start = battlefieldSourcePointToWorld({ x: 100, y: 500 });
+    const soldier = createSoldier("s", "player", "ai", start.x, start.y);
     soldier.state = "HEALING";
     soldier.hp = soldier.maxHp - 20;
     const healingPerSecond = soldier.maxHp / 400 * 24;
     updateHealing(soldier, 0.5);
     expect(soldier.hp).toBeCloseTo(soldier.maxHp - 20 + healingPerSecond * 0.5);
-    updateHealing(soldier, 5);
-    expect(soldier.hp).toBeCloseTo(soldier.maxHp - 20 + healingPerSecond * 5.5);
-    updateHealing(soldier, 100);
+
+    soldier.hp = soldier.maxHp - soldier.maxHp / 400;
+    updateHealing(soldier, 1 / 24);
+    expect(soldier.hp).toBeCloseTo(soldier.maxHp);
+    expect(soldier.state).toBe("HEALING");
+    updateHealing(soldier, 1 / 24);
     expect(soldier.hp).toBe(soldier.maxHp);
-    expect(soldier.state).toBe("NORMAL");
+    expect(soldier.state).toBe("REJOINING");
   });
 
-  it("derives rejoin exits from the selected top gate", () => {
+  it("completes the SWF p7 rejoin only below the strict 50-source-unit threshold", () => {
     const bases = createBattleBases();
     for (const team of ["player", "enemy"] as const) {
-      const base = getBaseForTeam(bases, team);
-      const point = rejoinPointFor(team, base.y - 100, bases);
-      const exit = getBaseGatePoint(base, "TOP", false);
-      expect(point).toEqual(exit);
-      const gateRect = getBaseUpperGateRect(base);
-      expect(exit.x).toBe(gateRect.x + gateRect.width / 2);
-      expect(exit.y).toBeLessThan(base.y - base.height / 2);
+      const targetX = team === "player" ? 346 : 1545;
+      const start = battlefieldSourcePointToWorld({ x: targetX + (team === "player" ? -49 : 49), y: 249 });
+      const soldier = createSoldier(`${team}-rejoin`, team, "ai", start.x, start.y, "wait");
+      soldier.state = "REJOINING";
+      soldier.recoveryGate = "TOP";
+      updateRejoining(soldier, bases);
+      expect(soldier.state).toBe("NORMAL");
+      expect(soldier.strategy).toBe("wait");
     }
   });
 });

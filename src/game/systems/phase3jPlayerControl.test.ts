@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import { createArmy } from "../factories/createArmy";
 import { COMMON_SPECIAL_ABILITY_POOL } from "./specialAbilitySystem";
 import { formatSoldierInspector, STRATEGY_LABELS, updateInspectorTarget } from "./soldierInspectorSystem";
 import { canPlayerContinueManualPursuitDuringWindup, canPlayerMoveInCurrentState, getSpecialGaugeProgress } from "./playerControlSystem";
-import { createBattleBases, getBaseForTeam } from "./baseSystem";
-import { getBaseGatePoint } from "./battlefieldGeometry";
+import { createBattleBases } from "./baseSystem";
 import { updateRecoveryStates } from "./recoverySystem";
 import { updateSpecialAttacks } from "./specialAttackSystem";
 
@@ -55,7 +55,7 @@ describe("Phase 3J inspector and player controls", () => {
     expect(getSpecialGaugeProgress(player, 0)).toBeLessThanOrEqual(1);
     expect(getSpecialGaugeProgress(player, 5_000)).toBe(1);
   });
-  it("starts player retreat toward a valid treatment holder without choosing a base gate", () => {
+  it("starts player retreat toward a valid treatment holder without choosing a base route yet", () => {
     const player = createSoldier("p", "player", "player", 500, 400);
     const healer = createSoldier("h", "player", "ai", 510, 400); healer.specialAbilities = ["TREATMENT"];
     player.hp = player.maxHp * 0.3;
@@ -66,15 +66,22 @@ describe("Phase 3J inspector and player controls", () => {
     expect(player.recoveryTargetKind).toBe("HEALER");
     expect(player.moveTargetX).toBeNull();
   });
-  it("enters after manually clearing a gate and exits instantly through the same gate", () => {
-    const bases = createBattleBases(); const base = getBaseForTeam(bases, "player");
-    const player = createSoldier("p", "player", "player", 0, 0); player.state = "EMERGENCY_RETREAT"; player.hp = 10;
-    Object.assign(player, getBaseGatePoint(base, "BOTTOM", true));
+  it("uses the same confirmed 999 -> healing -> p7 flow for the player-controlled soldier", () => {
+    const bases = createBattleBases();
+    const tile = battlefieldSourcePointToWorld({ x: 216, y: 432 });
+    const player = createSoldier("p", "player", "player", tile.x, tile.y);
+    player.state = "EMERGENCY_RETREAT";
+    player.recoveryGate = "TOP";
+    player.hp = 10;
     updateRecoveryStates([player], 0, bases, () => 1);
-    expect(player.state).toBe("HEALING"); expect(player.recoveryGate).toBe("BOTTOM");
-    updateRecoveryStates([player], 1_000, bases, () => 1);
-    expect(player.state).toBe("NORMAL");
-    expect({ x: player.x, y: player.y }).toEqual(getBaseGatePoint(base, "BOTTOM", false));
+    expect(player.state).toBe("HEALING");
+    expect(player.recoveryGate).toBe("TOP");
+
+    player.hp = player.maxHp;
+    updateRecoveryStates([player], 1 / 24, bases, () => 1);
+    expect(player.state).toBe("REJOINING");
+    const target = battlefieldWorldPointToSource({ x: player.moveTargetX!, y: player.moveTargetY! });
+    expect(target).toEqual({ x: 346, y: 249 });
   });
   it("never auto-fires player special and does not spend cooldown without a target", () => {
     const player = createSoldier("p", "player", "player", 100, 100);

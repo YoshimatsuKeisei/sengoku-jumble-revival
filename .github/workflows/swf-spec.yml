@@ -1,0 +1,59 @@
+name: SWF conformance
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - debug/swf-conformance
+    paths:
+      - "src/**"
+      - "tests/swf-spec/**"
+      - "swf-spec/**"
+      - ".github/workflows/swf-spec.yml"
+
+concurrency:
+  group: swf-spec-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Base and recovery regression tests
+        run: >-
+          npx vitest run
+          src/game/systems/baseContactSystem.test.ts
+          src/game/systems/baseGateRecoveryGeometry.test.ts
+          src/game/systems/recoverySystem.test.ts
+          src/game/systems/phase3eBattlefield.test.ts
+          src/game/systems/phase3fFidelity.test.ts
+          src/game/systems/phase3gFixes.test.ts
+          src/game/systems/phase3hIntegration.test.ts
+          src/game/systems/phase3jPlayerControl.test.ts
+          --reporter=verbose
+      - name: Strategy regression tests
+        run: >-
+          npx vitest run
+          src/game/systems/strategyEngagement.test.ts
+          src/game/systems/phase4c1TargetStrategy.test.ts
+          --reporter=verbose
+      - name: SWF conformance tests
+        run: npx vitest run tests/swf-spec --reporter=verbose
+      - name: Machine-readable SWF result
+        if: always()
+        run: npx vitest run tests/swf-spec --reporter=json --outputFile=swf-spec-results.json
+      - name: Upload SWF result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: swf-spec-results
+          path: swf-spec-results.json
+          if-no-files-found: warn

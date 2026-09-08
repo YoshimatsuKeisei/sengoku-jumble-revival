@@ -1,0 +1,19 @@
+{
+  "rules": [
+    {
+      "id": "DAMAGE_REACTION_PRIORITY",
+      "status": "confirmed",
+      "category": "damage",
+      "expected": {
+        "hitReactionVariable": "k",
+        "hitReactionLogicTicks": 10,
+        "fatalHitStillCompletesHitReaction": true,
+        "deathCheckRequiresHpBelowOneAndKZero": true,
+        "deathTransitionFunction": "tiky",
+        "deathState": 99,
+        "sequence": ["hit_stun", "death_if_hp_below_1", "emergency_retreat_if_alive", "normal_action"]
+      },
+      "evidence": { "reference": "evidence/damage_priority.md" }
+    }
+  ]
+}

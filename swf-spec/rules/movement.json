@@ -1,0 +1,11 @@
+{
+  "rules": [
+    {
+      "id": "TRAP_HALF_BOUNDARY_SOURCE_X",
+      "status": "confirmed",
+      "category": "movement",
+      "expected": { "sourceCenterX": 900, "comparisonSpace": "swf-source" },
+      "evidence": { "reference": "evidence/trap_boundary.md" }
+    }
+  ]
+}

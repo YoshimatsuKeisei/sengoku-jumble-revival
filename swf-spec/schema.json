@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Sengoku Jumble SWF conformance rule",
+  "type": "object",
+  "required": ["id", "status", "category", "expected", "evidence"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["confirmed", "inferred", "unconfirmed"] },
+    "category": { "type": "string", "minLength": 1 },
+    "expected": { "type": "object" },
+    "evidence": {
+      "type": "object",
+      "required": ["reference"],
+      "properties": { "reference": { "type": "string", "minLength": 1 } },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
