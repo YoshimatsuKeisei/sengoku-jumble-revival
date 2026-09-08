@@ -23,18 +23,19 @@ describe("Phase 3J inspector and player controls", () => {
     runtime = updateInspectorTarget(player, [player, farther, nearer, enemy], 501, runtime);
     expect(runtime.targetId).toBeNull();
   });
-  it("formats Japanese strategy and ability labels", () => {
+  it("formats the current Japanese strategy and ability labels", () => {
     const soldier = createSoldier("player-12", "player", "ai", 0, 0, "intercept");
     soldier.specialAbilities = ["MIGHT", "FORESIGHT"];
     expect(STRATEGY_LABELS.intercept).toBe("迎撃");
-    expect(formatSoldierInspector(soldier)).toContain("・将力\n・見切");
+    expect(formatSoldierInspector(soldier)).toContain("・膂力\n・見切");
   });
-  it("can debug-assign all and only common abilities to player", () => {
+  it("debug-assigns all common abilities only to the protagonist without erasing recovered ally abilities", () => {
+    const normalArmy = createArmy("player", () => 0, { playerAllCommonAbilities: false });
     const debugArmy = createArmy("player", () => 0, { playerAllCommonAbilities: true });
     expect(debugArmy[0].specialAbilities).toEqual(COMMON_SPECIAL_ABILITY_POOL);
     expect(new Set(debugArmy[0].specialAbilities).size).toBe(16);
-    expect(debugArmy[1].specialAbilities).toEqual([]);
-    expect(createArmy("player", () => 0, { playerAllCommonAbilities: false })[0].specialAbilities).toEqual([]);
+    expect(debugArmy[1].specialAbilities).toEqual(normalArmy[1].specialAbilities);
+    expect(normalArmy[0].specialAbilities).not.toEqual(COMMON_SPECIAL_ABILITY_POOL);
   });
   it("allows manual movement in retreat and only retreat-target windup", () => {
     const player = createSoldier("p", "player", "player", 0, 0);
@@ -58,7 +59,7 @@ describe("Phase 3J inspector and player controls", () => {
   it("starts player retreat toward a valid treatment holder without choosing a base route yet", () => {
     const player = createSoldier("p", "player", "player", 500, 400);
     const healer = createSoldier("h", "player", "ai", 510, 400); healer.specialAbilities = ["TREATMENT"];
-    player.hp = player.maxHp * 0.3;
+    player.hp = player.maxHp * 0.19;
     updateRecoveryStates([player, healer], 0, createBattleBases(), () => 1);
     expect(player.state).toBe("EMERGENCY_RETREAT");
     expect(player.recoveryGate).toBeNull();
