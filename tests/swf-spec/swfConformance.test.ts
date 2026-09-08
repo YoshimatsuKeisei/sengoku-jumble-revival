@@ -98,7 +98,7 @@ describe("SWF conformance: confirmed rules", () => {
     generalA.unitType = generalB.unitType = "GENERAL";
     generalA.technique = generalB.technique = "GENERAL_COMMAND";
     generalA.combatGauge = generalB.combatGauge = 10_000;
-    generalA.combatGaugeUpdatedAt = generalB.combatGaugeUpdatedAt = 1_000;
+    generalA.combatGaugeUpdatedAt = generalB.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
     archer.combatGauge = 0;

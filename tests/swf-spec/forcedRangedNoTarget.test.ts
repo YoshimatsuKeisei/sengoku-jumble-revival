@@ -3,6 +3,7 @@ import { battlefieldSourcePointToWorld } from "../../src/game/battlefieldLayout"
 import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
 import { createBattleBases } from "../../src/game/systems/baseSystem";
+import { COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 
 function unit(id: string, team: "player" | "enemy", sourceX: number, sourceY = 450): Soldier {
@@ -10,15 +11,15 @@ function unit(id: string, team: "player" | "enemy", sourceX: number, sourceY = 4
   return createSoldier(id, team, "ai", world.x, world.y);
 }
 
-function ready(soldier: Soldier): Soldier {
+function readyAtScd(soldier: Soldier): Soldier {
   soldier.combatGauge = 10_000;
-  soldier.combatGaugeUpdatedAt = 1_000;
+  soldier.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
   return soldier;
 }
 
 describe("general-forced ranged activation runtime invariants", () => {
   it("does not action-lock a ranged recipient when the general command finds no ranged target", () => {
-    const general = ready(unit("general", "player", 500));
+    const general = readyAtScd(unit("general", "player", 500));
     const archer = unit("archer", "player", 520);
     general.unitType = "GENERAL";
     general.technique = "GENERAL_COMMAND";

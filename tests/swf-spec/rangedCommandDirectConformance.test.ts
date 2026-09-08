@@ -93,7 +93,7 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     generalA.unitType = generalB.unitType = "GENERAL";
     generalA.technique = generalB.technique = "GENERAL_COMMAND";
     generalA.combatGauge = generalB.combatGauge = 10_000;
-    generalA.combatGaugeUpdatedAt = generalB.combatGaugeUpdatedAt = 1_000;
+    generalA.combatGaugeUpdatedAt = generalB.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
     spear.unitType = "ASHIGARU";
     spear.technique = "ASHIGARU_SPEAR_STRIKE";
     spear.combatGauge = 0;

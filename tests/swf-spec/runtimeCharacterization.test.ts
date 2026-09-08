@@ -17,9 +17,9 @@ function unit(id: string, team: "player" | "enemy", sourceX: number, sourceY = 4
   return createSoldier(id, team, "ai", world.x, world.y);
 }
 
-function ready(soldier: Soldier): Soldier {
+function readyAtScd(soldier: Soldier): Soldier {
   soldier.combatGauge = 10_000;
-  soldier.combatGaugeUpdatedAt = 1_000;
+  soldier.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
   return soldier;
 }
 
@@ -29,8 +29,8 @@ function ready(soldier: Soldier): Soldier {
  */
 describe("runtime characterization for major combat bugs", () => {
   it("uses the confirmed ranged action lock to collapse two same-update general-forced shots into one", () => {
-    const generalA = ready(unit("general-a", "player", 500));
-    const generalB = ready(unit("general-b", "player", 510));
+    const generalA = readyAtScd(unit("general-a", "player", 500));
+    const generalB = readyAtScd(unit("general-b", "player", 510));
     const archer = unit("archer", "player", 520);
     const enemy = unit("enemy", "enemy", 600);
     generalA.unitType = generalB.unitType = "GENERAL";
@@ -50,13 +50,15 @@ describe("runtime characterization for major combat bugs", () => {
   });
 
   it("prevents a general-forced ranged shot and gauge-driven normal shot from firing in the same update", () => {
-    const general = ready(unit("general", "player", 500));
-    const archer = ready(unit("archer", "player", 520));
+    const general = readyAtScd(unit("general", "player", 500));
+    const archer = unit("archer", "player", 520);
     const enemy = unit("enemy", "enemy", 600);
     general.unitType = "GENERAL";
     general.technique = "GENERAL_COMMAND";
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
+    archer.combatGauge = 10_000;
+    archer.combatGaugeUpdatedAt = 1_000;
 
     const gaugeBefore = archer.combatGauge;
     const events = updateSpecialAttacks(
