@@ -8,11 +8,14 @@ import {
   getBaseAttackSurfaceRect,
   getBaseGatePoint,
   getBaseRect,
+  getBaseUpperGateRect,
   isPointInsideRect,
   isPointWithinBaseGateSpan,
 } from "../../src/game/systems/battlefieldGeometry";
 import { createBattleBases, getBaseForTeam, resolveBaseAccessCollisions } from "../../src/game/systems/baseSystem";
 import { COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
+import { moveAiSoldiers, separateSoldiers } from "../../src/game/systems/movementSystem";
+import { updateRecoveryStates } from "../../src/game/systems/recoverySystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 
 function unit(id: string, team: "player" | "enemy", sourceX: number, sourceY = 450): Soldier {
@@ -168,5 +171,50 @@ describe("runtime characterization for major combat bugs", () => {
 
     resolveBaseAccessCollisions([retreating], bases);
     expect(isPointInsideRect(retreating, rect)).toBe(false);
+  });
+
+  it("can turn same-gate retreat crowding into separation-driven friendly-base ejection", () => {
+    const bases = createBattleBases();
+    const base = getBaseForTeam(bases, "player");
+    const baseRect = getBaseRect(base);
+    const gateRect = getBaseUpperGateRect(base);
+    const entryY = gateRect.y + gateRect.height + SOLDIER_RADIUS - 1;
+    const leftValidCenterX = gateRect.x + SOLDIER_RADIUS;
+    const retreaters = [
+      unit("retreat-crowd-a", "player", 300),
+      unit("retreat-crowd-b", "player", 300),
+    ];
+    for (const [index, soldier] of retreaters.entries()) {
+      soldier.state = "EMERGENCY_RETREAT";
+      soldier.recoveryGate = "TOP";
+      soldier.recoveryTargetKind = "BASE_GATE";
+      soldier.x = leftValidCenterX + 0.5 + index * 2;
+      soldier.y = entryY;
+      expect(isPointInsideRect(soldier, baseRect)).toBe(true);
+      expect(isPointWithinBaseGateSpan(soldier, base, "TOP")).toBe(true);
+    }
+
+    // Mirror the relevant BattleScene ordering: recovery targeting -> movement ->
+    // base contact -> soldier separation -> friendly-base access collision.
+    updateRecoveryStates(retreaters, 1 / 60, bases, () => 1, 1_000);
+    const beforeMovement = captureSoldierPositions(retreaters);
+    moveAiSoldiers(retreaters, 0.001, [], 1_000, bases);
+    resolveBaseMovementContacts(retreaters, bases, beforeMovement, 1_000, () => 1);
+    expect(retreaters.every((soldier) => isPointWithinBaseGateSpan(soldier, base, "TOP"))).toBe(true);
+
+    separateSoldiers(retreaters);
+    const displaced = retreaters.find((soldier) => isPointInsideRect(soldier, baseRect)
+      && !isPointWithinBaseGateSpan(soldier, base, "TOP"));
+    expect(displaced).toBeDefined();
+
+    resolveBaseAccessCollisions(retreaters, bases);
+    expect(isPointInsideRect(displaced!, baseRect)).toBe(false);
+    expect(displaced!.state).toBe("EMERGENCY_RETREAT");
+    expect(displaced!.recoveryGate).toBe("TOP");
+
+    updateRecoveryStates(retreaters, 1 / 60, bases, () => 1, 1_016);
+    expect(displaced!.moveTargetX).not.toBeNull();
+    expect(displaced!.moveTargetY).not.toBeNull();
+    expect(displaced!.recoveryGate).toBe("TOP");
   });
 });
