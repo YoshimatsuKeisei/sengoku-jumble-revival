@@ -3,11 +3,11 @@ import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, Soldier, Team } from "../types";
 import { startEngagement } from "./aiSystem";
 import { applyBaseAttackBounce } from "./baseAttackBounceSystem";
-import { getBaseAttackContactSegment } from "./battlefieldGeometry";
 import { damageBase } from "./baseSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
-import { calculateBaseAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { recordBaseAttack } from "./meritSystem";
+import { calculateBaseAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
+import { getSwfBaseCollisionCodeAtWorld, getSwfBaseDamageTileForTeam } from "./swfBaseCollisionGrid";
 
 export interface SoldierPosition { x: number; y: number }
 
@@ -39,30 +39,14 @@ export function isBaseHitBlockedByFortify(
   return false;
 }
 
-const BASE_CONTACT_EPSILON = 0.001;
-
-function getAttackSurfaceCrossing(
+function enteredSwfBaseDamageCell(
   attacker: Soldier,
   previous: SoldierPosition,
   base: BattleBase,
-): SoldierPosition | null {
-  const contact = getBaseAttackContactSegment(base);
-  const deltaX = attacker.x - previous.x;
-  const movingTowardBase = base.team === "enemy"
-    ? deltaX > BASE_CONTACT_EPSILON
-    : deltaX < -BASE_CONTACT_EPSILON;
-  const startedOutside = base.team === "enemy"
-    ? previous.x <= contact.x + BASE_CONTACT_EPSILON
-    : previous.x >= contact.x - BASE_CONTACT_EPSILON;
-  const reachedBoundary = base.team === "enemy"
-    ? attacker.x >= contact.x - BASE_CONTACT_EPSILON
-    : attacker.x <= contact.x + BASE_CONTACT_EPSILON;
-  if (!movingTowardBase || !startedOutside || !reachedBoundary) return null;
-  const progress = Math.max(0, Math.min(1, (contact.x - previous.x) / deltaX));
-  const crossingY = previous.y + (attacker.y - previous.y) * progress;
-  return crossingY >= contact.minY && crossingY <= contact.maxY
-    ? { x: contact.x, y: crossingY }
-    : null;
+): boolean {
+  const currentCode = getSwfBaseCollisionCodeAtWorld(attacker);
+  if (currentCode !== getSwfBaseDamageTileForTeam(base.team)) return false;
+  return getSwfBaseCollisionCodeAtWorld(previous) !== currentCode;
 }
 
 function canTriggerBaseContact(attacker: Soldier, base: BattleBase): boolean {
@@ -81,7 +65,11 @@ function aggroBaseDefenders(defenders: readonly Soldier[], attacker: Soldier, cu
   }
 }
 
-/** Resolve one logic update of SWF-style movement-contact base attacks. */
+/**
+ * Resolve one logic update of the SWF base-contact branch. The original battle
+ * code samples the next position through f[round(x / 36)][round(y / 36)] and
+ * treats only tile 996/997 as base damage. It arms fx/k before resolving damage.
+ */
 export function resolveBaseMovementContacts(
   soldiers: Soldier[],
   bases: readonly BattleBase[],
@@ -97,28 +85,25 @@ export function resolveBaseMovementContacts(
     const previous = previousPositions.get(attacker.id);
     if (!previous || (previous.x === attacker.x && previous.y === attacker.y)) continue;
     const base = bases.find((candidate) => candidate.team !== attacker.team);
-    if (!base || !canTriggerBaseContact(attacker, base)) continue;
-    const crossing = getAttackSurfaceCrossing(attacker, previous, base);
-    if (!crossing) continue;
-
-    // Resolve from the exact shared boundary, never from inside the base collider.
-    attacker.x = crossing.x;
-    attacker.y = crossing.y;
+    if (!base || !canTriggerBaseContact(attacker, base) || !enteredSwfBaseDamageCell(attacker, previous, base)) continue;
 
     const defenders = soldiers.filter((soldier) => soldier.team === base.team);
+
+    // Direct AVM1: 996/997 assigns fx and k=10 before the damage/fortify branch.
+    applyBaseAttackBounce(attacker, base, defenders);
+    attacker.baseContactLockTicks = BASE_CONTACT_CONFIG.lockLogicUpdates;
+
     const blocked = isBaseHitBlockedByFortify(attacker, defenders, random);
     if (!blocked) {
       const appliedDamage = damageBase(base, calculateBaseAttackDamage(attacker));
       if (appliedDamage > 0) recordBaseAttack(attacker, base.isDestroyed);
       aggroBaseDefenders(defenders, attacker, currentTime);
     }
-    applyBaseAttackBounce(attacker, base, defenders);
     if (attacker.temporaryOrder?.type === "JINTO_CHARGE") {
       attacker.temporaryOrder = null;
       attacker.moveTargetX = null;
       attacker.moveTargetY = null;
     }
-    attacker.baseContactLockTicks = BASE_CONTACT_CONFIG.lockLogicUpdates;
     if (base.isDestroyed) return base.team;
   }
   return null;
