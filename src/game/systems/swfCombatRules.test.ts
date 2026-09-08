@@ -39,9 +39,9 @@ function useTechnique(subject: Soldier, technique: UnitTechnique, unitType: Sold
 }
 
 describe("SWF combat/defense formulas", () => {
-  it("uses the linear combat ratio only to choose the contact attacker", () => {
+  it("uses cubic pw=pow(raw combat,3) weighting to choose the contact attacker", () => {
     expect(getCombatWinProbability(100, 100)).toBe(0.5);
-    const weighted = 100 / (100 + 80);
+    const weighted = 100 ** 3 / (100 ** 3 + 80 ** 3);
     expect(getCombatWinProbability(100, 80)).toBeCloseTo(weighted, 12);
     const a = soldier("a");
     const b = soldier("b", "enemy"); b.stats.combat = 80;
