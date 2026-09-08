@@ -37,6 +37,11 @@
         "retreatingSoldiersMustNotBePermanentlyRejectedByFriendlyBaseCollision": true,
         "currentGateWidthSensitiveAdmissionIsRuntimeReconstruction": true,
         "visualGateRectsDerivedFromAlphaBounds": true,
+        "runtimeCrowdSeparationCanEjectEnteringRetreater": true,
+        "runtimeEjectedRetreaterRetargetsSameGate": true,
+        "runtimeGateEdgeBehaviorIsAsymmetric": true,
+        "runtimeHasNoDistinctGateEntryInProgressState": true,
+        "recoveryGateEnteredOnlyBecomesTrueAfterHealingTransition": true,
         "swfBehavioralAdmissionSpan": null,
         "mustNotEquateVisualCorridorWithBehavioralCollision": true,
         "exactSwfGateEntrySemanticsStillRequired": true
