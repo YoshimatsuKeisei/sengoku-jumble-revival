@@ -178,7 +178,7 @@ describe("attack state machine", () => {
     expect(attacker.combatActionState).toBe("IDLE");
   });
 
-  it("allows simultaneous windups and makes later hits miss after target death", () => {
+  it("allows simultaneous windups and makes later hits miss after a fatal hit enters reaction", () => {
     const target = createSoldier("target", "enemy", "ai", 120, 100);
     target.hp = 1;
     target.stats.defense = 0;
@@ -195,7 +195,8 @@ describe("attack state machine", () => {
     expect(second.combatActionState).toBe("ATTACK_WINDUP");
     updateAttackStates(soldiers, bases, COMBAT_TIMING_CONFIG.attackWindupMs);
     expect(target.hp).toBe(0);
-    expect(target.isDead).toBe(true);
+    expect(target.isDead).toBe(false);
+    expect(target.reactionState).toBe("HIT_STUN");
     expect(first.attackHitApplied).toBe(true);
     expect(second.attackHitApplied).toBe(true);
   });
