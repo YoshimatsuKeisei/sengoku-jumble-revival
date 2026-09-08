@@ -1,95 +1,73 @@
 import { describe, expect, it } from "vitest";
 import { BASE_CONFIG, BATTLE_OBSTACLES, SOLDIER_RADIUS } from "../config";
+import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
-import type { BaseGate, Team } from "../types";
 import { createBattleBases, getBaseForTeam } from "./baseSystem";
 import {
   distanceToRect,
-  getBaseGatePoint,
   getBaseHealingInteriorRect,
   getBaseLowerGateRect,
   getBaseRect,
   getBaseUpperGateRect,
-  hasClearedBaseGateBoundary,
   isPointInsideRect,
 } from "./battlefieldGeometry";
 import { circleIntersectsObstacle } from "./movementSystem";
 import { chooseHealingSlotPosition, updateEmergencyRetreat, updateHealing } from "./recoverySystem";
 
-const gateCases = [
-  ["player", "TOP"],
-  ["player", "BOTTOM"],
-  ["enemy", "TOP"],
-  ["enemy", "BOTTOM"],
-] as const satisfies ReadonlyArray<readonly [Team, BaseGate]>;
+const recoveryTileCases = [
+  ["player", 216, 432, "TOP"],
+  ["enemy", 1620, 432, "TOP"],
+  ["player", 216, 756, "BOTTOM"],
+  ["enemy", 1620, 756, "BOTTOM"],
+] as const;
 
-function gateRect(team: Team, gate: BaseGate) {
-  const base = getBaseForTeam(createBattleBases(), team);
-  return gate === "TOP" ? getBaseUpperGateRect(base) : getBaseLowerGateRect(base);
-}
+const rejoinCases = [
+  ["player", 500, 397, 346, 249, "TOP"],
+  ["player", 600, 782, 346, 946, "BOTTOM"],
+  ["enemy", 500, 397, 1545, 249, "TOP"],
+  ["enemy", 600, 782, 1545, 946, "BOTTOM"],
+] as const;
 
-function entryPosition(team: Team, gate: BaseGate, clearanceDelta: number) {
-  const rect = gateRect(team, gate);
-  return {
-    x: rect.x + rect.width / 2,
-    y: gate === "TOP"
-      ? rect.y + rect.height + SOLDIER_RADIUS + clearanceDelta
-      : rect.y - SOLDIER_RADIUS - clearanceDelta,
-  };
-}
-
-describe("base gate crossing geometry", () => {
-  it.each(gateCases)("does not admit %s through %s before the horizontal fence is cleared", (team, gate) => {
+describe("direct SWF recovery entry and exit geometry", () => {
+  it.each(recoveryTileCases)("admits %s retreat through its confirmed recovery tile at source (%i,%i)", (team, sourceX, sourceY, gate) => {
     const bases = createBattleBases();
-    const base = getBaseForTeam(bases, team);
-    const soldier = createSoldier(`${team}-${gate}`, team, "player", 0, 0);
+    const point = battlefieldSourcePointToWorld({ x: sourceX, y: sourceY });
+    const soldier = createSoldier(`${team}-${gate}`, team, "ai", point.x, point.y);
     soldier.state = "EMERGENCY_RETREAT";
-    Object.assign(soldier, entryPosition(team, gate, -0.01));
-    expect(hasClearedBaseGateBoundary(soldier, base, gate, "ENTER")).toBe(false);
-    updateEmergencyRetreat(soldier, bases, () => 1, [soldier]);
-    expect(soldier.state).toBe("EMERGENCY_RETREAT");
-  });
-
-  it.each(gateCases)("admits %s through %s after the horizontal fence is cleared", (team, gate) => {
-    const bases = createBattleBases();
-    const base = getBaseForTeam(bases, team);
-    const soldier = createSoldier(`${team}-${gate}`, team, "player", 0, 0);
-    soldier.state = "EMERGENCY_RETREAT";
-    Object.assign(soldier, entryPosition(team, gate, 0));
+    soldier.recoveryGate = gate;
     updateEmergencyRetreat(soldier, bases, () => 1, [soldier]);
     expect(soldier.state).toBe("HEALING");
     expect(soldier.recoveryGate).toBe(gate);
-    expect(isPointInsideRect(soldier, getBaseHealingInteriorRect(base))).toBe(true);
+    expect(isPointInsideRect(soldier, getBaseHealingInteriorRect(getBaseForTeam(bases, team)))).toBe(true);
   });
 
-  it.each(gateCases)("does not admit %s beside the %s fence corridor", (team, gate) => {
+  it("does not treat an alpha-derived visual corridor as recovery admission by itself", () => {
     const bases = createBattleBases();
-    const base = getBaseForTeam(bases, team);
-    const position = entryPosition(team, gate, 0);
-    const rect = gateRect(team, gate);
-    const soldier = createSoldier(`${team}-${gate}`, team, "player", rect.x - SOLDIER_RADIUS - 0.01, position.y);
+    const point = battlefieldSourcePointToWorld({ x: 180, y: 450 });
+    const soldier = createSoldier("visual-only", "player", "ai", point.x, point.y);
     soldier.state = "EMERGENCY_RETREAT";
     updateEmergencyRetreat(soldier, bases, () => 1, [soldier]);
     expect(soldier.state).toBe("EMERGENCY_RETREAT");
   });
 
-  it.each(gateCases)("returns healed %s instantly through the stored %s gate", (team, gate) => {
+  it.each(rejoinCases)("moves healed %s through the SWF p7-equivalent %s route", (team, sourceY, interiorY, targetX, targetY, gate) => {
     const bases = createBattleBases();
-    const base = getBaseForTeam(bases, team);
-    const interior = getBaseHealingInteriorRect(base);
-    const soldier = createSoldier(`${team}-${gate}`, team, "ai", interior.x, interior.y);
+    const start = battlefieldSourcePointToWorld({ x: team === "player" ? 100 : 1650, y: sourceY });
+    const soldier = createSoldier(`${team}-${gate}`, team, "ai", start.x, start.y);
     soldier.state = "HEALING";
     soldier.recoveryGate = gate;
     soldier.recoveryGateEntered = true;
-    soldier.hp = soldier.maxHp - 1;
-    updateHealing(soldier, 1, bases);
-    expect(soldier.state).toBe("NORMAL");
-    expect({ x: soldier.x, y: soldier.y }).toEqual(getBaseGatePoint(base, gate, false));
-    expect(soldier.recoveryGate).toBeNull();
+    soldier.hp = soldier.maxHp;
+    updateHealing(soldier, 1 / 24, bases);
+    expect(soldier.state).toBe("REJOINING");
+    expect(battlefieldWorldPointToSource(soldier).y).toBeCloseTo(interiorY, 6);
+    const target = battlefieldWorldPointToSource({ x: soldier.moveTargetX!, y: soldier.moveTargetY! });
+    expect(target.x).toBeCloseTo(targetX, 6);
+    expect(target.y).toBeCloseTo(targetY, 6);
   });
 });
 
-describe("safe base recovery slots", () => {
+describe("safe reconstructed healing slots", () => {
   it.each(["player", "enemy"] as const)("keeps 30 %s recovery slots inside all radius-safe bounds", (team) => {
     const base = getBaseForTeam(createBattleBases(), team);
     const safe = getBaseHealingInteriorRect(base);

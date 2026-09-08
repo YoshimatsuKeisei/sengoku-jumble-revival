@@ -1,14 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { RECOVERY_CONFIG } from "../config";
+import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import { updateAiTargets } from "./aiSystem";
 import { applyDamage } from "./combatSystem";
 import { updateAttackStates } from "./attackSystem";
 import { createBattleBases } from "./baseSystem";
-import { getBaseGatePoint } from "./battlefieldGeometry";
 import {
-  recoveryDestinationFor,
-  rejoinPointFor,
   shouldEmergencyRetreat,
   startEmergencyRetreat,
   updateEmergencyRetreat,
@@ -46,40 +44,61 @@ describe("recovery state system", () => {
     expect(enemy.hp).toBe(enemy.maxHp);
   });
 
-  it("enters healing only after clearing its friendly gate", () => {
-    const station = recoveryDestinationFor("player");
-    const unit = createSoldier("p", "player", "ai", station.x, station.y, "charge");
-    startEmergencyRetreat(unit);
-    const base = createBattleBases()[0];
-    Object.assign(unit, getBaseGatePoint(base, unit.recoveryGate!, false));
-    updateEmergencyRetreat(unit);
+  it("enters healing only on its confirmed SWF recovery tile", () => {
+    const bases = createBattleBases();
+    const outside = battlefieldSourcePointToWorld({ x: 240, y: 432 });
+    const unit = createSoldier("p", "player", "ai", outside.x, outside.y, "charge");
+    unit.state = "EMERGENCY_RETREAT";
+    updateEmergencyRetreat(unit, bases);
     expect(unit.state).toBe("EMERGENCY_RETREAT");
-    Object.assign(unit, getBaseGatePoint(base, unit.recoveryGate!, true));
-    updateEmergencyRetreat(unit);
+
+    const tile999 = battlefieldSourcePointToWorld({ x: 216, y: 432 });
+    Object.assign(unit, tile999);
+    updateEmergencyRetreat(unit, bases);
     expect(unit.state).toBe("HEALING");
     expect(unit.moveTargetX).toBeNull();
   });
 
-  it("heals using delta time, caps HP, and snaps out at full HP", () => {
-    const unit = createSoldier("p", "player", "ai", 0, 0);
+  it("heals using SWF logic time, stays at exact max, then enters p7-equivalent rejoin on overshoot", () => {
+    const point = battlefieldSourcePointToWorld({ x: 100, y: 500 });
+    const unit = createSoldier("p", "player", "ai", point.x, point.y);
     unit.state = "HEALING";
     unit.hp = unit.maxHp - 20;
     const hpBefore = unit.hp;
     updateHealing(unit, 0.5);
     expect(unit.hp).toBeCloseTo(hpBefore + unit.maxHp / 400 * 24 * 0.5);
     expect(unit.state).toBe("HEALING");
-    updateHealing(unit, 20);
+
+    unit.hp = unit.maxHp - unit.maxHp / 400;
+    updateHealing(unit, 1 / 24);
+    expect(unit.hp).toBeCloseTo(unit.maxHp);
+    expect(unit.state).toBe("HEALING");
+    updateHealing(unit, 1 / 24);
     expect(unit.hp).toBe(unit.maxHp);
-    expect(unit.state).toBe("NORMAL");
+    expect(unit.state).toBe("REJOINING");
   });
 
-  it("returns to normal at the rejoin point without changing strategy", () => {
-    const point = rejoinPointFor("enemy");
+  it("returns to normal below the strict p7 Manhattan threshold without changing strategy", () => {
+    const point = battlefieldSourcePointToWorld({ x: 1500, y: 249 });
     const unit = createSoldier("e", "enemy", "ai", point.x, point.y, "wait");
     unit.state = "REJOINING";
+    unit.recoveryGate = "TOP";
     updateRejoining(unit);
     expect(unit.state).toBe("NORMAL");
     expect(unit.strategy).toBe("wait");
+    expect(unit.moveTargetX).toBeNull();
+    expect(unit.moveTargetY).toBeNull();
+  });
+
+  it("keeps p7 active at exactly 50 source Manhattan units", () => {
+    const point = battlefieldSourcePointToWorld({ x: 296, y: 249 });
+    const unit = createSoldier("p7", "player", "ai", point.x, point.y, "wait");
+    unit.state = "REJOINING";
+    unit.recoveryGate = "TOP";
+    updateRejoining(unit);
+    expect(unit.state).toBe("REJOINING");
+    const target = battlefieldWorldPointToSource({ x: unit.moveTargetX!, y: unit.moveTargetY! });
+    expect(target).toEqual({ x: 346, y: 249 });
   });
 
   it("does not loop from healing back into emergency retreat", () => {

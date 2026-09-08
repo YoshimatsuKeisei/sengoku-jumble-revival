@@ -1,12 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { BASE_CONFIG, BATTLEFIELD_CONFIG, BATTLE_OBSTACLES, CAMERA_CONFIG, PLAYER_MOUSE_DEAD_ZONE, SOLDIER_RADIUS } from "../config";
-import { BATTLEFIELD_FIXED_FENCE_SOURCE_RECTS, battlefieldSourceRectToWorld } from "../battlefieldLayout";
+import { BASE_CONFIG, BATTLEFIELD_CONFIG, BATTLE_OBSTACLES, CAMERA_CONFIG, PLAYER_MOUSE_DEAD_ZONE } from "../config";
+import { BATTLEFIELD_FIXED_FENCE_SOURCE_RECTS, battlefieldSourcePointToWorld, battlefieldSourceRectToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
-import { canAttackEnemyBase, createBattleBases, getBaseForTeam } from "./baseSystem";
+import { createBattleBases, getBaseForTeam } from "./baseSystem";
 import { updateAiTargets } from "./aiSystem";
 import {
   getBaseDamageCoreRect,
-  getBaseGatePoint,
   getBaseHealingInteriorRect,
   getBaseLowerGateRect,
   getBaseRect,
@@ -18,6 +17,7 @@ import { getCameraZoomLimits, getViewModeZoom, toggleCameraViewMode, visibleWorl
 import { issueAdvanceCommand, issueDefendCommand, issueRallyCommand } from "./commandSystem";
 import { getPointerMoveDirection } from "./movementSystem";
 import { startEmergencyRetreat, updateEmergencyRetreat, updateHealing } from "./recoverySystem";
+import { getSwfBaseCollisionCodeAtWorld } from "./swfBaseCollisionGrid";
 
 describe("Phase 3F battlefield and camera fidelity", () => {
   it("uses the corrected 2400 x 900 world", () => {
@@ -74,8 +74,8 @@ describe("Phase 3F controls", () => {
   });
 });
 
-describe("Phase 3F base gates and healing route", () => {
-  it("keeps the base inside the world margin and maps the upper/lower horizontal gate fences", () => {
+describe("Phase 3F visual base geometry and direct SWF recovery route", () => {
+  it("keeps the visual base inside the world and maps upper/lower fence alpha bounds", () => {
     for (const base of createBattleBases()) {
       const rect = getBaseRect(base);
       const upper = getBaseUpperGateRect(base);
@@ -87,11 +87,11 @@ describe("Phase 3F base gates and healing route", () => {
       expect(lower.y + lower.height).toBeCloseTo(rect.y + rect.height);
       expect(upper.y + upper.height).toBeLessThan(core.y);
       expect(lower.y).toBeGreaterThan(core.y + core.height);
-      expect(core.height).toBe(base.height * 0.3);
+      expect(core.height).toBe(base.height * BASE_CONFIG.damageCoreHeightRatio);
     }
   });
 
-  it("places a radius-inset healing interior wholly inside the base", () => {
+  it("places a radius-inset reconstructed healing interior wholly inside the visual base", () => {
     const base = createBattleBases()[0];
     const outer = getBaseRect(base);
     const interior = getBaseHealingInteriorRect(base);
@@ -101,58 +101,53 @@ describe("Phase 3F base gates and healing route", () => {
     expect(interior.y + interior.height).toBeLessThan(outer.y + outer.height);
   });
 
-  it("chooses upper and lower gates from the soldier's Y position", () => {
+  it("keeps the visual nearest-gate helper as layout-only geometry", () => {
     const base = createBattleBases()[0];
     expect(getPreferredBaseGate({ id: "upper", y: base.y - 100 }, base)).toBe("TOP");
     expect(getPreferredBaseGate({ id: "lower", y: base.y + 100 }, base)).toBe("BOTTOM");
   });
 
-  it("routes retreat through the selected gate before entering the interior", () => {
+  it("routes retreat through SWF p91 then p93 before confirmed recovery tile 999", () => {
     const bases = createBattleBases();
-    const base = getBaseForTeam(bases, "player");
-    const soldier = createSoldier("s", "player", "ai", 600, base.y - 100);
+    const start = battlefieldSourcePointToWorld({ x: 600, y: 500 });
+    const soldier = createSoldier("s", "player", "ai", start.x, start.y);
     startEmergencyRetreat(soldier, bases);
     expect(soldier.recoveryGate).toBe("TOP");
-    expect(soldier.moveTargetY).toBe(getBaseGatePoint(base, "TOP", false).y);
-    expect(soldier.moveTargetY).not.toBe(base.y);
+    let target = battlefieldWorldPointToSource({ x: soldier.moveTargetX!, y: soldier.moveTargetY! });
+    expect(target).toEqual({ x: 140, y: 249 });
 
-    Object.assign(soldier, getBaseGatePoint(base, "TOP", false));
+    Object.assign(soldier, battlefieldSourcePointToWorld({ x: 231, y: 249 }));
     updateEmergencyRetreat(soldier, bases);
-    expect(soldier.recoveryGateEntered).toBe(false);
-    expect(soldier.state).toBe("EMERGENCY_RETREAT");
-    Object.assign(soldier, getBaseGatePoint(base, "TOP", true));
+    expect((soldier as typeof soldier & { recoveryEntryCommitted?: boolean }).recoveryEntryCommitted).toBe(true);
+    target = battlefieldWorldPointToSource({ x: soldier.moveTargetX!, y: soldier.moveTargetY! });
+    expect(target).toEqual({ x: 70, y: 580 });
+
+    Object.assign(soldier, battlefieldSourcePointToWorld({ x: 216, y: 432 }));
     updateEmergencyRetreat(soldier, bases);
     expect(soldier.recoveryGateEntered).toBe(true);
     expect(soldier.state).toBe("HEALING");
-    expect(isPointInsideRect(soldier, getBaseHealingInteriorRect(base))).toBe(true);
+    expect(isPointInsideRect(soldier, getBaseHealingInteriorRect(getBaseForTeam(bases, "player")))).toBe(true);
   });
 
-  it("heals at 1 HP/sec and snaps outside through its stored gate", () => {
+  it("heals at the SWF rate and transitions into the lower p7 rejoin route instead of snapping to a visual gate", () => {
     const bases = createBattleBases();
-    const base = getBaseForTeam(bases, "player");
-    const soldier = createSoldier("s", "player", "ai", 0, 0);
+    const start = battlefieldSourcePointToWorld({ x: 100, y: 600 });
+    const soldier = createSoldier("s", "player", "ai", start.x, start.y);
     soldier.state = "HEALING";
     soldier.recoveryGate = "BOTTOM";
-    soldier.hp = soldier.maxHp - 1;
-    updateHealing(soldier, 1, bases);
+    soldier.hp = soldier.maxHp;
+    updateHealing(soldier, 1 / 24, bases);
     expect(soldier.hp).toBe(soldier.maxHp);
-    expect(soldier.state).toBe("NORMAL");
-    expect({ x: soldier.x, y: soldier.y }).toEqual(getBaseGatePoint(base, "BOTTOM", false));
-    expect(soldier.moveTargetX).toBeNull();
-    expect(isPointInsideRect(soldier, getBaseHealingInteriorRect(base))).toBe(false);
+    expect(soldier.state).toBe("REJOINING");
+    expect(battlefieldWorldPointToSource(soldier).y).toBeCloseTo(782, 6);
+    const target = battlefieldWorldPointToSource({ x: soldier.moveTargetX!, y: soldier.moveTargetY! });
+    expect(target).toEqual({ x: 346, y: 946 });
   });
 
-  it("allows core attacks but rejects upper and lower gate contact", () => {
-    const bases = createBattleBases();
-    const base = getBaseForTeam(bases, "enemy");
-    for (const gate of ["TOP", "BOTTOM"] as const) {
-      const point = getBaseGatePoint(base, gate, false);
-      const attacker = createSoldier(gate, "player", "ai", point.x, point.y);
-      expect(canAttackEnemyBase(attacker, base)).toBe(false);
-    }
-    const core = getBaseDamageCoreRect(base);
-    const attacker = createSoldier("core", "player", "ai", core.x - SOLDIER_RADIUS, core.y + core.height / 2);
-    expect(canAttackEnemyBase(attacker, base)).toBe(true);
+  it("uses 996 only for central base damage while upper/lower front cells are 998 recovery-wall cells", () => {
+    expect(getSwfBaseCollisionCodeAtWorld(battlefieldSourcePointToWorld({ x: 1605, y: 540 }))).toBe(996);
+    expect(getSwfBaseCollisionCodeAtWorld(battlefieldSourcePointToWorld({ x: 1620, y: 432 }))).toBe(998);
+    expect(getSwfBaseCollisionCodeAtWorld(battlefieldSourcePointToWorld({ x: 1620, y: 756 }))).toBe(998);
   });
 });
 

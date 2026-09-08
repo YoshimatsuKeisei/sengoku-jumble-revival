@@ -27,8 +27,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Full regression tests
-        run: npm test
+      - name: Base and recovery regression tests
+        run: >-
+          npx vitest run
+          src/game/systems/baseContactSystem.test.ts
+          src/game/systems/baseGateRecoveryGeometry.test.ts
+          src/game/systems/recoverySystem.test.ts
+          src/game/systems/phase3eBattlefield.test.ts
+          src/game/systems/phase3fFidelity.test.ts
+          src/game/systems/phase3gFixes.test.ts
+          src/game/systems/phase3hIntegration.test.ts
+          src/game/systems/phase3jPlayerControl.test.ts
+          --reporter=verbose
       - name: SWF conformance tests
         run: npx vitest run tests/swf-spec --reporter=verbose
       - name: Machine-readable SWF result

@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { BASE_CONTACT_CONFIG, BASE_CONFIG, SOLDIER_RADIUS } from "../config";
+import { BASE_CONTACT_CONFIG, BASE_CONFIG } from "../config";
+import { battlefieldSourcePointToWorld } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
-import type { BattleBase, Soldier } from "../types";
+import type { Soldier, Team } from "../types";
 import { getBattleResult } from "./victorySystem";
 import { getBaseAttackBounceDistance } from "./baseAttackBounceSystem";
 import {
@@ -9,15 +10,15 @@ import {
   isBaseHitBlockedByFortify,
   resolveBaseMovementContacts,
 } from "./baseContactSystem";
-import { getBaseAttackSurfaceRect } from "./battlefieldGeometry";
 import { createBattleBases, getBaseForTeam } from "./baseSystem";
 
-function crossEnemySurface(attacker: Soldier, base: BattleBase) {
-  const surface = getBaseAttackSurfaceRect(base);
-  attacker.x = surface.x - SOLDIER_RADIUS - 1;
-  attacker.y = surface.y + surface.height / 2;
+function enterBaseDamageTile(attacker: Soldier, attackedTeam: Team) {
+  const y = 540;
+  const outside = battlefieldSourcePointToWorld({ x: attackedTeam === "enemy" ? 1595 : 237, y });
+  const inside = battlefieldSourcePointToWorld({ x: attackedTeam === "enemy" ? 1605 : 215, y });
+  Object.assign(attacker, outside);
   const previous = captureSoldierPositions([attacker]);
-  attacker.x = surface.x - SOLDIER_RADIUS + 1;
+  Object.assign(attacker, inside);
   return previous;
 }
 
@@ -26,12 +27,12 @@ function makeDefenders(count = 30): Soldier[] {
 }
 
 describe("SWF movement-contact base attacks", () => {
-  it("requires physical surface crossing but does not reject an existing targetId", () => {
+  it("requires entry into the confirmed base-damage tile but does not reject an existing targetId", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "enemy");
     const attacker = createSoldier("a", "player", "ai", 0, 0, "charge");
     attacker.targetId = "some-enemy";
-    const previous = crossEnemySurface(attacker, base);
+    const previous = enterBaseDamageTile(attacker, "enemy");
     resolveBaseMovementContacts([attacker], bases, previous, 0, () => 0.99);
     expect(base.hp).toBe(base.maxHp - 1);
 
@@ -49,7 +50,7 @@ describe("SWF movement-contact base attacks", () => {
     attacker.combatActionState = "ATTACK_WINDUP";
     attacker.attackTargetKind = "SOLDIER";
     attacker.attackTargetId = "enemy-soldier";
-    resolveBaseMovementContacts([attacker], bases, crossEnemySurface(attacker, base), 0, () => 0.99);
+    resolveBaseMovementContacts([attacker], bases, enterBaseDamageTile(attacker, "enemy"), 0, () => 0.99);
     expect(base.hp).toBe(base.maxHp - 1);
     expect(attacker.combatActionState).toBe("ATTACK_WINDUP");
   });
@@ -60,7 +61,7 @@ describe("SWF movement-contact base attacks", () => {
       const base = getBaseForTeam(bases, "enemy");
       const attacker = createSoldier(`a-${damage}`, "player", "ai", 0, 0, "charge");
       attacker.specialAbilities = [...abilities];
-      resolveBaseMovementContacts([attacker], bases, crossEnemySurface(attacker, base), 0, () => 0.99);
+      resolveBaseMovementContacts([attacker], bases, enterBaseDamageTile(attacker, "enemy"), 0, () => 0.99);
       expect(base.hp).toBe(base.maxHp - damage);
     }
   });
@@ -83,7 +84,7 @@ describe("SWF movement-contact base attacks", () => {
       const attacker = createSoldier(`a-${blocked}`, "player", "ai", 0, 0, "charge");
       const defenders = makeDefenders();
       if (blocked) defenders[0].specialAbilities = ["FORTIFY"];
-      const previous = crossEnemySurface(attacker, base);
+      const previous = enterBaseDamageTile(attacker, "enemy");
       const contactX = attacker.x;
       resolveBaseMovementContacts([attacker, ...defenders], bases, previous, 0, blocked ? () => 0 : () => 0.99);
       expect(attacker.x).toBeLessThan(contactX);
@@ -96,13 +97,13 @@ describe("SWF movement-contact base attacks", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "enemy");
     const attacker = createSoldier("a", "player", "ai", 0, 0, "charge");
-    resolveBaseMovementContacts([attacker], bases, crossEnemySurface(attacker, base), 0, () => 0.99);
+    resolveBaseMovementContacts([attacker], bases, enterBaseDamageTile(attacker, "enemy"), 0, () => 0.99);
     expect(attacker.baseContactLockTicks).toBe(BASE_CONTACT_CONFIG.lockLogicUpdates);
     for (let update = 1; update <= BASE_CONTACT_CONFIG.lockLogicUpdates; update += 1) {
-      resolveBaseMovementContacts([attacker], bases, crossEnemySurface(attacker, base), update, () => 0.99);
+      resolveBaseMovementContacts([attacker], bases, enterBaseDamageTile(attacker, "enemy"), update, () => 0.99);
       expect(base.hp).toBe(BASE_CONFIG.maxHp - 1);
     }
-    resolveBaseMovementContacts([attacker], bases, crossEnemySurface(attacker, base), 11, () => 0.99);
+    resolveBaseMovementContacts([attacker], bases, enterBaseDamageTile(attacker, "enemy"), 11, () => 0.99);
     expect(base.hp).toBe(BASE_CONFIG.maxHp - 2);
   });
 
@@ -113,7 +114,7 @@ describe("SWF movement-contact base attacks", () => {
     const defend = createSoldier("defend", "enemy", "ai", 2200, 400, "defend");
     const intercept = createSoldier("intercept", "enemy", "ai", 2200, 450, "intercept");
     const wait = createSoldier("wait", "enemy", "ai", 2200, 500, "wait");
-    resolveBaseMovementContacts([attacker, defend, intercept, wait], bases, crossEnemySurface(attacker, base), 5, () => 0.99);
+    resolveBaseMovementContacts([attacker, defend, intercept, wait], bases, enterBaseDamageTile(attacker, "enemy"), 5, () => 0.99);
     expect(defend.targetId).toBe(attacker.id);
     expect(intercept.targetId).toBe(attacker.id);
     expect(wait.targetId).toBeNull();
@@ -125,17 +126,15 @@ describe("SWF movement-contact base attacks", () => {
     base.hp = 1;
     const attacker = createSoldier("a", "player", "ai", 0, 0, "charge");
     const livingEnemy = createSoldier("e", "enemy", "ai", 1000, 400, "wait");
-    expect(resolveBaseMovementContacts([attacker, livingEnemy], bases, crossEnemySurface(attacker, base), 0, () => 0.99)).toBe("enemy");
+    expect(resolveBaseMovementContacts([attacker, livingEnemy], bases, enterBaseDamageTile(attacker, "enemy"), 0, () => 0.99)).toBe("enemy");
     expect(getBattleResult([attacker, livingEnemy], bases)).toBe("VICTORY");
   });
 
-  it("handles the PLAYER base contact surface symmetrically", () => {
+  it("handles the PLAYER base damage tile symmetrically", () => {
     const bases = createBattleBases();
     const base = getBaseForTeam(bases, "player");
-    const surface = getBaseAttackSurfaceRect(base);
-    const attacker = createSoldier("e", "enemy", "ai", surface.x + surface.width + SOLDIER_RADIUS + 1, base.y, "charge");
-    const previous = captureSoldierPositions([attacker]);
-    attacker.x = surface.x + surface.width + SOLDIER_RADIUS - 1;
+    const attacker = createSoldier("e", "enemy", "ai", 0, 0, "charge");
+    const previous = enterBaseDamageTile(attacker, "player");
     resolveBaseMovementContacts([attacker], bases, previous, 0, () => 0.99);
     expect(base.hp).toBe(base.maxHp - 1);
   });
