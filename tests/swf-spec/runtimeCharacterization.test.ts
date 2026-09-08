@@ -25,7 +25,7 @@ function ready(soldier: Soldier): Soldier {
  * SWF-conformance gates until the corresponding rule is promoted to confirmed.
  */
 describe("runtime characterization for major combat bugs", () => {
-  it("currently allows two same-update generals to force the same ranged recipient twice", () => {
+  it("uses the confirmed ranged action lock to collapse two same-update general-forced shots into one", () => {
     const generalA = ready(unit("general-a", "player", 500));
     const generalB = ready(unit("general-b", "player", 510));
     const archer = unit("archer", "player", 520);
@@ -41,12 +41,12 @@ describe("runtime characterization for major combat bugs", () => {
       [generalA, generalB, archer, enemy], [], createBattleBases(), 1_000, false, () => 1,
     );
     const arrows = events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
-    expect(arrows).toHaveLength(2);
-    expect(archer.specialLockUntil).toBe(0);
-    expect(archer.activeSpecialTechnique).toBeNull();
+    expect(arrows).toHaveLength(1);
+    expect(archer.specialLockUntil).toBeGreaterThan(1_000);
+    expect(archer.activeSpecialTechnique).toBe("ARCHER_ARROW");
   });
 
-  it("currently permits a forced ranged shot and a gauge-driven normal shot in the same update", () => {
+  it("prevents a general-forced ranged shot and gauge-driven normal shot from firing in the same update", () => {
     const general = ready(unit("general", "player", 500));
     const archer = ready(unit("archer", "player", 520));
     const enemy = unit("enemy", "enemy", 600);
@@ -55,12 +55,14 @@ describe("runtime characterization for major combat bugs", () => {
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
 
+    const gaugeBefore = archer.combatGauge;
     const events = updateSpecialAttacks(
       [general, archer, enemy], [], createBattleBases(), 1_000, false, () => 1,
     );
     const arrows = events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
-    expect(arrows).toHaveLength(2);
+    expect(arrows).toHaveLength(1);
     expect(archer.specialLockUntil).toBeGreaterThan(1_000);
+    expect(archer.combatGauge).toBe(gaugeBefore);
   });
 
   it("keeps banked ranged gauge but no longer dumps it as a sub-cycle rapid burst", () => {
