@@ -160,7 +160,7 @@ describe("direct raw-SWF ranged attack resolution", () => {
 
   it("gives a guarded ranged IRON_WALL target the full raw 10-unit impulse and no attacker recoil", () => {
     const gun = ranged("gun", "TEPPOU_SHOOTING");
-    const target = unit("target", "enemy", 560);
+    const target = unit("target", "enemy", 700);
     target.stats.defense = 200;
     target.specialAbilities = ["IRON_WALL"];
     const targetBefore = battlefieldWorldPointToSource(target);
