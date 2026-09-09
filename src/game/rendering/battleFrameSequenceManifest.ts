@@ -28,7 +28,148 @@ export interface BattleFrameSequenceDefinition {
   fps: number;
   loop: boolean;
   holdFrameIndex?: number;
+  /**
+   * Source-coordinate correction from the extracted PNG canvas center to the
+   * raw Sprite664 child placement. The effect root itself is the soldier.
+   */
+  renderOffsetSourceUnits?: { x: number; y: number };
+  frameRenderOffsetsSourceUnits?: readonly { x: number; y: number }[];
 }
+
+export interface SwfBattleMarkerGeometry {
+  role: "critical" | "issuer" | "recipient";
+  parentSpriteId: number;
+  parentFrame: number;
+  parentLabel: string;
+  spriteId: number;
+  bitmapId: number;
+  bitmapSizeSourceUnits: { width: number; height: number };
+  parentPlacementSourceUnits: { x: number; y: number };
+  renderOffsetSourceUnits: { x: number; y: number };
+  frameCount: number;
+  actionStopFrame?: number;
+  finalFrameRemovesMark?: boolean;
+  frameRenderOffsetsSourceUnits?: readonly { x: number; y: number }[];
+}
+
+export const SWF_RECIPIENT_MARK_FRAME_CENTER_OFFSETS_SOURCE_UNITS = [
+  { x: 18, y: -23.5 },
+  { x: 20, y: -25.5 },
+  { x: 22, y: -27.5 },
+  { x: 23, y: -28.5 },
+  { x: 24, y: -29.5 },
+  { x: 24, y: -29.5 },
+  { x: 21, y: -26.5 },
+  { x: 19, y: -24.5 },
+  { x: 18, y: -23.5 },
+] as const;
+
+/**
+ * Directly recovered from Sprite664 in sgjbgm.swf.
+ *
+ * The parent placement is the true child-movie-clip coordinate relative to
+ * the soldier's `as` origin. `renderOffsetSourceUnits` is the texture-center
+ * offset used by the revival renderer after accounting for either the fixed
+ * extraction canvas (critical/issuer) or the raw 18x19 recipient bitmap.
+ */
+export const SWF_BATTLE_MARK_GEOMETRY: Partial<
+  Record<BattleFrameSequenceId, SwfBattleMarkerGeometry>
+> = {
+  critical_retreat: {
+    role: "critical",
+    parentSpriteId: 664,
+    parentFrame: 34,
+    parentLabel: "chp",
+    spriteId: 625,
+    bitmapId: 622,
+    bitmapSizeSourceUnits: { width: 19, height: 16 },
+    parentPlacementSourceUnits: { x: -9, y: -27 },
+    renderOffsetSourceUnits: { x: 0, y: -20 },
+    frameCount: 9,
+    actionStopFrame: 9,
+  },
+  command_gather: {
+    role: "issuer",
+    parentSpriteId: 664,
+    parentFrame: 29,
+    parentLabel: "shugo",
+    spriteId: 605,
+    bitmapId: 602,
+    bitmapSizeSourceUnits: { width: 49, height: 54 },
+    parentPlacementSourceUnits: { x: -19, y: -21 },
+    renderOffsetSourceUnits: { x: -19, y: -37 },
+    frameCount: 14,
+    finalFrameRemovesMark: true,
+  },
+  command_charge: {
+    role: "issuer",
+    parentSpriteId: 664,
+    parentFrame: 30,
+    parentLabel: "ttgk",
+    spriteId: 609,
+    bitmapId: 606,
+    bitmapSizeSourceUnits: { width: 49, height: 54 },
+    parentPlacementSourceUnits: { x: -19, y: -21 },
+    renderOffsetSourceUnits: { x: -19, y: -37 },
+    frameCount: 14,
+    finalFrameRemovesMark: true,
+  },
+  command_retreat: {
+    role: "issuer",
+    parentSpriteId: 664,
+    parentFrame: 31,
+    parentLabel: "shubi",
+    spriteId: 613,
+    bitmapId: 610,
+    bitmapSizeSourceUnits: { width: 48, height: 54 },
+    parentPlacementSourceUnits: { x: -19, y: -21 },
+    renderOffsetSourceUnits: { x: -19, y: -37 },
+    frameCount: 14,
+    finalFrameRemovesMark: true,
+  },
+  target_gather: {
+    role: "recipient",
+    parentSpriteId: 664,
+    parentFrame: 22,
+    parentLabel: "szch",
+    spriteId: 540,
+    bitmapId: 537,
+    bitmapSizeSourceUnits: { width: 18, height: 19 },
+    parentPlacementSourceUnits: { x: 17, y: -14 },
+    renderOffsetSourceUnits: SWF_RECIPIENT_MARK_FRAME_CENTER_OFFSETS_SOURCE_UNITS[0],
+    frameRenderOffsetsSourceUnits: SWF_RECIPIENT_MARK_FRAME_CENTER_OFFSETS_SOURCE_UNITS,
+    frameCount: 9,
+    actionStopFrame: 9,
+  },
+  target_charge: {
+    role: "recipient",
+    parentSpriteId: 664,
+    parentFrame: 23,
+    parentLabel: "sztt",
+    spriteId: 544,
+    bitmapId: 541,
+    bitmapSizeSourceUnits: { width: 18, height: 19 },
+    parentPlacementSourceUnits: { x: 17, y: -14 },
+    renderOffsetSourceUnits: SWF_RECIPIENT_MARK_FRAME_CENTER_OFFSETS_SOURCE_UNITS[0],
+    frameRenderOffsetsSourceUnits: SWF_RECIPIENT_MARK_FRAME_CENTER_OFFSETS_SOURCE_UNITS,
+    frameCount: 9,
+    actionStopFrame: 9,
+  },
+  target_retreat: {
+    role: "recipient",
+    parentSpriteId: 664,
+    parentFrame: 24,
+    parentLabel: "szsh",
+    spriteId: 548,
+    bitmapId: 545,
+    bitmapSizeSourceUnits: { width: 18, height: 19 },
+    parentPlacementSourceUnits: { x: 17, y: -14 },
+    renderOffsetSourceUnits: SWF_RECIPIENT_MARK_FRAME_CENTER_OFFSETS_SOURCE_UNITS[0],
+    frameRenderOffsetsSourceUnits: SWF_RECIPIENT_MARK_FRAME_CENTER_OFFSETS_SOURCE_UNITS,
+    frameCount: 9,
+    actionStopFrame: 9,
+  },
+};
 
 const sourceUrls = import.meta.glob("../../../assets/battle/**/*.png", {
   eager: true,
@@ -37,15 +178,71 @@ const sourceUrls = import.meta.glob("../../../assets/battle/**/*.png", {
 }) as Record<string, string>;
 
 const DEFINITIONS: readonly BattleFrameSequenceDefinition[] = [
-  { id: "critical_retreat", directory: "status-effects/critical_retreat/frames", frameCount: 9, fps: 24, loop: false, holdFrameIndex: 8 },
+  {
+    id: "critical_retreat",
+    directory: "status-effects/critical_retreat/frames",
+    frameCount: 9,
+    fps: 24,
+    loop: false,
+    holdFrameIndex: 8,
+    renderOffsetSourceUnits: SWF_BATTLE_MARK_GEOMETRY.critical_retreat!.renderOffsetSourceUnits,
+  },
   { id: "battle_out_player", directory: "status-effects/battle-out/player", frameCount: 3, fps: 24, loop: true },
   { id: "battle_out_enemy", directory: "status-effects/battle-out/enemy", frameCount: 3, fps: 24, loop: true },
-  { id: "command_retreat", directory: "player-commands/retreat", frameCount: 14, fps: 24, loop: false },
-  { id: "command_charge", directory: "player-commands/charge", frameCount: 14, fps: 24, loop: false },
-  { id: "command_gather", directory: "player-commands/gather", frameCount: 14, fps: 24, loop: false },
-  { id: "target_retreat", directory: "command_target_marks/A_shubi/frames", frameCount: 14, fps: 24, loop: false, holdFrameIndex: 4 },
-  { id: "target_charge", directory: "command_target_marks/S_ttgk/frames", frameCount: 14, fps: 24, loop: false, holdFrameIndex: 4 },
-  { id: "target_gather", directory: "command_target_marks/D_shugo/frames", frameCount: 14, fps: 24, loop: false, holdFrameIndex: 4 },
+  {
+    id: "command_retreat",
+    directory: "player-commands/retreat",
+    frameCount: 14,
+    fps: 24,
+    loop: false,
+    renderOffsetSourceUnits: SWF_BATTLE_MARK_GEOMETRY.command_retreat!.renderOffsetSourceUnits,
+  },
+  {
+    id: "command_charge",
+    directory: "player-commands/charge",
+    frameCount: 14,
+    fps: 24,
+    loop: false,
+    renderOffsetSourceUnits: SWF_BATTLE_MARK_GEOMETRY.command_charge!.renderOffsetSourceUnits,
+  },
+  {
+    id: "command_gather",
+    directory: "player-commands/gather",
+    frameCount: 14,
+    fps: 24,
+    loop: false,
+    renderOffsetSourceUnits: SWF_BATTLE_MARK_GEOMETRY.command_gather!.renderOffsetSourceUnits,
+  },
+  {
+    id: "target_retreat",
+    directory: "command-target-raw/szsh",
+    frameCount: 9,
+    fps: 24,
+    loop: false,
+    holdFrameIndex: 8,
+    renderOffsetSourceUnits: SWF_BATTLE_MARK_GEOMETRY.target_retreat!.renderOffsetSourceUnits,
+    frameRenderOffsetsSourceUnits: SWF_RECIPIENT_MARK_FRAME_CENTER_OFFSETS_SOURCE_UNITS,
+  },
+  {
+    id: "target_charge",
+    directory: "command-target-raw/sztt",
+    frameCount: 9,
+    fps: 24,
+    loop: false,
+    holdFrameIndex: 8,
+    renderOffsetSourceUnits: SWF_BATTLE_MARK_GEOMETRY.target_charge!.renderOffsetSourceUnits,
+    frameRenderOffsetsSourceUnits: SWF_RECIPIENT_MARK_FRAME_CENTER_OFFSETS_SOURCE_UNITS,
+  },
+  {
+    id: "target_gather",
+    directory: "command-target-raw/szch",
+    frameCount: 9,
+    fps: 24,
+    loop: false,
+    holdFrameIndex: 8,
+    renderOffsetSourceUnits: SWF_BATTLE_MARK_GEOMETRY.target_gather!.renderOffsetSourceUnits,
+    frameRenderOffsetsSourceUnits: SWF_RECIPIENT_MARK_FRAME_CENTER_OFFSETS_SOURCE_UNITS,
+  },
   { id: "caster_muso_cyan", directory: "special-attacks/caster_flash/fr_muso_cyan_shared", frameCount: 13, fps: 24, loop: false },
   { id: "caster_oni_magenta", directory: "special-attacks/caster_flash/fr_oni_magenta_technique", frameCount: 13, fps: 24, loop: false },
   { id: "caster_kiba_magenta", directory: "special-attacks/caster_flash/fr_kiba_magenta_technique", frameCount: 13, fps: 24, loop: false },
@@ -78,6 +275,16 @@ export const BATTLE_FRAME_SEQUENCE_ASSETS = BATTLE_FRAME_SEQUENCE_DEFINITIONS.fl
 
 export function getBattleFrameSequence(id: BattleFrameSequenceId) {
   return BATTLE_FRAME_SEQUENCE_DEFINITIONS.find((definition) => definition.id === id) ?? null;
+}
+
+export function getBattleFrameRenderOffsetSourceUnits(
+  id: BattleFrameSequenceId,
+  frameIndex = 0,
+): { x: number; y: number } {
+  const definition = getBattleFrameSequence(id);
+  return definition?.frameRenderOffsetsSourceUnits?.[frameIndex]
+    ?? definition?.renderOffsetSourceUnits
+    ?? { x: 0, y: 0 };
 }
 
 export interface BattleFrameSequenceSample {
