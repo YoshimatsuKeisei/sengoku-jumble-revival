@@ -8,6 +8,9 @@ import type { Soldier } from "../types";
 import {
   BATTLE_UNIT_UI_TEXTURES,
   UNIT_HP_BAR_SIZE,
+  SWF_UNIT_HP_BAR_COLORS,
+  SWF_UNIT_HP_BAR_LOCAL_SCALE,
+  SWF_UNIT_HP_BAR_SOURCE_OFFSET,
   getUnitHpFillWidth,
 } from "./battleUnitUiAssets";
 
@@ -15,8 +18,6 @@ interface UnitHpBarObjects {
   empty: Phaser.GameObjects.Image;
   fill: Phaser.GameObjects.Image;
 }
-
-const HP_BAR_SOURCE_OFFSET = { x: -6, y: -26 } as const;
 
 export class UnitHpBarRenderer {
   private readonly bars = new Map<string, UnitHpBarObjects>();
@@ -28,13 +29,20 @@ export class UnitHpBarRenderer {
   }
 
   private createBar(): UnitHpBarObjects {
-    const configure = (image: Phaser.GameObjects.Image) => image
+    const configure = (image: Phaser.GameObjects.Image, tint: number) => image
       .setOrigin(0)
-      .setScale(BATTLEFIELD_SOURCE_TO_WORLD.scaleX, BATTLEFIELD_SOURCE_TO_WORLD.scaleY)
+      // The extracted PNGs are Sprite667-local masks. Sprite2455 places the
+      // movie clip h with an additional 0.46666x horizontal transform and a
+      // fixed CXFORM. setTintFill reproduces the resulting solid SWF colors.
+      .setTintFill(tint)
+      .setScale(
+        BATTLEFIELD_SOURCE_TO_WORLD.scaleX * SWF_UNIT_HP_BAR_LOCAL_SCALE.x,
+        BATTLEFIELD_SOURCE_TO_WORLD.scaleY * SWF_UNIT_HP_BAR_LOCAL_SCALE.y,
+      )
       .setDepth(2);
     return {
-      empty: configure(this.scene.add.image(0, 0, BATTLE_UNIT_UI_TEXTURES.hpBarEmpty)),
-      fill: configure(this.scene.add.image(0, 0, BATTLE_UNIT_UI_TEXTURES.hpBarFull)),
+      empty: configure(this.scene.add.image(0, 0, BATTLE_UNIT_UI_TEXTURES.hpBarEmpty), SWF_UNIT_HP_BAR_COLORS.empty),
+      fill: configure(this.scene.add.image(0, 0, BATTLE_UNIT_UI_TEXTURES.hpBarFull), SWF_UNIT_HP_BAR_COLORS.fill),
     };
   }
 
@@ -48,8 +56,8 @@ export class UnitHpBarRenderer {
         this.bars.set(soldier.id, bar);
       }
       const visible = !soldier.isDead;
-      const x = soldier.x + battlefieldSourceDistanceToWorldX(HP_BAR_SOURCE_OFFSET.x);
-      const y = soldier.y + battlefieldSourceDistanceToWorldY(HP_BAR_SOURCE_OFFSET.y);
+      const x = soldier.x + battlefieldSourceDistanceToWorldX(SWF_UNIT_HP_BAR_SOURCE_OFFSET.x);
+      const y = soldier.y + battlefieldSourceDistanceToWorldY(SWF_UNIT_HP_BAR_SOURCE_OFFSET.y);
       const fillWidth = getUnitHpFillWidth(soldier.hpBarHp, soldier.maxHp);
       bar.empty.setVisible(visible).setPosition(x, y);
       bar.fill
