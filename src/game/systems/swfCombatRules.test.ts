@@ -46,10 +46,12 @@ describe("SWF combat/defense formulas", () => {
     expect(calculateNormalAttackDamage(a, b)).toBe(2);
   });
 
-  it("applies confirmed additive damage components before FINISHER", () => {
+  it("applies basic, MIGHT, FINISHER threshold, then NINJA_HUNTER", () => {
     const attacker = soldier("attacker"); attacker.specialAbilities = ["MIGHT", "FINISHER"];
     attacker.rareSpecialAbilities = ["NINJA_HUNTER"];
     const ninja = soldier("ninja", "enemy"); ninja.unitType = "NINJA"; ninja.hp = 8;
+    expect(calculateNormalAttackDamage(attacker, ninja)).toBe(3);
+    ninja.hp = 7;
     expect(calculateNormalAttackDamage(attacker, ninja)).toBe(4);
     ninja.hp = 9;
     expect(calculateNormalAttackDamage(attacker, ninja)).toBe(3);
@@ -64,12 +66,14 @@ describe("SWF combat/defense formulas", () => {
     expect(isDamageGuarded(target, "SPECIAL_ATTACK", () => 0.5)).toBe(true);
   });
 
-  it("applies HORO only to defense-checked attacks and lets guns bypass ninja defense", () => {
+  it("applies HORO after the defense roll and forces teppou-vs-ninja hit before HORO", () => {
     const target = soldier("target", "enemy"); target.specialAbilities = ["HORO"];
     expect(isDamageGuarded(target, "NORMAL_ATTACK", () => 0.69)).toBe(true);
     const gunner = useTechnique(soldier("gunner"), "TEPPOU_SHOOTING", "TEPPOU");
     target.unitType = "NINJA";
-    expect(isDamageGuarded(target, "GUN_ATTACK", () => { throw new Error("gun-vs-ninja must not roll defense"); }, gunner)).toBe(false);
+    let calls = 0;
+    expect(isDamageGuarded(target, "GUN_ATTACK", () => { calls += 1; return 0; }, gunner)).toBe(false);
+    expect(calls).toBe(1);
   });
 });
 
