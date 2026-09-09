@@ -21,9 +21,9 @@ function randomSlotIndex(random: RandomSource): number {
 }
 
 /**
- * Mirrors the SWF's two independent 30-slot draws. Missing/dead slot semantics
- * are intentionally not invented: the runtime army slot remains selectable,
- * and only the presence of FORTIFY on that selected slot matters.
+ * Raw mkjn()/ekjn(): exactly two roster-slot draws. A selected FORTIFY holder
+ * blocks only when Math.random()*100 > 50. The loop never returns early; the
+ * last successful holder is retained, so all source RNG draws must be consumed.
  */
 export function isBaseHitBlockedByFortify(
   attacker: Soldier,
@@ -31,12 +31,13 @@ export function isBaseHitBlockedByFortify(
   random: RandomSource = Math.random,
 ): boolean {
   if (attacker.unitType === "NINJA") return false;
+  let blocked = false;
   for (let attempt = 0; attempt < BASE_CONTACT_CONFIG.fortifyAttempts; attempt += 1) {
     const selected = defendingSlots[randomSlotIndex(random)];
     if (selected && hasSpecialAbility(selected, "FORTIFY")
-      && random() < BASE_CONTACT_CONFIG.fortifySuccessChance) return true;
+      && random() * 100 > 50) blocked = true;
   }
-  return false;
+  return blocked;
 }
 
 function enteredSwfBaseDamageCell(
@@ -95,8 +96,12 @@ export function resolveBaseMovementContacts(
 
     const blocked = isBaseHitBlockedByFortify(attacker, defenders, random);
     if (!blocked) {
-      const appliedDamage = damageBase(base, calculateBaseAttackDamage(attacker));
-      if (appliedDamage > 0) recordBaseAttack(attacker, base.isDestroyed);
+      const attackDamage = calculateBaseAttackDamage(attacker);
+      const appliedDamage = damageBase(base, attackDamage);
+      // Raw d() adds rsj by the attempted base-hit value (1, or 2 with s8)
+      // before clamping base HP to zero. A finishing s8 hit therefore still
+      // earns two base-attack merit points even when only one HP remained.
+      if (appliedDamage > 0) recordBaseAttack(attacker, attackDamage);
       aggroBaseDefenders(defenders, attacker, currentTime);
     }
     if (attacker.temporaryOrder?.type === "JINTO_CHARGE") {

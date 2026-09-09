@@ -66,15 +66,19 @@ describe("SWF movement-contact base attacks", () => {
     }
   });
 
-  it("uses two 30-slot FORTIFY draws and lets NINJA ignore the block", () => {
+  it("uses two 30-slot FORTIFY draws with strict >50 success and lets NINJA ignore the block", () => {
     const attacker = createSoldier("a", "player", "ai", 0, 0, "charge");
     const defenders = makeDefenders();
     defenders[0].specialAbilities = ["FORTIFY"];
-    expect(isBaseHitBlockedByFortify(attacker, defenders, () => 0)).toBe(true);
-    const secondAttempt = [0.99, 0, 0][Symbol.iterator]();
+    const firstAttempt = [0, 0.51, 0.99, 0][Symbol.iterator]();
+    expect(isBaseHitBlockedByFortify(attacker, defenders, () => firstAttempt.next().value ?? 0)).toBe(true);
+    // If the first roster draw misses s18, raw AVM1 does not consume a success-roll there.
+    const secondAttempt = [0.99, 0, 0.51][Symbol.iterator]();
     expect(isBaseHitBlockedByFortify(attacker, defenders, () => secondAttempt.next().value ?? 0)).toBe(true);
+    const exactBoundary = [0, 0.5, 0, 0.5][Symbol.iterator]();
+    expect(isBaseHitBlockedByFortify(attacker, defenders, () => exactBoundary.next().value ?? 0)).toBe(false);
     attacker.unitType = "NINJA";
-    expect(isBaseHitBlockedByFortify(attacker, defenders, () => 0)).toBe(false);
+    expect(isBaseHitBlockedByFortify(attacker, defenders, () => 0.99)).toBe(false);
   });
 
   it("bounces after either a successful or blocked contact using the dedicated FORTIFY distance", () => {
@@ -86,7 +90,9 @@ describe("SWF movement-contact base attacks", () => {
       if (blocked) defenders[0].specialAbilities = ["FORTIFY"];
       const previous = enterBaseDamageTile(attacker, "enemy");
       const contactX = attacker.x;
-      resolveBaseMovementContacts([attacker, ...defenders], bases, previous, 0, blocked ? () => 0 : () => 0.99);
+      const sequence = blocked ? [0, 0.51, 0.99, 0] : [0.99, 0.99];
+      let draw = 0;
+      resolveBaseMovementContacts([attacker, ...defenders], bases, previous, 0, () => sequence[draw++] ?? 0.99);
       expect(attacker.x).toBeLessThan(contactX);
       expect(contactX - attacker.x).toBeCloseTo(getBaseAttackBounceDistance(defenders));
       expect(base.hp).toBe(blocked ? base.maxHp : base.maxHp - 1);
