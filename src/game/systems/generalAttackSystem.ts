@@ -10,7 +10,7 @@ import { startHitReaction } from "./reactionSystem";
 import { calculateSuccessfulAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { clearEngagement } from "./aiSystem";
-import { beginTechniqueAction } from "./combatGaugeSystem";
+import { beginTechniqueAction, isRangedGaugeTechnique } from "./combatGaugeSystem";
 import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
 export type GeneralTechnique = "GENERAL_COMMAND" | "GENERAL_HEROIC" | "GENERAL_HEAL" | "GENERAL_FURIOUS";
@@ -97,7 +97,11 @@ export function executeGeneralAttack(
   for (const recipient of findGeneralCommandRecipients(general, soldiers)) {
     event.recipientIds.push(recipient.id);
     clearConfusion(recipient, "GENERAL_COMMAND");
-    clearEngagement(recipient);
+    // Direct command callback invokes ranged spl() against the recipient's
+    // existing l. Clearing engagement here erased l before spl() and made every
+    // command-forced bow/gun activation a no-op. Keep the latch for ranged
+    // recipients; non-ranged behavior retains the reconstruction's existing reset.
+    if (!isRangedGaugeTechnique(recipient)) clearEngagement(recipient);
     if (recipient.controller === "player") {
       recipient.specialReadyAt = Math.min(recipient.specialReadyAt, currentTime);
       recipient.playerTechniqueGauge = 100;

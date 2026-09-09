@@ -105,6 +105,7 @@ describe("SWF conformance: confirmed rules", () => {
     const enemy = unit("enemy", "enemy", 600);
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
+    archer.targetId = enemy.id;
     archer.stats.skill = 100;
     archer.combatGauge = 200;
     archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
@@ -130,6 +131,7 @@ describe("SWF conformance: confirmed rules", () => {
     generalA.combatGaugeUpdatedAt = generalB.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
+    archer.targetId = enemy.id;
     archer.combatGauge = 0;
     archer.combatGaugeUpdatedAt = 1_000;
 

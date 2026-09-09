@@ -3,12 +3,16 @@ import type { RandomSource } from "../stats/soldierStats";
 import type { DamageComponentKind, Soldier, Team, UnitTechnique } from "../types";
 import { applyDamage } from "./combatSystem";
 import { isDamageGuarded } from "./defenseSystem";
-import { startHitReaction } from "./reactionSystem";
 import { calculateSuccessfulAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
-import { applyRareDamageImmunity, totalDamageComponents } from "./damageComponentSystem";
+import { hasRareAbility } from "./damageComponentSystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
-import { getRangedHoldMarginWorld, getTechniqueRangeWorld, isPointInTechniqueRectangle, isWithinNormalContact } from "./techniqueCombatProfiles";
+import { getRangedHoldMarginWorld, getTechniqueRangeWorld, isWithinNormalContact } from "./techniqueCombatProfiles";
+import {
+  findRawAiRangedTarget,
+  getRawExplosionGridVictims,
+  startRawRangedTargetResponse,
+} from "./rawRangedAttackSystem";
 
 export interface GunAttackEvent {
   kind: "GUN"; attackerId: string; targetId: string; team: Team;
@@ -24,15 +28,16 @@ export function isGunTechnique(technique: UnitTechnique): boolean {
 export function getGunRange(technique: UnitTechnique): number | null {
   return isGunTechnique(technique) ? getTechniqueRangeWorld(technique) : null;
 }
+// Raw ac17: one pre-defense explosion on the primary, one 3x3-cell explosion
+// pass (normally including the primary cell), then the ordinary direct shot.
 export const BOMBARDMENT_DAMAGE_COMPONENTS: Readonly<Partial<Record<DamageComponentKind, number>>> = {
-  DIRECT_SPECIAL: 1, FIRE: 1, EXPLOSION: 1,
+  DIRECT_SPECIAL: 1, EXPLOSION: 2,
 };
 export function calculateGunDirectDamage(attacker: Soldier): number {
   return GUN_CONFIG.damage + Number(hasSpecialAbility(attacker, "MIGHT"));
 }
 export function calculateBombardmentPrimaryDamage(attacker: Soldier): number {
-  return Object.values(BOMBARDMENT_DAMAGE_COMPONENTS).reduce((sum, value) => sum + value, 0)
-    + Number(hasSpecialAbility(attacker, "MIGHT"));
+  return 3 + Number(hasSpecialAbility(attacker, "MIGHT"));
 }
 export type GunMovementDecision = "ADVANCE_TO_RANGE" | "HOLD_IN_RANGE" | "NORMAL_COMBAT";
 export function getGunMovementDecision(soldier: Soldier, target: Soldier): GunMovementDecision {
@@ -51,8 +56,9 @@ export function aimGunAtTarget(attacker: Soldier, target: Soldier): { x: number;
 function activeEnemy(attacker: Soldier, target: Soldier): boolean {
   return isValidCombatTarget(attacker, target) && target.state !== "REJOINING";
 }
-export function findGunTarget(attacker: Soldier, soldiers: readonly Soldier[]): Soldier | null {
+export function findGunTarget(attacker: Soldier, soldiers: readonly Soldier[], allowUnlatchedScan = true): Soldier | null {
   const range = getGunRange(attacker.technique); if (range === null) return null;
+  if (attacker.controller === "ai") return findRawAiRangedTarget(attacker, soldiers, range, allowUnlatchedScan);
   const candidates = soldiers.filter((target) => activeEnemy(attacker, target)
     && Math.hypot(target.x - attacker.x, target.y - attacker.y) < range);
   const sticky = candidates.find((target) => target.id === attacker.targetId);
@@ -64,40 +70,35 @@ export function executeGunAttack(attacker: Soldier, target: Soldier, currentTime
   const range = getGunRange(attacker.technique);
   if (range === null || !activeEnemy(attacker, target) || Math.hypot(target.x - attacker.x, target.y - attacker.y) >= range) return null;
   if (consumeCooldown && !beginTechniqueAction(attacker, currentTime, random, true)) return null;
-  const guarded = isDamageGuarded(target, "GUN_ATTACK", random, attacker);
+
   const aim = aimGunAtTarget(attacker, target);
   const bombardment = attacker.technique === "TEPPOU_BOMBARDMENT";
-  const victimIds: string[] = [];
-  const bombardmentComponents = bombardment ? applyRareDamageImmunity(target, {
-    ...BOMBARDMENT_DAMAGE_COMPONENTS,
-    DIRECT_SPECIAL: calculateSuccessfulAttackDamage(attacker, target, BOMBARDMENT_DAMAGE_COMPONENTS.DIRECT_SPECIAL!),
-  }) : null;
-  const primaryDamage = bombardment ? totalDamageComponents(bombardmentComponents!) : calculateSuccessfulAttackDamage(attacker, target, GUN_CONFIG.damage);
-  if (!guarded) applyDamage(target, primaryDamage, attacker);
-  target.combatFeedbackMarker = guarded ? "S" : "H";
-  target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
-  if (!guarded && !target.isDead) startHitReaction(target, attacker, currentTime, 0, random, "GUN_ATTACK");
-  if (!guarded && bombardment && ((bombardmentComponents!.FIRE ?? 0) > 0 || (bombardmentComponents!.EXPLOSION ?? 0) > 0)) victimIds.push(target.id);
-  if (bombardment && !guarded) {
-    const impactX = target.x; const impactY = target.y;
-    for (const splash of soldiers) {
-      if (splash === target || splash.team === attacker.team || splash.isDead || splash.hp <= 0
-        || splash.state === "HEALING" || splash.state === "REJOINING"
-        || !isPointInTechniqueRectangle(attacker.technique, { x: impactX, y: impactY }, splash)) continue;
-      if (isDamageGuarded(splash, "GUN_ATTACK", random, attacker)) continue;
-      const splashDamage = totalDamageComponents(applyRareDamageImmunity(splash, { EXPLOSION: BOMBARDMENT_DAMAGE_COMPONENTS.EXPLOSION! }));
-      if (splashDamage <= 0) continue;
-      applyDamage(splash, splashDamage, attacker);
-      splash.combatFeedbackMarker = "H"; splash.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
-      if (!splash.isDead) startHitReaction(splash, target, currentTime, 0, random, "GUN_ATTACK");
-      victimIds.push(splash.id);
+  const explosionVictims = new Set<string>();
+
+  // Direct AVM1 atck(): ac17 explosion damage happens before the ordinary
+  // random*200 defense decision. The s33/KATON test is on the PRIMARY target
+  // and skips this whole block; splash units do not receive their own s33 or
+  // defense test inside the 3x3 loop.
+  if (bombardment && !hasRareAbility(target, "KATON")) {
+    if (applyDamage(target, 1, attacker).appliedDamage > 0) explosionVictims.add(target.id);
+    for (const victim of getRawExplosionGridVictims(attacker, target, soldiers)) {
+      if (applyDamage(victim, 1, attacker).appliedDamage > 0) explosionVictims.add(victim.id);
     }
   }
+
+  const guarded = isDamageGuarded(target, "GUN_ATTACK", random, attacker);
+  if (!guarded) {
+    applyDamage(target, calculateSuccessfulAttackDamage(attacker, target, GUN_CONFIG.damage), attacker);
+  }
+  target.combatFeedbackMarker = guarded ? "S" : "H";
+  target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
+  startRawRangedTargetResponse(target, attacker, currentTime, random, "GUN_ATTACK");
+
   const barrelLength = attacker.technique === "TEPPOU_SNIPING" ? 24 : attacker.technique === "TEPPOU_BOMBARDMENT" ? 19 : 16;
   return { kind: "GUN", attackerId: attacker.id, targetId: target.id, team: attacker.team,
     x: attacker.x + aim.x * barrelLength, y: attacker.y + aim.y * barrelLength,
     shooterX: attacker.x, shooterY: attacker.y, targetX: target.x, targetY: target.y,
     smoke: true, shotLine: true, shooterFlash: true,
-    bombardmentVictimIds: bombardment ? victimIds : [], primaryDefended: bombardment && guarded,
+    bombardmentVictimIds: bombardment ? [...explosionVictims] : [], primaryDefended: bombardment && guarded,
     bombardmentSmokeDurationMs: GUN_CONFIG.bombardmentVictimSmokeDurationMs };
 }

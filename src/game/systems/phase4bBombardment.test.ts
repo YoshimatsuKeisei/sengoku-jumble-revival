@@ -3,7 +3,7 @@ import { GUN_CONFIG, SPECIAL_ATTACK_CONFIG } from "../config";
 import { createSoldier } from "../entities/Soldier";
 import { createArmy } from "../factories/createArmy";
 import type { SoldierLoadout } from "../types";
-import { createDefaultArmySetup, createDefaultTeamArmySetup, getArmySetupTotal, isValidTeamArmySetup, techniqueSlotsForTeam, validateArmySetup } from "./armySetupSystem";
+import { createDefaultArmySetup, createDefaultTeamArmySetup, getArmySetupTotal, isValidTeamArmySetup, validateArmySetup } from "./armySetupSystem";
 import { BOMBARDMENT_DAMAGE_COMPONENTS, calculateBombardmentPrimaryDamage, calculateGunDirectDamage, executeGunAttack, getGunMovementDecision, getGunRange } from "./gunAttackSystem";
 import { formatSoldierInspector } from "./soldierInspectorSystem";
 import { isTechniqueCompatibleWithUnitType, makePlayerDebugPreset, TECHNIQUE_DEFINITIONS } from "./unitLoadoutSystem";
@@ -21,8 +21,8 @@ describe("Phase 4B bombardment and army setup", () => {
     expect(getGunRange("TEPPOU_BOMBARDMENT")!).toBeGreaterThan(getGunRange("TEPPOU_SHOOTING")!);
     expect(getGunRange("TEPPOU_SNIPING")!).toBeGreaterThan(getGunRange("TEPPOU_BOMBARDMENT")!);
   });
-  it("keeps explicit direct, fire, and explosion components", () => {
-    expect(BOMBARDMENT_DAMAGE_COMPONENTS).toEqual({ DIRECT_SPECIAL: 1, FIRE: 1, EXPLOSION: 1 });
+  it("keeps the raw direct plus two primary explosion components", () => {
+    expect(BOMBARDMENT_DAMAGE_COMPONENTS).toEqual({ DIRECT_SPECIAL: 1, EXPLOSION: 2 });
     const gun = createSoldier("g", "player", "ai", 0, 0, "melee", undefined, loadout("TEPPOU_BOMBARDMENT"));
     expect(calculateBombardmentPrimaryDamage(gun)).toBe(3);
     gun.specialAbilities = ["MIGHT"]; expect(calculateBombardmentPrimaryDamage(gun)).toBe(4);
@@ -33,41 +33,40 @@ describe("Phase 4B bombardment and army setup", () => {
       expect(calculateGunDirectDamage(gun)).toBe(2);
     }
   });
-  it("hits primary for three and nearby enemies for one with feedback and smoke events", () => {
+  it("hits primary for three and nearby enemies for one with the raw pre-effect grid", () => {
     const gun = createSoldier("g", "player", "ai", 0, 0, "melee", undefined, loadout("TEPPOU_BOMBARDMENT"));
-    gun.combatGauge = 201;
-    const halfArea = getTechniqueAreaWorld("TEPPOU_BOMBARDMENT").width / 2;
-    const primary = createSoldier("p", "enemy", "ai", 100, 0); const splash = createSoldier("s", "enemy", "ai", 100 + halfArea, 0);
-    const outside = createSoldier("o", "enemy", "ai", 101 + halfArea, 0); const friendly = createSoldier("f", "player", "ai", 101, 0);
-    const event = executeGunAttack(gun, primary, 0, () => 1, true, [gun, primary, splash, outside, friendly])!;
+    const primary = createSoldier("p", "enemy", "ai", 100, 0);
+    const splash = createSoldier("s", "enemy", "ai", 110, 0);
+    const outside = createSoldier("o", "enemy", "ai", 500, 0);
+    const friendly = createSoldier("f", "player", "ai", 110, 0);
+    const event = executeGunAttack(gun, primary, 0, () => 1, false, [gun, primary, splash, outside, friendly])!;
     expect(primary.hp).toBe(primary.maxHp - 3); expect(splash.hp).toBe(splash.maxHp - 1);
     expect(outside.hp).toBe(outside.maxHp); expect(friendly.hp).toBe(friendly.maxHp);
-    expect(primary.combatFeedbackMarker).toBe("H"); expect(splash.combatFeedbackMarker).toBe("H");
-    expect(primary.reactionState).toBe("HIT_STUN"); expect(splash.reactionState).toBe("HIT_STUN");
-    expect(event.bombardmentVictimIds).toEqual(["p", "s"]); expect(event.primaryDefended).toBe(false);
+    expect(primary.combatFeedbackMarker).toBe("H"); expect(splash.combatFeedbackMarker).toBeNull();
+    expect(primary.reactionState).toBe("HIT_STUN");
+    expect(event.bombardmentVictimIds).toEqual(expect.arrayContaining(["p", "s"]));
+    expect(event.primaryDefended).toBe(false);
     expect(event.bombardmentSmokeDurationMs).toBe(1_000);
   });
-  it("primary defense shows only S and cancels every splash result", () => {
+  it("keeps the pre-defense explosion grid when the later direct shot is guarded", () => {
     const gun = createSoldier("g", "player", "ai", 0, 0, "melee", undefined, loadout("TEPPOU_BOMBARDMENT", ["MIGHT"]));
-    gun.combatGauge = 201;
-    const primary = createSoldier("p", "enemy", "ai", 100, 0); primary.unitType = "NINJA"; primary.specialAbilities = ["HORO"];
+    const primary = createSoldier("p", "enemy", "ai", 100, 0); primary.stats.defense = 200;
     const splash = createSoldier("s", "enemy", "ai", 110, 0);
-    const event = executeGunAttack(gun, primary, 0, () => 1, true, [gun, primary, splash])!;
-    expect(primary.hp).toBe(primary.maxHp); expect(primary.combatFeedbackMarker).toBe("S");
-    expect(splash.hp).toBe(splash.maxHp); expect(splash.combatFeedbackMarker).toBeNull();
-    expect(event.primaryDefended).toBe(true); expect(event.bombardmentVictimIds).toEqual([]);
+    const event = executeGunAttack(gun, primary, 0, () => 0, false, [gun, primary, splash])!;
+    expect(primary.hp).toBe(primary.maxHp - 2); expect(primary.combatFeedbackMarker).toBe("S");
+    expect(splash.hp).toBe(splash.maxHp - 1); expect(splash.combatFeedbackMarker).toBeNull();
+    expect(event.primaryDefended).toBe(true);
+    expect(event.bombardmentVictimIds).toEqual(expect.arrayContaining(["p", "s"]));
     expect(event.smoke && event.shotLine && event.shooterFlash).toBe(true);
   });
-  it("silently defends one splash victim without affecting other victims", () => {
+  it("does not run independent guard checks for splash victims", () => {
     const gun = createSoldier("g", "player", "ai", 0, 0, "melee", undefined, loadout("TEPPOU_BOMBARDMENT"));
-    gun.combatGauge = 201;
-    const primary = createSoldier("p", "enemy", "ai", 100, 0); const hitA = createSoldier("a", "enemy", "ai", 110, 0);
-    const defended = createSoldier("b", "enemy", "ai", 120, 0); defended.unitType = "NINJA"; defended.specialAbilities = ["HORO"];
-    const hitC = createSoldier("c", "enemy", "ai", 130, 0);
-    const event = executeGunAttack(gun, primary, 0, () => 1, true, [gun, primary, hitA, defended, hitC])!;
-    expect(hitA.hp).toBe(hitA.maxHp - 1); expect(hitC.hp).toBe(hitC.maxHp - 1);
-    expect(defended.hp).toBe(defended.maxHp); expect(defended.combatFeedbackMarker).toBeNull();
-    expect(event.bombardmentVictimIds).toEqual(["p", "a", "c"]);
+    const primary = createSoldier("p", "enemy", "ai", 100, 0);
+    const splash = createSoldier("s", "enemy", "ai", 110, 0); splash.stats.defense = 200; splash.specialAbilities = ["HORO"];
+    const event = executeGunAttack(gun, primary, 0, () => 1, false, [gun, primary, splash])!;
+    expect(splash.hp).toBe(splash.maxHp - 1);
+    expect(splash.combatFeedbackMarker).toBeNull();
+    expect(event.bombardmentVictimIds).toEqual(expect.arrayContaining(["p", "s"]));
   });
   it("uses the three-cell impact rectangle, smoke duration, and range-hold behavior", () => {
     expect(getTechniqueAreaWorld("TEPPOU_BOMBARDMENT").width).toBeGreaterThan(SPECIAL_ATTACK_CONFIG.radius * 2);

@@ -157,16 +157,18 @@ export function updateSpecialAttacks(
   const generalForcedRecipientsThisUpdate = new Set<string>();
   function dispatchForcedTechnique(recipient: Soldier, establishRangedAction = false): SpecialAttackEvent | null {
     if (isGunTechnique(recipient.technique)) {
-      const target = findGunTarget(recipient, soldiers);
+      // General-command spl() requires the recipient's existing l; it does not
+      // run the ordinary l==-1 ranged scd scan or opportunistically choose a new enemy.
+      const target = findGunTarget(recipient, soldiers, false);
       if (!target) return null;
       if (establishRangedAction && !beginTechniqueAction(recipient, currentTime, random, false)) return null;
       return executeGunAttack(recipient, target, currentTime, random, false, soldiers);
     }
     if (isArrowTechnique(recipient.technique)) {
-      const target = findArrowTarget(recipient, soldiers);
+      const target = findArrowTarget(recipient, soldiers, false);
       if (!target) return null;
       if (establishRangedAction && !beginTechniqueAction(recipient, currentTime, random, false)) return null;
-      return executeArrowAttack(recipient, target, currentTime, random, false);
+      return executeArrowAttack(recipient, target, currentTime, random, false, soldiers);
     }
     return recipient.technique === "CAVALRY_CHARGE" ? executeCavalryCharge(recipient, soldiers, obstacles, bases, currentTime, random, { consumeCooldown: false })
       : isSpearTechnique(recipient.technique) ? executeSpearAttack(recipient, soldiers, obstacles, bases, currentTime, random, false)
@@ -229,7 +231,7 @@ export function updateSpecialAttacks(
       : isGunTechnique(attacker.technique)
       ? (() => { const target = findGunTarget(attacker, soldiers); return target && getGunMovementDecision(attacker, target) !== "NORMAL_COMBAT" ? executeGunAttack(attacker, target, currentTime, random, true, soldiers) : null; })()
       : isArrowTechnique(attacker.technique)
-      ? (() => { const target = findArrowTarget(attacker, soldiers); return target && getArrowMovementDecision(attacker, target) !== "NORMAL_COMBAT" ? executeArrowAttack(attacker, target, currentTime, random, true) : null; })()
+      ? (() => { const target = findArrowTarget(attacker, soldiers); return target && getArrowMovementDecision(attacker, target) !== "NORMAL_COMBAT" ? executeArrowAttack(attacker, target, currentTime, random, true, soldiers) : null; })()
       : isSpearTechnique(attacker.technique)
       ? executeSpearAttack(attacker, soldiers, obstacles, bases, currentTime, random, true)
       : isNinjaTechnique(attacker.technique)
