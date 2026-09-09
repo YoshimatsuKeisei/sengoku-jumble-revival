@@ -3,6 +3,7 @@ import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
 import { recordBaseAttack, recordRecovery } from "../../src/game/systems/meritSystem";
 import { applyFieldHospitalArrival, applySupportHealingPulse } from "../../src/game/systems/specialAbilitySystem";
+import meritSideSpec from "../../swf-spec/rules/common_ability_merit_side.json";
 
 function unit(id: string, team: "player" | "enemy" = "player", x = 500, y = 450): Soldier {
   return createSoldier(id, team, "ai", x, y);
@@ -17,6 +18,16 @@ function roster(team: "player" | "enemy", ability?: Soldier["specialAbilities"][
 }
 
 describe("SWF conformance: common ability merit is player-side only", () => {
+  it("keeps the raw side asymmetry machine-readable", () => {
+    const rule = meritSideSpec.rules.find((candidate) => candidate.id === "COMMON_ABILITY_MERIT_PLAYER_SIDE_ONLY");
+    expect(rule?.status).toBe("confirmed");
+    expect(rule?.expected.baseAttackRsj.enemy).toBe(0);
+    expect(rule?.expected.supportPulseRsk.enemy).toBe(0);
+    expect(rule?.expected.treatmentRsk.enemy).toBe(0);
+    expect(rule?.expected.fieldHospitalRsk.enemy).toBe(0);
+    expect(rule?.expected.healingEffectsRemainMirrored).toBe(true);
+  });
+
   it("records s8/base rsj for player attackers but not mirrored enemy attackers", () => {
     const player = unit("player");
     const enemy = unit("enemy", "enemy");
