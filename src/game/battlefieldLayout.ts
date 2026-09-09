@@ -88,12 +88,12 @@ export function battlefieldWorldPointToSwf(point: { x: number; y: number }): { x
 }
 
 /**
- * Compatibility aliases. Historically "source point" meant SWF logic points,
- * while "source rect" meant extracted bitmap-local rectangles. Keep that API
- * stable but route each alias through the now-explicit correct coordinate space.
+ * Diagnostic compatibility aliases. The 069b810 regression changed these point
+ * aliases from bitmap-local to raw SWF coordinates globally. Restore their old
+ * bitmap-local behavior here without removing the explicit SWF helpers above.
  */
-export const battlefieldSourcePointToWorld = battlefieldSwfPointToWorld;
-export const battlefieldWorldPointToSource = battlefieldWorldPointToSwf;
+export const battlefieldSourcePointToWorld = battlefieldBitmapPointToWorld;
+export const battlefieldWorldPointToSource = battlefieldWorldPointToBitmap;
 export const battlefieldSourceRectToWorld = battlefieldBitmapRectToWorld;
 
 export function battlefieldSourceDistanceToWorldX(distance: number): number {
