@@ -34,7 +34,7 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     expect(launch?.status).toBe("confirmed");
     expect(launch?.expected).toMatchObject({
       projectileLaunchesPerAttackCycle: 1,
-      attackResolutionCallsPerSuccessfulSpl: 1,
+      attackResolutionCallsPerSuccessfulActivation: 1,
       projectileChildSpriteId: 1002,
       projectileInstanceName: "ya",
       projectileChildInstancesPerDirectionalPose: 1,
@@ -61,6 +61,7 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     const enemy = unit("enemy", "enemy", 600);
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
+    archer.targetId = enemy.id;
     archer.stats.skill = 100;
     archer.combatGauge = 200;
     archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
@@ -77,6 +78,7 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     const enemy = unit("single-enemy", "enemy", 600);
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
+    archer.targetId = enemy.id;
     archer.stats.skill = 100;
     archer.combatGauge = 200;
     archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
