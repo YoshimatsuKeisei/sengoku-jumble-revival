@@ -1,7 +1,8 @@
 import Phaser from "phaser";
-import { BATTLEFIELD_SOURCE_TO_WORLD } from "../battlefieldLayout";
+import { battlefieldSourceDistanceToWorldX, battlefieldSourceDistanceToWorldY, BATTLEFIELD_SOURCE_TO_WORLD } from "../battlefieldLayout";
 import {
   BATTLE_FRAME_SEQUENCE_ASSETS,
+  getBattleFrameRenderOffsetSourceUnits,
   getBattleFrameSequence,
   getBattleFrameTextureKey,
   sampleBattleFrameSequence,
@@ -17,6 +18,14 @@ interface ActiveSequence {
   getRoot?: () => EffectPoint | null;
   isActive?: () => boolean;
   image: Phaser.GameObjects.Image;
+}
+
+function getRenderedPoint(id: BattleFrameSequenceId, root: EffectPoint, frameIndex = 0): EffectPoint {
+  const offset = getBattleFrameRenderOffsetSourceUnits(id, frameIndex);
+  return {
+    x: root.x + battlefieldSourceDistanceToWorldX(offset.x),
+    y: root.y + battlefieldSourceDistanceToWorldY(offset.y),
+  };
 }
 
 export class BattleFrameSequenceRenderer {
@@ -37,7 +46,8 @@ export class BattleFrameSequenceRenderer {
   ): boolean {
     const definition = getBattleFrameSequence(id);
     if (!definition || !this.scene.textures.exists(definition.frames[0].key)) return false;
-    const image = this.scene.add.image(root.x, root.y, definition.frames[0].key)
+    const renderedPoint = getRenderedPoint(id, root, 0);
+    const image = this.scene.add.image(renderedPoint.x, renderedPoint.y, definition.frames[0].key)
       .setOrigin(0.5)
       .setScale(BATTLEFIELD_SOURCE_TO_WORLD.scaleX, BATTLEFIELD_SOURCE_TO_WORLD.scaleY)
       .setDepth(2.05);
@@ -62,8 +72,9 @@ export class BattleFrameSequenceRenderer {
         effect.image.destroy();
         continue;
       }
+      const renderedPoint = getRenderedPoint(effect.id, root, sample.frameIndex);
       effect.image
-        .setPosition(root.x, root.y)
+        .setPosition(renderedPoint.x, renderedPoint.y)
         .setTexture(getBattleFrameTextureKey(effect.id, sample.frameIndex));
       retained.push(effect);
     }
