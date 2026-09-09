@@ -11,7 +11,7 @@ import {
   applySupportHealingPulse,
   handleRetreatStateEntered,
   hasSpecialAbility,
-  isAbilityActionCapable,
+  isSwfPreRetreatFieldState,
 } from "./specialAbilitySystem";
 import { invalidateCombatTargetForAll } from "./combatTargetSystem";
 import { clearConfusion } from "./confusionSystem";
@@ -97,7 +97,8 @@ export function getSwfHealingSlotPosition(
 }
 
 export const SWF_TREATMENT_SEARCH_MANHATTAN_UNITS = 760;
-export const TREATMENT_RECOVERY_LOCK_TICKS = 1;
+export const SWF_TREATMENT_FORWARD_TOLERANCE_UNITS = 30;
+export const TREATMENT_RECOVERY_LOCK_TICKS = 12;
 
 export function shouldEmergencyRetreat(soldier: Soldier, currentTime = 0): boolean {
   const hpPercent = soldier.maxHp > 0 ? Math.floor(soldier.hp / soldier.maxHp * 100) : 0;
@@ -117,6 +118,23 @@ function treatmentDistanceInSwfUnits(a: Pick<Soldier, "x" | "y">, b: Pick<Soldie
   const sourceA = battlefieldWorldPointToSource(a);
   const sourceB = battlefieldWorldPointToSource(b);
   return Math.abs(sourceA.x - sourceB.x) + Math.abs(sourceA.y - sourceB.y);
+}
+
+/** Raw s14 scan requires healer p < 88; available runtime states map p7 rejoin as eligible. */
+export function isSwfTreatmentHolderRuntimeEligible(candidate: Soldier): boolean {
+  return isSwfPreRetreatFieldState(candidate) && hasSpecialAbility(candidate, "TREATMENT");
+}
+
+/**
+ * Raw player scan requires healerX - 30 < patientX; enemy is mirrored as
+ * healerX + 30 > patientX. These are strict source-coordinate comparisons.
+ */
+export function isSwfTreatmentDirectionEligible(patient: Soldier, candidate: Soldier): boolean {
+  const patientSource = battlefieldWorldPointToSource(patient);
+  const candidateSource = battlefieldWorldPointToSource(candidate);
+  return patient.team === "player"
+    ? candidateSource.x - SWF_TREATMENT_FORWARD_TOLERANCE_UNITS < patientSource.x
+    : candidateSource.x + SWF_TREATMENT_FORWARD_TOLERANCE_UNITS > patientSource.x;
 }
 
 function isRecoveryEntryCommitted(soldier: Soldier): boolean {
@@ -193,9 +211,9 @@ function beginSwfRejoin(soldier: Soldier): void {
   );
 }
 
-export function findNearestTreatmentHealer(patient: Soldier, soldiers: readonly Soldier[], currentTime = 0): Soldier | null {
+export function findNearestTreatmentHealer(patient: Soldier, soldiers: readonly Soldier[], _currentTime = 0): Soldier | null {
   return soldiers.filter((candidate) => candidate !== patient && candidate.team === patient.team
-    && hasSpecialAbility(candidate, "TREATMENT") && isAbilityActionCapable(candidate, currentTime)
+    && isSwfTreatmentHolderRuntimeEligible(candidate) && isSwfTreatmentDirectionEligible(patient, candidate)
     && treatmentDistanceInSwfUnits(candidate, patient) < SWF_TREATMENT_SEARCH_MANHATTAN_UNITS)
     .sort((a, b) => treatmentDistanceInSwfUnits(a, patient) - treatmentDistanceInSwfUnits(b, patient))[0] ?? null;
 }
@@ -208,6 +226,9 @@ function completeTreatment(patient: Soldier, healer: Soldier, soldiers: readonly
   const amount = calculateTreatmentHealAmount(patient);
   const boost = hasSpecialAbility(patient, "RECOVERY_BOOST");
   const beforeHp = patient.hp;
+  // Raw tat() invokes the source-excluding sz(5) pulse before the doubled
+  // treatment additions when the patient owns s20.
+  if (boost) applySupportHealingPulse(patient, soldiers, false);
   patient.hp = Math.min(patient.maxHp, patient.hp + amount * (boost ? 2 : 1));
   // tat() is the confirmed exception that immediately refreshes h after recovery.
   patient.hpBarHp = patient.hp;
@@ -225,7 +246,6 @@ function completeTreatment(patient: Soldier, healer: Soldier, soldiers: readonly
   patient.abilityActionLockUntil = Math.max(patient.abilityActionLockUntil,
     currentTime + swfLogicTicksToMs(TREATMENT_RECOVERY_LOCK_TICKS));
   clearCombat(patient);
-  if (boost) applySupportHealingPulse(patient, soldiers, false);
 }
 
 export function startEmergencyRetreat(
@@ -254,10 +274,11 @@ export function startEmergencyRetreat(
 
 function applyTreatmentContact(soldier: Soldier, soldiers: readonly Soldier[], currentTime: number): boolean {
   if (soldier.treatmentUsedSinceLastBaseVisit) return false;
-  const healer = soldiers.find((candidate) => candidate !== soldier && candidate.team === soldier.team
-    && hasSpecialAbility(candidate, "TREATMENT") && isAbilityActionCapable(candidate, currentTime)
-    && Math.hypot(candidate.x - soldier.x, candidate.y - soldier.y) <= SPECIAL_ABILITY_CONFIG.treatmentContactRadius);
-  if (!healer) return false;
+  const healer = soldier.recoveryHealerId
+    ? soldiers.find((candidate) => candidate.id === soldier.recoveryHealerId && candidate !== soldier
+      && candidate.team === soldier.team && isSwfTreatmentHolderRuntimeEligible(candidate))
+    : findNearestTreatmentHealer(soldier, soldiers, currentTime);
+  if (!healer || Math.hypot(healer.x - soldier.x, healer.y - soldier.y) > SPECIAL_ABILITY_CONFIG.treatmentContactRadius) return false;
   completeTreatment(soldier, healer, soldiers, currentTime);
   return true;
 }
@@ -300,7 +321,7 @@ export function updateEmergencyRetreat(
   if (applyTreatmentContact(soldier, soldiers, currentTime)) return;
   if (soldier.recoveryTargetKind === "HEALER") {
     const healer = soldiers.find((candidate) => candidate.id === soldier.recoveryHealerId
-      && candidate.team === soldier.team && hasSpecialAbility(candidate, "TREATMENT") && isAbilityActionCapable(candidate, currentTime));
+      && candidate.team === soldier.team && isSwfTreatmentHolderRuntimeEligible(candidate));
     if (healer) {
       setMoveTarget(soldier, healer);
       if (Math.hypot(healer.x - soldier.x, healer.y - soldier.y) <= SPECIAL_ABILITY_CONFIG.treatmentContactRadius) {
