@@ -80,7 +80,8 @@ describe("direct raw-SWF normal melee conformance", () => {
 
     expect(first.targetId).toBe(second.id);
     expect(second.targetId).toBe(first.id);
-    expect(first.combatActionState).toBe("ATTACK_WINDUP");
+    expect(first.combatActionState).toBe("ATTACK_RECOVERY");
+    expect(first.attackHitApplied).toBe(true);
     expect(second.combatActionState).toBe("IDLE");
   });
 
