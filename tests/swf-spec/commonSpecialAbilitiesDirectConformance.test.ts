@@ -5,6 +5,8 @@ import type { Soldier } from "../../src/game/types";
 import { createBattleBases } from "../../src/game/systems/baseSystem";
 import { isBaseHitBlockedByFortify, resolveBaseMovementContacts } from "../../src/game/systems/baseContactSystem";
 import { beginTechniqueAction } from "../../src/game/systems/combatGaugeSystem";
+import { isDamageGuarded } from "../../src/game/systems/defenseSystem";
+import { clearReaction, startHitReaction } from "../../src/game/systems/reactionSystem";
 import {
   SWF_TREATMENT_FORWARD_TOLERANCE_UNITS,
   TREATMENT_RECOVERY_LOCK_TICKS,
@@ -16,6 +18,8 @@ import {
 import {
   applyFieldHospitalArrival,
   applySupportHealingPulse,
+  calculateRetreatMoveSpeed,
+  calculateSuccessfulAttackDamage,
   handleRetreatStateEntered,
   rosterSlotDrawHasAbility,
 } from "../../src/game/systems/specialAbilitySystem";
@@ -49,6 +53,78 @@ describe("SWF conformance: common special abilities s7..s22", () => {
       s13: "RALLY_SPIRIT", s14: "TREATMENT", s15: "INSPIRE", s16: "FIELD_HOSPITAL", s17: "TRAP",
       s18: "FORTIFY", s19: "FORESIGHT", s20: "RECOVERY_BOOST", s21: "DOUBLE_SPECIAL", s22: "FLEET_FOOT",
     });
+  });
+
+  it("keeps a machine-readable direct-audit row with every required field for all sixteen abilities", () => {
+    const matrix = rule("COMMON_SPECIAL_ABILITY_DIRECT_AUDIT_MATRIX")?.expected as Record<string, Record<string, unknown>> | undefined;
+    expect(matrix).toBeDefined();
+    expect(Object.keys(matrix!)).toEqual([
+      "s7", "s8", "s9", "s10", "s11", "s12", "s13", "s14",
+      "s15", "s16", "s17", "s18", "s19", "s20", "s21", "s22",
+    ]);
+    for (const row of Object.values(matrix!)) {
+      for (const key of [
+        "label", "tsId", "trigger", "probability", "target", "effect", "effectOrder",
+        "lockCooldown", "merit", "interactions", "playerEnemyDifference", "implementation", "testId", "evidenceGrade",
+      ]) expect(row).toHaveProperty(key);
+      expect(row.evidenceGrade).toBe("confirmed");
+    }
+  });
+
+  it("uses the raw s7 RUSH random*100 <= 70 keep-target boundary and never suppresses normal contact retarget", () => {
+    const target = unit("rush"); const attacker = unit("attacker", "enemy");
+    target.strategy = "charge"; target.specialAbilities = ["RUSH"];
+    startHitReaction(target, attacker, 0, 0, () => 0.7, "GUN_ATTACK");
+    expect(target.targetId).toBeNull();
+    clearReaction(target);
+    startHitReaction(target, attacker, 1, 0, () => 0.700001, "GUN_ATTACK");
+    expect(target.targetId).toBe(attacker.id);
+    target.targetId = null; clearReaction(target);
+    startHitReaction(target, attacker, 2, 0, () => 0, "NORMAL_ATTACK");
+    expect(target.targetId).toBe(attacker.id);
+  });
+
+  it("orders successful-hit damage as basic -> s10 MIGHT -> s9 FINISHER threshold -> NINJA_HUNTER", () => {
+    const attacker = unit("attacker"); const target = unit("target", "enemy");
+    target.unitType = "NINJA";
+    attacker.specialAbilities = ["FINISHER"];
+    attacker.rareSpecialAbilities = ["NINJA_HUNTER"];
+    target.hp = 7;
+    expect(calculateSuccessfulAttackDamage(attacker, target)).toBe(2);
+    target.hp = 6;
+    expect(calculateSuccessfulAttackDamage(attacker, target)).toBe(3);
+    attacker.specialAbilities = ["MIGHT", "FINISHER"];
+    target.hp = 7;
+    expect(calculateSuccessfulAttackDamage(attacker, target)).toBe(4);
+  });
+
+  it("consumes defense RNG before s12 HORO, keeps >30 strict, and lets s19 FORESIGHT make ss=1 guard-capable", () => {
+    const defender = unit("defender", "enemy"); defender.stats.defense = 100; defender.specialAbilities = ["HORO"];
+    let calls = 0; const guarded = [0.6, 0.300001];
+    expect(isDamageGuarded(defender, "NORMAL_ATTACK", () => guarded[calls++] ?? 0)).toBe(true);
+    expect(calls).toBe(2);
+
+    calls = 0; const exactBoundary = [0.6, 0.3];
+    expect(isDamageGuarded(defender, "NORMAL_ATTACK", () => exactBoundary[calls++] ?? 0)).toBe(false);
+    expect(calls).toBe(2);
+
+    defender.specialAbilities = ["FORESIGHT", "HORO"];
+    calls = 0; const special = [0.6, 0.31];
+    expect(isDamageGuarded(defender, "SPECIAL_ATTACK", () => special[calls++] ?? 0)).toBe(true);
+    expect(calls).toBe(2);
+
+    defender.specialAbilities = ["HORO"];
+    calls = 0;
+    expect(isDamageGuarded(defender, "SPECIAL_ATTACK", () => { calls += 1; return calls === 1 ? 0.6 : 0.31; })).toBe(false);
+    expect(calls).toBe(2);
+  });
+
+  it("forces the raw teppou(ch6) -> ninja(ch7) hit after one defense draw and skips HORO's second draw", () => {
+    const defender = unit("ninja", "enemy"); defender.unitType = "NINJA"; defender.specialAbilities = ["HORO", "FORESIGHT"];
+    const gunner = unit("gunner"); gunner.unitType = "TEPPOU";
+    let calls = 0;
+    expect(isDamageGuarded(defender, "GUN_ATTACK", () => { calls += 1; return 0; }, gunner)).toBe(false);
+    expect(calls).toBe(1);
   });
 
   it("keeps sz support recovery source-excluded, p<89-only, and awards one merit for a two-HP s20 pulse", () => {
@@ -104,7 +180,7 @@ describe("SWF conformance: common special abilities s7..s22", () => {
     expect(calls).toBe(2);
   });
 
-  it("uses strict >50 and consumes both s18 FORTIFY attempts", () => {
+  it("uses strict >50 and consumes both s18 FORTIFY attempts with chance RNG short-circuited on non-holder slots", () => {
     const attacker = unit("attacker");
     const defenders = roster("enemy"); defenders[0].specialAbilities = ["FORTIFY"];
     let calls = 0;
@@ -116,6 +192,11 @@ describe("SWF conformance: common special abilities s7..s22", () => {
     const exactBoundary = [0, 0.5, 0, 0.5];
     expect(isBaseHitBlockedByFortify(attacker, defenders, () => exactBoundary[calls++] ?? 0)).toBe(false);
     expect(calls).toBe(4);
+
+    calls = 0;
+    const shortCircuit = [0.99, 0, 0.51];
+    expect(isBaseHitBlockedByFortify(attacker, defenders, () => shortCircuit[calls++] ?? 0)).toBe(true);
+    expect(calls).toBe(3);
   });
 
   it("credits s8 SIEGE rsj by two even when the finishing base had only one HP, with no invented capture bonus", () => {
@@ -168,5 +249,13 @@ describe("SWF conformance: common special abilities s7..s22", () => {
     player.playerTechniqueGauge = 100;
     expect(beginTechniqueAction(player, 0, () => 0.4, true)).toBe(true);
     expect(player.playerTechniqueGauge).toBe(100);
+  });
+
+  it("applies s22 FLEET_FOOT as +2 foot capped at 8 during retreat", () => {
+    const runner = unit("runner"); runner.specialAbilities = ["FLEET_FOOT"];
+    runner.stats.foot = 7;
+    expect(calculateRetreatMoveSpeed(70, runner)).toBe(80);
+    runner.stats.foot = 3;
+    expect(calculateRetreatMoveSpeed(30, runner)).toBe(50);
   });
 });
