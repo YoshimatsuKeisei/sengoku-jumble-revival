@@ -72,7 +72,8 @@ describe("SWF movement-contact base attacks", () => {
     defenders[0].specialAbilities = ["FORTIFY"];
     const firstAttempt = [0, 0.51, 0.99, 0][Symbol.iterator]();
     expect(isBaseHitBlockedByFortify(attacker, defenders, () => firstAttempt.next().value ?? 0)).toBe(true);
-    const secondAttempt = [0.99, 0, 0, 0.51][Symbol.iterator]();
+    // If the first roster draw misses s18, raw AVM1 does not consume a success-roll there.
+    const secondAttempt = [0.99, 0, 0.51][Symbol.iterator]();
     expect(isBaseHitBlockedByFortify(attacker, defenders, () => secondAttempt.next().value ?? 0)).toBe(true);
     const exactBoundary = [0, 0.5, 0, 0.5][Symbol.iterator]();
     expect(isBaseHitBlockedByFortify(attacker, defenders, () => exactBoundary.next().value ?? 0)).toBe(false);
