@@ -15,13 +15,27 @@ export function isDamageGuarded(
 ): boolean {
   if (damageKind === "TRAP") return false;
   const soldier = "specialAbilities" in defender ? defender as Soldier : null;
-  if (damageKind === "SPECIAL_ATTACK" && (!soldier || !hasSpecialAbility(soldier, "FORESIGHT"))) return false;
-  // The original gun branch forces the defense roll high against every class
-  // except ninja. Ninja therefore still reaches HORO/the normal defense roll.
-  if (damageKind === "GUN_ATTACK" && attacker?.unitType === "TEPPOU" && soldier?.unitType !== "NINJA") return false;
-  const isRangedDefense = damageKind === "ARROW_ATTACK" || damageKind === "GUN_ATTACK";
-  if (soldier && isRangedDefense && hasSpecialAbility(soldier, "HORO")
-    && random() > 1 - DEFENSE_CONFIG.horoForcedGuardChance) return true;
+
+  // Raw atck() first lets s19 clear the ss=1 special-defense bypass, then
+  // consumes the ordinary random*200 defense roll. Even an unguardable ss=1
+  // special consumes that roll before the final ss check.
+  const specialBypassesDefense = damageKind === "SPECIAL_ATTACK"
+    && (!soldier || !hasSpecialAbility(soldier, "FORESIGHT"));
   const defense = soldier ? getEffectiveDefenseForAttack(soldier, damageKind) : defender.stats.defense;
-  return random() * DEFENSE_CONFIG.randomScale <= defense;
+  let defenseRoll = random() * DEFENSE_CONFIG.randomScale;
+
+  // Direct AVM1 ch==6 attacker / ch==7 defender path: teppou against ninja
+  // forces the roll to 999 and jumps past s12, so it is a forced hit and HORO
+  // does not consume a second random value on this path.
+  if (damageKind === "GUN_ATTACK" && attacker?.unitType === "TEPPOU" && soldier?.unitType === "NINJA") {
+    defenseRoll = 999;
+    return false;
+  }
+
+  // s12 is evaluated after the ordinary defense roll and overwrites that roll
+  // with zero only on strict random*100 > 30. Thus it applies to every
+  // guard-capable atck() path (normal/ranged, and ss=1 only after s19).
+  if (soldier && hasSpecialAbility(soldier, "HORO") && random() * 100 > 30) defenseRoll = 0;
+
+  return !specialBypassesDefense && defenseRoll <= defense;
 }

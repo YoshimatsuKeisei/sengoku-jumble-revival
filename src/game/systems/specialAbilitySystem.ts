@@ -32,12 +32,12 @@ export function createRandomCommonSpecialAbilities(random: RandomSource = Math.r
   return result;
 }
 
-/** Common atck() order: basic, 将力, 忍狩, then 討取 against the resulting HP. */
+/** Raw atck() successful-hit order: basic, s10 膂力, s9/s9s 討取 threshold, then s34 忍狩. */
 export function calculateSuccessfulAttackDamage(attacker: Soldier, defender: Soldier, basicDamage = 1): number {
-  const beforeFinisher = basicDamage
-    + Number(hasSpecialAbility(attacker, "MIGHT"))
-    + Number(attacker.rareSpecialAbilities.includes("NINJA_HUNTER") && defender.unitType === "NINJA");
-  return beforeFinisher + Number(hasSpecialAbility(attacker, "FINISHER") && defender.hp - beforeFinisher < 6);
+  const beforeFinisher = basicDamage + Number(hasSpecialAbility(attacker, "MIGHT"));
+  const finisherDamage = Number(hasSpecialAbility(attacker, "FINISHER") && defender.hp - beforeFinisher < 6);
+  const ninjaHunterDamage = Number(attacker.rareSpecialAbilities.includes("NINJA_HUNTER") && defender.unitType === "NINJA");
+  return beforeFinisher + finisherDamage + ninjaHunterDamage;
 }
 export const calculateNormalAttackDamage = calculateSuccessfulAttackDamage;
 export function calculateBaseAttackDamage(attacker: Soldier): number { return hasSpecialAbility(attacker, "SIEGE") ? 2 : 1; }
