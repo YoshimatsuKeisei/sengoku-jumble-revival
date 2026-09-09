@@ -1,7 +1,14 @@
-import { BASE_CONFIG, BASE_CONTACT_CONFIG, SOLDIER_RADIUS } from "../config";
+import { BASE_CONFIG, BASE_CONTACT_CONFIG, BATTLEFIELD_CONFIG, SOLDIER_RADIUS } from "../config";
 import { BATTLEFIELD_BASE_WORLD_RECTS, battlefieldSourceDistanceToWorldX } from "../battlefieldLayout";
 import type { BattleBase, Soldier, Team } from "../types";
-import { distanceToRect, getBaseAttackSurfaceRect } from "./battlefieldGeometry";
+import {
+  distanceToRect,
+  getBaseAttackSurfaceRect,
+  getBaseFrontAccessBoundaryX,
+  getBaseRect,
+  isPointInsideRect,
+  isPointWithinBaseGateSpan,
+} from "./battlefieldGeometry";
 import { applyBaseAttackBounce } from "./baseAttackBounceSystem";
 import { applyForcedMovement } from "./movementSystem";
 import {
@@ -11,6 +18,8 @@ import {
   SWF_PLAYER_BASE_DAMAGE_TILE,
   SWF_PLAYER_RECOVERY_TILE,
 } from "./swfBaseCollisionGrid";
+
+type RecoveryEntryRuntime = Soldier & { recoveryEntryCommitted?: boolean };
 
 export function createBattleBase(team: Team): BattleBase {
   const rect = BATTLEFIELD_BASE_WORLD_RECTS[team];
@@ -73,28 +82,80 @@ function baseForDamageCode(bases: readonly BattleBase[], code: 996 | 997): Battl
 }
 
 /**
- * Resolve the original shk2()/d() headquarters barrier. The visible PNG is not
- * an independent physics rectangle: 996/997 are blocking wall cells first and
- * damage cells second, while 998/999 admit only the matching retreat state.
+ * Preserve the 2026-09-07 visible-headquarters access guard for reconstructed
+ * zero-code gaps. The raw 996..999 grid remains authoritative whenever one of
+ * those cells is actually present; this guard only closes visual gaps that are
+ * not represented by a raw special cell.
+ */
+function canOccupyOwnVisualBase(soldier: Soldier, base: BattleBase): boolean {
+  if (soldier.team !== base.team) return false;
+  if (soldier.state === "HEALING" || soldier.state === "REJOINING") return true;
+  if (soldier.state !== "EMERGENCY_RETREAT") return false;
+  if (Boolean((soldier as RecoveryEntryRuntime).recoveryEntryCommitted)) return true;
+  return soldier.recoveryGate
+    ? isPointWithinBaseGateSpan(soldier, base, soldier.recoveryGate)
+    : isPointWithinBaseGateSpan(soldier, base, "TOP") || isPointWithinBaseGateSpan(soldier, base, "BOTTOM");
+}
+
+function enforceVisualBaseAccessGuard(soldier: Soldier, bases: readonly BattleBase[]): void {
+  for (const base of bases) {
+    if (canOccupyOwnVisualBase(soldier, base)) continue;
+    const rect = getBaseRect(base);
+    const frontBoundaryX = getBaseFrontAccessBoundaryX(base);
+    const overlapsFrontFace = soldier.y >= rect.y - SOLDIER_RADIUS
+      && soldier.y <= rect.y + rect.height + SOLDIER_RADIUS
+      && (base.team === "enemy"
+        ? soldier.x > frontBoundaryX && soldier.x < rect.x
+        : soldier.x < frontBoundaryX && soldier.x > rect.x + rect.width);
+    if (overlapsFrontFace) {
+      soldier.x = frontBoundaryX;
+      continue;
+    }
+    if (!isPointInsideRect(soldier, rect)) continue;
+    const distances = {
+      left: rect.x <= 0 ? Number.POSITIVE_INFINITY : Math.abs(soldier.x - rect.x),
+      right: rect.x + rect.width >= BATTLEFIELD_CONFIG.width
+        ? Number.POSITIVE_INFINITY
+        : Math.abs(rect.x + rect.width - soldier.x),
+      top: Math.abs(soldier.y - rect.y),
+      bottom: Math.abs(rect.y + rect.height - soldier.y),
+    };
+    const nearest = (Object.keys(distances) as Array<keyof typeof distances>)
+      .reduce((best, side) => distances[side] < distances[best] ? side : best, "left");
+    if ((base.team === "enemy" && nearest === "left")
+      || (base.team === "player" && nearest === "right")) {
+      soldier.x = frontBoundaryX;
+    } else if (nearest === "left") soldier.x = rect.x - SOLDIER_RADIUS;
+    else if (nearest === "right") soldier.x = rect.x + rect.width + SOLDIER_RADIUS;
+    else if (nearest === "top") soldier.y = rect.y - SOLDIER_RADIUS;
+    else soldier.y = rect.y + rect.height + SOLDIER_RADIUS;
+  }
+}
+
+/**
+ * Resolve raw 996..999 collisions, then apply the preserved visual guard only
+ * to reconstructed zero-code headquarters gaps.
  */
 export function resolveBaseAccessCollisions(soldiers: Soldier[], bases: readonly BattleBase[]): void {
   for (const soldier of soldiers) {
-    if (soldier.isDead || soldier.baseContactLockTicks > 0) continue;
+    if (soldier.isDead) continue;
     const code = getSwfBaseCollisionCodeAtWorld(soldier);
 
-    if (code === SWF_ENEMY_BASE_DAMAGE_TILE || code === SWF_PLAYER_BASE_DAMAGE_TILE) {
-      const base = baseForDamageCode(bases, code);
-      const defenders = soldiers.filter((candidate) => candidate.team === base.team);
-      applyBaseAttackBounce(soldier, base, defenders);
-      soldier.baseContactLockTicks = BASE_CONTACT_CONFIG.lockLogicUpdates;
-      continue;
+    if (soldier.baseContactLockTicks <= 0) {
+      if (code === SWF_ENEMY_BASE_DAMAGE_TILE || code === SWF_PLAYER_BASE_DAMAGE_TILE) {
+        const base = baseForDamageCode(bases, code);
+        const defenders = soldiers.filter((candidate) => candidate.team === base.team);
+        applyBaseAttackBounce(soldier, base, defenders);
+        soldier.baseContactLockTicks = BASE_CONTACT_CONFIG.lockLogicUpdates;
+      } else if (code === SWF_ENEMY_RECOVERY_TILE || code === SWF_PLAYER_RECOVERY_TILE) {
+        if (!canPassRecoveryTile(soldier, code)) {
+          const directionX = code === SWF_ENEMY_RECOVERY_TILE ? -1 : 1;
+          applyForcedMovement(soldier, directionX, 0, battlefieldSourceDistanceToWorldX(6));
+          soldier.baseContactLockTicks = BASE_CONTACT_CONFIG.lockLogicUpdates;
+        }
+      }
     }
 
-    if (code === SWF_ENEMY_RECOVERY_TILE || code === SWF_PLAYER_RECOVERY_TILE) {
-      if (canPassRecoveryTile(soldier, code)) continue;
-      const directionX = code === SWF_ENEMY_RECOVERY_TILE ? -1 : 1;
-      applyForcedMovement(soldier, directionX, 0, battlefieldSourceDistanceToWorldX(6));
-      soldier.baseContactLockTicks = BASE_CONTACT_CONFIG.lockLogicUpdates;
-    }
+    if (code === null) enforceVisualBaseAccessGuard(soldier, bases);
   }
 }
