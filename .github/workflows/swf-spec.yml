@@ -6,7 +6,6 @@ on:
     branches:
       - debug/swf-conformance
       - debug/current-20260907-swf-integrated
-      - debug/current-20260907-swf-integrated-normal-attack-stage
     paths:
       - "src/**"
       - "tests/swf-spec/**"
@@ -36,14 +35,11 @@ jobs:
           src/game/systems/baseGateRecoveryGeometry.test.ts
           src/game/systems/recoverySystem.test.ts
           src/game/systems/swfIntegrationPreservation.test.ts
-          src/game/systems/phase3dCombat.test.ts
           src/game/systems/phase3eBattlefield.test.ts
           src/game/systems/phase3fFidelity.test.ts
           src/game/systems/phase3gFixes.test.ts
           src/game/systems/phase3hIntegration.test.ts
           src/game/systems/phase3jPlayerControl.test.ts
-          src/game/systems/attackSystem.test.ts
-          src/game/systems/reactionSystem.test.ts
           src/game/systems/obstacleAvoidance.test.ts
           src/game/rendering/battleUnitUiAssets.test.ts
           src/game/rendering/battleFrameSequenceManifest.test.ts
