@@ -70,7 +70,7 @@
       "category": "movement",
       "expected": {
         "rawSwfSourceCenterX": 900,
-        "rawSwfComparisonSpace": "swf-battle",
+        "rawSwfComparisonSpace": "swf-source",
         "rawSwfContainsOpposingHalfEligibilityBranch": true,
         "activePortTrigger": "new-enemy-fixed-fence-contact",
         "activePortContactSource": "901..906 raw collision event with alpha-contact fallback",
