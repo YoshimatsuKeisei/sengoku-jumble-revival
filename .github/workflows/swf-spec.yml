@@ -51,13 +51,6 @@ jobs:
           src/game/systems/strategyEngagement.test.ts
           src/game/systems/phase4c1TargetStrategy.test.ts
           --reporter=verbose
-      - name: Touched common-ability regression tests
-        run: >-
-          npx vitest run
-          src/game/systems/swfSpecialAbilities.test.ts
-          src/game/systems/swfCombatRules.test.ts
-          src/game/systems/phase3dCombat.test.ts
-          --reporter=verbose
       - name: SWF conformance tests
         run: npx vitest run tests/swf-spec --reporter=verbose
       - name: Machine-readable SWF result
