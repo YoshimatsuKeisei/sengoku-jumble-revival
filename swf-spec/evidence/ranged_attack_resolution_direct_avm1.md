@@ -10,6 +10,8 @@ The relevant Sprite2456 AVM1 functions were disassembled with the parent Constan
 
 At `0x2192f8..0x21933b`, an existing `l` bypasses the local scan unless the raw `pp` special cases 14/15 apply. When `l == -1`, the scan computes its cell window from `tk` and the 36-unit grid and takes the first opposing `p < 95` unit encountered. It does not perform a nearest-enemy sort.
 
+The no-`l` window is centered on the predicted next position, not the current cell alone. Direct `scd()` computes `r17 = round((_x + x) / h) - r19` and `r18 = round((_y + y) / h) - r19` with `h = 36`, `r19 = floor(tk / 72)`, and `r14 = floor(tk / 36)`, then scans both offsets `0..r14` inclusive. The reconstruction must therefore convert current world position plus the stored movement vector before deriving the 36-unit scan cells.
+
 At `0x219572..0x21963f`, `kd += kp` and the strict `kd > 200` consumption/`s21` retention decision happens before range, `k`, or target-state checks. With an existing `l`, `0x21963f..0x219738` computes the Euclidean distance only to that latched target. If it is outside `tk`, the already-consumed activation opportunity simply produces no shot; there is no fallback to a different in-range enemy. A successful normal ranged activation calls `atck(distance,self,l)` at `0x21973e..0x219755`.
 
 The `l == -1` scan calls `atck(5,self,candidate)` at `0x2194e9..0x2194fd`. General-command forced callbacks reach the ranged `spl()` branch instead; that branch requires an existing `l` and likewise does not invent a replacement target.
@@ -64,6 +66,7 @@ The conformance implementation therefore requires:
 
 - skill-gauge opportunity consumption before target/range success;
 - no opportunistic fallback when a latched ranged target is merely out of range;
+- no-`l` grid acquisition centered on the predicted `_x+x`, `_y+y` position;
 - no new target invention for general-forced ranged `spl()`;
 - synchronous arrow/gun gameplay resolution at launch;
 - projectile visuals travelling to a launch-time impact point rather than homing to live coordinates;
