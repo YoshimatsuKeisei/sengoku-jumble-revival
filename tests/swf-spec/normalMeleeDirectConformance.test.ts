@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../../src/game/battlefieldLayout";
 import { createSoldier } from "../../src/game/entities/Soldier";
+import { startEngagement, updateAiTargets } from "../../src/game/systems/aiSystem";
 import { applyDamage } from "../../src/game/systems/combatSystem";
-import { moveAiSoldiers } from "../../src/game/systems/movementSystem";
 import {
   getCombatWinProbability,
   updateNormalCombatContests,
@@ -16,6 +16,7 @@ import {
   SWF_HIT_REACTION_MS,
   updateReactions,
 } from "../../src/game/systems/reactionSystem";
+import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 import combatSpec from "../../swf-spec/rules/combat.json";
 
 function unit(
@@ -35,7 +36,7 @@ function sequence(...values: number[]): () => number {
 }
 
 describe("direct raw-SWF normal melee conformance", () => {
-  it("records the confirmed contact, pursuit, and release rules", () => {
+  it("records the confirmed contact, stored-vector pursuit, and release rules", () => {
     const contact = combatSpec.rules.find((rule) => rule.id === "NORMAL_CONTACT_CONTEST");
     expect(contact?.status).toBe("confirmed");
     expect(contact?.expected).toMatchObject({
@@ -46,10 +47,16 @@ describe("direct raw-SWF normal melee conformance", () => {
     });
     const pursuit = combatSpec.rules.find((rule) => rule.id === "NORMAL_PURSUIT_LIFECYCLE");
     expect(pursuit?.expected).toMatchObject({
-      dynamicTargetCoordinates: true,
+      continuousLiveTargetCoordinatesEveryFrame: false,
+      storedTargetCoordinateVariables: ["tx", "ty"],
+      storedVelocityVariables: ["x", "y"],
+      velocityFunction: "vc",
+      targetCoordinatesRefreshedByScdDefault: true,
+      scdRefreshIntervalLogicTicks: 23,
       standaloneMaximumChaseDistance: null,
       closeAxisThresholdExclusive: 20,
       closeSpacingSourceUnits: 24,
+      meleeP30P31SkipDefaultCloseCorrection: true,
       deathReleaseFunction: "led",
       retreatReleaseStates: [93, 94],
     });
@@ -104,34 +111,47 @@ describe("direct raw-SWF normal melee conformance", () => {
     expect(rush2.targetId).toBe(defender2.id);
   });
 
-  it("applies the raw strict <20 overlap correction to an exact 24-source-unit separation", () => {
+  it("skips the default <20 / 24-unit close correction after entering raw melee p30/p31", () => {
     const first = unit("first", "player", 500, 500);
     const second = unit("second", "enemy", 518, 500);
     updateNormalCombatContests([first, second], 0, () => 0);
     const firstSource = battlefieldWorldPointToSource(first);
     const secondSource = battlefieldWorldPointToSource(second);
-    expect(firstSource.x).toBeCloseTo(494);
-    expect(firstSource.y).toBeCloseTo(500);
-    expect(Math.hypot(firstSource.x - secondSource.x, firstSource.y - secondSource.y)).toBeCloseTo(24);
+    expect(firstSource.x).toBeCloseTo(500, 6);
+    expect(secondSource.x).toBeCloseTo(518, 6);
+    expect(Math.abs(firstSource.x - secondSource.x)).toBeCloseTo(18, 6);
   });
 
-  it("pursues the target's live coordinates without an independent maximum chase distance", () => {
-    const pursuer = unit("pursuer", "player", 500, 500);
-    const target = unit("target", "enemy", 1100, 700);
-    pursuer.targetId = target.id;
-    const before = Math.hypot(target.x - pursuer.x, target.y - pursuer.y);
-    moveAiSoldiers([pursuer, target], 0.1, [], 0);
-    const after = Math.hypot(target.x - pursuer.x, target.y - pursuer.y);
-    expect(after).toBeLessThan(before);
-    expect(pursuer.targetId).toBe(target.id);
+  it("keeps sampled tx/ty between scd refreshes, then resamples the target on the next scd", () => {
+    const pursuer = unit("pursuer", "player", 500, 500, "melee");
+    const target = unit("target", "enemy", 1100, 500, "charge");
+    const roster = [pursuer, target];
 
-    const movedTarget = battlefieldSourcePointToWorld({ x: 1500, y: 850 });
+    startEngagement(pursuer, target, 0);
+    const initialTargetX = pursuer.moveTargetX;
+    const initialTargetY = pursuer.moveTargetY;
+    const initialOriginX = pursuer.engagementOriginX;
+    const initialOriginY = pursuer.engagementOriginY;
+    updateAiTargets(roster, 0, () => 0);
+
+    const movedTarget = battlefieldSourcePointToWorld({ x: 1100, y: 800 });
     target.x = movedTarget.x;
     target.y = movedTarget.y;
-    moveAiSoldiers([pursuer, target], 0.1, [], 100);
+
+    updateAiTargets(roster, swfLogicTicksToMs(3), () => 0);
     expect(pursuer.targetId).toBe(target.id);
-    expect(pursuer.velocityX).toBeGreaterThan(0);
-    expect(pursuer.velocityY).toBeGreaterThan(0);
+    expect(pursuer.moveTargetX).toBe(initialTargetX);
+    expect(pursuer.moveTargetY).toBe(initialTargetY);
+    expect(pursuer.engagementOriginX).toBe(initialOriginX);
+    expect(pursuer.engagementOriginY).toBe(initialOriginY);
+
+    updateAiTargets(roster, swfLogicTicksToMs(4), () => 0);
+    expect(pursuer.targetId).toBe(target.id);
+    expect(pursuer.moveTargetX).toBeCloseTo(target.x, 8);
+    expect(pursuer.moveTargetY).toBeCloseTo(target.y, 8);
+    expect(pursuer.moveTargetY).not.toBe(initialTargetY);
+    expect(pursuer.engagementOriginX).toBeCloseTo(pursuer.x, 8);
+    expect(pursuer.engagementOriginY).toBeCloseTo(pursuer.y, 8);
   });
 
   it("finishes fatal k=10 reaction before death and runs led-equivalent pursuer release immediately", () => {

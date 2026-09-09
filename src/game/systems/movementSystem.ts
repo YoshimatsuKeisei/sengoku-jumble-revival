@@ -8,7 +8,7 @@ import { calculateRetreatMoveSpeed } from "./specialAbilitySystem";
 import { findGunTarget, getGunMovementDecision } from "./gunAttackSystem";
 import { findArrowTarget, getArrowMovementDecision } from "./arrowAttackSystem";
 import { clearStaleCombatTarget, isValidCombatTarget } from "./combatTargetSystem";
-import { getArrivalToleranceWorld, isWithinNormalContact, swfLogicTicksToMs } from "./techniqueCombatProfiles";
+import { getArrivalToleranceWorld, swfLogicTicksToMs } from "./techniqueCombatProfiles";
 import {
   getSwfBaseDamageContactSegment,
   getSwfFenceCodeById,
@@ -304,7 +304,10 @@ export function moveAiSoldiers(
     const target = chasingRetreatWindup ? windupTarget : soldier.state === "NORMAL" && !soldier.temporaryOrder && soldier.targetId
       ? soldiers.find((candidate) => candidate.id === soldier.targetId && isValidCombatTarget(soldier, candidate)) ?? null
       : null;
-    if (soldier.state === "NORMAL" && soldier.unitType === "TEPPOU" && !chasingRetreatWindup) {
+    const rawMeleeP30 = soldier.strategy === "melee"
+      && !soldier.rareSpecialAbilities.includes("NINJA_HUNTER")
+      && target !== null;
+    if (soldier.state === "NORMAL" && soldier.unitType === "TEPPOU" && !chasingRetreatWindup && !rawMeleeP30) {
       const gunTarget = target ?? findGunTarget(soldier, soldiers);
       if (gunTarget && getGunMovementDecision(soldier, gunTarget) === "HOLD_IN_RANGE") {
         const gx = gunTarget.x - soldier.x; const gy = gunTarget.y - soldier.y; const length = Math.hypot(gx, gy);
@@ -312,7 +315,7 @@ export function moveAiSoldiers(
         continue;
       }
     }
-    if (soldier.state === "NORMAL" && soldier.unitType === "ARCHER" && !chasingRetreatWindup) {
+    if (soldier.state === "NORMAL" && soldier.unitType === "ARCHER" && !chasingRetreatWindup && !rawMeleeP30) {
       const arrowTarget = target && getArrowMovementDecision(soldier, target) === "HOLD_IN_RANGE"
         ? target : findArrowTarget(soldier, soldiers);
       if (arrowTarget && getArrowMovementDecision(soldier, arrowTarget) === "HOLD_IN_RANGE") {
@@ -321,15 +324,16 @@ export function moveAiSoldiers(
         continue;
       }
     }
-    if (target && !chasingRetreatWindup && isWithinNormalContact(soldier, target)) continue;
     if (!target && (soldier.moveTargetX === null || soldier.moveTargetY === null)) continue;
-    const predictiveDefendDestination = target && soldier.strategy === "defend"
-      && soldier.strategyObjectiveKind === "SEEK_COMBAT"
-      ? { x: soldier.strategyObjectiveX, y: soldier.strategyObjectiveY }
-      : null;
+    // l pursuit does not home on l every render frame. vc() stores a direction
+    // from the latest tx/ty sample and scd()/atck()/other events refresh it.
+    // Keep the special in-windup retreat chase behavior isolated from this normal
+    // idle pursuit path; all ordinary target movement uses the stored vector.
     const destination = target
-      ? predictiveDefendDestination
-        ?? (target.state === "EMERGENCY_RETREAT" ? target : getPreferredApproachPoint(soldier, target, soldiers, obstacles) ?? target)
+      ? (chasingRetreatWindup
+          ? target
+          : getPreferredApproachPoint(soldier, target, soldiers, obstacles)
+            ?? { x: soldier.moveTargetX ?? target.x, y: soldier.moveTargetY ?? target.y })
       : { x: soldier.moveTargetX!, y: soldier.moveTargetY! };
     if (!target && soldier.state === "NORMAL" && soldier.strategyObjectiveKind === "ENEMY_SIDE") {
       const enemyBase = bases.find((base) => base.team !== soldier.team && !base.isDestroyed && base.hp > 0);

@@ -77,15 +77,44 @@
       "category": "strategy",
       "expected": {
         "randomOpponentSlotCount": { "player": 30, "enemy": 29 },
+        "playerDrawExpression": "floor(random*30)+30",
+        "enemyDrawExpression": "floor(random*29)+1",
+        "drawsFixedRosterSlotWithoutFiltering": true,
         "enemySelectionExcludesPlayerControlledM200": true,
+        "selectedSlotEligibleStateExpression": "p < 90",
         "roamX": { "floorRandomMultiplier": 1211, "offset": 334 },
         "roamY": { "floorRandomMultiplier": 409, "offset": 359 },
         "roamArrivalManhattanExclusive": 150,
         "invalidSelectedSlotFallsBackToRoam": true,
+        "invalidSelectedSlotDoesNotRetryAnotherOpponent": true,
         "afterLostTargetReturnsToBaseMeleeSelection": true,
-        "evaluatedEveryBattleLogicFrameInD": true
+        "evaluatedEveryBattleLogicFrameInD": true,
+        "engagedStates": { "player": 30, "enemy": 31 },
+        "engagedVectorContinuouslyHomesEveryFrame": false,
+        "engagedVectorRefreshesViaScdDefault": true,
+        "engagedVectorScdIntervalLogicTicks": 23
       },
-      "evidence": { "reference": "evidence/strategy_actions.md" }
+      "evidence": { "reference": "evidence/normal_melee_ai_reaudit_avm1.md" }
+    },
+    {
+      "id": "STRATEGY_MELEE_NINJA_HUNTER",
+      "status": "confirmed",
+      "category": "strategy",
+      "expected": {
+        "abilityRawCode": "s34",
+        "revivalId": "NINJA_HUNTER",
+        "states": { "player": 40, "enemy": 41 },
+        "initialMeleeTargetStillComesFromRandomRosterSlot": true,
+        "frontmostNinjaRetargetRunsEveryFrame": false,
+        "frontmostNinjaRetargetRunsOnScd": true,
+        "candidateUnitCode": 7,
+        "candidateUsesProjectedFrontOrdering": true,
+        "candidateProjectedYExclusiveMin": 324,
+        "candidateProjectedYExclusiveMax": 841,
+        "enemyScanExcludesPlayerM200": true,
+        "noCandidatePreservesPriorTargetAndVector": true
+      },
+      "evidence": { "reference": "evidence/normal_melee_ai_reaudit_avm1.md" }
     },
     {
       "id": "STRATEGY_WAIT_ANCHOR",
@@ -110,9 +139,11 @@
         "initialCounter": 19,
         "firstTriggerLogicTicks": 4,
         "subsequentIntervalLogicTicks": 23,
-        "meleeBaseAndRoamStatesUsePerLogicFrameD": true
+        "meleeBaseAndRoamStatesUsePerLogicFrameD": true,
+        "meleeP30P31UseScdDefaultPursuitRefresh": true,
+        "meleeP40P41UseExplicitNinjaHunterScdCases": true
       },
-      "evidence": { "reference": "evidence/strategy_actions.md" }
+      "evidence": { "reference": "evidence/normal_melee_ai_reaudit_avm1.md" }
     }
   ]
 }

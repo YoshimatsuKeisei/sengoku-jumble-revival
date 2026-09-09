@@ -10,6 +10,7 @@ import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier, StrategyObjectiveKind, Team } from "../types";
 import { clearApproachRuntime } from "./engagementPositioningSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
+import { getTeamRosterSlots } from "./specialAbilitySystem";
 
 export function distanceBetween(a: Pick<Soldier, "x" | "y">, b: Pick<Soldier, "x" | "y">): number {
   return Math.hypot(a.x - b.x, a.y - b.y);
@@ -30,12 +31,25 @@ export function findNearestEnemyWithinRange(soldier: Soldier, soldiers: Soldier[
   return nearest;
 }
 
+function meleeOpponentSlots(soldier: Soldier, soldiers: readonly Soldier[]): readonly (Soldier | undefined)[] {
+  const opponentTeam: Team = soldier.team === "player" ? "enemy" : "player";
+  const slots = getTeamRosterSlots(soldiers, opponentTeam);
+  // Raw p10 samples enemy m30..m59 (30 slots). Raw p11 samples m1..m29,
+  // deliberately excluding player-controlled m0/m200 from the 29-slot draw.
+  return soldier.team === "player" ? slots : slots.slice(1);
+}
+
 export function findFrontmostEnemyNinja(soldier: Soldier, soldiers: readonly Soldier[]): Soldier | null {
-  const ninjas = soldiers.filter((candidate) => candidate.unitType === "NINJA" && isValidCombatTarget(soldier, candidate));
-  if (ninjas.length === 0) return null;
-  return ninjas.reduce((frontmost, candidate) => soldier.team === "player"
-    ? (candidate.x < frontmost.x ? candidate : frontmost)
-    : (candidate.x > frontmost.x ? candidate : frontmost));
+  let best: { soldier: Soldier; projectedX: number } | null = null;
+  for (const candidate of meleeOpponentSlots(soldier, soldiers)) {
+    if (!candidate || candidate.unitType !== "NINJA") continue;
+    const projected = projectedStrategyCandidate(soldier, candidate);
+    if (!projected) continue;
+    if (!best || (soldier.team === "player" ? projected.x < best.projectedX : projected.x > best.projectedX)) {
+      best = { soldier: candidate, projectedX: projected.x };
+    }
+  }
+  return best?.soldier ?? null;
 }
 
 function targetById(soldier: Soldier, soldiers: Soldier[]): Soldier | null {
@@ -47,8 +61,12 @@ export function startEngagement(soldier: Soldier, target: Soldier, currentTime: 
   if (soldier.targetId !== target.id) clearApproachRuntime(soldier);
   soldier.targetId = target.id;
   soldier.engagementStartedAt = currentTime;
+  // Raw l assignment is accompanied by tx/ty plus vc(). Preserve the position
+  // sampled by that event instead of steering to l's live coordinates every frame.
   soldier.engagementOriginX = soldier.x;
   soldier.engagementOriginY = soldier.y;
+  soldier.moveTargetX = target.x;
+  soldier.moveTargetY = target.y;
 }
 
 export function clearEngagement(soldier: Soldier): void {
@@ -65,6 +83,11 @@ function setStrategyObjective(soldier: Soldier, kind: StrategyObjectiveKind, x: 
   soldier.strategyObjectiveY = y;
   soldier.moveTargetX = x;
   soldier.moveTargetY = y;
+}
+
+function refreshEngagementVector(soldier: Soldier, target: Soldier, currentTime: number): void {
+  startEngagement(soldier, target, currentTime);
+  setStrategyObjective(soldier, "SEEK_COMBAT", target.x, target.y);
 }
 
 function clearInvalidEngagement(soldier: Soldier, soldiers: Soldier[]): Soldier | null {
@@ -144,7 +167,14 @@ function setInitialChargeObjective(soldier: Soldier): void {
   setStrategyObjective(soldier, "ENEMY_SIDE", target.x, target.y);
 }
 
-export function updateChargeAI(soldier: Soldier, soldiers: Soldier[], _currentTime = 0): void {
+export function updateChargeAI(soldier: Soldier, soldiers: Soldier[], currentTime = 0): void {
+  const current = clearInvalidEngagement(soldier, soldiers);
+  if (current) {
+    // p21/p22 are not explicit scd cases, so scd's default refreshes tx/ty
+    // from the current l and recalculates vc only on that cadence.
+    refreshEngagementVector(soldier, current, currentTime);
+    return;
+  }
   const source = battlefieldWorldPointToSource(soldier);
   let target = { x: soldier.team === "player" ? 1600 : 0, y: source.y };
   if (soldier.team === "player") {
@@ -156,7 +186,6 @@ export function updateChargeAI(soldier: Soldier, soldiers: Soldier[], _currentTi
   }
   const world = battlefieldSourcePointToWorld(target);
   setStrategyObjective(soldier, "ENEMY_SIDE", world.x, world.y);
-  clearInvalidEngagement(soldier, soldiers);
   // Raw p1/p2 do not proactively acquire a combat target. Contact/retaliation
   // can still put the soldier into the corresponding pp+20 engagement state.
 }
@@ -206,13 +235,14 @@ function hasReachedRandomMeleeObjective(soldier: Soldier): boolean {
 }
 
 function selectRandomMeleeTarget(soldier: Soldier, soldiers: Soldier[], currentTime: number, random: RandomSource): void {
-  const enemySlots = soldiers.filter((candidate) => candidate.team !== soldier.team && candidate !== soldier
-    && !(soldier.team === "enemy" && candidate.controller === "player"));
-  const selected = enemySlots.length > 0 ? enemySlots[randomIndex(enemySlots.length, random)] : null;
+  const opponentSlots = meleeOpponentSlots(soldier, soldiers);
+  const selected = opponentSlots[randomIndex(opponentSlots.length, random)];
   if (isValidCombatTarget(soldier, selected) && selected.state !== "EMERGENCY_RETREAT") {
     startEngagement(soldier, selected, currentTime);
     setStrategyObjective(soldier, "SEEK_COMBAT", selected.x, selected.y);
   } else {
+    // The raw code does not retry another valid opponent. One bad fixed roster
+    // slot immediately diverts p10/p11 to the p12/p13 random roam branch.
     setRandomMeleeObjective(soldier, random);
   }
 }
@@ -223,25 +253,38 @@ export function updateMeleeAI(
   currentTime = 0,
   random: RandomSource = Math.random,
 ): void {
-  if (soldier.rareSpecialAbilities.includes("NINJA_HUNTER")) {
-    const ninja = findFrontmostEnemyNinja(soldier, soldiers);
-    if (ninja) {
-      startEngagement(soldier, ninja, currentTime);
-      setStrategyObjective(soldier, "SEEK_COMBAT", ninja.x, ninja.y);
-      return;
-    }
-  }
   const current = clearInvalidEngagement(soldier, soldiers);
   if (current) return;
   if (soldier.strategyObjectiveKind === "RANDOM_ROAM" && !hasReachedRandomMeleeObjective(soldier)) return;
-  // Raw p10/p11 immediately samples another opponent slot after a lost target.
-  // It roams only when that selected slot is unusable.
+  // Raw p10/p11 immediately samples another fixed opponent slot after a lost target.
+  // s34 changes the pursuit state to p40/p41 but does not replace that initial
+  // random l until the later scd frontmost-ninja pass.
   selectRandomMeleeTarget(soldier, soldiers, currentTime, random);
 }
 
-export function updateWaitAI(soldier: Soldier, soldiers: Soldier[], _currentTime = 0): void {
+function updateMeleeScdAI(soldier: Soldier, soldiers: Soldier[], currentTime: number): void {
+  const current = clearInvalidEngagement(soldier, soldiers);
+  if (!current) return;
+  if (soldier.rareSpecialAbilities.includes("NINJA_HUNTER")) {
+    // Raw p40/p41 only updates l/tx/ty/vc when the projected frontmost-ninja
+    // candidate register is valid. No candidate means the old vector is retained.
+    const ninja = findFrontmostEnemyNinja(soldier, soldiers);
+    if (ninja) refreshEngagementVector(soldier, ninja, currentTime);
+    return;
+  }
+  // p30/p31 are absent from the explicit scd switch and therefore hit its
+  // default tx=l._x / ty=l._y / vc() block every 23 logic ticks.
+  refreshEngagementVector(soldier, current, currentTime);
+}
+
+export function updateWaitAI(soldier: Soldier, soldiers: Soldier[], currentTime = 0): void {
+  const current = clearInvalidEngagement(soldier, soldiers);
+  if (current) {
+    // Retaliation p34/p35 also falls through scd's default pursuit refresh.
+    refreshEngagementVector(soldier, current, currentTime);
+    return;
+  }
   setStrategyObjective(soldier, "ANCHOR", soldier.anchorX, soldier.anchorY);
-  clearInvalidEngagement(soldier, soldiers);
   // Raw p14/p15 never proactively assign persistent l. Ranged wait units can
   // still fire through the separate local tk/atck scan, and retaliation may pursue.
 }
@@ -287,11 +330,12 @@ function initializeStrategy(soldier: Soldier): void {
 
 function runScdStrategyPass(soldiers: Soldier[], currentTime: number): void {
   for (const soldier of soldiers) {
-    if (!canRunNormalStrategy(soldier, currentTime) || soldier.strategy === "melee") continue;
+    if (!canRunNormalStrategy(soldier, currentTime)) continue;
     switch (soldier.strategy) {
       case "charge": updateChargeAI(soldier, soldiers, currentTime); break;
       case "defend": updateDefendAI(soldier, soldiers, currentTime); break;
       case "intercept": updateInterceptAI(soldier, soldiers, currentTime); break;
+      case "melee": updateMeleeScdAI(soldier, soldiers, currentTime); break;
       case "wait": updateWaitAI(soldier, soldiers, currentTime); break;
     }
   }

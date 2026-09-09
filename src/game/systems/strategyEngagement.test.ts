@@ -102,15 +102,16 @@ describe("raw-SWF strategy objective and temporary engagement lifecycle", () => 
     expect(objective.y).toBeCloseTo(570, 6);
   });
 
-  it("melee selects by random enemy slot rather than nearest", () => {
+  it("melee selects by fixed random enemy roster slot rather than nearest distance", () => {
     const unit = sourceUnit("m", "player", 500, 400, "melee");
     const nearest = sourceUnit("near", "enemy", 510, 400);
     const farther = sourceUnit("far", "enemy", 900, 400);
-    updateMeleeAI(unit, [unit, nearest, farther], 0, () => 0.75);
+    // 0.04 * 30 -> fixed slot 1, which is the farther unit.
+    updateMeleeAI(unit, [unit, nearest, farther], 0, () => 0.04);
     expect(unit.targetId).toBe(farther.id);
   });
 
-  it("melee moves to a raw integer random point after an invalid slot and reselects after arrival", () => {
+  it("melee moves to a raw integer random point after an invalid slot and reselects a fixed slot after arrival", () => {
     const unit = sourceUnit("m", "player", 500, 400, "melee");
     const dead = sourceUnit("dead", "enemy", 600, 400);
     const valid = sourceUnit("valid", "enemy", 700, 400);
@@ -120,7 +121,7 @@ describe("raw-SWF strategy objective and temporary engagement lifecycle", () => 
     expect(unit.strategyObjectiveKind).toBe("RANDOM_ROAM");
     unit.x = unit.strategyObjectiveX;
     unit.y = unit.strategyObjectiveY;
-    updateMeleeAI(unit, [unit, dead, valid], 1, () => 0.75);
+    updateMeleeAI(unit, [unit, dead, valid], 1, () => 0.04);
     expect(unit.targetId).toBe(valid.id);
   });
 

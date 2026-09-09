@@ -122,15 +122,41 @@ describe("SWF conformance: direct strategy state machine", () => {
     expectSourceTarget(interceptor, 810, 500);
   });
 
-  it("returns 乱戦 directly to random opponent selection after losing a target instead of forcing a roam first", () => {
+  it("records fixed-slot melee selection and the p30/p31 scd pursuit cadence", () => {
+    const melee = strategySpec.rules.find((rule) => rule.id === "STRATEGY_MELEE_RANDOM");
+    expect(melee?.status).toBe("confirmed");
+    expect(melee?.expected).toMatchObject({
+      randomOpponentSlotCount: { player: 30, enemy: 29 },
+      drawsFixedRosterSlotWithoutFiltering: true,
+      invalidSelectedSlotDoesNotRetryAnotherOpponent: true,
+      engagedStates: { player: 30, enemy: 31 },
+      engagedVectorContinuouslyHomesEveryFrame: false,
+      engagedVectorRefreshesViaScdDefault: true,
+      engagedVectorScdIntervalLogicTicks: 23,
+    });
+  });
+
+  it("returns 乱戦 directly to fixed-slot selection after losing a target instead of forcing a roam first", () => {
     const melee = unit("melee", "player", 500, 500, "melee");
     const dead = unit("dead", "enemy", 600, 500, "charge");
     const valid = unit("valid", "enemy", 700, 500, "charge");
     dead.isDead = true;
     melee.targetId = dead.id;
-    updateMeleeAI(melee, [melee, dead, valid], 0, () => 0.75);
+    // 0.04 * 30 -> slot 1, the valid unit.
+    updateMeleeAI(melee, [melee, dead, valid], 0, () => 0.04);
     expect(melee.targetId).toBe(valid.id);
     expect(melee.strategyObjectiveKind).toBe("SEEK_COMBAT");
+  });
+
+  it("does not compact or retry fixed melee slots when the sampled roster slot is empty", () => {
+    const melee = unit("melee-gap", "player", 500, 500, "melee");
+    const first = unit("first", "enemy", 600, 500, "charge");
+    const second = unit("second", "enemy", 700, 500, "charge");
+    const draws = [0.9, 0.5, 0.25];
+    updateMeleeAI(melee, [melee, first, second], 0, () => draws.shift() ?? 0);
+    expect(melee.targetId).toBeNull();
+    expect(melee.strategyObjectiveKind).toBe("RANDOM_ROAM");
+    expectSourceTarget(melee, 939, 461);
   });
 
   it("uses integer raw roam coordinates and excludes the player-controlled m200 slot from enemy 乱戦 random selection", () => {
@@ -147,6 +173,36 @@ describe("SWF conformance: direct strategy state machine", () => {
     const playerAi = unit("m1", "player", 600, 500, "charge");
     updateMeleeAI(enemyMelee, [enemyMelee, protagonist, playerAi], 0, () => 0);
     expect(enemyMelee.targetId).toBe(playerAi.id);
+  });
+
+  it("keeps s34/NINJA_HUNTER on its initial random target until the scd p40/p41 retarget pass", () => {
+    const hunterRule = strategySpec.rules.find((rule) => rule.id === "STRATEGY_MELEE_NINJA_HUNTER");
+    expect(hunterRule?.status).toBe("confirmed");
+    expect(hunterRule?.expected).toMatchObject({
+      states: { player: 40, enemy: 41 },
+      initialMeleeTargetStillComesFromRandomRosterSlot: true,
+      frontmostNinjaRetargetRunsEveryFrame: false,
+      frontmostNinjaRetargetRunsOnScd: true,
+      noCandidatePreservesPriorTargetAndVector: true,
+    });
+
+    const hunter = unit("hunter", "player", 500, 500, "melee");
+    hunter.rareSpecialAbilities = ["NINJA_HUNTER"];
+    const sampled = unit("sampled", "enemy", 900, 500, "charge");
+    const ninja = unit("ninja", "enemy", 800, 500, "charge");
+    ninja.unitType = "NINJA";
+    const roster = [hunter, sampled, ninja];
+
+    updateAiTargets(roster, 0, () => 0);
+    updateAiTargets(roster, swfLogicTicksToMs(1), () => 0);
+    expect(hunter.targetId).toBe(sampled.id);
+
+    updateAiTargets(roster, swfLogicTicksToMs(3), () => 0);
+    expect(hunter.targetId).toBe(sampled.id);
+
+    updateAiTargets(roster, swfLogicTicksToMs(4), () => 0);
+    expect(hunter.targetId).toBe(ninja.id);
+    expectSourceTarget(hunter, 800, 500);
   });
 
   it("keeps 待機 anchored without proactive pursuit acquisition", () => {
@@ -166,6 +222,8 @@ describe("SWF conformance: direct strategy state machine", () => {
       subsequentIntervalLogicTicks: 23,
       sharedWithCombatGaugeScd: true,
       meleeBaseAndRoamStatesUsePerLogicFrameD: true,
+      meleeP30P31UseScdDefaultPursuitRefresh: true,
+      meleeP40P41UseExplicitNinjaHunterScdCases: true,
     });
 
     const defender = unit("scheduled-defender", "player", 300, 500, "defend");
