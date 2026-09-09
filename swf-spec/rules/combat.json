@@ -69,6 +69,8 @@
         "unlatchedSentinel": -1,
         "unlatchedSearchUsesGridScan": true,
         "gridCellSourceUnits": 36,
+        "unlatchedScanOriginExpression": "round((_x + x) / 36), round((_y + y) / 36)",
+        "unlatchedScanUsesPredictedNextPosition": true,
         "unlatchedSearchUsesNearestSort": false,
         "generalForcedSplRequiresExistingLatchedTarget": true,
         "generalForcedSplMayInventTarget": false
