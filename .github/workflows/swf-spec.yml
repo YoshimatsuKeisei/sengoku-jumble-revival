@@ -6,6 +6,7 @@ on:
     branches:
       - debug/swf-conformance
       - debug/current-20260907-swf-integrated
+      - debug/current-20260907-swf-integrated-ranged-stage
     paths:
       - "src/**"
       - "tests/swf-spec/**"
@@ -49,6 +50,15 @@ jobs:
           npx vitest run
           src/game/systems/strategyEngagement.test.ts
           src/game/systems/phase4c1TargetStrategy.test.ts
+          --reporter=verbose
+      - name: Ranged regression tests
+        run: >-
+          npx vitest run
+          src/game/systems/phase4aGunLoadout.test.ts
+          src/game/systems/phase4a1GunBehavior.test.ts
+          src/game/systems/phase4bBombardment.test.ts
+          src/game/systems/phase4d1Archer.test.ts
+          src/game/systems/phase4d2ArcherArea.test.ts
           --reporter=verbose
       - name: SWF conformance tests
         run: npx vitest run tests/swf-spec --reporter=verbose
