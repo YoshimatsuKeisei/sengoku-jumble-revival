@@ -1,5 +1,5 @@
 import { SPECIAL_ABILITY_CONFIG } from "../config";
-import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
+import { battlefieldSourceDistanceToWorldX, battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import type { BattleBase, Soldier, Team } from "../types";
 import type { RandomSource } from "../stats/soldierStats";
 import { clearEngagement } from "./aiSystem";
@@ -127,14 +127,15 @@ export function isSwfTreatmentHolderRuntimeEligible(candidate: Soldier): boolean
 
 /**
  * Raw player scan requires healerX - 30 < patientX; enemy is mirrored as
- * healerX + 30 > patientX. These are strict source-coordinate comparisons.
+ * healerX + 30 > patientX. Because world X is an affine transform of raw SWF X,
+ * compare in world space so an exact 30-unit boundary is not perturbed by a
+ * world -> SWF floating-point round trip.
  */
 export function isSwfTreatmentDirectionEligible(patient: Soldier, candidate: Soldier): boolean {
-  const patientSource = battlefieldWorldPointToSource(patient);
-  const candidateSource = battlefieldWorldPointToSource(candidate);
+  const toleranceWorld = battlefieldSourceDistanceToWorldX(SWF_TREATMENT_FORWARD_TOLERANCE_UNITS);
   return patient.team === "player"
-    ? candidateSource.x - SWF_TREATMENT_FORWARD_TOLERANCE_UNITS < patientSource.x
-    : candidateSource.x + SWF_TREATMENT_FORWARD_TOLERANCE_UNITS > patientSource.x;
+    ? candidate.x - toleranceWorld < patient.x
+    : candidate.x + toleranceWorld > patient.x;
 }
 
 function isRecoveryEntryCommitted(soldier: Soldier): boolean {
