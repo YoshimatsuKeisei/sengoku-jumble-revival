@@ -68,7 +68,7 @@ describe("SWF special ability hooks", () => {
     expect(getBaseAttackBounceDistance(defenders)).toBeGreaterThan(getBaseAttackBounceDistance([]));
   });
 
-  it("applies 将力, 忍狩, then 討取 after the prior components", () => {
+  it("applies basic, 膂力, 討取 threshold, then 忍狩 in raw atck order", () => {
     const attacker = unit("attacker"); const target = unit("target", "enemy");
     attacker.specialAbilities = ["FINISHER"];
     target.hp = 6;
@@ -78,6 +78,9 @@ describe("SWF special ability hooks", () => {
     attacker.rareSpecialAbilities = ["NINJA_HUNTER"];
     target.unitType = "NINJA";
     expect(calculateSuccessfulAttackDamage(attacker, target)).toBe(4);
+    attacker.specialAbilities = ["FINISHER"];
+    target.hp = 7;
+    expect(calculateSuccessfulAttackDamage(attacker, target)).toBe(2);
     expect(COMMON_SPECIAL_ABILITY_LABELS.MIGHT).toBe("膂力");
   });
 
@@ -88,7 +91,7 @@ describe("SWF special ability hooks", () => {
     defender.specialAbilities = ["HORO"];
     expect(isDamageGuarded(defender, "SPECIAL_ATTACK", () => 0)).toBe(false);
     defender.specialAbilities = ["FORESIGHT", "HORO"];
-    expect(isDamageGuarded(defender, "SPECIAL_ATTACK", () => 0.69)).toBe(false);
+    expect(isDamageGuarded(defender, "SPECIAL_ATTACK", () => 0.69)).toBe(true);
     expect(isDamageGuarded(defender, "ARROW_ATTACK", () => 0.69)).toBe(true);
 
     const normalGuard = unit("normal-guard", "enemy", 510, 450);
