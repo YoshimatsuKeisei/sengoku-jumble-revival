@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { battlefieldSourcePointToWorld } from "../battlefieldLayout";
 import { ARCHER_CONFIG } from "../config";
 import { createSoldier } from "../entities/Soldier";
 import type { SoldierLoadout, UnitTechnique } from "../types";
@@ -17,6 +18,10 @@ function impact(technique: "ARCHER_FIRE_ARROW" | "ARCHER_HOROKU", targets: Retur
   const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, loadout(technique, abilities));
   const launch = executeArrowAttack(attacker, targets[0], 0, () => 1, false, [attacker, ...targets])!;
   return { attacker, launch, result: updateArrowProjectile(launch.projectile, [attacker, ...targets], 10_000, 10_000, () => 1) };
+}
+function sourceUnit(id: string, team: "player" | "enemy", sourceX: number, sourceY = 500) {
+  const point = battlefieldSourcePointToWorld({ x: sourceX, y: sourceY });
+  return createSoldier(id, team, "ai", point.x, point.y);
 }
 
 describe("Phase 4D-2 fire arrow, horoku and katon", () => {
@@ -50,10 +55,12 @@ describe("Phase 4D-2 fire arrow, horoku and katon", () => {
     expect(fire.launch.projectile.flameVictimIds).toEqual(["p"]);
     expect(fire.result.impact?.flameVictimIds).toEqual(["p"]);
 
-    const hp = [createSoldier("hp", "enemy", "ai", 60, 0), createSoldier("hs", "enemy", "ai", 70, 0)];
-    const horoku = impact("ARCHER_HOROKU", hp);
+    const attacker = sourceUnit("ha", "player", 640);
+    attacker.unitType = "ARCHER"; attacker.technique = "ARCHER_HOROKU";
+    const hp = [sourceUnit("hp", "enemy", 700), sourceUnit("hs", "enemy", 720)];
+    const launch = executeArrowAttack(attacker, hp[0], 0, () => 1, false, [attacker, ...hp])!;
     expect(hp[0].hp).toBe(hp[0].maxHp - 3); expect(hp[1].hp).toBe(hp[1].maxHp - 1);
-    expect(horoku.launch.projectile.brownSmokeVictimIds).toEqual(expect.arrayContaining(["hp", "hs"]));
+    expect(launch.projectile.brownSmokeVictimIds).toEqual(expect.arrayContaining(["hp", "hs"]));
   });
   it("keeps fire-arrow fire when the later direct arrow is guarded", () => {
     const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, loadout("ARCHER_FIRE_ARROW"));
@@ -65,10 +72,11 @@ describe("Phase 4D-2 fire arrow, horoku and katon", () => {
     expect(launch.projectile.flameVictimIds).toEqual(["p"]);
   });
   it("does not run independent defense or KATON checks for horoku splash victims", () => {
-    const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, loadout("ARCHER_HOROKU"));
-    const primary = createSoldier("p", "enemy", "ai", 60, 0);
-    const guarded = createSoldier("g", "enemy", "ai", 65, 0); guarded.stats.defense = 200; guarded.specialAbilities = ["FORESIGHT"];
-    const katonSplash = createSoldier("k", "enemy", "ai", 70, 0); katonSplash.rareSpecialAbilities = ["KATON"];
+    const attacker = sourceUnit("a", "player", 640);
+    attacker.unitType = "ARCHER"; attacker.technique = "ARCHER_HOROKU";
+    const primary = sourceUnit("p", "enemy", 700);
+    const guarded = sourceUnit("g", "enemy", 720); guarded.stats.defense = 200; guarded.specialAbilities = ["FORESIGHT"];
+    const katonSplash = sourceUnit("k", "enemy", 700, 536); katonSplash.rareSpecialAbilities = ["KATON"];
     const launch = executeArrowAttack(attacker, primary, 0, () => 1, false, [attacker, primary, guarded, katonSplash])!;
     expect(primary.hp).toBe(primary.maxHp - 3);
     expect(guarded.hp).toBe(guarded.maxHp - 1); expect(guarded.combatFeedbackMarker).toBeNull();
