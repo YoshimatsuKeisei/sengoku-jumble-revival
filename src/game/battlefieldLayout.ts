@@ -104,7 +104,11 @@ export function battlefieldSourceDistanceToWorldY(distance: number): number {
   return distance * BATTLEFIELD_BITMAP_TO_WORLD.scaleY;
 }
 
-// Coordinates confirmed directly from raw Sprite2456 strategy routines.
+// Direct-AVM1 strategy constants. This probe intentionally applies the same
+// zero-offset point conversion used by the last visually stable e878 build so
+// we can isolate whether 069b810's global point-space reinterpretation caused
+// the battle-flow regression. Explicit SWF transforms remain available for the
+// headquarters/recovery collision path.
 export const BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY = {
   chargeDestinationX: { player: 1600, enemy: 0 },
   defendFrontLineX: { player: 434, enemy: 1445 },
@@ -115,23 +119,18 @@ export const BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY = {
 
 export const BATTLEFIELD_STRATEGY_WORLD_GEOMETRY = {
   chargeDestinationX: {
-    player: battlefieldSwfPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.chargeDestinationX.player, y: 0 }).x,
-    enemy: battlefieldSwfPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.chargeDestinationX.enemy, y: 0 }).x,
+    player: battlefieldBitmapPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.chargeDestinationX.player, y: 0 }).x,
+    enemy: battlefieldBitmapPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.chargeDestinationX.enemy, y: 0 }).x,
   },
   defendFrontLineX: {
-    player: battlefieldSwfPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.defendFrontLineX.player, y: 0 }).x,
-    enemy: battlefieldSwfPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.defendFrontLineX.enemy, y: 0 }).x,
+    player: battlefieldBitmapPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.defendFrontLineX.player, y: 0 }).x,
+    enemy: battlefieldBitmapPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.defendFrontLineX.enemy, y: 0 }).x,
   },
   interceptFrontLineX: {
-    player: battlefieldSwfPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.interceptFrontLineX.player, y: 0 }).x,
-    enemy: battlefieldSwfPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.interceptFrontLineX.enemy, y: 0 }).x,
+    player: battlefieldBitmapPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.interceptFrontLineX.player, y: 0 }).x,
+    enemy: battlefieldBitmapPointToWorld({ x: BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.interceptFrontLineX.enemy, y: 0 }).x,
   },
-  meleeRoamRect: (() => {
-    const raw = BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.meleeRoamRect;
-    const topLeft = battlefieldSwfPointToWorld({ x: raw.x, y: raw.y });
-    const bottomRight = battlefieldSwfPointToWorld({ x: raw.x + raw.width, y: raw.y + raw.height });
-    return { x: topLeft.x, y: topLeft.y, width: bottomRight.x - topLeft.x, height: bottomRight.y - topLeft.y };
-  })(),
+  meleeRoamRect: battlefieldBitmapRectToWorld(BATTLEFIELD_STRATEGY_SOURCE_GEOMETRY.meleeRoamRect),
 } as const;
 
 // Bitmap-local crop bounds recorded by assets/bases/base_reconstruction_manifest.json.
