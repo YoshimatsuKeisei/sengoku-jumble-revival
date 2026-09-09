@@ -29,6 +29,8 @@ describe("direct raw-SWF ranged attack resolution", () => {
       existingTargetRangeFailureFallsBackToAnotherEnemy: false,
       gaugeConsumedBeforeRangeFailure: true,
       unlatchedSearchUsesGridScan: true,
+      unlatchedScanOriginExpression: "round((_x + x) / 36), round((_y + y) / 36)",
+      unlatchedScanUsesPredictedNextPosition: true,
       unlatchedSearchUsesNearestSort: false,
       generalForcedSplRequiresExistingLatchedTarget: true,
       generalForcedSplMayInventTarget: false,
@@ -73,6 +75,20 @@ describe("direct raw-SWF ranged attack resolution", () => {
     archer.targetId = null;
     expect(findArrowTarget(archer, [archer, near, farther])?.id).toBe("near");
     expect(findArrowTarget(archer, [archer, near, farther], false)).toBeNull();
+  });
+
+  it("centers the no-l scan on raw _x+x rather than the current source cell", () => {
+    const archer = ranged("moving-archer", "ARCHER_ARROW", 500);
+    archer.targetId = null;
+    const current = battlefieldSourcePointToWorld({ x: 500, y: 500 });
+    const predicted = battlefieldSourcePointToWorld({ x: 536, y: 500 });
+    archer.velocityX = predicted.x - current.x;
+    archer.velocityY = predicted.y - current.y;
+    const predictedEdge = unit("predicted-edge", "enemy", 612);
+
+    // rangeCells=3: current cell 14 would scan X 13..16, while predicted cell
+    // 15 scans X 14..17. Source X=612 is cell 17 and is found only by _x+x.
+    expect(findArrowTarget(archer, [archer, predictedEdge])?.id).toBe(predictedEdge.id);
   });
 
   it("commits arrow damage at launch and keeps the visual projectile on the launch-time impact point", () => {
