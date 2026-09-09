@@ -157,7 +157,7 @@ export const SPECIAL_ABILITY_CONFIG = {
 } as const;
 
 export const PLAYER_DEBUG_CONFIG = {
-  playerAllCommonAbilities: true,
+  playerAllCommonAbilities: false,
 } as const;
 
 export const SOLDIER_INSPECTOR_CONFIG = { holdMs: 400 } as const;
