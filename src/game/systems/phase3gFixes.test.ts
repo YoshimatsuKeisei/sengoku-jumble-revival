@@ -234,14 +234,15 @@ describe("Phase 3G retreat pursuit", () => {
     expect(player.x).toBe(100);
   });
 
-  it("allows only the pursuer to attack from a retreat contest", () => {
+  it("allows only the pursuer to resolve a synchronous mode-0 attack from a retreat contest", () => {
     const pursuer = createSoldier("p", "player", "ai", 100, 100, "melee", stats(3, 100));
     const retreat = createSoldier("r", "enemy", "ai", 120, 100, "melee", stats(3, 0));
     retreat.state = "EMERGENCY_RETREAT";
     pursuer.targetId = retreat.id;
     retreat.targetId = pursuer.id;
     updateNormalCombatContests([pursuer, retreat], 0, () => 0);
-    expect(pursuer.combatActionState).toBe("ATTACK_WINDUP");
+    expect(pursuer.combatActionState).toBe("ATTACK_RECOVERY");
+    expect(pursuer.attackHitApplied).toBe(true);
     expect(retreat.combatActionState).toBe("IDLE");
   });
 
