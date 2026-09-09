@@ -1,19 +1,23 @@
-import { ASHIGARU_CONFIG, BATTLEFIELD_CONFIG, DEFENSE_CONFIG, SOLDIER_RADIUS, SPECIAL_ATTACK_CONFIG } from "../config";
+import { ASHIGARU_CONFIG, BATTLEFIELD_CONFIG, SOLDIER_RADIUS, SPECIAL_ATTACK_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, BattleObstacle, Soldier, Team, UnitTechnique } from "../types";
 import { getBaseRect } from "./battlefieldGeometry";
-import { applyDamage } from "./combatSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
-import { isDamageGuarded } from "./defenseSystem";
-import { startHitReaction } from "./reactionSystem";
-import { calculateSuccessfulAttackDamage } from "./specialAbilitySystem";
 import { beginTechniqueAction } from "./combatGaugeSystem";
 import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
+import {
+  findRawSpearStrikeTargets,
+  findRawSpecialGridTargets,
+  resolveRawSpecialAtck,
+  startRawSpecialSelfMotion,
+} from "./rawSpecialTechniqueSystem";
 
 export const SPEAR_STRIKE_REACH = ASHIGARU_CONFIG.spearStrikeReach;
 export const SPEAR_STRIKE_HALF_WIDTH = ASHIGARU_CONFIG.spearStrikeHalfWidth;
+/** @deprecated Raw sgk()/atck(ss=1) uses the common 10-unit response. */
 export const SPEAR_STRIKE_KNOCKBACK = SPECIAL_ATTACK_CONFIG.knockbackDistance * ASHIGARU_CONFIG.spearStrikeKnockbackRatio;
 export const SPEAR_TECHNIQUE_RADIUS = getTechniqueAreaWorld("ASHIGARU_SPEAR_TECHNIQUE").width / 2;
+/** @deprecated Raw bsl()/atck(ss=1) uses the common 10-unit response. */
 export const SPEAR_TECHNIQUE_KNOCKBACK = SPECIAL_ATTACK_CONFIG.knockbackDistance;
 export interface SpearAttackEvent { kind: "SPEAR"; attackerId: string; team: Team; x: number; y: number;
   technique: "ASHIGARU_SPEAR_STRIKE" | "ASHIGARU_SPEAR_TECHNIQUE"; facingX: number; facingY: number; targetIds: string[]; isWave: boolean }
@@ -29,9 +33,11 @@ function normalizedFacing(attacker: Soldier): { x: number; y: number } {
 export function isInsideSpearStrike(attacker: Soldier, target: Soldier): boolean {
   return isPointInTechniqueRectangle("ASHIGARU_SPEAR_STRIKE", getTechniqueAreaCenter("ASHIGARU_SPEAR_STRIKE", attacker), target);
 }
+/** Legacy geometry helper retained for UI/debug callers; gameplay uses raw sgk f[][] selection. */
 export function findSpearStrikeTargets(attacker: Soldier, soldiers: readonly Soldier[]): Soldier[] {
   return soldiers.filter((target) => isValidCombatTarget(attacker, target) && target.state !== "REJOINING" && isInsideSpearStrike(attacker, target));
 }
+/** Legacy area helper retained for compatibility; gameplay uses raw predicted 3x3 bsl scan. */
 export function findSpearTechniqueTargets(attacker: Soldier, soldiers: readonly Soldier[]): Soldier[] {
   return soldiers.filter((target) => isValidCombatTarget(attacker, target) && target.state !== "REJOINING"
     && isPointInTechniqueRectangle("ASHIGARU_SPEAR_TECHNIQUE", getTechniqueAreaCenter("ASHIGARU_SPEAR_TECHNIQUE", attacker), target));
@@ -49,42 +55,37 @@ export function calculateSafeSpearKnockbackDistance(target: Soldier, directionX:
     safe = distance;
   } return safe;
 }
-function aimAtPreferredTarget(attacker: Soldier, soldiers: readonly Soldier[], radius: number): void {
-  const candidates = soldiers.filter((target) => isValidCombatTarget(attacker, target) && target.state !== "REJOINING"
-    && Math.hypot(target.x - attacker.x, target.y - attacker.y) <= radius);
+function aimAtPreferredTarget(attacker: Soldier, soldiers: readonly Soldier[]): void {
+  const candidates = soldiers.filter((target) => isValidCombatTarget(attacker, target) && target.state !== "REJOINING");
   const target = candidates.find((candidate) => candidate.id === attacker.targetId)
     ?? candidates.sort((a, b) => Math.hypot(a.x - attacker.x, a.y - attacker.y) - Math.hypot(b.x - attacker.x, b.y - attacker.y))[0];
   if (!target) return; const dx = target.x - attacker.x; const dy = target.y - attacker.y; const length = Math.hypot(dx, dy) || 1;
   attacker.facingX = dx / length; attacker.facingY = dy / length; attacker.aimX = attacker.facingX; attacker.aimY = attacker.facingY;
 }
-export function executeSpearAttack(attacker: Soldier, soldiers: Soldier[], obstacles: readonly BattleObstacle[], bases: readonly BattleBase[],
+export function executeSpearAttack(attacker: Soldier, soldiers: Soldier[], _obstacles: readonly BattleObstacle[], _bases: readonly BattleBase[],
   currentTime: number, random: RandomSource = Math.random, consumeCooldown = true, isWave = false): SpearAttackEvent | null {
   if (!isSpearTechnique(attacker.technique)) return null;
   if (consumeCooldown && !beginTechniqueAction(attacker, currentTime, random, true)) return null;
+
   if (!isWave) {
-    aimAtPreferredTarget(attacker, soldiers, Number.POSITIVE_INFINITY);
+    aimAtPreferredTarget(attacker, soldiers);
+    const initialUnits = attacker.technique === "ASHIGARU_SPEAR_STRIKE" ? 14 : 20;
+    const kTicks = attacker.technique === "ASHIGARU_SPEAR_STRIKE" ? 10 : 16;
+    startRawSpecialSelfMotion(attacker, currentTime, initialUnits, kTicks);
     const facing = normalizedFacing(attacker);
-    const requested = getTechniqueSelfAdvanceWorld(attacker.technique);
-    const safe = calculateSafeSpearKnockbackDistance(attacker, facing.x, facing.y, requested, soldiers, obstacles, bases);
-    attacker.x += facing.x * safe; attacker.y += facing.y * safe;
+    return { kind: "SPEAR", attackerId: attacker.id, team: attacker.team, x: attacker.x, y: attacker.y,
+      technique: attacker.technique, facingX: facing.x, facingY: facing.y, targetIds: [], isWave: false };
   }
-  const targets = attacker.technique === "ASHIGARU_SPEAR_STRIKE" ? findSpearStrikeTargets(attacker, soldiers) : findSpearTechniqueTargets(attacker, soldiers);
-  const facing = normalizedFacing(attacker); const hitIds: string[] = [];
+
+  const targets = attacker.technique === "ASHIGARU_SPEAR_STRIKE"
+    ? findRawSpearStrikeTargets(attacker, soldiers)
+    : findRawSpecialGridTargets(attacker, soldiers, 3, 95);
+  const hitIds: string[] = [];
   for (const target of targets) {
-    if (isDamageGuarded(target, "SPECIAL_ATTACK", random)) {
-      target.combatFeedbackMarker = "S"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; continue;
-    }
-    const damage = calculateSuccessfulAttackDamage(attacker, target); applyDamage(target, damage, attacker);
-    target.combatFeedbackMarker = "H"; target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs; hitIds.push(target.id);
-    if (target.isDead) continue;
-    let dx = facing.x; let dy = facing.y;
-    if (attacker.technique === "ASHIGARU_SPEAR_TECHNIQUE") {
-      dx = target.x - attacker.x; dy = target.y - attacker.y; const length = Math.hypot(dx, dy) || 1; dx /= length; dy /= length;
-    }
-    const requested = attacker.technique === "ASHIGARU_SPEAR_STRIKE" ? SPEAR_STRIKE_KNOCKBACK : SPEAR_TECHNIQUE_KNOCKBACK;
-    const safe = calculateSafeSpearKnockbackDistance(target, dx, dy, requested, soldiers, obstacles, bases);
-    startHitReaction(target, attacker, currentTime, safe, random, "SPECIAL_ATTACK"); target.knockbackDirectionX = dx; target.knockbackDirectionY = dy;
+    const result = resolveRawSpecialAtck(attacker, target, currentTime, random);
+    if (!result.defended) hitIds.push(target.id);
   }
+  const facing = normalizedFacing(attacker);
   return { kind: "SPEAR", attackerId: attacker.id, team: attacker.team, x: attacker.x, y: attacker.y,
-    technique: attacker.technique, facingX: facing.x, facingY: facing.y, targetIds: hitIds, isWave };
+    technique: attacker.technique, facingX: facing.x, facingY: facing.y, targetIds: hitIds, isWave: true };
 }
