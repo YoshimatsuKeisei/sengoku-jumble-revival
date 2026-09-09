@@ -34,7 +34,12 @@ export function findRawAiRangedTarget(
 
   const rangeCells = getTechniqueProfile(attacker.technique).rangeCells;
   if (rangeCells === null) return null;
-  const origin = battlefieldWorldPointToSwf(attacker);
+  // Direct scd() centers the no-l scan on the predicted next position:
+  // round((_x + x) / 36), round((_y + y) / 36), not the current cell alone.
+  const origin = battlefieldWorldPointToSwf({
+    x: attacker.x + attacker.velocityX,
+    y: attacker.y + attacker.velocityY,
+  });
   const startCellX = Math.round(origin.x / SWF_GRID_CELL_SIZE) - Math.floor(rangeCells / 2);
   const startCellY = Math.round(origin.y / SWF_GRID_CELL_SIZE) - Math.floor(rangeCells / 2);
   // Direct scd(): r14=floor(tk/36), then both nested loops run 0..r14 inclusive.
