@@ -1,0 +1,29 @@
+{
+  "rules": [
+    {
+      "id": "COMMON_ABILITY_MERIT_PLAYER_SIDE_ONLY",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": {
+        "baseAttackRsj": {
+          "player": "attempted base-hit value: 1 normally, 2 with s8 SIEGE",
+          "enemy": 0
+        },
+        "supportPulseRsk": {
+          "player": "1 per healed target even when s20 restores 2 HP",
+          "enemy": 0
+        },
+        "treatmentRsk": {
+          "player": "actual treatment HP restored after clamp",
+          "enemy": 0
+        },
+        "fieldHospitalRsk": {
+          "player": "actual s16 FIELD_HOSPITAL HP restored after clamp",
+          "enemy": 0
+        },
+        "healingEffectsRemainMirrored": true
+      },
+      "evidence": { "reference": "evidence/common_special_ability_merit_side_avm1.md" }
+    }
+  ]
+}
