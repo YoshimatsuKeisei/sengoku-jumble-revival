@@ -46,7 +46,7 @@ describe("Phase 4A loadouts and gun specials", () => {
     const loadout = makePlayerDebugPreset("TEPPOU_SNIPING");
     expect(createArmy("player", () => 0, { playerLoadout: loadout })[0].technique).toBe("TEPPOU_SNIPING");
   });
-  it("uses a longer sniping range and selects a sticky or nearest target", () => {
+  it("uses a longer sniping range and keeps a valid latched target", () => {
     expect(GUN_CONFIG.shootingRange).toBeLessThan(GUN_CONFIG.snipingRange);
     expect(getGunRange("PROTOTYPE_AREA")).toBeNull(); expect(isGunTechnique("TEPPOU_SHOOTING")).toBe(true);
     const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, shooting);
@@ -62,16 +62,17 @@ describe("Phase 4A loadouts and gun specials", () => {
     expect(updateSpecialAttacks([attacker, far], [], createBattleBases(), 100, true)).toEqual([]);
     expect(attacker.specialReadyAt).toBe(0);
   });
-  it("deals one, bypasses non-ninja defense including foresight, and has no knockback", () => {
+  it("uses normal ranged defense and queues the raw k response", () => {
     const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, shooting);
-    const target = createSoldier("t", "enemy", "ai", 100, 0); const x = target.x;
+    const target = createSoldier("t", "enemy", "ai", 100, 0); target.stats.defense = 0; const x = target.x;
     const event = executeGunAttack(attacker, target, 0, () => 1, false);
     expect(event).toMatchObject({ kind: "GUN", smoke: true, shotLine: true, shooterFlash: true });
     expect(target.hp).toBe(target.maxHp - 1); expect(target.combatFeedbackMarker).toBe("H");
     expect(target.reactionState).toBe("HIT_STUN"); expect(target.x).toBe(x);
-    const guarded = createSoldier("g", "enemy", "ai", 100, 0); guarded.specialAbilities = ["FORESIGHT"];
+    const guarded = createSoldier("g", "enemy", "ai", 100, 0); guarded.stats.defense = 100; guarded.specialAbilities = ["FORESIGHT"];
     attacker.specialReadyAt = 0; executeGunAttack(attacker, guarded, 0, () => 0, false);
-    expect(guarded.hp).toBe(guarded.maxHp - 1); expect(guarded.combatFeedbackMarker).toBe("H");
+    expect(guarded.hp).toBe(guarded.maxHp); expect(guarded.combatFeedbackMarker).toBe("S");
+    expect(guarded.reactionState).toBe("HIT_STUN");
   });
   it("keeps the player cooldown separate and does not use a fixed delayed second shot", () => {
     expect(calculateSpecialCooldownMs(100)).toBeLessThan(calculateSpecialCooldownMs(0));
