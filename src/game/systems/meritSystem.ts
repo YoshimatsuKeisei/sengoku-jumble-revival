@@ -37,9 +37,9 @@ export function recordRetreatTransition(
   if (attacker && attacker.team !== retreater.team) attacker.merits.repels += 1;
 }
 
-export function recordBaseAttack(attacker: Soldier, baseWasCaptured: boolean): void {
-  attacker.merits.baseDamage += 1;
-  if (baseWasCaptured) attacker.merits.baseDamage += 2;
+/** Raw rsj increments by the base-hit value itself: 1 normally, 2 with s8. */
+export function recordBaseAttack(attacker: Soldier, score = 1): void {
+  if (score > 0) attacker.merits.baseDamage += score;
 }
 
 export function recordRecovery(source: Soldier, target: Soldier, appliedHealing: number): void {
