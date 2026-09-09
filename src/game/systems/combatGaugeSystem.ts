@@ -1,5 +1,5 @@
 import type { RandomSource } from "../stats/soldierStats";
-import type { Soldier } from "../types";
+import type { Soldier, UnitTechnique } from "../types";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import {
   COMBAT_GAUGE_UPDATE_TICKS,
@@ -24,6 +24,73 @@ export const PLAYER_TECHNIQUE_GAUGE_FRAME_MS = 1000 / SWF_COMBAT_FPS;
  */
 const pendingRangedGaugeTrigger = new WeakSet<Soldier>();
 const pendingNonRangedGaugeTrigger = new WeakSet<Soldier>();
+
+interface TechniqueWaveSchedule {
+  startedAt: number;
+  offsets: number[];
+  nextIndex: number;
+}
+
+const techniqueWaveSchedules = new WeakMap<Soldier, TechniqueWaveSchedule>();
+
+const HELPER_TEN_PULSE_TECHNIQUES = new Set<UnitTechnique>([
+  "ASHIGARU_SPEAR_STRIKE",
+  "ASHIGARU_SPEAR_TECHNIQUE",
+  "MOSA_SENPUU",
+  "MOSA_MUSOU",
+  "MOSA_KIJIN",
+  "GENERAL_HEROIC",
+  "GENERAL_FURIOUS",
+  "CAVALRY_CHARGE",
+]);
+
+const HELPER_SIXTEEN_PULSE_TECHNIQUES = new Set<UnitTechnique>([
+  "NINJA_NINJUTSU",
+  "NINJA_SHADOW_RUN",
+  "NINJA_GENJUTSU",
+  "NINJA_BARRIER",
+]);
+
+const STRATEGIST_FIRE_TECHNIQUES = new Set<UnitTechnique>([
+  "STRATEGIST_FIRE_PLAY",
+  "STRATEGIST_FIRE_ATTACK",
+  "STRATEGIST_FIRE_PLAN",
+  "STRATEGIST_HELLFIRE",
+  "STRATEGIST_FLAME_ART",
+]);
+
+export function getTechniqueWaveOffsets(technique: UnitTechnique): number[] {
+  if (HELPER_TEN_PULSE_TECHNIQUES.has(technique)) return Array.from({ length: 10 }, (_, index) => index + 1);
+  if (HELPER_SIXTEEN_PULSE_TECHNIQUES.has(technique)) return Array.from({ length: 16 }, (_, index) => index + 1);
+  // spl() calls kaen() immediately; d() calls it again only when the decremented
+  // k equals 20 and 10. With initial k=28 those are +8 and +18 logic ticks.
+  if (STRATEGIST_FIRE_TECHNIQUES.has(technique)) return [8, 18];
+  return [];
+}
+
+function initializeTechniqueWaveSchedule(soldier: Soldier, currentTime: number): void {
+  const offsets = getTechniqueWaveOffsets(soldier.technique);
+  techniqueWaveSchedules.set(soldier, { startedAt: currentTime, offsets, nextIndex: 0 });
+  soldier.specialWavesRemaining = offsets.length;
+  soldier.nextSpecialWaveAt = offsets.length > 0
+    ? currentTime + swfLogicTicksToMs(offsets[0])
+    : null;
+}
+
+/** Advance exactly one raw helper/kaen pulse after the caller executed it. */
+export function consumeTechniqueWave(soldier: Soldier): void {
+  const schedule = techniqueWaveSchedules.get(soldier);
+  if (!schedule || schedule.nextIndex >= schedule.offsets.length) {
+    soldier.specialWavesRemaining = 0;
+    soldier.nextSpecialWaveAt = null;
+    return;
+  }
+  schedule.nextIndex += 1;
+  soldier.specialWavesRemaining = Math.max(0, schedule.offsets.length - schedule.nextIndex);
+  soldier.nextSpecialWaveAt = schedule.nextIndex < schedule.offsets.length
+    ? schedule.startedAt + swfLogicTicksToMs(schedule.offsets[schedule.nextIndex])
+    : null;
+}
 
 export function isRangedGaugeTechnique(soldier: Pick<Soldier, "technique">): boolean {
   return soldier.technique.startsWith("ARCHER_") || soldier.technique.startsWith("TEPPOU_");
@@ -147,8 +214,7 @@ export function beginTechniqueAction(
   const techniqueProfile = getTechniqueProfile(soldier.technique);
   soldier.specialLockUntil = currentTime + swfLogicTicksToMs(techniqueProfile.actionLockTicks);
   soldier.activeSpecialTechnique = soldier.technique;
-  soldier.specialWavesRemaining = Math.max(0, techniqueProfile.waveCount - 1);
-  soldier.nextSpecialWaveAt = soldier.specialWavesRemaining > 0 ? currentTime + swfLogicTicksToMs(1) : null;
+  initializeTechniqueWaveSchedule(soldier, currentTime);
   if (!consumeGauge) return true;
 
   if (soldier.controller === "player") {
@@ -169,5 +235,6 @@ export function clearTechniqueActionIfComplete(soldier: Soldier, currentTime: nu
   if (soldier.specialWavesRemaining === 0 && currentTime >= soldier.specialLockUntil) {
     soldier.activeSpecialTechnique = null;
     soldier.nextSpecialWaveAt = null;
+    techniqueWaveSchedules.delete(soldier);
   }
 }
