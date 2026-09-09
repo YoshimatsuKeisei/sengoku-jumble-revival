@@ -97,18 +97,52 @@
           "rowStep": 60,
           "localIndexExpression": "i-30"
         },
+        "hpBarMovieClip": "h",
+        "hpBarSpriteId": 667,
+        "hpBarSpriteFrames": 100,
+        "hpBarFrameExpression": "101-floor(hp/mp*100)",
+        "hpBarRefreshEveryHealingLogicUpdate": true,
+        "hpBarForcedFullFrameOnRejoin": 1,
+        "hpBarSourceOffset": { "x": -6, "y": -26 },
+        "hpBarLocalScale": { "x": 0.4666595458984375, "y": 1.0000457763671875 },
+        "hpBarColorTransform": {
+          "multiplier": { "r": 230, "g": 230, "b": 230, "a": 256 },
+          "additive": { "r": -79, "g": 0, "b": 83, "a": 0 },
+          "divisor": 256
+        },
+        "hpBarSourceColors": { "empty": "#000000", "fill": "#adadad" },
+        "hpBarFinalColors": { "empty": "#000053", "fill": "#4c9bee" },
+        "hpBarNominalTextureSize": { "width": 30, "height": 2 },
+        "hpBarFullFillDisplayedWidthSourceUnits": 13.996653286740184,
         "rejoinState": 7,
         "routeSplitY": 576,
+        "exitSideSelectedFromHealingSlotY": true,
+        "healingSlotRows": [
+          { "sourceY": 480, "exit": "TOP" },
+          { "sourceY": 540, "exit": "TOP" },
+          { "sourceY": 600, "exit": "BOTTOM" },
+          { "sourceY": 660, "exit": "BOTTOM" },
+          { "sourceY": 720, "exit": "BOTTOM" }
+        ],
         "playerRejoinTargetX": 346,
         "enemyRejoinTargetX": 1545,
         "topInteriorYOnExit": 397,
         "bottomInteriorYOnExit": 782,
         "topRejoinTargetY": 249,
         "bottomRejoinTargetY": 946,
+        "exitInstantlyRepositionsToP7Start": true,
+        "exitFullyCompletesInstantly": false,
+        "exitReusesRecoveryTile998999": false,
+        "topP7StartCellY": 11,
+        "bottomP7StartCellY": 22,
+        "playerP7StartCellXByHealingColumn": [2, 3, 3, 4, 5, 5],
+        "enemyP7StartCellXByHealingColumn": [46, 46, 47, 48, 49, 49],
+        "playerRejoinTargetCells": { "TOP": { "x": 10, "y": 7 }, "BOTTOM": { "x": 10, "y": 26 } },
+        "enemyRejoinTargetCells": { "TOP": { "x": 43, "y": 7 }, "BOTTOM": { "x": 43, "y": 26 } },
         "rejoinCompletionManhattanDistance": { "operator": "<", "value": 50 },
         "returnsToPreRecoveryBehaviorAfterRejoin": true
       },
-      "evidence": { "reference": "evidence/healing_rejoin_direct_avm1.md" }
+      "evidence": { "reference": "evidence/field_hospital_exit_and_hp_bar.md" }
     }
   ]
 }

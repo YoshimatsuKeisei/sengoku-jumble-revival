@@ -349,9 +349,14 @@ export function updateHealing(soldier: Soldier, deltaSeconds: number, _bases?: r
   const multiplier = hasSpecialAbility(soldier, "RECOVERY_BOOST") ? SPECIAL_ABILITY_CONFIG.recoveryBoostMultiplier : 1;
   const swfHealingPerUpdate = soldier.maxHp / 400;
   soldier.hp += swfHealingPerUpdate * SWF_COMBAT_FPS * multiplier * deltaSeconds;
+  // Raw p97/p98 recalculates h.gotoAndStop(101-floor(hp/mp*100)) on every
+  // healing logic update. Keep the displayed HP snapshot synchronized here;
+  // other recovery effects retain their own raw-SWF refresh semantics.
+  soldier.hpBarHp = Math.min(soldier.maxHp, soldier.hp);
   if (soldier.hp <= soldier.maxHp) return;
 
   soldier.hp = soldier.maxHp;
+  soldier.hpBarHp = soldier.maxHp;
   beginSwfRejoin(soldier);
 }
 
