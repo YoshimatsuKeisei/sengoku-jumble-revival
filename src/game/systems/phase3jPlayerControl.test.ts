@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
+import { PLAYER_DEBUG_CONFIG } from "../config";
 import { createSoldier } from "../entities/Soldier";
 import { createArmy } from "../factories/createArmy";
 import { COMMON_SPECIAL_ABILITY_POOL } from "./specialAbilitySystem";
@@ -29,9 +30,12 @@ describe("Phase 3J inspector and player controls", () => {
     expect(STRATEGY_LABELS.intercept).toBe("迎撃");
     expect(formatSoldierInspector(soldier)).toContain("・膂力\n・見切");
   });
-  it("debug-assigns all common abilities only to the protagonist without erasing recovered ally abilities", () => {
+  it("keeps the all-common-abilities override explicit and disabled by default", () => {
+    expect(PLAYER_DEBUG_CONFIG.playerAllCommonAbilities).toBe(false);
+    const defaultArmy = createArmy("player", () => 0);
     const normalArmy = createArmy("player", () => 0, { playerAllCommonAbilities: false });
     const debugArmy = createArmy("player", () => 0, { playerAllCommonAbilities: true });
+    expect(defaultArmy[0].specialAbilities).toEqual(normalArmy[0].specialAbilities);
     expect(debugArmy[0].specialAbilities).toEqual(COMMON_SPECIAL_ABILITY_POOL);
     expect(new Set(debugArmy[0].specialAbilities).size).toBe(16);
     expect(debugArmy[1].specialAbilities).toEqual(normalArmy[1].specialAbilities);
