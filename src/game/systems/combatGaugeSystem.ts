@@ -152,7 +152,7 @@ export function beginTechniqueAction(
   if (!consumeGauge) return true;
 
   if (soldier.controller === "player") {
-    const keepGauge = hasSpecialAbility(soldier, "DOUBLE_SPECIAL") && random() < 0.4;
+    const keepGauge = hasSpecialAbility(soldier, "DOUBLE_SPECIAL") && random() <= 0.4;
     soldier.specialReadyAt = soldier.specialLockUntil;
     if (!keepGauge) soldier.playerTechniqueGauge = 0;
     return true;
