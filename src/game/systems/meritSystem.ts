@@ -37,18 +37,20 @@ export function recordRetreatTransition(
   if (attacker && attacker.team !== retreater.team) attacker.merits.repels += 1;
 }
 
-/** Raw rsj increments by the base-hit value itself: 1 normally, 2 with s8. */
+/** Raw rsj exists on the player attack-base branch only: +1 normally, +2 with s8. */
 export function recordBaseAttack(attacker: Soldier, score = 1): void {
-  if (score > 0) attacker.merits.baseDamage += score;
+  if (attacker.team !== "player" || score <= 0) return;
+  attacker.merits.baseDamage += score;
 }
 
+/** Raw rsk attribution in tat()/mrjo() is player-side only. */
 export function recordRecovery(source: Soldier, target: Soldier, appliedHealing: number): void {
-  if (source.team !== target.team || appliedHealing <= 0) return;
+  if (source.team !== "player" || source.team !== target.team || appliedHealing <= 0) return;
   source.merits.recovery += appliedHealing;
 }
 
-/** sz(5/6)-style small recovery awards one rsk event even when s20 heals two HP. */
+/** Raw sz(5/6) awards one player-side rsk event even when s20 heals two HP. */
 export function recordSmallRecoveryPulse(source: Soldier, target: Soldier, appliedHealing: number): void {
-  if (source.team !== target.team || appliedHealing <= 0) return;
+  if (source.team !== "player" || source.team !== target.team || appliedHealing <= 0) return;
   source.merits.recovery += 1;
 }
