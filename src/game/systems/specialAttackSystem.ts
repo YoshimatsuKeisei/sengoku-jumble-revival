@@ -20,8 +20,13 @@ import { executeNinjaAttack, isNinjaTechnique, type NinjaAttackEvent } from "./n
 import { executeGeneralAttack, isGeneralTechnique, type GeneralAttackEvent } from "./generalAttackSystem";
 import { executeStrategistAttack, isStrategistTechnique, type StrategistAttackEvent } from "./strategistAttackSystem";
 import { executeMosaAttack, isMosaTechnique, type MosaAttackEvent } from "./mosaAttackSystem";
-import { advanceCombatGauge, beginTechniqueAction, clearTechniqueActionIfComplete, hasTechniqueGauge } from "./combatGaugeSystem";
-import { swfLogicTicksToMs } from "./techniqueCombatProfiles";
+import {
+  advanceCombatGauge,
+  beginTechniqueAction,
+  clearTechniqueActionIfComplete,
+  consumeTechniqueWave,
+  hasTechniqueGauge,
+} from "./combatGaugeSystem";
 import { calculateSuccessfulAttackDamage } from "./specialAbilitySystem";
 
 export interface AreaSpecialAttackEvent { kind: "AREA"; attackerId: string; team: Team; x: number; y: number }
@@ -155,10 +160,10 @@ export function updateSpecialAttacks(
 ): SpecialAttackEvent[] {
   const events: SpecialAttackEvent[] = [];
   const generalForcedRecipientsThisUpdate = new Set<string>();
+  let forceGeneralRecipient: (recipient: Soldier) => boolean;
+
   function dispatchForcedTechnique(recipient: Soldier, establishRangedAction = false): SpecialAttackEvent | null {
     if (isGunTechnique(recipient.technique)) {
-      // General-command spl() requires the recipient's existing l; it does not
-      // run the ordinary l==-1 ranged scd scan or opportunistically choose a new enemy.
       const target = findGunTarget(recipient, soldiers, false);
       if (!target) return null;
       if (establishRangedAction && !beginTechniqueAction(recipient, currentTime, random, false)) return null;
@@ -179,7 +184,8 @@ export function updateSpecialAttacks(
       : recipient.technique === "PROTOTYPE_AREA" ? executeSpecialAttack(recipient, findSpecialTargets(recipient, soldiers), soldiers, obstacles, bases, currentTime, false, random)
       : null;
   }
-  const forceGeneralRecipient = (recipient: Soldier): boolean => {
+
+  forceGeneralRecipient = (recipient: Soldier): boolean => {
     if (generalForcedRecipientsThisUpdate.has(recipient.id)) return false;
     generalForcedRecipientsThisUpdate.add(recipient.id);
     const event = dispatchForcedTechnique(recipient, true);
@@ -187,19 +193,19 @@ export function updateSpecialAttacks(
     return event !== null;
   };
 
-  const executeWave = (attacker: Soldier): SpecialAttackEvent | null => {
+  const executeWave = (attacker: Soldier, waveTime: number): SpecialAttackEvent | null => {
     if (attacker.technique === "CAVALRY_CHARGE")
-      return executeCavalryCharge(attacker, soldiers, obstacles, bases, currentTime, random, { consumeCooldown: false, isWave: true });
+      return executeCavalryCharge(attacker, soldiers, obstacles, bases, waveTime, random, { consumeCooldown: false, isWave: true });
     if (isSpearTechnique(attacker.technique))
-      return executeSpearAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, true);
+      return executeSpearAttack(attacker, soldiers, obstacles, bases, waveTime, random, false, true);
     if (isNinjaTechnique(attacker.technique))
-      return executeNinjaAttack(attacker, soldiers, obstacles, bases, currentTime, random, "WAVE");
+      return executeNinjaAttack(attacker, soldiers, obstacles, bases, waveTime, random, "WAVE");
     if (isGeneralTechnique(attacker.technique))
-      return executeGeneralAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, forceGeneralRecipient, true);
+      return executeGeneralAttack(attacker, soldiers, obstacles, bases, waveTime, random, false, forceGeneralRecipient, true);
     if (isStrategistTechnique(attacker.technique))
-      return executeStrategistAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, true);
+      return executeStrategistAttack(attacker, soldiers, obstacles, bases, waveTime, random, false, true);
     if (isMosaTechnique(attacker.technique))
-      return executeMosaAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, true);
+      return executeMosaAttack(attacker, soldiers, obstacles, bases, waveTime, random, false, true);
     return null;
   };
 
@@ -212,13 +218,12 @@ export function updateSpecialAttacks(
       if (reactive) events.push(reactive);
     }
     if (attacker.activeSpecialTechnique !== null && attacker.nextSpecialWaveAt !== null) {
-      let nextWaveAt = attacker.nextSpecialWaveAt;
-      while (attacker.specialWavesRemaining > 0 && currentTime >= nextWaveAt
+      while (attacker.specialWavesRemaining > 0 && attacker.nextSpecialWaveAt !== null
+        && currentTime >= attacker.nextSpecialWaveAt
         && !attacker.isDead && attacker.state === "NORMAL" && attacker.reactionState === "NONE") {
-        attacker.specialWavesRemaining -= 1;
-        nextWaveAt += swfLogicTicksToMs(1);
-        attacker.nextSpecialWaveAt = attacker.specialWavesRemaining > 0 ? nextWaveAt : null;
-        const wave = executeWave(attacker);
+        const waveTime = attacker.nextSpecialWaveAt;
+        const wave = executeWave(attacker, waveTime);
+        consumeTechniqueWave(attacker);
         if (wave) events.push(wave);
       }
     }
