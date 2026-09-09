@@ -8,7 +8,8 @@ import { calculateSpecialCooldownMs, updateSpecialAttacks } from "./specialAttac
 import { COMMON_SPECIAL_ABILITY_POOL } from "./specialAbilitySystem";
 import { createBattleBases } from "./baseSystem";
 import { formatSoldierInspector } from "./soldierInspectorSystem";
-import { DEFAULT_PLAYER_LOADOUT, isTechniqueCompatibleWithUnitType, makePlayerDebugPreset, validateSoldierLoadout } from "./unitLoadoutSystem";
+import { INITIAL_PLAYER_TECHNIQUE_COUNTS } from "./originalPlayerArmySystem";
+import { DEFAULT_PLAYER_LOADOUT, isTechniqueCompatibleWithUnitType, makePlayerDebugPreset, TECHNIQUE_DEFINITIONS, validateSoldierLoadout } from "./unitLoadoutSystem";
 
 const shooting: SoldierLoadout = {
   unitType: "TEPPOU", technique: "TEPPOU_SHOOTING",
@@ -34,8 +35,16 @@ describe("Phase 4A loadouts and gun specials", () => {
     expect(makePlayerDebugPreset("TEPPOU_SNIPING").technique).toBe("TEPPOU_SNIPING");
     expect(makePlayerDebugPreset("PROTOTYPE_AREA").specialAbilities).toEqual(COMMON_SPECIAL_ABILITY_POOL);
   });
-  it.each(["player", "enemy"] as const)("creates the default bombardment composition per %s team", (team) => {
-    const army = createArmy(team, () => 0, { playerAllCommonAbilities: false });
+  it("keeps the recovered initial player army instead of imposing the synthetic enemy bombardment composition", () => {
+    const army = createArmy("player", () => 0, { playerAllCommonAbilities: false });
+    const expectedTeppou = Object.entries(INITIAL_PLAYER_TECHNIQUE_COUNTS)
+      .filter(([technique]) => TECHNIQUE_DEFINITIONS[technique as keyof typeof TECHNIQUE_DEFINITIONS].unitType === "TEPPOU")
+      .reduce((sum, [, count]) => sum + (count ?? 0), 0);
+    expect(army).toHaveLength(30);
+    expect(army.filter((soldier) => soldier.unitType === "TEPPOU")).toHaveLength(expectedTeppou);
+  });
+  it("creates the default six-bombardment synthetic enemy composition", () => {
+    const army = createArmy("enemy", () => 0, { playerAllCommonAbilities: false });
     expect(army.filter((s) => s.unitType === "TEPPOU")).toHaveLength(6);
     expect(army.filter((s) => s.technique === "TEPPOU_SHOOTING")).toHaveLength(0);
     expect(army.filter((s) => s.technique === "TEPPOU_SNIPING")).toHaveLength(0);
@@ -50,7 +59,6 @@ describe("Phase 4A loadouts and gun specials", () => {
     expect(GUN_CONFIG.shootingRange).toBeLessThan(GUN_CONFIG.snipingRange);
     expect(getGunRange("PROTOTYPE_AREA")).toBeNull(); expect(isGunTechnique("TEPPOU_SHOOTING")).toBe(true);
     const attacker = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, shooting);
-    attacker.combatGauge = 201;
     const near = createSoldier("near", "enemy", "ai", 100, 0); const far = createSoldier("far", "enemy", "ai", 200, 0);
     expect(findGunTarget(attacker, [attacker, far, near])).toBe(near);
     attacker.targetId = far.id; expect(findGunTarget(attacker, [attacker, far, near])).toBe(far);
@@ -70,7 +78,7 @@ describe("Phase 4A loadouts and gun specials", () => {
     expect(target.hp).toBe(target.maxHp - 1); expect(target.combatFeedbackMarker).toBe("H");
     expect(target.reactionState).toBe("HIT_STUN"); expect(target.x).toBe(x);
     const guarded = createSoldier("g", "enemy", "ai", 100, 0); guarded.stats.defense = 100; guarded.specialAbilities = ["FORESIGHT"];
-    attacker.specialReadyAt = 0; executeGunAttack(attacker, guarded, 0, () => 0, false);
+    executeGunAttack(attacker, guarded, 0, () => 0, false);
     expect(guarded.hp).toBe(guarded.maxHp); expect(guarded.combatFeedbackMarker).toBe("S");
     expect(guarded.reactionState).toBe("HIT_STUN");
   });
