@@ -179,7 +179,8 @@ function queueMovementContacts(soldiers: Soldier[]): void {
     pendingMovementContactsByRoster.set(soldiers, pending);
   }
   for (const event of detected) {
-    pending.set(rawContactPairKey(event.moverId, event.opponentId), event);
+    const key = rawContactPairKey(event.moverId, event.opponentId);
+    if (!pending.has(key)) pending.set(key, event);
   }
 }
 
