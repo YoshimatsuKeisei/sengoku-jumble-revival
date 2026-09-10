@@ -1,13 +1,43 @@
-import { BATTLE_OBSTACLES, STRATEGY_AI_CONFIG } from "../config";
+import { battlefieldWorldPointToSource } from "../battlefieldLayout";
+import { STRATEGY_AI_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier } from "../types";
 import { startEngagement } from "./aiSystem";
 import { startSoldierAttack } from "./attackSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
-import { getRawCloseEngagementPoint } from "./engagementPositioningSystem";
 import { recordNormalCombatResult } from "./meritSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
-import { isWithinNormalContact } from "./techniqueCombatProfiles";
+import {
+  isWithinNormalContact,
+  SWF_COMBAT_FPS,
+  SWF_GRID_CELL_SIZE,
+} from "./techniqueCombatProfiles";
+
+export const SWF_NORMAL_CONTACT_TICK_MS = 1000 / SWF_COMBAT_FPS;
+
+interface RawContactSchedulerRuntime {
+  nextTickAt: number;
+  lastObservedTime: number;
+}
+
+const rawContactSchedulerByRoster = new WeakMap<Soldier[], RawContactSchedulerRuntime>();
+
+export interface RawContactGridCell {
+  x: number;
+  y: number;
+}
+
+const NEIGHBOR_CELL_OFFSETS: readonly RawContactGridCell[] = [
+  { x: 0, y: 0 },
+  { x: 1, y: 0 },
+  { x: -1, y: 0 },
+  { x: 0, y: 1 },
+  { x: 0, y: -1 },
+  { x: 1, y: 1 },
+  { x: 1, y: -1 },
+  { x: -1, y: 1 },
+  { x: -1, y: -1 },
+] as const;
 
 export function getCombatWinProbability(combatA: number, combatB: number): number {
   const valueA = Math.max(0, combatA);
@@ -23,6 +53,39 @@ export function getCombatWinProbability(combatA: number, combatB: number): numbe
 
 export function resolveCombatContest(a: Soldier, b: Soldier, random: RandomSource = Math.random): Soldier {
   return random() < getCombatWinProbability(a.stats.combat, b.stats.combat) ? a : b;
+}
+
+export function getRawContactGridCell(point: Pick<Soldier, "x" | "y">): RawContactGridCell {
+  const source = battlefieldWorldPointToSource(point);
+  return {
+    x: Math.round(source.x / SWF_GRID_CELL_SIZE),
+    y: Math.round(source.y / SWF_GRID_CELL_SIZE),
+  };
+}
+
+function rawContactCellKey(cell: RawContactGridCell): string {
+  return `${cell.x},${cell.y}`;
+}
+
+function canOccupyRawContactGrid(soldier: Soldier): boolean {
+  return !soldier.isDead && soldier.hp > 0 && soldier.state !== "HEALING";
+}
+
+/**
+ * Phase-1 compatibility bridge for raw d() contact scheduling.
+ *
+ * The original SWF stores one dynamic soldier index in each 36-unit f-grid cell.
+ * The revival movement layer still permits temporary overlaps, so later roster
+ * entries overwrite earlier entries here, matching the one-value nature of f
+ * without adding any positional correction in this probe.
+ */
+function buildRawContactOccupancy(soldiers: readonly Soldier[]): Map<string, Soldier> {
+  const occupancy = new Map<string, Soldier>();
+  for (const soldier of soldiers) {
+    if (!canOccupyRawContactGrid(soldier)) continue;
+    occupancy.set(rawContactCellKey(getRawContactGridCell(soldier)), soldier);
+  }
+  return occupancy;
 }
 
 function isContactPair(a: Soldier, b: Soldier): boolean {
@@ -47,49 +110,110 @@ function applyNormalContactEngagements(
   currentTime: number,
   random: RandomSource,
 ): void {
-  // atck(sa=defender, sb=attacker, mode=0): the defender's s7 branch still
-  // evaluates its random test, but mode==0 is the final fallback and therefore
-  // normal contact always assigns defender.l=attacker when the state is eligible.
   if (canReceiveNormalContactEngagement(defender)) {
     if (isRushCharge(defender)) random();
     startEngagement(defender, attacker, currentTime);
   }
 
-  // The attacker's l assignment has no mode==0 fallback. For a charge soldier
-  // carrying raw s7 (RUSH), random*100 must be >70 to retarget; <=70 preserves
-  // its previous l. Other normal strategies retarget unconditionally.
-  if (!canReceiveNormalContactEngagement(attacker)) return;
   const rushKeepsPriorTarget = isRushCharge(attacker)
     && random() <= STRATEGY_AI_CONFIG.rushRetargetIgnoreChance;
-  if (!rushKeepsPriorTarget) startEngagement(attacker, defender, currentTime);
+  if (canReceiveNormalContactEngagement(attacker) && !rushKeepsPriorTarget) {
+    startEngagement(attacker, defender, currentTime);
+  }
 }
 
-function applyRawClosePairSpacing(first: Soldier, second: Soldier): void {
-  // d() applies the 20-axis / 24-unit correction only to a unit that already
-  // has l. Process roster order just like the original per-unit frame loop;
-  // after the first correction the pair is normally no longer inside <20.
-  const firstPoint = getRawCloseEngagementPoint(first, second, BATTLE_OBSTACLES);
-  if (firstPoint) { first.x = firstPoint.x; first.y = firstPoint.y; }
-  const secondPoint = getRawCloseEngagementPoint(second, first, BATTLE_OBSTACLES);
-  if (secondPoint) { second.x = secondPoint.x; second.y = secondPoint.y; }
+function sourceDistanceSquared(a: Soldier, b: Soldier): number {
+  const sourceA = battlefieldWorldPointToSource(a);
+  const sourceB = battlefieldWorldPointToSource(b);
+  const dx = sourceB.x - sourceA.x;
+  const dy = sourceB.y - sourceA.y;
+  return dx * dx + dy * dy;
 }
 
-/** Resolves every unordered normal-contact pair at most once in this update. */
+/**
+ * Search only the current 36-unit cell and its eight neighbors. Each cell
+ * contributes at most one occupant, so this is bounded spatial contact lookup,
+ * not the previous all-pairs sweep. Among valid local occupants the closest is
+ * chosen only as a compatibility bridge until movement itself is driven by f.
+ */
+function findLocalContactOccupant(
+  soldier: Soldier,
+  occupancy: ReadonlyMap<string, Soldier>,
+  consumedThisTick: ReadonlySet<string>,
+): Soldier | null {
+  const center = getRawContactGridCell(soldier);
+  let best: Soldier | null = null;
+  let bestDistance = Number.POSITIVE_INFINITY;
+
+  for (const offset of NEIGHBOR_CELL_OFFSETS) {
+    const candidate = occupancy.get(rawContactCellKey({
+      x: center.x + offset.x,
+      y: center.y + offset.y,
+    }));
+    if (!candidate || candidate === soldier || consumedThisTick.has(candidate.id)) continue;
+    if (!isContactPair(soldier, candidate)) continue;
+    const distance = sourceDistanceSquared(soldier, candidate);
+    if (distance < bestDistance) {
+      best = candidate;
+      bestDistance = distance;
+    }
+  }
+  return best;
+}
+
+function isRawContactTickDue(soldiers: Soldier[], currentTime: number): boolean {
+  let runtime = rawContactSchedulerByRoster.get(soldiers);
+  if (!runtime || currentTime < runtime.lastObservedTime) {
+    runtime = { nextTickAt: currentTime, lastObservedTime: currentTime };
+    rawContactSchedulerByRoster.set(soldiers, runtime);
+  }
+  runtime.lastObservedTime = currentTime;
+  if (currentTime + 1e-6 < runtime.nextTickAt) return false;
+
+  // Do not replay many contact ticks from one rendered frame after a pause.
+  // Advance the cadence beyond now and process exactly one spatial snapshot.
+  do runtime.nextTickAt += SWF_NORMAL_CONTACT_TICK_MS;
+  while (runtime.nextTickAt <= currentTime + 1e-6);
+  return true;
+}
+
+export function resetNormalContactScheduler(soldiers: Soldier[]): void {
+  rawContactSchedulerByRoster.delete(soldiers);
+}
+
+/**
+ * Phase 1 of the raw contact rebuild.
+ *
+ * Contact arbitration runs at the SWF's 24 Hz cadence and uses a 36-unit
+ * occupancy neighborhood. A soldier may participate in at most one contact per
+ * logic tick. Crucially, this function performs no x/y spacing, knockback, fx/fy
+ * impulse, or generic separation; the previously verified movement path remains
+ * untouched. Existing attack windup/damage timing is intentionally retained for
+ * this probe so scheduler effects can be evaluated in isolation.
+ */
 export function updateNormalCombatContests(
   soldiers: Soldier[],
   currentTime: number,
   random: RandomSource = Math.random,
 ): void {
-  for (let firstIndex = 0; firstIndex < soldiers.length; firstIndex += 1) {
-    const first = soldiers[firstIndex];
-    for (let secondIndex = firstIndex + 1; secondIndex < soldiers.length; secondIndex += 1) {
-      const second = soldiers[secondIndex];
-      if (!isContactPair(first, second)) continue;
-      const attacker = resolveCombatContest(first, second, random);
-      const defender = attacker === first ? second : first;
-      applyNormalContactEngagements(attacker, defender, currentTime, random);
-      applyRawClosePairSpacing(first, second);
-      if (startSoldierAttack(attacker, defender, currentTime)) recordNormalCombatResult(attacker, defender);
+  if (!isRawContactTickDue(soldiers, currentTime)) return;
+
+  const occupancy = buildRawContactOccupancy(soldiers);
+  const consumedThisTick = new Set<string>();
+
+  for (const soldier of soldiers) {
+    if (consumedThisTick.has(soldier.id) || !canOccupyRawContactGrid(soldier)) continue;
+    const opponent = findLocalContactOccupant(soldier, occupancy, consumedThisTick);
+    if (!opponent) continue;
+
+    consumedThisTick.add(soldier.id);
+    consumedThisTick.add(opponent.id);
+
+    const attacker = resolveCombatContest(soldier, opponent, random);
+    const defender = attacker === soldier ? opponent : soldier;
+    applyNormalContactEngagements(attacker, defender, currentTime, random);
+    if (startSoldierAttack(attacker, defender, currentTime)) {
+      recordNormalCombatResult(attacker, defender);
     }
   }
 }
