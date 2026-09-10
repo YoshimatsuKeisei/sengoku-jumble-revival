@@ -7,10 +7,16 @@ export interface RawMovementGateCell {
   y: number;
 }
 
+export interface RawMovementContactEvent {
+  moverId: string;
+  opponentId: string;
+}
+
 export type RawMovementStepDecision = "MOVE" | "MOVE_AND_STOP" | "STOP";
 
 interface RawMovementContactGateRuntime {
   cells: Map<string, Soldier[]>;
+  contacts: Map<string, RawMovementContactEvent>;
 }
 
 const NEIGHBOR_CELL_OFFSETS: readonly RawMovementGateCell[] = [
@@ -26,6 +32,7 @@ const NEIGHBOR_CELL_OFFSETS: readonly RawMovementGateCell[] = [
 ] as const;
 
 let activeRuntime: RawMovementContactGateRuntime | null = null;
+let completedContacts: RawMovementContactEvent[] = [];
 
 export function getRawMovementGateCell(point: Pick<Soldier, "x" | "y">): RawMovementGateCell {
   const source = battlefieldWorldPointToSource(point);
@@ -37,6 +44,10 @@ export function getRawMovementGateCell(point: Pick<Soldier, "x" | "y">): RawMove
 
 function cellKey(cell: RawMovementGateCell): string {
   return `${cell.x},${cell.y}`;
+}
+
+function contactKey(firstId: string, secondId: string): string {
+  return firstId < secondId ? `${firstId}\u0000${secondId}` : `${secondId}\u0000${firstId}`;
 }
 
 function canTrack(soldier: Soldier): boolean {
@@ -60,6 +71,13 @@ function removeFromCell(runtime: RawMovementContactGateRuntime, soldier: Soldier
   else runtime.cells.delete(key);
 }
 
+function recordContact(runtime: RawMovementContactGateRuntime, mover: Soldier, opponent: Soldier): void {
+  const key = contactKey(mover.id, opponent.id);
+  if (!runtime.contacts.has(key)) {
+    runtime.contacts.set(key, { moverId: mover.id, opponentId: opponent.id });
+  }
+}
+
 /**
  * Compatibility probe for the raw d() ordering: create a dynamic 36-unit
  * spatial snapshot before AI movement, then update it sequentially as each AI
@@ -68,13 +86,30 @@ function removeFromCell(runtime: RawMovementContactGateRuntime, soldier: Soldier
  * soldiers in one cell.
  */
 export function beginRawAiMovementContactGate(soldiers: readonly Soldier[]): void {
-  const runtime: RawMovementContactGateRuntime = { cells: new Map() };
+  const runtime: RawMovementContactGateRuntime = { cells: new Map(), contacts: new Map() };
   for (const soldier of soldiers) addToCell(runtime, soldier);
   activeRuntime = runtime;
 }
 
 export function endRawAiMovementContactGate(): void {
+  if (!activeRuntime) return;
+  completedContacts.push(...activeRuntime.contacts.values());
   activeRuntime = null;
+}
+
+/**
+ * Drain the exact enemy pairs observed by the pre-move gate. The combat system
+ * can retain these until its next 24 Hz logic tick, avoiding a second opponent
+ * search after movement has already identified who blocked the step.
+ */
+export function drainRawMovementContactEvents(): RawMovementContactEvent[] {
+  const result = completedContacts;
+  completedContacts = [];
+  return result;
+}
+
+export function resetRawMovementContactEvents(): void {
+  completedContacts = [];
 }
 
 /** Clear the moving soldier before its candidate is checked, matching raw d(). */
@@ -120,9 +155,13 @@ export function getRawAiMovementStepDecision(
       if (opponent === soldier || opponent.team === soldier.team || !canTrack(opponent)) continue;
       const currentlyInContact = isWithinNormalContact(soldier, opponent);
       const candidateInContact = isWithinNormalContact(candidate, opponent);
-      if (!currentlyInContact && candidateInContact) return "MOVE_AND_STOP";
+      if (!currentlyInContact && candidateInContact) {
+        recordContact(runtime, soldier, opponent);
+        return "MOVE_AND_STOP";
+      }
       if (currentlyInContact && candidateInContact
         && squaredDistance(candidate, opponent) < squaredDistance(soldier, opponent)) {
+        recordContact(runtime, soldier, opponent);
         return "STOP";
       }
     }
