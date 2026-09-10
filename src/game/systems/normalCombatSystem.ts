@@ -9,6 +9,12 @@ import { startEngagement } from "./aiSystem";
 import { startSoldierAttack } from "./attackSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { recordNormalCombatResult } from "./meritSystem";
+import {
+  isRawGenericContactImpulseActive,
+  resetRawGenericContactImpulses,
+  startRawGenericContactImpulsePair,
+  updateRawGenericContactImpulses,
+} from "./rawContactImpulseSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import { getSwfStaticCollisionCodeAtWorld } from "./swfBaseCollisionGrid";
 import {
@@ -139,6 +145,7 @@ function findLocalContactOccupant(
       y: center.y + offset.y,
     }));
     if (!candidate || candidate === soldier || consumedThisTick.has(candidate.id)) continue;
+    if (isRawGenericContactImpulseActive(candidate)) continue;
     if (!isContactPair(soldier, candidate)) continue;
     const distance = sourceDistanceSquared(soldier, candidate);
     if (distance < bestDistance) {
@@ -153,8 +160,7 @@ function findLocalContactOccupant(
  * Raw generic occupant contact proposes a point exactly 24 source units away
  * from the encountered occupant when both axis deltas are strictly below 32.
  * The current unit's f cell is cleared before the candidate cell is tested.
- * Phase 2A reproduces only that positional correction; fx/fy, k, t and vc2 are
- * deliberately deferred.
+ * Phase 2A reproduces only that positional correction.
  */
 export function applyRawContactSpacingPhase2A(
   soldier: Soldier,
@@ -205,13 +211,14 @@ function isRawContactTickDue(soldiers: Soldier[], currentTime: number): boolean 
 
 export function resetNormalContactScheduler(soldiers: Soldier[]): void {
   rawContactSchedulerByRoster.delete(soldiers);
+  resetRawGenericContactImpulses(soldiers);
 }
 
 /**
- * Phase 2A: 24 Hz occupancy-based contact arbitration plus only the raw 24-unit
- * candidate spacing for the current roster soldier. No combat impulse or generic
- * all-pairs separation is added here; existing attack windup/damage timing stays
- * unchanged so positional effects remain isolated.
+ * Phase 2B-1: retain the phase-2A 24-unit correction, then apply only the raw
+ * k=3 fx/fy contact impulse to the selected pair on later 24 Hz ticks. Ordinary
+ * movement is held while k is active so the impulse replaces rather than stacks
+ * on the render-frame movement path. t+=10/vc2 remains deliberately deferred.
  */
 export function updateNormalCombatContests(
   soldiers: Soldier[],
@@ -220,11 +227,13 @@ export function updateNormalCombatContests(
 ): void {
   if (!isRawContactTickDue(soldiers, currentTime)) return;
 
+  updateRawGenericContactImpulses(soldiers, currentTime);
   const occupancy = buildRawContactOccupancy(soldiers);
   const consumedThisTick = new Set<string>();
 
   for (const soldier of soldiers) {
     if (consumedThisTick.has(soldier.id) || !canOccupyRawContactGrid(soldier)) continue;
+    if (isRawGenericContactImpulseActive(soldier)) continue;
     const opponent = findLocalContactOccupant(soldier, occupancy, consumedThisTick);
     if (!opponent) continue;
 
@@ -238,5 +247,6 @@ export function updateNormalCombatContests(
     if (startSoldierAttack(attacker, defender, currentTime)) {
       recordNormalCombatResult(attacker, defender);
     }
+    startRawGenericContactImpulsePair(soldier, opponent, currentTime);
   }
 }
