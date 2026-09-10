@@ -6,6 +6,7 @@ import { startEngagement } from "./aiSystem";
 import { finalizeFatalDamage } from "./combatSystem";
 import { invalidateCombatTargetForAll } from "./combatTargetSystem";
 import { applyForcedMovement } from "./movementSystem";
+import { updateRawCombatImpulses } from "./rawCombatImpulseSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import { swfLogicTicksToMs } from "./techniqueCombatProfiles";
 
@@ -40,9 +41,9 @@ export function startHitReaction(
   const rushIgnoresRetarget = target.strategy === "charge"
     && hasSpecialAbility(target, "RUSH")
     && attackKind !== "NORMAL_ATTACK"
-    // Raw test is random*100 > 70 for retargeting, so exactly 70 belongs to
-    // the 70% keep-prior-target branch as well.
-    && random() <= STRATEGY_AI_CONFIG.rushRetargetIgnoreChance;
+    // Raw branch retargets only when random*100 > 70, so exactly 70 remains
+    // on the keep-prior-target side. Keep the source percent expression intact.
+    && random() * 100 <= STRATEGY_AI_CONFIG.rushRetargetIgnoreChance * 100;
   if (canRetaliate && !rushIgnoresRetarget && target.hp > 0) startEngagement(target, attacker, currentTime);
   cancelAttack(target);
   target.activeSpecialTechnique = null;
@@ -94,6 +95,10 @@ export function updateReactions(
   battleEnded = false,
 ): void {
   if (battleEnded) return;
+  // Raw d() applies its fx/fy k-branch before the k==0 fatal tiky() path. Run
+  // contact impulses first so a fatal normal hit still receives the last decayed
+  // movement step before reaction completion finalizes state 99.
+  updateRawCombatImpulses(soldiers, obstacles, currentTime);
   for (const soldier of soldiers) {
     const wasDead = soldier.isDead;
     updateReaction(soldier, obstacles, currentTime, deltaMs);
