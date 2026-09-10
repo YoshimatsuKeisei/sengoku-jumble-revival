@@ -5,10 +5,12 @@ import { moveAiSoldiers, movePlayer } from "./movementSystem";
 import {
   beginRawAiMovementContactGate,
   beginRawSoldierMovementStep,
+  drainRawMovementContactEvents,
   endRawAiMovementContactGate,
   finishRawSoldierMovementStep,
   getRawAiMovementStepDecision,
   getRawMovementGateCell,
+  resetRawMovementContactEvents,
 } from "./rawMovementContactGateSystem";
 
 function soldierAtSource(
@@ -22,7 +24,10 @@ function soldierAtSource(
   return createSoldier(id, team, controller, world.x, world.y, "melee");
 }
 
-afterEach(() => endRawAiMovementContactGate());
+afterEach(() => {
+  endRawAiMovementContactGate();
+  resetRawMovementContactEvents();
+});
 
 describe("raw pre-move enemy contact gate probe", () => {
   it("quantizes candidate positions on the raw 36-unit spatial grid", () => {
@@ -42,6 +47,23 @@ describe("raw pre-move enemy contact gate probe", () => {
     expect(getRawAiMovementStepDecision(mover, crossing)).toBe("MOVE_AND_STOP");
 
     finishRawSoldierMovementStep(mover);
+  });
+
+  it("records the exact enemy that caused the pre-move stop", () => {
+    const mover = soldierAtSource("mover", "player", 500, 500);
+    const enemy = soldierAtSource("enemy", "enemy", 533, 500);
+    const otherEnemy = soldierAtSource("other", "enemy", 529, 500);
+    beginRawAiMovementContactGate([mover, enemy, otherEnemy]);
+    beginRawSoldierMovementStep(mover);
+
+    const crossing = battlefieldSourcePointToWorld({ x: 502, y: 500 });
+    expect(getRawAiMovementStepDecision(mover, crossing)).toBe("MOVE_AND_STOP");
+    finishRawSoldierMovementStep(mover);
+    endRawAiMovementContactGate();
+
+    expect(drainRawMovementContactEvents()).toEqual([
+      { moverId: mover.id, opponentId: enemy.id },
+    ]);
   });
 
   it("blocks a step that moves deeper into an already active enemy contact", () => {
