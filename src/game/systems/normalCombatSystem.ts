@@ -2,13 +2,10 @@ import { BATTLE_OBSTACLES, STRATEGY_AI_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier } from "../types";
 import { startEngagement } from "./aiSystem";
+import { startSoldierAttack } from "./attackSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { getRawCloseEngagementPoint } from "./engagementPositioningSystem";
 import { recordNormalCombatResult } from "./meritSystem";
-import {
-  isRawNormalContactKLocked,
-  resolveRawNormalContactAttack,
-} from "./normalContactAttackSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import { isWithinNormalContact } from "./techniqueCombatProfiles";
 
@@ -28,15 +25,9 @@ export function resolveCombatContest(a: Soldier, b: Soldier, random: RandomSourc
   return random() < getCombatWinProbability(a.stats.combat, b.stats.combat) ? a : b;
 }
 
-function isContactPair(a: Soldier, b: Soldier, currentTime: number): boolean {
+function isContactPair(a: Soldier, b: Soldier): boolean {
   if (!isValidCombatTarget(a, b) || !isValidCombatTarget(b, a)) return false;
   if (a.activeSpecialTechnique !== null || b.activeSpecialTechnique !== null) return false;
-  // Raw d() skips contact logic while k!=0. atck() assigns k=10 to both
-  // participants, so a pair that just fought cannot immediately resolve again.
-  // A third, unlocked soldier may still contact one locked participant, matching
-  // the original per-soldier d() loop rather than rejecting a target solely
-  // because the target currently has k.
-  if (isRawNormalContactKLocked(a, currentTime) && isRawNormalContactKLocked(b, currentTime)) return false;
   return isWithinNormalContact(a, b);
 }
 
@@ -93,13 +84,12 @@ export function updateNormalCombatContests(
     const first = soldiers[firstIndex];
     for (let secondIndex = firstIndex + 1; secondIndex < soldiers.length; secondIndex += 1) {
       const second = soldiers[secondIndex];
-      if (!isContactPair(first, second, currentTime)) continue;
+      if (!isContactPair(first, second)) continue;
       const attacker = resolveCombatContest(first, second, random);
       const defender = attacker === first ? second : first;
       applyNormalContactEngagements(attacker, defender, currentTime, random);
       applyRawClosePairSpacing(first, second);
-      const result = resolveRawNormalContactAttack(attacker, defender, currentTime, random);
-      if (result.resolved) recordNormalCombatResult(attacker, defender);
+      if (startSoldierAttack(attacker, defender, currentTime)) recordNormalCombatResult(attacker, defender);
     }
   }
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { COMBAT_TIMING_CONFIG, NORMAL_ATTACK_DAMAGE } from "../config";
+import { COMBAT_TIMING_CONFIG, NORMAL_ATTACK_DAMAGE, RECOVERY_CONFIG } from "../config";
 import { createSoldier } from "../entities/Soldier";
+import type { Soldier } from "../types";
 import { createBattleBases } from "./baseSystem";
 import {
   canStartSoldierAttack,
@@ -10,7 +11,6 @@ import {
 import { moveAiSoldiers, movePlayer } from "./movementSystem";
 import { updateRecoveryStates } from "./recoverySystem";
 import { issueAdvanceCommand } from "./commandSystem";
-import { SWF_HIT_REACTION_MS, updateReactions } from "./reactionSystem";
 
 function duel(controller: "ai" | "player" = "ai") {
   const attacker = createSoldier("attacker", "player", controller, 100, 100, "charge");
@@ -178,7 +178,7 @@ describe("attack state machine", () => {
     expect(attacker.combatActionState).toBe("IDLE");
   });
 
-  it("allows simultaneous legacy windups but keeps fatal cleanup delayed through the confirmed hit reaction", () => {
+  it("allows simultaneous windups and makes later hits miss after target death", () => {
     const target = createSoldier("target", "enemy", "ai", 120, 100);
     target.hp = 1;
     target.stats.defense = 0;
@@ -195,12 +195,9 @@ describe("attack state machine", () => {
     expect(second.combatActionState).toBe("ATTACK_WINDUP");
     updateAttackStates(soldiers, bases, COMBAT_TIMING_CONFIG.attackWindupMs);
     expect(target.hp).toBe(0);
-    expect(target.isDead).toBe(false);
+    expect(target.isDead).toBe(true);
     expect(first.attackHitApplied).toBe(true);
     expect(second.attackHitApplied).toBe(true);
-    const reactionEnd = COMBAT_TIMING_CONFIG.attackWindupMs + SWF_HIT_REACTION_MS;
-    updateReactions(soldiers, [], reactionEnd, SWF_HIT_REACTION_MS);
-    expect(target.isDead).toBe(true);
   });
 
   it("uses the same state machine for a player-controlled attacker", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MOVEMENT_SPEED_CONFIG, NORMAL_ATTACK_DAMAGE } from "../config";
+import { COMBAT_TIMING_CONFIG, MOVEMENT_SPEED_CONFIG, NORMAL_ATTACK_DAMAGE } from "../config";
 import { createSoldier } from "../entities/Soldier";
 import {
   calculateMoveSpeedFromFoot,
@@ -9,19 +9,15 @@ import {
   randomIntInclusive,
 } from "../stats/soldierStats";
 import type { SoldierBaseStats } from "../types";
+import { createBattleBases } from "./baseSystem";
+import { startSoldierAttack, updateAttackStates } from "./attackSystem";
 import { applyDamage, isOutOfBattle, isWithdrawn } from "./combatSystem";
 import { getNormalGuardProbability, isDamageGuarded } from "./defenseSystem";
 import { applyForcedMovement, moveAiSoldiers, movePlayer } from "./movementSystem";
 import { getCombatWinProbability, resolveCombatContest, updateNormalCombatContests } from "./normalCombatSystem";
-import { resolveRawNormalContactAttack } from "./normalContactAttackSystem";
 
 function stats(overrides: Partial<SoldierBaseStats> = {}): SoldierBaseStats {
   return { maxHp: 60, skill: 50, foot: 3, combat: 50, defense: 50, ...overrides };
-}
-
-function sequence(...values: number[]): () => number {
-  let index = 0;
-  return () => values[Math.min(index++, values.length - 1)] ?? 0;
 }
 
 describe("Phase 3D normal parameters", () => {
@@ -84,48 +80,40 @@ describe("Phase 3D normal parameters", () => {
 });
 
 describe("Phase 3D combat contest and defense", () => {
-  it("uses the confirmed cubic combat weights including zero and negative values", () => {
-    expect(getCombatWinProbability(75, 25)).toBeCloseTo(27 / 28);
-    expect(getCombatWinProbability(25, 75)).toBeCloseTo(1 / 28);
+  it("calculates official combat weights including zero and negative values", () => {
+    expect(getCombatWinProbability(75, 25)).toBe(0.75);
     expect(getCombatWinProbability(0, 0)).toBe(0.5);
     expect(getCombatWinProbability(-10, 30)).toBe(0);
   });
 
-  it("selects the cubic contest winner with the strict random < probability boundary", () => {
+  it("selects the contest winner with injected RNG", () => {
     const a = createSoldier("a", "player", "ai", 100, 100, "melee", stats({ combat: 75 }));
     const b = createSoldier("b", "enemy", "ai", 110, 100, "melee", stats({ combat: 25 }));
-    const probability = 27 / 28;
-    expect(resolveCombatContest(a, b, () => probability - 1e-9)).toBe(a);
-    expect(resolveCombatContest(a, b, () => probability)).toBe(b);
+    expect(resolveCombatContest(a, b, () => 0.749)).toBe(a);
+    expect(resolveCombatContest(a, b, () => 0.75)).toBe(b);
   });
 
-  it("resolves one unordered contact pair synchronously and consumes contest plus defense RNG", () => {
+  it("resolves an unordered pair once and starts only the winner", () => {
     const a = createSoldier("a", "player", "ai", 100, 100, "melee", stats({ combat: 50 }));
-    const b = createSoldier("b", "enemy", "ai", 110, 100, "melee", stats({ combat: 50, defense: 0 }));
+    const b = createSoldier("b", "enemy", "ai", 110, 100, "melee", stats({ combat: 50 }));
     a.targetId = b.id;
     b.targetId = a.id;
     let calls = 0;
-    const random = sequence(0, 1);
-    updateNormalCombatContests([a, b], 0, () => { calls += 1; return random(); });
-    expect(calls).toBe(2);
-    expect(a.combatActionState).toBe("ATTACK_RECOVERY");
-    expect(a.attackHitApplied).toBe(true);
+    updateNormalCombatContests([a, b], 0, () => { calls += 1; return 0; });
+    expect(calls).toBe(1);
+    expect(a.combatActionState).toBe("ATTACK_WINDUP");
     expect(b.combatActionState).toBe("IDLE");
-    expect(b.reactionState).toBe("HIT_STUN");
-    expect(b.hp).toBe(b.maxHp - NORMAL_ATTACK_DAMAGE);
   });
 
-  it("mode-0 normal contact retargets ordinary participants to each other", () => {
+  it("does not require the winner's combat target to be the loser", () => {
     const a = createSoldier("a", "player", "ai", 100, 100, "melee", stats({ combat: 0 }));
-    const b = createSoldier("b", "enemy", "ai", 110, 100, "melee", stats({ combat: 100, defense: 0 }));
+    const b = createSoldier("b", "enemy", "ai", 110, 100, "melee", stats({ combat: 100 }));
     const other = createSoldier("other", "player", "ai", 500, 500);
     a.targetId = b.id;
     b.targetId = other.id;
-    updateNormalCombatContests([a, b, other], 0, sequence(0.9, 1));
-    expect(a.targetId).toBe(b.id);
-    expect(b.targetId).toBe(a.id);
+    updateNormalCombatContests([a, b, other], 0, () => 0.9);
+    expect(b.targetId).toBe(other.id);
     expect(b.attackTargetId).toBe(a.id);
-    expect(a.hp).toBe(a.maxHp - NORMAL_ATTACK_DAMAGE);
   });
 
   it("does not run a soldier contest for base attacks", () => {
@@ -144,20 +132,20 @@ describe("Phase 3D combat contest and defense", () => {
     expect(isDamageGuarded(defender, "TRAP", () => 0)).toBe(false);
   });
 
-  it("guarded raw normal contact deals zero damage and creates no hit reaction", () => {
+  it("guarded normal hits deal zero damage and create no reaction", () => {
     const attacker = createSoldier("a", "player", "ai", 100, 100);
     const defender = createSoldier("d", "enemy", "ai", 110, 100, "melee", stats({ defense: 100 }));
-    const result = resolveRawNormalContactAttack(attacker, defender, 0, () => 0);
-    expect(result.guarded).toBe(true);
+    startSoldierAttack(attacker, defender, 0);
+    updateAttackStates([attacker, defender], createBattleBases(), COMBAT_TIMING_CONFIG.attackWindupMs, false, () => 0);
     expect(defender.hp).toBe(defender.maxHp);
     expect(defender.reactionState).toBe("NONE");
   });
 
-  it("failed raw normal guards deal exactly 1 damage immediately and create a reaction", () => {
+  it("failed normal guards deal exactly 1 damage then create a reaction", () => {
     const attacker = createSoldier("a", "player", "ai", 100, 100, "melee", stats({ combat: 999 }));
     const defender = createSoldier("d", "enemy", "ai", 110, 100, "melee", stats({ defense: 100 }));
-    const result = resolveRawNormalContactAttack(attacker, defender, 0, () => 1);
-    expect(result.guarded).toBe(false);
+    startSoldierAttack(attacker, defender, 0);
+    updateAttackStates([attacker, defender], createBattleBases(), COMBAT_TIMING_CONFIG.attackWindupMs, false, () => 1);
     expect(defender.hp).toBe(defender.maxHp - NORMAL_ATTACK_DAMAGE);
     expect(defender.reactionState).toBe("HIT_STUN");
   });
@@ -165,7 +153,8 @@ describe("Phase 3D combat contest and defense", () => {
   it("keeps combat and skill out of normal damage calculation", () => {
     const attacker = createSoldier("a", "player", "ai", 100, 100, "melee", stats({ skill: 9999, combat: 9999 }));
     const defender = createSoldier("d", "enemy", "ai", 110, 100, "melee", stats({ defense: 0 }));
-    resolveRawNormalContactAttack(attacker, defender, 0, () => 1);
+    startSoldierAttack(attacker, defender, 0);
+    updateAttackStates([attacker, defender], createBattleBases(), COMBAT_TIMING_CONFIG.attackWindupMs, false, () => 1);
     expect(defender.maxHp - defender.hp).toBe(1);
   });
 

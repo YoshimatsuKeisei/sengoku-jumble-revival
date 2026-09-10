@@ -6,7 +6,6 @@ import { startEngagement } from "./aiSystem";
 import { finalizeFatalDamage } from "./combatSystem";
 import { invalidateCombatTargetForAll } from "./combatTargetSystem";
 import { applyForcedMovement } from "./movementSystem";
-import { updateRawCombatImpulses } from "./rawCombatImpulseSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import { swfLogicTicksToMs } from "./techniqueCombatProfiles";
 
@@ -95,10 +94,6 @@ export function updateReactions(
   battleEnded = false,
 ): void {
   if (battleEnded) return;
-  // Raw d() applies its fx/fy k-branch before the k==0 fatal tiky() path. Run
-  // contact impulses first so a fatal normal hit still receives the last decayed
-  // movement step before reaction completion finalizes state 99.
-  updateRawCombatImpulses(soldiers, obstacles, currentTime);
   for (const soldier of soldiers) {
     const wasDead = soldier.isDead;
     updateReaction(soldier, obstacles, currentTime, deltaMs);
