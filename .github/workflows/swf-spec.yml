@@ -42,6 +42,7 @@ jobs:
           src/game/systems/phase3jPlayerControl.test.ts
           src/game/systems/obstacleAvoidance.test.ts
           src/game/rendering/battleUnitUiAssets.test.ts
+          src/game/rendering/battleFrameSequenceManifest.test.ts
           --reporter=verbose
       - name: Strategy regression tests
         run: >-
