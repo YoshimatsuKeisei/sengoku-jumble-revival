@@ -57,6 +57,83 @@
       "evidence": { "reference": "evidence/ranged_cycle.md" }
     },
     {
+      "id": "RANGED_TARGET_LATCH_AND_SCAN",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "latchedTargetVariable": "l",
+        "existingTargetRangeFailureFallsBackToAnotherEnemy": false,
+        "gaugeConsumedBeforeRangeFailure": true,
+        "unlatchedSentinel": -1,
+        "unlatchedSearchUsesGridScan": true,
+        "gridCellSourceUnits": 36,
+        "unlatchedScanOriginExpression": "round((_x + x) / 36), round((_y + y) / 36)",
+        "unlatchedScanUsesPredictedNextPosition": true,
+        "unlatchedSearchUsesNearestSort": false,
+        "generalForcedSplRequiresExistingLatchedTarget": true,
+        "generalForcedSplMayInventTarget": false
+      },
+      "evidence": { "reference": "evidence/ranged_attack_resolution_direct_avm1.md" }
+    },
+    {
+      "id": "RANGED_SYNCHRONOUS_GAMEPLAY_RESOLUTION",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "atckThirdParameterMeaning": "distance_or_special_selector",
+        "ordinaryRangedThirdParameter": "euclidean_distance",
+        "unlatchedGridScanThirdParameter": 5,
+        "gameplayResolvedInsideAtck": true,
+        "damageDeferredUntilProjectileArrival": false,
+        "defenseDeferredUntilProjectileArrival": false,
+        "projectileVisualMayHomeToFutureTargetCoordinates": false,
+        "projectileImpactPointSampledAtLaunch": true,
+        "defenderKLogicTicks": 10,
+        "attackerKLogicTicks": 10,
+        "defenderImpulseSourceUnits": 10,
+        "defenderImpulseDecayPerTick": 0.7,
+        "guardedRangedStillReceivesKAndImpulse": true,
+        "ironWallRangedGuardImpulseSourceUnits": 10,
+        "ironWallRangedGuardAttackerRecoilSourceUnits": 0
+      },
+      "implementation": {
+        "status": "partial_probe",
+        "implemented": [
+          "target_latch_and_grid_scan",
+          "launch_time_damage_and_defense",
+          "launch_time_projectile_impact_sampling",
+          "defender_k10_action_lock_and_hit_stun"
+        ],
+        "deferred": [
+          "defender_10_source_unit_decaying_fx_fy_displacement"
+        ],
+        "reason": "The b191 implementation depended on rawCombatImpulseSystem from the rejected f5 movement lineage; displacement is isolated for a later visual-regression probe."
+      },
+      "evidence": { "reference": "evidence/ranged_attack_resolution_direct_avm1.md" }
+    },
+    {
+      "id": "RANGED_PRE_EFFECT_DAMAGE_ORDER",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "fireArrowCode": 15,
+        "horokuCode": 16,
+        "bombardmentCode": 17,
+        "fireArrowPreDefenseDamage": 1,
+        "horokuBombardmentPrimaryPreExplosionDamage": 1,
+        "horokuBombardmentExplosionGridWidthCells": 3,
+        "horokuBombardmentExplosionGridHeightCells": 3,
+        "splashHasIndependentDefenseRoll": false,
+        "preEffectRunsBeforeDirectDefense": true,
+        "directArrowBulletRemainsGuardable": true,
+        "katonAbilityCode": "s33",
+        "katonCheckedOnPrimaryBeforeWholePreEffectBlock": true,
+        "primaryKatonSuppressesWholeExplosionGrid": true,
+        "splashKatonCheckedIndividually": false
+      },
+      "evidence": { "reference": "evidence/ranged_attack_resolution_direct_avm1.md" }
+    },
+    {
       "id": "NORMAL_CONTACT_CONTEST",
       "status": "confirmed",
       "category": "combat",

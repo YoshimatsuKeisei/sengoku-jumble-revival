@@ -36,6 +36,7 @@ describe("runtime characterization for major combat bugs", () => {
     generalA.technique = generalB.technique = "GENERAL_COMMAND";
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
+    archer.targetId = enemy.id;
     archer.combatGauge = 0;
     archer.combatGaugeUpdatedAt = 1_000;
 
@@ -56,6 +57,7 @@ describe("runtime characterization for major combat bugs", () => {
     general.technique = "GENERAL_COMMAND";
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
+    archer.targetId = enemy.id;
     archer.combatGauge = 10_000;
     archer.combatGaugeUpdatedAt = 1_000;
 
@@ -74,6 +76,7 @@ describe("runtime characterization for major combat bugs", () => {
     const enemy = unit("enemy", "enemy", 900);
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
+    archer.targetId = enemy.id;
     archer.stats.skill = 100;
     archer.combatGauge = 0;
     archer.combatGaugeUpdatedAt = 0;

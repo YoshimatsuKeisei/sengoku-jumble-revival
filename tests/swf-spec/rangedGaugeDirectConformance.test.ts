@@ -71,6 +71,7 @@ describe("SWF conformance: direct ranged scd gauge rollover", () => {
   it("still emits one shot for the threshold-crossing gauge step after that step consumes 200", () => {
     const subject = archer("triggered");
     const target = enemy("target");
+    subject.targetId = target.id;
     subject.combatGauge = 200;
     subject.combatGaugeUpdatedAt = 0;
     const time = COMBAT_GAUGE_UPDATE_INTERVAL_MS + 1;

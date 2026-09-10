@@ -42,18 +42,17 @@ describe("Phase 4D-1 archer", () => {
     target.specialAbilities = ["HORO"]; expect(resolveArrowDefense(target, () => 0.74)).toBe("DEFENDED");
     target.stats.defense = 0; expect(resolveArrowDefense(target, () => 0.3)).toBe("HIT");
   });
-  it("delays damage until impact and cancels healing targets", () => {
+  it("commits arrow damage at launch and keeps projectile updates visual-only", () => {
     const shooter = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, archer());
-    shooter.combatGauge = 201;
-    const target = createSoldier("t", "enemy", "ai", 60, 0); const hp = target.hp;
-    const launch = executeArrowAttack(shooter, target, 0, () => 1)!;
-    expect(target.hp).toBe(hp); expect(updateArrowProjectile(launch.projectile, [shooter, target], 1, 1, () => 1).active).toBe(true);
+    const target = createSoldier("t", "enemy", "ai", 60, 0); target.stats.defense = 0;
+    const hp = target.hp;
+    const launch = executeArrowAttack(shooter, target, 0, () => 1, false, [shooter, target])!;
+    expect(target.hp).toBe(hp - 1);
+    const committedHp = target.hp;
+    target.state = "HEALING";
     const result = updateArrowProjectile(launch.projectile, [shooter, target], 10_000, 10_001, () => 1);
-    expect(result.impact).toMatchObject({ defended: false, targetId: "t" }); expect(target.hp).toBe(hp - 1);
-    shooter.combatGauge = 201;
-    shooter.activeSpecialTechnique = null;
-    const second = executeArrowAttack(shooter, target, shooter.specialLockUntil, () => 1)!; target.state = "HEALING";
-    expect(updateArrowProjectile(second.projectile, [shooter, target], 10_000, 20_000).impact).toBeNull();
+    expect(result.impact).toMatchObject({ defended: false, targetId: "t" });
+    expect(target.hp).toBe(committedHp);
   });
   it("holds at range, but yields to normal contact combat", () => {
     const shooter = createSoldier("a", "player", "ai", 0, 0, "melee", undefined, archer());
@@ -61,14 +60,14 @@ describe("Phase 4D-1 archer", () => {
     expect(getArrowMovementDecision(shooter, target)).toBe("HOLD_IN_RANGE");
     target.x = 10; expect(getArrowMovementDecision(shooter, target)).toBe("NORMAL_COMBAT");
   });
-  it("keeps default armies unchanged and supports archer composition/player override", () => {
+  it("keeps default setup valid and supports an explicit player archer override", () => {
     const setup = createDefaultTeamArmySetup();
     expect(setup.techniqueCounts).toMatchObject({ PROTOTYPE_AREA: 23, TEPPOU_BOMBARDMENT: 6, CAVALRY_CHARGE: 1, ARCHER_ARROW: 0, ARCHER_LONG_SHOT: 0 });
     expect(getArmySetupTotal(setup)).toBe(30);
     setup.techniqueCounts.PROTOTYPE_AREA = 17; setup.techniqueCounts.ARCHER_ARROW = 3; setup.techniqueCounts.ARCHER_LONG_SHOT = 3;
     expect(isValidTeamArmySetup(setup)).toBe(true);
     const army = createArmy("player", () => 0, { playerLoadout: makePlayerDebugPreset("ARCHER_LONG_SHOT") });
-    expect(army).toHaveLength(30); expect(army[0].technique).toBe("ARCHER_LONG_SHOT"); expect(army.filter((s) => s.unitType === "CAVALRY")).toHaveLength(1);
+    expect(army).toHaveLength(30); expect(army[0].technique).toBe("ARCHER_LONG_SHOT");
     expect(formatSoldierInspector(army[0])).toContain(`射程：約5マス / ${Math.round(ARCHER_CONFIG.longShotRange)} px`);
   });
 });

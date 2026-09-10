@@ -105,6 +105,7 @@ describe("SWF conformance: confirmed rules", () => {
     const enemy = unit("enemy", "enemy", 600);
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
+    archer.targetId = enemy.id;
     archer.stats.skill = 100;
     archer.combatGauge = 200;
     archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
@@ -130,6 +131,7 @@ describe("SWF conformance: confirmed rules", () => {
     generalA.combatGaugeUpdatedAt = generalB.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
+    archer.targetId = enemy.id;
     archer.combatGauge = 0;
     archer.combatGaugeUpdatedAt = 1_000;
 
@@ -183,10 +185,13 @@ describe("SWF conformance: confirmed rules", () => {
 });
 
 describe("SWF conformance: evidence status", () => {
-  it("keeps the directly recovered command, launch, lock, and ranged gauge rules confirmed", () => {
+  it("keeps the directly recovered command and ranged rules confirmed", () => {
     expect(commandSpec.rules.find((candidate) => candidate.id === "GENERAL_SAME_TICK_DEDUPE")?.status).toBe("confirmed");
     expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH")?.status).toBe("confirmed");
     expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_ACTION_FRAME_LOCK")?.status).toBe("confirmed");
     expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_GAUGE_BANKING_LIMIT")?.status).toBe("confirmed");
+    expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_TARGET_LATCH_AND_SCAN")?.status).toBe("confirmed");
+    expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_SYNCHRONOUS_GAMEPLAY_RESOLUTION")?.status).toBe("confirmed");
+    expect(combatSpec.rules.find((candidate) => candidate.id === "RANGED_PRE_EFFECT_DAMAGE_ORDER")?.status).toBe("confirmed");
   });
 });
