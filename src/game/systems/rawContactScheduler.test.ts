@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { battlefieldSourcePointToWorld } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import {
@@ -7,6 +7,14 @@ import {
   SWF_NORMAL_CONTACT_TICK_MS,
   updateNormalCombatContests,
 } from "./normalCombatSystem";
+import {
+  beginRawAiMovementContactGate,
+  beginRawSoldierMovementStep,
+  endRawAiMovementContactGate,
+  finishRawSoldierMovementStep,
+  getRawAiMovementStepDecision,
+  resetRawMovementContactEvents,
+} from "./rawMovementContactGateSystem";
 
 function soldierAtSource(
   id: string,
@@ -17,6 +25,11 @@ function soldierAtSource(
   const world = battlefieldSourcePointToWorld({ x: sourceX, y: sourceY });
   return createSoldier(id, team, "ai", world.x, world.y, "melee");
 }
+
+afterEach(() => {
+  endRawAiMovementContactGate();
+  resetRawMovementContactEvents();
+});
 
 describe("raw contact scheduler probe", () => {
   it("quantizes revival positions through the raw 36-unit f-grid", () => {
@@ -68,5 +81,54 @@ describe("raw contact scheduler probe", () => {
     expect(calls).toBe(1);
     const started = roster.filter((soldier) => soldier.combatActionState === "ATTACK_WINDUP");
     expect(started).toHaveLength(1);
+  });
+
+  it("retains a movement-detected pair until the next 24 Hz combat tick", () => {
+    const a = soldierAtSource("a", "player", 500, 500);
+    const b = soldierAtSource("b", "enemy", 540, 500);
+    const roster = [a, b];
+    resetNormalContactScheduler(roster);
+
+    updateNormalCombatContests(roster, 0, () => 0);
+    expect(a.combatActionState).toBe("IDLE");
+
+    beginRawAiMovementContactGate(roster);
+    beginRawSoldierMovementStep(a);
+    const crossing = battlefieldSourcePointToWorld({ x: 509, y: 500 });
+    expect(getRawAiMovementStepDecision(a, crossing)).toBe("MOVE_AND_STOP");
+    a.x = crossing.x;
+    a.y = crossing.y;
+    finishRawSoldierMovementStep(a);
+    endRawAiMovementContactGate();
+
+    updateNormalCombatContests(roster, SWF_NORMAL_CONTACT_TICK_MS * 0.5, () => 0);
+    expect(a.combatActionState).toBe("IDLE");
+
+    updateNormalCombatContests(roster, SWF_NORMAL_CONTACT_TICK_MS + 0.01, () => 0);
+    expect(a.combatActionState).toBe("ATTACK_WINDUP");
+    expect(a.attackTargetId).toBe(b.id);
+  });
+
+  it("prioritizes the enemy that actually blocked movement over a nearer fallback neighbor", () => {
+    const a = soldierAtSource("a", "player", 500, 500);
+    const b = soldierAtSource("b", "enemy", 533, 500);
+    const c = soldierAtSource("c", "enemy", 525, 500);
+    const roster = [a, b, c];
+    resetNormalContactScheduler(roster);
+
+    beginRawAiMovementContactGate([a, b]);
+    beginRawSoldierMovementStep(a);
+    const crossing = battlefieldSourcePointToWorld({ x: 502, y: 500 });
+    expect(getRawAiMovementStepDecision(a, crossing)).toBe("MOVE_AND_STOP");
+    a.x = crossing.x;
+    a.y = crossing.y;
+    finishRawSoldierMovementStep(a);
+    endRawAiMovementContactGate();
+
+    updateNormalCombatContests(roster, 0, () => 0);
+
+    expect(a.combatActionState).toBe("ATTACK_WINDUP");
+    expect(a.attackTargetId).toBe(b.id);
+    expect(c.combatActionState).toBe("IDLE");
   });
 });
