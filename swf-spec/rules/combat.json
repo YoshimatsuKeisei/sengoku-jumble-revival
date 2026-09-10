@@ -81,10 +81,20 @@
       "status": "confirmed",
       "category": "combat",
       "expected": {
-        "dynamicTargetCoordinates": true,
+        "continuousLiveTargetCoordinatesEveryFrame": false,
+        "storedTargetCoordinateVariables": ["tx", "ty"],
+        "storedVelocityVariables": ["x", "y"],
+        "velocityFunction": "vc",
+        "velocityExpression": "atan2(ty-_y, tx-_x) then cos/sin * s",
+        "ordinaryMovementAddsStoredVelocityEveryFrame": true,
+        "targetCoordinatesSampledOnEngagement": true,
+        "targetCoordinatesRefreshedByScdDefault": true,
+        "scdRefreshIntervalLogicTicks": 23,
+        "eventDrivenRefreshesAlsoExist": true,
         "standaloneMaximumChaseDistance": null,
         "closeAxisThresholdExclusive": 20,
         "closeSpacingSourceUnits": 24,
+        "meleeP30P31SkipDefaultCloseCorrection": true,
         "persistentSectorSlots": false,
         "crowdJitter": false,
         "rangedHoldMarginSourceUnits": 10,
@@ -95,7 +105,7 @@
         "retreatRemainsPursuableBeforeEntryCommit": true,
         "retreatReleaseStates": [93, 94]
       },
-      "evidence": { "reference": "evidence/normal_melee_combat.md" }
+      "evidence": { "reference": "evidence/normal_melee_ai_reaudit_avm1.md" }
     }
   ]
 }
