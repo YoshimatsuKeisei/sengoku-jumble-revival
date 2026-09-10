@@ -77,6 +77,36 @@
       "evidence": { "reference": "evidence/normal_melee_combat.md" }
     },
     {
+      "id": "NORMAL_CONTACT_ATTACK_TIMING",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "atckMode": 0,
+        "resolutionIsSynchronousWithContactContest": true,
+        "independentWindupMs": null,
+        "laterRangeRecheckBeforeDamage": false,
+        "independentRecoveryMs": null,
+        "separateCooldownMs": null,
+        "defenseRandomScale": 200,
+        "guardIncludesEquality": true,
+        "damageMutatesHpInAtckCall": true,
+        "kAssignedToDefender": 10,
+        "kAssignedToAttacker": 10,
+        "ordinaryDResumesAfterKConsumingUpdates": 10,
+        "impulseTicks": 10,
+        "impulseDecayPerTick": 0.7,
+        "normalDefenderInitialImpulseUnits": 10,
+        "ironWallGuardDefenderInitialImpulseUnits": 5,
+        "ironWallGuardAttackerOppositeInitialImpulseUnits": 10,
+        "ironWallGuardAttackerImpulseOnlyOnSuccessfulGuard": true,
+        "directionIndexExpression": "round(atan2(sb.y-sa.y, sb.x-sa.x) / 0.75) + 5, wrap >8",
+        "directionFx": [0, -1, -0.6, 0, 0.6, 1, 0.6, 0, -0.6],
+        "directionFy": [0, 0, -0.6, -1, -0.6, 0, 0.6, 1, 0.6],
+        "fatalCleanupWaitsForKResponse": true
+      },
+      "evidence": { "reference": "evidence/normal_contact_attack_direct_avm1.md" }
+    },
+    {
       "id": "NORMAL_PURSUIT_LIFECYCLE",
       "status": "confirmed",
       "category": "combat",
