@@ -9,6 +9,13 @@ import { findArrowTarget, getArrowMovementDecision } from "./arrowAttackSystem";
 import { clearStaleCombatTarget, isValidCombatTarget } from "./combatTargetSystem";
 import { getArrivalToleranceWorld, isWithinNormalContact } from "./techniqueCombatProfiles";
 import { getBaseAttackContactSegment } from "./battlefieldGeometry";
+import {
+  beginRawAiMovementContactGate,
+  beginRawSoldierMovementStep,
+  endRawAiMovementContactGate,
+  finishRawSoldierMovementStep,
+  getRawAiMovementStepDecision,
+} from "./rawMovementContactGateSystem";
 
 export interface Direction { x: number; y: number }
 
@@ -163,11 +170,25 @@ function applyMovementDistance(
 ): void {
   const steps = Math.max(1, Math.ceil(distance / (SOLDIER_RADIUS / 2)));
   const stepDistance = distance / steps;
-  for (let step = 0; step < steps; step += 1) {
-    const nextX = Math.max(SOLDIER_RADIUS, Math.min(BATTLEFIELD_CONFIG.width - SOLDIER_RADIUS, soldier.x + direction.x * stepDistance));
-    if (!obstacles.some((obstacle) => circleIntersectsObstacle(nextX, soldier.y, SOLDIER_RADIUS, obstacle))) soldier.x = nextX;
-    const nextY = Math.max(SOLDIER_RADIUS, Math.min(BATTLEFIELD_CONFIG.height - SOLDIER_RADIUS, soldier.y + direction.y * stepDistance));
-    if (!obstacles.some((obstacle) => circleIntersectsObstacle(soldier.x, nextY, SOLDIER_RADIUS, obstacle))) soldier.y = nextY;
+  beginRawSoldierMovementStep(soldier);
+  try {
+    for (let step = 0; step < steps; step += 1) {
+      const nextX = Math.max(SOLDIER_RADIUS, Math.min(BATTLEFIELD_CONFIG.width - SOLDIER_RADIUS, soldier.x + direction.x * stepDistance));
+      const candidateX = obstacles.some((obstacle) => circleIntersectsObstacle(nextX, soldier.y, SOLDIER_RADIUS, obstacle))
+        ? soldier.x
+        : nextX;
+      const nextY = Math.max(SOLDIER_RADIUS, Math.min(BATTLEFIELD_CONFIG.height - SOLDIER_RADIUS, soldier.y + direction.y * stepDistance));
+      const candidateY = obstacles.some((obstacle) => circleIntersectsObstacle(candidateX, nextY, SOLDIER_RADIUS, obstacle))
+        ? soldier.y
+        : nextY;
+      const decision = getRawAiMovementStepDecision(soldier, { x: candidateX, y: candidateY });
+      if (decision === "STOP") break;
+      soldier.x = candidateX;
+      soldier.y = candidateY;
+      if (decision === "MOVE_AND_STOP") break;
+    }
+  } finally {
+    finishRawSoldierMovementStep(soldier);
   }
 }
 
@@ -205,86 +226,91 @@ export function moveAiSoldiers(
   currentTime = 0,
   bases: readonly BattleBase[] = [],
 ): void {
-  for (const soldier of soldiers) {
-    if (soldier.controller === "ai" || soldier.state !== "NORMAL") {
-      soldier.velocityX = 0;
-      soldier.velocityY = 0;
-    }
-    if (soldier.targetId) {
-      const selected = soldiers.find((candidate) => candidate.id === soldier.targetId);
-      if (!isValidCombatTarget(soldier, selected)) clearStaleCombatTarget(soldier);
-    }
-    const stateControlled = soldier.state === "EMERGENCY_RETREAT" || soldier.state === "REJOINING" || soldier.isConfused;
-    const windupTarget = soldier.attackTargetKind === "SOLDIER"
-      ? soldiers.find((candidate) => candidate.id === soldier.attackTargetId && isValidCombatTarget(soldier, candidate)) ?? null
-      : null;
-    const chasingRetreatWindup = soldier.controller === "ai"
-      && soldier.state === "NORMAL"
-      && soldier.combatActionState === "ATTACK_WINDUP"
-      && windupTarget?.state === "EMERGENCY_RETREAT";
-    if (soldier.isDead || currentTime < soldier.ninjaDashUntil || currentTime < soldier.abilityActionLockUntil
-      || currentTime < soldier.trapStateUntil || soldier.baseContactLockTicks > 0
-      || soldier.activeSpecialTechnique !== null
-      || soldier.reactionState !== "NONE" || (soldier.combatActionState !== "IDLE" && !chasingRetreatWindup)
-      || (!stateControlled && soldier.controller !== "ai") || soldier.state === "HEALING"
-    ) continue;
-    if (soldier.isConfused) {
-      const ownBase = bases.find((base) => base.team === soldier.team);
-      const destination = ownBase ?? { x: soldier.team === "player" ? BATTLEFIELD_CONFIG.playerHomeX : BATTLEFIELD_CONFIG.enemyHomeX, y: soldier.y };
-      moveBy(soldier, destination.x - soldier.x, destination.y - soldier.y, deltaSeconds, obstacles, currentTime, true);
-      continue;
-    }
-    const target = chasingRetreatWindup ? windupTarget : soldier.state === "NORMAL" && !soldier.temporaryOrder && soldier.targetId
-      ? soldiers.find((candidate) => candidate.id === soldier.targetId && isValidCombatTarget(soldier, candidate)) ?? null
-      : null;
-    if (soldier.state === "NORMAL" && soldier.unitType === "TEPPOU" && !chasingRetreatWindup) {
-      const gunTarget = target ?? findGunTarget(soldier, soldiers);
-      if (gunTarget && getGunMovementDecision(soldier, gunTarget) === "HOLD_IN_RANGE") {
-        const dx = gunTarget.x - soldier.x; const dy = gunTarget.y - soldier.y; const length = Math.hypot(dx, dy);
-        if (length > 0) { soldier.facingX = dx / length; soldier.facingY = dy / length; soldier.aimX = dx / length; soldier.aimY = dy / length; }
+  beginRawAiMovementContactGate(soldiers);
+  try {
+    for (const soldier of soldiers) {
+      if (soldier.controller === "ai" || soldier.state !== "NORMAL") {
+        soldier.velocityX = 0;
+        soldier.velocityY = 0;
+      }
+      if (soldier.targetId) {
+        const selected = soldiers.find((candidate) => candidate.id === soldier.targetId);
+        if (!isValidCombatTarget(soldier, selected)) clearStaleCombatTarget(soldier);
+      }
+      const stateControlled = soldier.state === "EMERGENCY_RETREAT" || soldier.state === "REJOINING" || soldier.isConfused;
+      const windupTarget = soldier.attackTargetKind === "SOLDIER"
+        ? soldiers.find((candidate) => candidate.id === soldier.attackTargetId && isValidCombatTarget(soldier, candidate)) ?? null
+        : null;
+      const chasingRetreatWindup = soldier.controller === "ai"
+        && soldier.state === "NORMAL"
+        && soldier.combatActionState === "ATTACK_WINDUP"
+        && windupTarget?.state === "EMERGENCY_RETREAT";
+      if (soldier.isDead || currentTime < soldier.ninjaDashUntil || currentTime < soldier.abilityActionLockUntil
+        || currentTime < soldier.trapStateUntil || soldier.baseContactLockTicks > 0
+        || soldier.activeSpecialTechnique !== null
+        || soldier.reactionState !== "NONE" || (soldier.combatActionState !== "IDLE" && !chasingRetreatWindup)
+        || (!stateControlled && soldier.controller !== "ai") || soldier.state === "HEALING"
+      ) continue;
+      if (soldier.isConfused) {
+        const ownBase = bases.find((base) => base.team === soldier.team);
+        const destination = ownBase ?? { x: soldier.team === "player" ? BATTLEFIELD_CONFIG.playerHomeX : BATTLEFIELD_CONFIG.enemyHomeX, y: soldier.y };
+        moveBy(soldier, destination.x - soldier.x, destination.y - soldier.y, deltaSeconds, obstacles, currentTime, true);
         continue;
       }
-    }
-    if (soldier.state === "NORMAL" && soldier.unitType === "ARCHER" && !chasingRetreatWindup) {
-      const arrowTarget = target && getArrowMovementDecision(soldier, target) === "HOLD_IN_RANGE"
-        ? target : findArrowTarget(soldier, soldiers);
-      if (arrowTarget && getArrowMovementDecision(soldier, arrowTarget) === "HOLD_IN_RANGE") {
-        const dx = arrowTarget.x - soldier.x; const dy = arrowTarget.y - soldier.y; const length = Math.hypot(dx, dy);
-        if (length > 0) { soldier.facingX = dx / length; soldier.facingY = dy / length; soldier.aimX = dx / length; soldier.aimY = dy / length; }
-        continue;
-      }
-    }
-    if (target && !chasingRetreatWindup && isWithinNormalContact(soldier, target)) continue;
-    if (!target && (soldier.moveTargetX === null || soldier.moveTargetY === null)) continue;
-    const predictiveDefendDestination = target && soldier.strategy === "defend"
-      && soldier.strategyObjectiveKind === "SEEK_COMBAT"
-      ? { x: soldier.strategyObjectiveX, y: soldier.strategyObjectiveY }
-      : null;
-    const destination = target
-      ? predictiveDefendDestination
-        ?? (target.state === "EMERGENCY_RETREAT" ? target : getPreferredApproachPoint(soldier, target, soldiers, obstacles) ?? target)
-      : { x: soldier.moveTargetX!, y: soldier.moveTargetY! };
-    if (!target && soldier.state === "NORMAL" && soldier.strategyObjectiveKind === "ENEMY_SIDE") {
-      const enemyBase = bases.find((base) => base.team !== soldier.team && !base.isDestroyed && base.hp > 0);
-      if (enemyBase) {
-        const contact = getBaseAttackContactSegment(enemyBase);
-        const verticalInset = SOLDIER_RADIUS * 2;
-        const minimumApproachY = Math.min(contact.maxY, contact.minY + verticalInset);
-        const maximumApproachY = Math.max(contact.minY, contact.maxY - verticalInset);
-        destination.y = Math.max(minimumApproachY, Math.min(maximumApproachY, destination.y));
-        if (soldier.y < contact.minY || soldier.y > contact.maxY) {
-          // First line up outside the base. A diagonal aimed directly through
-          // the base rectangle is ejected by its top/bottom collider before it
-          // can ever reach the narrow attack segment.
-          destination.x = contact.x + (enemyBase.team === "enemy" ? -verticalInset : verticalInset);
+      const target = chasingRetreatWindup ? windupTarget : soldier.state === "NORMAL" && !soldier.temporaryOrder && soldier.targetId
+        ? soldiers.find((candidate) => candidate.id === soldier.targetId && isValidCombatTarget(soldier, candidate)) ?? null
+        : null;
+      if (soldier.state === "NORMAL" && soldier.unitType === "TEPPOU" && !chasingRetreatWindup) {
+        const gunTarget = target ?? findGunTarget(soldier, soldiers);
+        if (gunTarget && getGunMovementDecision(soldier, gunTarget) === "HOLD_IN_RANGE") {
+          const dx = gunTarget.x - soldier.x; const dy = gunTarget.y - soldier.y; const length = Math.hypot(dx, dy);
+          if (length > 0) { soldier.facingX = dx / length; soldier.facingY = dy / length; soldier.aimX = dx / length; soldier.aimY = dy / length; }
+          continue;
         }
       }
+      if (soldier.state === "NORMAL" && soldier.unitType === "ARCHER" && !chasingRetreatWindup) {
+        const arrowTarget = target && getArrowMovementDecision(soldier, target) === "HOLD_IN_RANGE"
+          ? target : findArrowTarget(soldier, soldiers);
+        if (arrowTarget && getArrowMovementDecision(soldier, arrowTarget) === "HOLD_IN_RANGE") {
+          const dx = arrowTarget.x - soldier.x; const dy = arrowTarget.y - soldier.y; const length = Math.hypot(dx, dy);
+          if (length > 0) { soldier.facingX = dx / length; soldier.facingY = dy / length; soldier.aimX = dx / length; soldier.aimY = dy / length; }
+          continue;
+        }
+      }
+      if (target && !chasingRetreatWindup && isWithinNormalContact(soldier, target)) continue;
+      if (!target && (soldier.moveTargetX === null || soldier.moveTargetY === null)) continue;
+      const predictiveDefendDestination = target && soldier.strategy === "defend"
+        && soldier.strategyObjectiveKind === "SEEK_COMBAT"
+        ? { x: soldier.strategyObjectiveX, y: soldier.strategyObjectiveY }
+        : null;
+      const destination = target
+        ? predictiveDefendDestination
+          ?? (target.state === "EMERGENCY_RETREAT" ? target : getPreferredApproachPoint(soldier, target, soldiers, obstacles) ?? target)
+        : { x: soldier.moveTargetX!, y: soldier.moveTargetY! };
+      if (!target && soldier.state === "NORMAL" && soldier.strategyObjectiveKind === "ENEMY_SIDE") {
+        const enemyBase = bases.find((base) => base.team !== soldier.team && !base.isDestroyed && base.hp > 0);
+        if (enemyBase) {
+          const contact = getBaseAttackContactSegment(enemyBase);
+          const verticalInset = SOLDIER_RADIUS * 2;
+          const minimumApproachY = Math.min(contact.maxY, contact.minY + verticalInset);
+          const maximumApproachY = Math.max(contact.minY, contact.maxY - verticalInset);
+          destination.y = Math.max(minimumApproachY, Math.min(maximumApproachY, destination.y));
+          if (soldier.y < contact.minY || soldier.y > contact.maxY) {
+            // First line up outside the base. A diagonal aimed directly through
+            // the base rectangle is ejected by its top/bottom collider before it
+            // can ever reach the narrow attack segment.
+            destination.x = contact.x + (enemyBase.team === "enemy" ? -verticalInset : verticalInset);
+          }
+        }
+      }
+      // Engagements use their own SWF 24-unit spacing point. Applying the
+      // destination tolerance on top of that spacing would stop short of contact.
+      const stopDistance = target ? 2 : getArrivalToleranceWorld(soldier.stats.foot);
+      if (distanceBetween(soldier, destination) <= stopDistance) continue;
+      moveBy(soldier, destination.x - soldier.x, destination.y - soldier.y, deltaSeconds, obstacles, currentTime, true);
     }
-    // Engagements use their own SWF 24-unit spacing point. Applying the
-    // destination tolerance on top of that spacing would stop short of contact.
-    const stopDistance = target ? 2 : getArrivalToleranceWorld(soldier.stats.foot);
-    if (distanceBetween(soldier, destination) <= stopDistance) continue;
-    moveBy(soldier, destination.x - soldier.x, destination.y - soldier.y, deltaSeconds, obstacles, currentTime, true);
+  } finally {
+    endRawAiMovementContactGate();
   }
 }
 
