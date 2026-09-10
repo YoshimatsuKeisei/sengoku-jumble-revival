@@ -6,6 +6,10 @@ import { startEngagement } from "./aiSystem";
 import { startSoldierAttack } from "./attackSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { recordNormalCombatResult } from "./meritSystem";
+import {
+  drainRawMovementContactEvents,
+  type RawMovementContactEvent,
+} from "./rawMovementContactGateSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import {
   isWithinNormalContact,
@@ -21,6 +25,7 @@ interface RawContactSchedulerRuntime {
 }
 
 const rawContactSchedulerByRoster = new WeakMap<Soldier[], RawContactSchedulerRuntime>();
+const pendingMovementContactsByRoster = new WeakMap<Soldier[], Map<string, RawMovementContactEvent>>();
 
 export interface RawContactGridCell {
   x: number;
@@ -65,6 +70,10 @@ export function getRawContactGridCell(point: Pick<Soldier, "x" | "y">): RawConta
 
 function rawContactCellKey(cell: RawContactGridCell): string {
   return `${cell.x},${cell.y}`;
+}
+
+function rawContactPairKey(firstId: string, secondId: string): string {
+  return firstId < secondId ? `${firstId}\u0000${secondId}` : `${secondId}\u0000${firstId}`;
 }
 
 function canOccupyRawContactGrid(soldier: Soldier): boolean {
@@ -161,6 +170,40 @@ function findLocalContactOccupant(
   return best;
 }
 
+function queueMovementContacts(soldiers: Soldier[]): void {
+  const detected = drainRawMovementContactEvents();
+  if (detected.length === 0) return;
+  let pending = pendingMovementContactsByRoster.get(soldiers);
+  if (!pending) {
+    pending = new Map();
+    pendingMovementContactsByRoster.set(soldiers, pending);
+  }
+  for (const event of detected) {
+    pending.set(rawContactPairKey(event.moverId, event.opponentId), event);
+  }
+}
+
+function resolveNormalContactPair(
+  first: Soldier,
+  second: Soldier,
+  currentTime: number,
+  random: RandomSource,
+  consumedThisTick: Set<string>,
+): boolean {
+  if (consumedThisTick.has(first.id) || consumedThisTick.has(second.id)) return false;
+  if (!isContactPair(first, second)) return false;
+
+  consumedThisTick.add(first.id);
+  consumedThisTick.add(second.id);
+  const attacker = resolveCombatContest(first, second, random);
+  const defender = attacker === first ? second : first;
+  applyNormalContactEngagements(attacker, defender, currentTime, random);
+  if (startSoldierAttack(attacker, defender, currentTime)) {
+    recordNormalCombatResult(attacker, defender);
+  }
+  return true;
+}
+
 function isRawContactTickDue(soldiers: Soldier[], currentTime: number): boolean {
   let runtime = rawContactSchedulerByRoster.get(soldiers);
   if (!runtime || currentTime < runtime.lastObservedTime) {
@@ -179,41 +222,47 @@ function isRawContactTickDue(soldiers: Soldier[], currentTime: number): boolean 
 
 export function resetNormalContactScheduler(soldiers: Soldier[]): void {
   rawContactSchedulerByRoster.delete(soldiers);
+  pendingMovementContactsByRoster.delete(soldiers);
+  drainRawMovementContactEvents();
 }
 
 /**
- * Phase 1 of the raw contact rebuild.
+ * Direct-contact handoff probe.
  *
- * Contact arbitration runs at the SWF's 24 Hz cadence and uses a 36-unit
- * occupancy neighborhood. A soldier may participate in at most one contact per
- * logic tick. Crucially, this function performs no x/y spacing, knockback, fx/fy
- * impulse, or generic separation; the previously verified movement path remains
- * untouched. Existing attack windup/damage timing is intentionally retained for
- * this probe so scheduler effects can be evaluated in isolation.
+ * The pre-move gate now records the exact enemy that blocked an AI movement
+ * step. Those pairs are retained until the next 24 Hz contact tick and resolved
+ * first, so movement does not stop for one opponent and then have combat search
+ * for a different nearby opponent. The Phase-1 neighborhood search remains only
+ * as a compatibility fallback for contacts not yet emitted by the AI movement
+ * path (for example player-controlled contact and pre-existing overlaps).
  */
 export function updateNormalCombatContests(
   soldiers: Soldier[],
   currentTime: number,
   random: RandomSource = Math.random,
 ): void {
+  queueMovementContacts(soldiers);
   if (!isRawContactTickDue(soldiers, currentTime)) return;
 
-  const occupancy = buildRawContactOccupancy(soldiers);
   const consumedThisTick = new Set<string>();
+  const byId = new Map(soldiers.map((soldier) => [soldier.id, soldier] as const));
+  const pending = pendingMovementContactsByRoster.get(soldiers);
+  pendingMovementContactsByRoster.delete(soldiers);
 
+  if (pending) {
+    for (const event of pending.values()) {
+      const mover = byId.get(event.moverId);
+      const opponent = byId.get(event.opponentId);
+      if (!mover || !opponent) continue;
+      resolveNormalContactPair(mover, opponent, currentTime, random, consumedThisTick);
+    }
+  }
+
+  const occupancy = buildRawContactOccupancy(soldiers);
   for (const soldier of soldiers) {
     if (consumedThisTick.has(soldier.id) || !canOccupyRawContactGrid(soldier)) continue;
     const opponent = findLocalContactOccupant(soldier, occupancy, consumedThisTick);
     if (!opponent) continue;
-
-    consumedThisTick.add(soldier.id);
-    consumedThisTick.add(opponent.id);
-
-    const attacker = resolveCombatContest(soldier, opponent, random);
-    const defender = attacker === soldier ? opponent : soldier;
-    applyNormalContactEngagements(attacker, defender, currentTime, random);
-    if (startSoldierAttack(attacker, defender, currentTime)) {
-      recordNormalCombatResult(attacker, defender);
-    }
+    resolveNormalContactPair(soldier, opponent, currentTime, random, consumedThisTick);
   }
 }
