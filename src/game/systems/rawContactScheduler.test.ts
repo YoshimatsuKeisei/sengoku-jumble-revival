@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  battlefieldSourcePointToWorld,
-  battlefieldWorldPointToSource,
-} from "../battlefieldLayout";
+import { battlefieldSourcePointToWorld } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import {
   getRawContactGridCell,
@@ -10,10 +7,6 @@ import {
   SWF_NORMAL_CONTACT_TICK_MS,
   updateNormalCombatContests,
 } from "./normalCombatSystem";
-import {
-  isRawGenericContactImpulseActive,
-  SWF_GENERIC_CONTACT_K_TICKS,
-} from "./rawContactImpulseSystem";
 
 function soldierAtSource(
   id: string,
@@ -31,9 +24,11 @@ describe("raw contact scheduler probe", () => {
     expect(getRawContactGridCell(world)).toEqual({ x: 2, y: 3 });
   });
 
-  it("does not arbitrate again between 24 Hz ticks or while the raw k=3 contact response is active", () => {
+  it("runs contact arbitration at no more than the SWF 24 Hz cadence", () => {
     const a = soldierAtSource("a", "player", 500, 500);
-    const b = soldierAtSource("b", "enemy", 530, 500);
+    const b = soldierAtSource("b", "enemy", 510, 500);
+    a.targetId = b.id;
+    b.targetId = a.id;
     const roster = [a, b];
     resetNormalContactScheduler(roster);
 
@@ -42,47 +37,29 @@ describe("raw contact scheduler probe", () => {
 
     updateNormalCombatContests(roster, 0, random);
     expect(calls).toBe(1);
+
     updateNormalCombatContests(roster, SWF_NORMAL_CONTACT_TICK_MS * 0.5, random);
     expect(calls).toBe(1);
+
     updateNormalCombatContests(roster, SWF_NORMAL_CONTACT_TICK_MS + 0.01, random);
-    expect(calls).toBe(1);
-    expect(isRawGenericContactImpulseActive(a)).toBe(true);
-    expect(isRawGenericContactImpulseActive(b)).toBe(true);
+    expect(calls).toBe(2);
   });
 
-  it("retains phase 2A and first moves only the current roster soldier to the raw 24-unit spacing point", () => {
+  it("does not modify soldier coordinates while arbitrating contact", () => {
     const a = soldierAtSource("a", "player", 500, 500);
-    const b = soldierAtSource("b", "enemy", 530, 500);
+    const b = soldierAtSource("b", "enemy", 510, 505);
     const roster = [a, b];
+    const before = roster.map((soldier) => ({ x: soldier.x, y: soldier.y }));
 
     updateNormalCombatContests(roster, 0, () => 0);
 
-    const sourceA = battlefieldWorldPointToSource(a);
-    const sourceB = battlefieldWorldPointToSource(b);
-    expect(sourceA.x).toBeCloseTo(506, 6);
-    expect(sourceA.y).toBeCloseTo(500, 6);
-    expect(sourceB.x).toBeCloseTo(530, 6);
-    expect(sourceB.y).toBeCloseTo(500, 6);
-    expect(Math.hypot(sourceB.x - sourceA.x, sourceB.y - sourceA.y)).toBeCloseTo(24, 6);
+    expect(roster.map((soldier) => ({ x: soldier.x, y: soldier.y }))).toEqual(before);
   });
 
-  it("rejects the phase-2A 24-unit correction when its candidate f cell already has a dynamic occupant", () => {
+  it("allows each soldier to participate in at most one contact per logic tick", () => {
     const a = soldierAtSource("a", "player", 500, 500);
-    const b = soldierAtSource("b", "enemy", 530, 500);
-    const blocker = soldierAtSource("blocker", "player", 506, 500);
-    const roster = [a, b, blocker];
-
-    updateNormalCombatContests(roster, 0, () => 0);
-
-    const sourceA = battlefieldWorldPointToSource(a);
-    expect(sourceA.x).toBeCloseTo(500, 6);
-    expect(sourceA.y).toBeCloseTo(500, 6);
-  });
-
-  it("allows each soldier to participate in at most one selected contact per logic tick", () => {
-    const a = soldierAtSource("a", "player", 500, 500);
-    const b = soldierAtSource("b", "enemy", 530, 500);
-    const c = soldierAtSource("c", "enemy", 500, 530);
+    const b = soldierAtSource("b", "enemy", 510, 500);
+    const c = soldierAtSource("c", "enemy", 505, 510);
     const roster = [a, b, c];
 
     let calls = 0;
@@ -91,36 +68,5 @@ describe("raw contact scheduler probe", () => {
     expect(calls).toBe(1);
     const started = roster.filter((soldier) => soldier.combatActionState === "ATTACK_WINDUP");
     expect(started).toHaveLength(1);
-  });
-
-  it("applies exactly three decaying away-from-contact impulse ticks after the retained 24-unit correction", () => {
-    const a = soldierAtSource("a", "player", 500, 500);
-    const b = soldierAtSource("b", "enemy", 530, 500);
-    a.stats.foot = 3;
-    b.stats.foot = 3;
-    const roster = [a, b];
-    resetNormalContactScheduler(roster);
-
-    updateNormalCombatContests(roster, 0, () => 0);
-    expect(battlefieldWorldPointToSource(a).x).toBeCloseTo(506, 6);
-    expect(battlefieldWorldPointToSource(b).x).toBeCloseTo(530, 6);
-
-    for (let tick = 1; tick <= SWF_GENERIC_CONTACT_K_TICKS; tick += 1) {
-      updateNormalCombatContests(roster, SWF_NORMAL_CONTACT_TICK_MS * tick + 0.01, () => 0);
-    }
-
-    const sourceA = battlefieldWorldPointToSource(a);
-    const sourceB = battlefieldWorldPointToSource(b);
-    const totalImpulse = 3 * (1 + 0.7 + 0.49);
-    expect(sourceA.x).toBeCloseTo(506 - totalImpulse, 5);
-    expect(sourceB.x).toBeCloseTo(530 + totalImpulse, 5);
-    expect(sourceA.y).toBeCloseTo(500, 5);
-    expect(sourceB.y).toBeCloseTo(500, 5);
-    expect(isRawGenericContactImpulseActive(a)).toBe(true);
-    expect(isRawGenericContactImpulseActive(b)).toBe(true);
-
-    updateNormalCombatContests(roster, SWF_NORMAL_CONTACT_TICK_MS * (SWF_GENERIC_CONTACT_K_TICKS + 1) + 0.01, () => 0);
-    expect(isRawGenericContactImpulseActive(a)).toBe(false);
-    expect(isRawGenericContactImpulseActive(b)).toBe(false);
   });
 });
