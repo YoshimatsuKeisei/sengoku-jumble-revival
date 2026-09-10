@@ -1,11 +1,154 @@
 {
   "rules": [
     {
+      "id": "COMMON_SPECIAL_ABILITY_CODE_MAP",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": {
+        "s7": "RUSH",
+        "s8": "SIEGE",
+        "s9": "FINISHER",
+        "s10": "MIGHT",
+        "s11": "IRON_WALL",
+        "s12": "HORO",
+        "s13": "RALLY_SPIRIT",
+        "s14": "TREATMENT",
+        "s15": "INSPIRE",
+        "s16": "FIELD_HOSPITAL",
+        "s17": "TRAP",
+        "s18": "FORTIFY",
+        "s19": "FORESIGHT",
+        "s20": "RECOVERY_BOOST",
+        "s21": "DOUBLE_SPECIAL",
+        "s22": "FLEET_FOOT"
+      },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
+      "id": "RUSH_RETARGET_BOUNDARY",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": { "keepPriorTargetAtOrBelowPercent": 70, "normalContactAlwaysRetargets": true },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
+      "id": "SIEGE_BASE_DAMAGE_AND_MERIT",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": {
+        "normalBaseDamage": 1,
+        "siegeBaseDamage": 2,
+        "normalRsjIncrement": 1,
+        "siegeRsjIncrement": 2,
+        "meritIncrementOccursBeforeBaseHpClamp": true,
+        "separateCaptureBonus": false
+      },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
+      "id": "MIGHT_FINISHER_DAMAGE_ORDER",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": { "mightAddsDamage": 1, "finisherThresholdOperator": "<", "finisherThresholdHp": 6, "finisherChecksAfterPriorDamage": true },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
+      "id": "IRON_WALL_GUARD_KNOCKBACK",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": { "changesGuardProbability": false, "normalGuardKnockbackSourceUnits": 10, "ironWallGuardKnockbackSourceUnits": 5 },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
+      "id": "HORO_AND_FORESIGHT_DEFENSE",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": { "horoForcedGuardChance": 0.7, "horoRandomOperator": ">", "horoRandomPercentBoundary": 30, "foresightEnablesSpecialDefenseRoll": true },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
+      "id": "SUPPORT_RECOVERY_PULSE",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": {
+        "sourceExcluded": true,
+        "targetStateCondition": "p < 89",
+        "normalHeal": 1,
+        "recoveryBoostHeal": 2,
+        "recoveryMeritPerHealedTarget": 1
+      },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
+      "id": "RALLY_INSPIRE_RETREAT_TRIGGER",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": {
+        "holderStateCondition": "p < 89",
+        "actionLockTicks": 16,
+        "requiresCombatIdle": false,
+        "requiresNoHitReaction": false,
+        "pulseMode": 5
+      },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
+      "id": "TREATMENT_SELECTION_AND_RECOVERY",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": {
+        "holderStateCondition": "p < 88",
+        "manhattanDistance": { "operator": "<", "value": 760 },
+        "playerDirectionCondition": "holderX - 30 < patientX",
+        "enemyDirectionCondition": "holderX + 30 > patientX",
+        "baseHealExpression": "floor(maxHp * 0.2) + 2",
+        "recoveryBoostTreatmentMultiplier": 2,
+        "postTreatmentLockTicks": 12,
+        "singleUseUntilBaseVisit": true
+      },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
+      "id": "FIELD_HOSPITAL_ROSTER_DRAWS",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": { "draws": 3, "withReplacement": true, "consumeAllDraws": true, "winningHolder": "last matching draw", "healAmount": 30 },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
+      "id": "TRAP_ROSTER_DRAWS",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": { "draws": 2, "withReplacement": true, "consumeAllDraws": true, "winningHolder": "last matching draw", "activePortTrigger": "enemy fixed-fence new contact" },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
       "id": "TRAP_ACTIVE_STATE_DEDUPES_RECHECK",
       "status": "confirmed",
       "category": "ability",
       "expected": { "actionLockTicks": 10, "trapStateTicks": 20, "retriggerWhileTrapStateActive": false },
       "evidence": { "reference": "evidence/trap_boundary.md" }
+    },
+    {
+      "id": "FORTIFY_ROSTER_DRAWS",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": {
+        "draws": 2,
+        "withReplacement": true,
+        "consumeAllDraws": true,
+        "successRandomOperator": ">",
+        "successRandomPercentBoundary": 50,
+        "ninjaBypass": true
+      },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
+    },
+    {
+      "id": "RECOVERY_BOOST_MULTIPLIERS",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": { "supportPulseHpMultiplier": 2, "baseRecoveryMultiplier": 2, "treatmentMultiplier": 2, "supportPulseMeritMultiplier": 1 },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
     },
     {
       "id": "NON_RANGED_DOUBLE_SPECIAL_RETENTION",
@@ -36,6 +179,13 @@
         "globalMaximumTwoActivations": false
       },
       "evidence": { "reference": "evidence/double_special_cardinality.md" }
+    },
+    {
+      "id": "FLEET_FOOT_RETREAT_SPEED",
+      "status": "confirmed",
+      "category": "ability",
+      "expected": { "retreatFootBonus": 2, "retreatFootMaximum": 8, "normalSpeedRestoredAfterRecovery": true },
+      "evidence": { "reference": "evidence/common_special_abilities_direct_avm1.md" }
     }
   ]
 }

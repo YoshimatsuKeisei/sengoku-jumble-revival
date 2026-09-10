@@ -56,6 +56,17 @@ export function isAbilityActionCapable(soldier: Soldier, currentTime = 0): boole
     && soldier.combatActionState === "IDLE" && soldier.activeSpecialTechnique === null
     && currentTime >= soldier.abilityActionLockUntil && currentTime >= soldier.trapStateUntil;
 }
+
+/**
+ * Raw p < 89 eligibility used by sz() and the s13/s15 retreat-trigger scans.
+ * In this reconstruction REJOINING is raw p7 and remains eligible, while
+ * EMERGENCY_RETREAT and HEALING represent the raw 89+ states.
+ */
+export function isSwfPreRetreatFieldState(soldier: Pick<Soldier, "isDead" | "hp" | "state">): boolean {
+  return !soldier.isDead && soldier.hp > 0
+    && soldier.state !== "EMERGENCY_RETREAT" && soldier.state !== "HEALING";
+}
+
 export function getTeamRosterSlots(soldiers: readonly Soldier[], team: Team): readonly (Soldier | undefined)[] {
   const teamMembers = soldiers.filter((soldier) => soldier.team === team);
   return Array.from({ length: SOLDIERS_PER_TEAM }, (_, index) => teamMembers[index]);
@@ -67,21 +78,23 @@ export function rosterSlotDrawHasAbility(
   soldiers: readonly Soldier[], team: Team, ability: CommonSpecialAbilityId, draws: number, random: RandomSource,
 ): boolean {
   const slots = getTeamRosterSlots(soldiers, team);
+  let matched = false;
   for (let attempt = 0; attempt < draws; attempt += 1) {
     const selected = slots[randomSlotIndex(random)];
-    if (selected && hasSpecialAbility(selected, ability)) return true;
+    if (selected && hasSpecialAbility(selected, ability)) matched = true;
   }
-  return false;
+  return matched;
 }
 export function drawRosterSlotAbilityHolder(
   soldiers: readonly Soldier[], team: Team, ability: CommonSpecialAbilityId, draws: number, random: RandomSource,
 ): Soldier | null {
   const slots = getTeamRosterSlots(soldiers, team);
+  let matched: Soldier | null = null;
   for (let attempt = 0; attempt < draws; attempt += 1) {
     const selected = slots[randomSlotIndex(random)];
-    if (selected && hasSpecialAbility(selected, ability)) return selected;
+    if (selected && hasSpecialAbility(selected, ability)) matched = selected;
   }
-  return null;
+  return matched;
 }
 export function countRosterSlotAbility(soldiers: readonly Soldier[], team: Team, ability: CommonSpecialAbilityId): number {
   return getTeamRosterSlots(soldiers, team).filter((slot) => slot && hasSpecialAbility(slot, ability)).length;
@@ -99,11 +112,11 @@ export function isInsideSupportRectangle(center: Pick<Soldier, "x" | "y">, targe
   return Math.abs(target.x - center.x) <= swfCellsToWorldX(halfCells)
     && Math.abs(target.y - center.y) <= swfCellsToWorldY(halfCells);
 }
-export function applySupportHealingPulse(source: Soldier, soldiers: readonly Soldier[], includeSource = true): string[] {
+export function applySupportHealingPulse(source: Soldier, soldiers: readonly Soldier[], includeSource = false): string[] {
   const healed: string[] = [];
   for (const target of soldiers) {
-    if ((!includeSource && target === source) || target.isDead || target.hp <= 0 || target.team !== source.team
-      || !isInsideSupportRectangle(source, target)) continue;
+    if ((!includeSource && target === source) || target.team !== source.team
+      || !isSwfPreRetreatFieldState(target) || !isInsideSupportRectangle(source, target)) continue;
     const requested = hasSpecialAbility(target, "RECOVERY_BOOST") ? 2 : 1;
     const amount = Math.min(requested, target.maxHp - target.hp);
     if (amount <= 0) continue;
@@ -155,16 +168,18 @@ export function handleRetreatStateEntered(
 ): RetreatAbilityEvent[] {
   const events: RetreatAbilityEvent[] = [];
   for (const holder of soldiers) {
-    if (!isAbilityActionCapable(holder, currentTime)) continue;
-    if (holder.team === retreater.team && hasSpecialAbility(holder, "RALLY_SPIRIT")) {
+    if (holder.team === retreater.team && hasSpecialAbility(holder, "RALLY_SPIRIT")
+      && isSwfPreRetreatFieldState(holder)) {
       lockAbilityHolder(holder, currentTime);
-      events.push({ holderId: holder.id, ability: "RALLY_SPIRIT", affectedIds: applySupportHealingPulse(holder, soldiers) });
+      events.push({ holderId: holder.id, ability: "RALLY_SPIRIT", affectedIds: applySupportHealingPulse(holder, soldiers, false) });
     }
-    if (holder.team !== retreater.team && hasSpecialAbility(holder, "INSPIRE")) {
+    if (holder.team !== retreater.team && hasSpecialAbility(holder, "INSPIRE")
+      && isSwfPreRetreatFieldState(holder)) {
       lockAbilityHolder(holder, currentTime);
-      events.push({ holderId: holder.id, ability: "INSPIRE", affectedIds: applySupportHealingPulse(holder, soldiers) });
+      events.push({ holderId: holder.id, ability: "INSPIRE", affectedIds: applySupportHealingPulse(holder, soldiers, false) });
     }
-    if (holder.team !== retreater.team && holder.rareSpecialAbilities.includes("JINTO")) {
+    if (holder.team !== retreater.team && holder.rareSpecialAbilities.includes("JINTO")
+      && isAbilityActionCapable(holder, currentTime)) {
       const affectedIds = applyJintoCharge(holder, soldiers, currentTime);
       lockAbilityHolder(holder, currentTime);
       events.push({ holderId: holder.id, ability: "JINTO", affectedIds });

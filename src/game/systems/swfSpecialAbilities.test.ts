@@ -60,7 +60,8 @@ describe("SWF special ability hooks", () => {
     expect(calculateBaseAttackDamage(attacker)).toBe(1);
     attacker.specialAbilities = ["SIEGE"];
     expect(calculateBaseAttackDamage(attacker)).toBe(2);
-    expect(isBaseHitBlockedByFortify(attacker, defenders, () => 0)).toBe(true);
+    const sequence = [0, 0.51, 0, 0.51]; let index = 0;
+    expect(isBaseHitBlockedByFortify(attacker, defenders, () => sequence[index++] ?? 0)).toBe(true);
     attacker.unitType = "NINJA";
     expect(isBaseHitBlockedByFortify(attacker, defenders, () => 0)).toBe(false);
     defenders[0].isDead = true;
@@ -115,7 +116,7 @@ describe("SWF special ability hooks", () => {
     expect(enemyAlly.strategy).toBe("defend");
   });
 
-  it("selects the nearest actionable TREATMENT holder by SWF Manhattan distance and applies H/2H", () => {
+  it("selects the nearest SWF-eligible TREATMENT holder by Manhattan distance and applies H/2H", () => {
     const patient = unit("patient", "player", 500, 450); patient.maxHp = 100; patient.hp = 10; patient.hpBarHp = 10;
     const near = unit("near", "player", 510, 450); near.specialAbilities = ["TREATMENT"];
     const far = unit("far", "player", 700, 450); far.specialAbilities = ["TREATMENT"];
@@ -129,7 +130,6 @@ describe("SWF special ability hooks", () => {
     expect(patient.hp).toBe(54);
     expect(patient.hpBarHp).toBe(54);
     expect(patient.state).toBe("NORMAL");
-    expect(pulseTarget.hp).toBe(pulseTarget.maxHp - 3);
     expect(near.merits.recovery).toBe(44);
   });
 
