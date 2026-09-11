@@ -19,7 +19,7 @@ function gunner(): Soldier {
 }
 
 describe("raw ranged target impulse", () => {
-  it("moves an ordinary ranged-hit target 10 source units toward the shooter on the first raw tick", () => {
+  it("faces the shooter but moves an ordinary ranged-hit target 10 source units away on the first raw tick", () => {
     const gun = gunner();
     const target = unit("target", "enemy", 700);
     target.stats.defense = 0;
@@ -29,17 +29,19 @@ describe("raw ranged target impulse", () => {
     expect(executeGunAttack(gun, target, 0, () => 1, false, [gun, target])).not.toBeNull();
     expect(target.reactionState).toBe("HIT_STUN");
     expect(target.abilityActionLockUntil).toBeGreaterThanOrEqual(swfLogicTicksToMs(10));
+    expect(target.facingX).toBeCloseTo(-1, 6);
+    expect(target.facingY).toBeCloseTo(0, 6);
     updateReactions([gun, target], [], swfLogicTicksToMs(1), swfLogicTicksToMs(1));
 
     const targetAfter = battlefieldWorldPointToSource(target);
     const gunAfter = battlefieldWorldPointToSource(gun);
-    expect(targetAfter.x - targetBefore.x).toBeCloseTo(-10, 6);
+    expect(targetAfter.x - targetBefore.x).toBeCloseTo(10, 6);
     expect(targetAfter.y - targetBefore.y).toBeCloseTo(0, 6);
     expect(gunAfter.x).toBeCloseTo(gunBefore.x, 6);
     expect(gunAfter.y).toBeCloseTo(gunBefore.y, 6);
   });
 
-  it("keeps the full 10-unit target impulse on the raw gun-guard branch and gives the shooter no recoil", () => {
+  it("keeps the full outward 10-unit target impulse on the raw gun-guard branch and gives the shooter no new recoil", () => {
     const gun = gunner();
     const target = unit("target", "enemy", 700);
     // Raw gun defense only reaches the ordinary defense roll for ninja targets;
@@ -51,11 +53,13 @@ describe("raw ranged target impulse", () => {
 
     expect(executeGunAttack(gun, target, 0, () => 0, false, [gun, target])).not.toBeNull();
     expect(target.combatFeedbackMarker).toBe("S");
+    expect(target.facingX).toBeCloseTo(-1, 6);
+    expect(target.facingY).toBeCloseTo(0, 6);
     updateReactions([gun, target], [], swfLogicTicksToMs(1), swfLogicTicksToMs(1));
 
     const targetAfter = battlefieldWorldPointToSource(target);
     const gunAfter = battlefieldWorldPointToSource(gun);
-    expect(targetAfter.x - targetBefore.x).toBeCloseTo(-10, 6);
+    expect(targetAfter.x - targetBefore.x).toBeCloseTo(10, 6);
     expect(targetAfter.y - targetBefore.y).toBeCloseTo(0, 6);
     expect(gunAfter.x).toBeCloseTo(gunBefore.x, 6);
     expect(gunAfter.y).toBeCloseTo(gunBefore.y, 6);
