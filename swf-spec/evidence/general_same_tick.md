@@ -9,16 +9,22 @@ General command attack code `14` enters the `spl()` branch that calls `sz(genera
 - character code `ch != 3` (generals are excluded), and
 - `sp == 0` (the recipient is not already in a special-action state).
 
-For an accepted recipient, mode 4 does not directly invoke a second copy of the recipient technique. It selects the recipient's `fr` effect frame `kb` with `gotoAndStop("kb")`.
+For an accepted ordinary AI recipient, mode 4 does **not** call the recipient technique immediately. It selects the recipient's `fr` effect frame `kb` with `gotoAndStop("kb")`.
 
-## `kb` callback is a single timeline instance
+The player-controlled `m200` branch is separate: when its gauge is below 99, mode 4 raises `m200.kd` to `99` instead of routing that unit through the automatic `kb -> spl()` callback.
 
-The `fr` selector is SWF Sprite `800`. Its frame 3 is labelled `kb` and places one child Sprite `671` at display-list depth 1. Sprite 671 has a 13-frame timeline. Its frame-13 AVM1 action calls the battle root's `spl(recipient)` with the affected soldier, then returns the recipient movie clip to frame 1.
+## `kb` callback is a single 13-frame timeline
 
-Therefore a command recipient is routed back through the same `spl()` function used by its own technique, rather than through a separate reconstruction-only attack path.
+The `fr` selector is SWF Sprite `800`. Its frame 3 is labelled `kb` and places one child Sprite `671` at display-list depth 1. Direct parsing of Sprite 671 confirms **13 timeline frames**. Its frame-13 AVM1 action calls the battle root's `spl(recipient)` exactly once, then returns the recipient movie clip to frame 1 and stops.
 
-If two generals select the same recipient at the same logical instant, both mode-4 calls address the same recipient `fr` movie clip and the same `kb` frame/depth. Flash display lists cannot hold two independent objects simultaneously at the same depth; the second `gotoAndStop("kb")` does not create a second concurrent Sprite-671 callback. The recipient consequently receives at most one forced `spl()` activation from that same-instant overlap.
+Because a newly placed child begins on frame 1, the frame-13 callback is reached after **12 frame advances**. At the battle SWF's 24 fps that is 500 ms. The reconstruction therefore schedules the automatic AI recipient callback at `12 * (1000 / 24)` ms after the command selects `kb`, rather than firing in the command's own update.
 
-The recipient state checks reinforce this behavior after activation. `sp == 0` is required by mode 4, while ranged `spl()` additionally requires `k == 0`; a successful ranged resolution sets `k = 10`. Thus a later command while the recipient is already active is rejected by the original state machine rather than being blindly stacked.
+The callback re-enters the same `spl()` function used by the recipient's own technique. For ranged recipients this means the callback still obeys the ordinary ranged branch: it requires the existing `l`, verifies range and `k == 0`, and only then resolves one shot. A command does not invent a new ranged target.
 
-This confirms the invariant represented by `GENERAL_SAME_TICK_DEDUPE`: overlapping same-logical-instant general commands must not produce more than one forced activation for the same recipient. This does **not** ban a later, genuinely separate general command from triggering another activation after the original recipient state permits it again.
+## Same-instant overlap and later callbacks
+
+If two generals select the same recipient at the same logical instant, both mode-4 calls address the same recipient `fr` movie clip and the same `kb` frame/depth. Flash display lists cannot hold two independent Sprite-671 children simultaneously at that depth. The second `gotoAndStop("kb")` therefore does not create a second concurrent callback, so at most one callback is pending for that same-instant overlap.
+
+This does **not** imply that a recipient's own ranged shot and the command callback must collapse into the same attack. They occur on different timeline events. A ranged self-activation may fire when the command is issued, establish `k = 10`, and finish that 10-tick lock before the `kb` frame-13 callback arrives after 12 advances. If the original `l` is still valid and in range at callback time, the command can then produce another, time-separated shot.
+
+The recipient state checks still reject genuinely incompatible later activations. Mode 4 requires `sp == 0`, and ranged `spl()` requires `k == 0` at callback time.
