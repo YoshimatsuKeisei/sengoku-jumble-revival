@@ -65,17 +65,22 @@
       "evidence": { "reference": "evidence/battlefield_coordinates_and_fence_routing.md" }
     },
     {
-      "id": "TRAP_RAW_HALF_BRANCH_AND_PORT_TRIGGER",
+      "id": "TRAP_FIXED_FENCE_ENTRY_AND_HALF_ELIGIBILITY",
       "status": "confirmed",
       "category": "movement",
       "expected": {
-        "rawSwfSourceCenterX": 900,
-        "rawSwfComparisonSpace": "swf-source",
-        "rawSwfContainsOpposingHalfEligibilityBranch": true,
+        "collisionGridLookup": "f[round(x/36)][round(y/36)]",
+        "defaultFenceBranchRequiresCollisionCodeGreaterThan": 900,
+        "specialCollisionCodesHandledBeforeFenceBranch": [996, 997, 998, 999, 1000],
+        "fixedFenceCodesEnteringDefaultBranch": [901, 902, 903, 904, 905, 906],
+        "opposingHalfEligibilitySourceX": 900,
+        "playerSideInvaderEligibility": "e==1 && x>900",
+        "enemySideInvaderEligibility": "e==2 && x<900",
+        "halfBoundaryAloneTriggersTrap": false,
         "activePortTrigger": "new-enemy-fixed-fence-contact",
         "activePortContactSource": "901..906 raw collision event with alpha-contact fallback",
-        "activePortUsesHalfBoundaryAsCollisionOrTrigger": false,
-        "activePortDecisionDate": "2026-09-07"
+        "impactLockTicks": 10,
+        "routeTicks": 20
       },
       "evidence": { "reference": "evidence/trap_boundary.md" }
     }
