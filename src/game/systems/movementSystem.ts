@@ -9,6 +9,8 @@ import { findArrowTarget, getArrowMovementDecision } from "./arrowAttackSystem";
 import { clearStaleCombatTarget, isValidCombatTarget } from "./combatTargetSystem";
 import { getArrivalToleranceWorld, isWithinNormalContact } from "./techniqueCombatProfiles";
 import { getBaseAttackContactSegment } from "./battlefieldGeometry";
+import { consumeMovementFrameStart } from "./movementFrameSnapshot";
+import { resolveSequentialSwfSoldierContacts } from "./swfSoldierContactSystem";
 
 export interface Direction { x: number; y: number }
 
@@ -309,6 +311,14 @@ export function resolveObstacleOverlaps(soldiers: Soldier[], obstacles: readonly
 }
 
 export function separateSoldiers(soldiers: Soldier[]): void {
+  const movementStartPositions = consumeMovementFrameStart(soldiers);
+  if (movementStartPositions) {
+    resolveSequentialSwfSoldierContacts(soldiers, movementStartPositions);
+    return;
+  }
+
+  // Compatibility fallback for isolated callers/tests that do not participate
+  // in BattleScene's capture -> movement -> separation frame pipeline.
   const minimumDistance = SOLDIER_RADIUS * 2;
   for (let i = 0; i < soldiers.length; i += 1) {
     const a = soldiers[i];
