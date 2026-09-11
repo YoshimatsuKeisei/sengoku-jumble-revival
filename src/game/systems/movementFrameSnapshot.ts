@@ -5,43 +5,28 @@ export interface MovementFramePosition {
   y: number;
 }
 
-export interface MovementFrameSnapshot {
-  positions: ReadonlyMap<string, MovementFramePosition>;
-  currentTime: number | null;
-}
-
-interface StoredMovementFrameSnapshot extends MovementFrameSnapshot {
+interface MovementFrameSnapshot {
   soldiers: readonly Soldier[];
+  positions: ReadonlyMap<string, MovementFramePosition>;
 }
 
-let latestSnapshot: StoredMovementFrameSnapshot | null = null;
+let latestSnapshot: MovementFrameSnapshot | null = null;
 
 export function rememberMovementFrameStart(
   soldiers: readonly Soldier[],
   positions: ReadonlyMap<string, MovementFramePosition>,
 ): void {
-  latestSnapshot = { soldiers: [...soldiers], positions, currentTime: null };
-}
-
-export function rememberMovementFrameTime(
-  soldiers: readonly Soldier[],
-  currentTime: number,
-): void {
-  if (!latestSnapshot || latestSnapshot.soldiers.length !== soldiers.length) return;
-  for (let index = 0; index < soldiers.length; index += 1) {
-    if (latestSnapshot.soldiers[index] !== soldiers[index]) return;
-  }
-  latestSnapshot.currentTime = currentTime;
+  latestSnapshot = { soldiers: [...soldiers], positions };
 }
 
 export function consumeMovementFrameStart(
   soldiers: readonly Soldier[],
-): MovementFrameSnapshot | null {
+): ReadonlyMap<string, MovementFramePosition> | null {
   const snapshot = latestSnapshot;
   latestSnapshot = null;
   if (!snapshot || snapshot.soldiers.length !== soldiers.length) return null;
   for (let index = 0; index < soldiers.length; index += 1) {
     if (snapshot.soldiers[index] !== soldiers[index]) return null;
   }
-  return { positions: snapshot.positions, currentTime: snapshot.currentTime };
+  return snapshot.positions;
 }
