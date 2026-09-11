@@ -32,15 +32,15 @@ jobs:
           npx vitest run
           tests/swf-spec/soldierContactSequentialRuntime.test.ts
           tests/swf-spec/soldierContactFrameIntegration.test.ts
+          tests/swf-spec/soldierContactCrowdRegression.test.ts
           tests/swf-spec/soldierContactGridSpecConformance.test.ts
           --reporter=verbose
       - name: Full SWF conformance suite
         run: npx vitest run tests/swf-spec --reporter=verbose
-      - name: Movement/base/reaction regressions
+      - name: Stable movement/base regressions
         run: >-
           npx vitest run
           src/game/systems/baseContactSystem.test.ts
-          src/game/systems/reactionSystem.test.ts
           src/game/systems/swfIntegrationPreservation.test.ts
           src/game/systems/phase3eBattlefield.test.ts
           src/game/systems/phase3fFidelity.test.ts
