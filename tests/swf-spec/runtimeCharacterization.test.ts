@@ -8,8 +8,10 @@ import {
 } from "../../src/game/systems/battlefieldGeometry";
 import { createBattleBases, getBaseForTeam, resolveBaseAccessCollisions } from "../../src/game/systems/baseSystem";
 import { COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
+import { SWF_GENERAL_COMMAND_CALLBACK_ADVANCE_TICKS } from "../../src/game/systems/generalAttackSystem";
 import { getSwfBaseCollisionCodeAtWorld } from "../../src/game/systems/swfBaseCollisionGrid";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
+import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 
 function unit(id: string, team: "player" | "enemy", sourceX: number, sourceY = 450): Soldier {
   const world = battlefieldSourcePointToWorld({ x: sourceX, y: sourceY });
@@ -27,7 +29,7 @@ function readyAtScd(soldier: Soldier): Soldier {
  * behavior is gated separately by swfConformance.test.ts.
  */
 describe("runtime characterization for major combat bugs", () => {
-  it("uses the confirmed ranged action lock to collapse two same-update general-forced shots into one", () => {
+  it("collapses two same-update general commands to one later kb callback", () => {
     const generalA = readyAtScd(unit("general-a", "player", 500));
     const generalB = readyAtScd(unit("general-b", "player", 510));
     const archer = unit("archer", "player", 520);
@@ -38,17 +40,22 @@ describe("runtime characterization for major combat bugs", () => {
     archer.technique = "ARCHER_ARROW";
     archer.combatGauge = 0;
     archer.combatGaugeUpdatedAt = 1_000;
+    archer.targetId = enemy.id;
+    const bases = createBattleBases();
 
-    const events = updateSpecialAttacks(
-      [generalA, generalB, archer, enemy], [], createBattleBases(), 1_000, false, () => 1,
-    );
-    const arrows = events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
-    expect(arrows).toHaveLength(1);
-    expect(archer.specialLockUntil).toBeGreaterThan(1_000);
+    const issued = updateSpecialAttacks([generalA, generalB, archer, enemy], [], bases, 1_000, false, () => 1);
+    expect(issued.filter((event) => event.kind === "ARROW")).toHaveLength(0);
+    const scheduled = issued.flatMap((event) => event.kind === "GENERAL" ? event.forcedAttackerIds : []);
+    expect(scheduled.filter((id) => id === archer.id)).toHaveLength(1);
+
+    const callbackAt = 1_000 + swfLogicTicksToMs(SWF_GENERAL_COMMAND_CALLBACK_ADVANCE_TICKS);
+    const callback = updateSpecialAttacks([archer, enemy], [], bases, callbackAt, false, () => 1);
+    expect(callback.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id)).toHaveLength(1);
+    expect(archer.specialLockUntil).toBeGreaterThan(callbackAt);
     expect(archer.activeSpecialTechnique).toBe("ARCHER_ARROW");
   });
 
-  it("prevents a general-forced ranged shot and gauge-driven normal shot from firing in the same update", () => {
+  it("allows a gauge-driven ranged shot at issue time and the command shot at the later callback", () => {
     const general = readyAtScd(unit("general", "player", 500));
     const archer = unit("archer", "player", 520);
     const enemy = unit("enemy", "enemy", 600);
@@ -56,17 +63,20 @@ describe("runtime characterization for major combat bugs", () => {
     general.technique = "GENERAL_COMMAND";
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
-    archer.combatGauge = 10_000;
-    archer.combatGaugeUpdatedAt = 1_000;
+    archer.stats.skill = 100;
+    archer.combatGauge = 200;
+    archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+    archer.targetId = enemy.id;
+    const bases = createBattleBases();
 
-    const gaugeBefore = archer.combatGauge;
-    const events = updateSpecialAttacks(
-      [general, archer, enemy], [], createBattleBases(), 1_000, false, () => 1,
-    );
-    const arrows = events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
-    expect(arrows).toHaveLength(1);
-    expect(archer.specialLockUntil).toBeGreaterThan(1_000);
-    expect(archer.combatGauge).toBe(gaugeBefore);
+    const issued = updateSpecialAttacks([general, archer, enemy], [], bases, 1_000, false, () => 1);
+    expect(issued.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id)).toHaveLength(1);
+    expect(archer.combatGauge).toBe(100);
+
+    const callbackAt = 1_000 + swfLogicTicksToMs(SWF_GENERAL_COMMAND_CALLBACK_ADVANCE_TICKS);
+    const callback = updateSpecialAttacks([archer, enemy], [], bases, callbackAt, false, () => 1);
+    expect(callback.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id)).toHaveLength(1);
+    expect(archer.combatGauge).toBe(100);
   });
 
   it("rolls idle ranged gauge at each confirmed threshold opportunity instead of banking it for a later burst", () => {
@@ -77,6 +87,9 @@ describe("runtime characterization for major combat bugs", () => {
     archer.stats.skill = 100;
     archer.combatGauge = 0;
     archer.combatGaugeUpdatedAt = 0;
+    // Raw ordinary ranged scd() may keep an existing l while it is outside tk;
+    // the threshold is consumed before that range check.
+    archer.targetId = enemy.id;
 
     const bankedAt = COMBAT_GAUGE_UPDATE_INTERVAL_MS * 10 + 1;
     expect(updateSpecialAttacks([archer, enemy], [], createBattleBases(), bankedAt, false, () => 1)).toEqual([]);

@@ -6,6 +6,7 @@ import type { Soldier } from "../../src/game/types";
 import { captureSoldierPositions, resolveBaseMovementContacts } from "../../src/game/systems/baseContactSystem";
 import { createBattleBases, getBaseForTeam } from "../../src/game/systems/baseSystem";
 import { beginTechniqueAction, COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
+import { SWF_GENERAL_COMMAND_CALLBACK_ADVANCE_TICKS } from "../../src/game/systems/generalAttackSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 import { updateEnemyFenceTrapContacts } from "../../src/game/systems/trapAbilitySystem";
@@ -30,13 +31,13 @@ function trapRoster(): Soldier[] {
 
 describe("SWF conformance: confirmed rules", () => {
   it("preserves the raw X=900 TRAP branch as evidence without recreating an invisible runtime trigger line", () => {
-    const rule = movementSpec.rules[0];
-    expect(rule.status).toBe("confirmed");
-    expect(rule.expected.rawSwfSourceCenterX).toBe(900);
-    expect(rule.expected.rawSwfComparisonSpace).toBe("swf-source");
-    expect(rule.expected.rawSwfContainsOpposingHalfEligibilityBranch).toBe(true);
-    expect(rule.expected.activePortTrigger).toBe("new-enemy-fixed-fence-contact");
-    expect(rule.expected.activePortUsesHalfBoundaryAsCollisionOrTrigger).toBe(false);
+    const rule = movementSpec.rules.find((candidate) => candidate.id === "TRAP_RAW_HALF_BRANCH_AND_PORT_TRIGGER");
+    expect(rule?.status).toBe("confirmed");
+    expect(rule?.expected.rawSwfSourceCenterX).toBe(900);
+    expect(rule?.expected.rawSwfComparisonSpace).toBe("swf-source");
+    expect(rule?.expected.rawSwfContainsOpposingHalfEligibilityBranch).toBe(true);
+    expect(rule?.expected.activePortTrigger).toBe("new-enemy-fixed-fence-contact");
+    expect(rule?.expected.activePortUsesHalfBoundaryAsCollisionOrTrigger).toBe(false);
 
     const defenders = trapRoster();
     const halfInvader = unit("half-invader", "player", 901);
@@ -108,6 +109,7 @@ describe("SWF conformance: confirmed rules", () => {
     archer.stats.skill = 100;
     archer.combatGauge = 200;
     archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+    archer.targetId = enemy.id;
 
     const first = updateSpecialAttacks([archer, enemy], [], createBattleBases(), 1_000, false, () => 1);
     expect(first.filter((event) => event.kind === "ARROW")).toHaveLength(1);
@@ -116,7 +118,7 @@ describe("SWF conformance: confirmed rules", () => {
     expect(beginTechniqueAction(archer, 1_000 + swfLogicTicksToMs(10), () => 1, false)).toBe(true);
   });
 
-  it("puts a GENERAL_COMMAND-forced ranged activation into the same confirmed SWF k=10 lock", () => {
+  it("puts the delayed GENERAL_COMMAND ranged callback into the same confirmed SWF k=10 lock", () => {
     const rule = combatSpec.rules.find((candidate) => candidate.id === "RANGED_ACTION_FRAME_LOCK");
     expect(rule?.status).toBe("confirmed");
 
@@ -132,13 +134,19 @@ describe("SWF conformance: confirmed rules", () => {
     archer.technique = "ARCHER_ARROW";
     archer.combatGauge = 0;
     archer.combatGaugeUpdatedAt = 1_000;
+    archer.targetId = enemy.id;
+    const bases = createBattleBases();
 
-    const events = updateSpecialAttacks(
-      [generalA, generalB, archer, enemy], [], createBattleBases(), 1_000, false, () => 1,
+    const issued = updateSpecialAttacks(
+      [generalA, generalB, archer, enemy], [], bases, 1_000, false, () => 1,
     );
-    const arrows = events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
+    expect(issued.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id)).toHaveLength(0);
+
+    const callbackAt = 1_000 + swfLogicTicksToMs(SWF_GENERAL_COMMAND_CALLBACK_ADVANCE_TICKS);
+    const callback = updateSpecialAttacks([archer, enemy], [], bases, callbackAt, false, () => 1);
+    const arrows = callback.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
     expect(arrows).toHaveLength(1);
-    expect(archer.specialLockUntil).toBe(1_000 + swfLogicTicksToMs(10));
+    expect(archer.specialLockUntil).toBe(callbackAt + swfLogicTicksToMs(10));
     expect(archer.activeSpecialTechnique).toBe("ARCHER_ARROW");
   });
 

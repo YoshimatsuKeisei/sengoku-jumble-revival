@@ -4,6 +4,7 @@ import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
 import { createBattleBases } from "../../src/game/systems/baseSystem";
 import { beginTechniqueAction, COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
+import { SWF_GENERAL_COMMAND_CALLBACK_ADVANCE_TICKS } from "../../src/game/systems/generalAttackSystem";
 import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 import commandSpec from "../../swf-spec/rules/commands.json";
@@ -27,7 +28,9 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
       effectSelectorLabel: "kb",
       forcedCallbackSpriteId: 671,
       forcedCallbackFrame: 13,
+      forcedCallbackFrameAdvanceTicks: 12,
       forcedCallbackFunction: "spl",
+      forcedCallbackIsImmediate: false,
     });
 
     const launch = combatSpec.rules.find((rule) => rule.id === "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH");
@@ -89,7 +92,7 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     expect(archer.combatGauge).toBe(100);
   });
 
-  it("collapses two same-update general commands to one forced activation for a non-ranged recipient", () => {
+  it("collapses two same-update general commands to one delayed kb callback for a non-ranged recipient", () => {
     const generalA = unit("general-a", "player", 500);
     const generalB = unit("general-b", "player", 510);
     const spear = unit("spear", "player", 520);
@@ -101,9 +104,15 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     spear.technique = "ASHIGARU_SPEAR_STRIKE";
     spear.combatGauge = 0;
     spear.combatGaugeUpdatedAt = 1_000;
+    const bases = createBattleBases();
 
-    const events = updateSpecialAttacks([generalA, generalB, spear], [], createBattleBases(), 1_000, false, () => 1);
-    const forced = events.filter((event) => event.kind === "SPEAR" && event.attackerId === spear.id);
-    expect(forced).toHaveLength(1);
+    const issued = updateSpecialAttacks([generalA, generalB, spear], [], bases, 1_000, false, () => 1);
+    expect(issued.filter((event) => event.kind === "SPEAR" && event.attackerId === spear.id)).toHaveLength(0);
+    const scheduled = issued.flatMap((event) => event.kind === "GENERAL" ? event.forcedAttackerIds : []);
+    expect(scheduled.filter((id) => id === spear.id)).toHaveLength(1);
+
+    const callbackAt = 1_000 + swfLogicTicksToMs(SWF_GENERAL_COMMAND_CALLBACK_ADVANCE_TICKS);
+    const callback = updateSpecialAttacks([spear], [], bases, callbackAt, false, () => 1);
+    expect(callback.filter((event) => event.kind === "SPEAR" && event.attackerId === spear.id)).toHaveLength(1);
   });
 });
