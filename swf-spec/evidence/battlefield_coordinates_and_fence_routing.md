@@ -1,4 +1,4 @@
-# Direct AVM1 evidence: battlefield coordinates, fixed fences, and contact spacing
+# Direct AVM1 evidence: battlefield coordinates, fixed fences, and soldier contact
 
 ## Source
 
@@ -22,8 +22,8 @@ it could round-trip internally while still disagreeing with the rendered art.
 
 ## `shk2()` collision grid
 
-`shk2` starts at AVM1 offset 2233427. The battle initializes `h=36`, and `d()`
-samples the collision field as the equivalent of
+`shk2` starts at AVM1 offset 2233427. The battle initializes `h=36` around
+2252757 and samples the collision field as the equivalent of
 `f[Math.round(x/h)][Math.round(y/h)]`.
 
 Besides headquarters values 996..999 and outer value 1000, `shk2` writes the
@@ -72,17 +72,98 @@ This is why the original can travel around a long fixed fence while retaining a
 live combat target. A short speculative look-ahead/left-right steering system
 is not the raw mechanism.
 
-## Generic soldier contact spacing
+## Soldier occupancy is sequential and grid-gated
 
-The ordinary per-unit collision branch around 2195329 computes the pair angle.
-When both absolute axis deltas are strictly below 32 source units, it proposes a
-position exactly 24 source units from the other unit. The candidate is accepted
-only when the corresponding `f[round(x/36)][round(y/36)]` entry equals zero
-(offsets 2195489..2195705).
+The earlier interpretation of the 24-unit branch as a generic all-pairs
+separator was wrong. `d(i)` does not iterate over every soldier pair.
 
-Therefore the previous revival-only Euclidean `SOLDIER_RADIUS*2` separator was
-not an SWF rule and allowed much denser sprite piles than the original contact
-geometry.
+At the beginning of `d(i)`, the current soldier's existing collision cell is
+computed from `_x/_y`. If that cell contains a value below 900, the cell is
+cleared to zero (2185549..2185682). At the end of `d(i)`, the current cell is
+recomputed and, again only when it is below 900, the soldier's numeric `i`
+value is written back to `f[][]` (2198289..2198418).
+
+For ordinary movement, `d(i)` computes the proposed point
+`(_x+x, _y+y)` at 2191441..2191484 and reads exactly one collision value from
+`f[round(proposedX/36)][round(proposedY/36)]` at 2191485..2191549.
+
+If that value is zero and there is no forced current-target contact, the current
+soldier simply moves to the proposed point and exits this collision branch
+(2191550..2191611). Values above 900 go to fixed/base collision handling.
+Values 1..200 are interpreted as dynamic soldier IDs; only then is the
+corresponding `m<id>` soldier loaded as the contact candidate
+(2194817..2194904).
+
+This makes the raw contact system sequential and asymmetric: one soldier clears
+its own old cell, evaluates one proposed destination cell, resolves that event,
+and writes its new cell before another soldier's `d()` update occurs. It is not
+an unconditional post-movement pairwise separation pass.
+
+## Current-target close-contact override
+
+There is one deliberate route that can enter soldier-contact handling even when
+the proposed grid cell is not occupied. In the default target-following path,
+`d(i)` compares the current target `l` against the current soldier.
+
+When both absolute axis deltas are strictly below 20 source units
+(2190575..2190696), register 17 is set to 1. The code then proposes a position
+24 source units away from `l` and applies it only when the destination `f[][]`
+cell is zero (2190714..2190968).
+
+Later, when register 17 is 1, the collision candidate ID is explicitly replaced
+with `l.i` before the normal 1..200 candidate lookup (2194817..2194852). Thus
+this is a targeted close-contact override, not permission to process every
+nearby soldier pair.
+
+## Enemy attack gate before physical contact response
+
+Once a dynamic soldier candidate is resolved, the branch at 2194909..2195145
+first checks whether this pair is eligible for the immediate normal-attack path.
+The attack path requires both units to have moved away from their stored
+`bx/by` contact positions, opposing teams, `sp==0` on both sides, candidate
+`p<95`, and candidate `fr._currentframe != 6`.
+
+When those conditions hold, `atck(...,3)` is called, both units' `bx/by` values
+are updated to their current positions, and the code skips the physical
+24-unit correction for that event (2195150..2195324).
+
+This saved-position gate is another reason the 24-unit branch cannot be modeled
+as a generic continuously-running separator.
+
+## Physical soldier-contact response
+
+If the pair does not take the attack branch, the physical response begins at
+2195329. It computes the angle from the current soldier to the candidate.
+
+Only when both absolute axis deltas are strictly below 32 source units does it
+propose a new current-soldier position exactly 24 source units from the
+candidate. That proposed point is accepted only when the destination
+`f[round(x/36)][round(y/36)]` entry equals zero
+(2195419..2195705). The immediate position assignment affects only the current
+soldier.
+
+The branch then derives an eight-direction index from `round(angle/0.75)+5`,
+assigns the candidate and current soldier opposite `fx/fy` vectors scaled by
+their respective movement-speed value `s`, and sets a short `k=3` contact
+impulse. While `k` is non-zero, the common movement branch applies `fx/fy` and
+multiplies both by `0.7` each logic tick. Candidate `t` is also increased by 10
+and capped at 25 under its normal-contact gate.
+
+So the raw response is a one-event grid collision plus short decaying impulse;
+it is not repeated teleport-style correction of every nearby pair each render
+update.
+
+## Reconstruction consequence from the failed device replay
+
+The experimental commit `cf0ef57` applied the `<32 axis -> 24 source-unit`
+position rule inside the revival's global `separateSoldiers()` all-pairs pass.
+Real-device testing immediately restored the previously observed circular
+movement and caused the player character to be dragged by allied contact.
+Rolling back that single commit to `c63d327` removed both regressions.
+
+That device result is consistent with the re-read AVM1 control flow above: the
+numeric 32/24 geometry was real, but the trigger scope was wrong. The raw rule
+must not be reintroduced as a global all-pairs post-pass.
 
 ## Reconstruction requirements
 
@@ -93,5 +174,11 @@ geometry.
 - 901..906 and 996..999 share the same 36-unit `f` collision source.
 - Fixed-fence movement must begin on actual grid collision, not a look-ahead
   sensor.
+- Soldier contact must be gated by the sequential 36-unit occupancy grid, or by
+  the explicit current-target `<20` override.
+- The `<32` / `24` correction is only part of that already-selected contact
+  event; it must never be applied to all nearby pairs every frame.
+- The raw physical contact event also includes opposite `fx/fy`, `k=3`, and
+  `0.7` decay; implementing only the position snap is incomplete.
 - Collision/UI tests must compare the raw grid after coordinate conversion with
   the reconstructed PNG geometry; round-trip tests alone are insufficient.
