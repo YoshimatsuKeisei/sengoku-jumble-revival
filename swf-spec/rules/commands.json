@@ -5,15 +5,21 @@
       "status": "confirmed",
       "category": "command",
       "expected": {
-        "maxForcedActivationsPerSoldierPerTick": 1,
         "swfMode": 4,
+        "sourceAttackCode": 14,
         "recipientGeneralCharacterCodeExcluded": 3,
         "recipientRequiresSpZero": true,
+        "nonM200RecipientDirectSpl": false,
+        "nonM200RecipientEffect": "m200.kd=max(m200.kd,99)",
+        "m200RecipientEffect": "fr.gotoAndStop(kb)",
         "effectSelectorSpriteId": 800,
         "effectSelectorLabel": "kb",
         "forcedCallbackSpriteId": 671,
         "forcedCallbackFrame": 13,
-        "forcedCallbackFunction": "spl"
+        "forcedCallbackDelayLogicTicks": 12,
+        "forcedCallbackFunction": "spl",
+        "maxPendingM200Callbacks": 1,
+        "mustNotForceNearbyAiTechniques": true
       },
       "evidence": { "reference": "evidence/general_same_tick.md" }
     }
