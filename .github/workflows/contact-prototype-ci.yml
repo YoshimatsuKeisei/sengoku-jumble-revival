@@ -1,0 +1,29 @@
+name: Sequential SWF contact prototype v2
+
+on:
+  push:
+    branches:
+      - debug/current-20260907-contact-grid-prototype
+    paths:
+      - "src/game/systems/swfSoldierContactSystem.ts"
+      - "tests/swf-spec/soldierContactSequentialRuntime.test.ts"
+      - ".github/workflows/contact-prototype-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  prototype:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Vite production bundle
+        run: npx vite build
+      - name: Sequential contact prototype
+        run: npx vitest run tests/swf-spec/soldierContactSequentialRuntime.test.ts --reporter=verbose
+      - name: Contact spec conformance
+        run: npx vitest run tests/swf-spec/soldierContactGridSpecConformance.test.ts --reporter=verbose
