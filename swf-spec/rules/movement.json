@@ -63,6 +63,9 @@
         "newCellWrittenAfterOwnMovement": true,
         "freeProposedCellMovesDirectly": true,
         "unconditionalAllPairsPostPass": false,
+        "frameUpdateOrder": ["m200", "m1..m59 ascending"],
+        "m200EnterFrameCallsDThenAl": true,
+        "alNormalRouteCallsD": true,
         "normalGridCandidateSource": "f[round(proposedX/36)][round(proposedY/36)]",
         "forcedCurrentTargetAxisThresholdExclusiveSourceUnits": 20,
         "forcedCurrentTargetOverridesGridCandidate": true,
@@ -75,7 +78,10 @@
         "collisionImpulseUsesOppositeDirections": true,
         "genericWorldCircleSeparationIsNotRawRule": true
       },
-      "evidence": { "reference": "evidence/battlefield_coordinates_and_fence_routing.md" }
+      "evidence": {
+        "reference": "evidence/battlefield_coordinates_and_fence_routing.md",
+        "updateOrderReference": "evidence/soldier_contact_update_order.md"
+      }
     },
     {
       "id": "TRAP_FIXED_FENCE_ENTRY_AND_HALF_ELIGIBILITY",
