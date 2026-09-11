@@ -17,7 +17,7 @@ import { isValidCombatTarget } from "./combatTargetSystem";
 import { executeArrowAttack, findArrowTarget, getArrowMovementDecision, isArrowTechnique, type ArrowLaunchEvent } from "./arrowAttackSystem";
 import { executeSpearAttack, isSpearTechnique, type SpearAttackEvent } from "./spearAttackSystem";
 import { executeNinjaAttack, isNinjaTechnique, type NinjaAttackEvent } from "./ninjaAttackSystem";
-import { executeGeneralAttack, isGeneralTechnique, type GeneralAttackEvent } from "./generalAttackSystem";
+import { executeGeneralAttack, isGeneralTechnique, SWF_GENERAL_COMMAND_CALLBACK_ADVANCE_TICKS, type GeneralAttackEvent } from "./generalAttackSystem";
 import { executeStrategistAttack, isStrategistTechnique, type StrategistAttackEvent } from "./strategistAttackSystem";
 import { executeMosaAttack, isMosaTechnique, type MosaAttackEvent } from "./mosaAttackSystem";
 import { advanceCombatGauge, beginTechniqueAction, clearTechniqueActionIfComplete, hasTechniqueGauge } from "./combatGaugeSystem";
@@ -27,6 +27,12 @@ import { calculateSuccessfulAttackDamage } from "./specialAbilitySystem";
 export interface AreaSpecialAttackEvent { kind: "AREA"; attackerId: string; team: Team; x: number; y: number }
 export type SpecialAttackEvent = AreaSpecialAttackEvent | GunAttackEvent | CavalryChargeEvent | ArrowLaunchEvent | SpearAttackEvent | NinjaAttackEvent | GeneralAttackEvent | StrategistAttackEvent | MosaAttackEvent;
 export { calculateSpecialCooldownMs } from "./skillCooldownSystem";
+
+// Raw GENERAL_COMMAND mode 4 sends ordinary AI recipients to fr."kb". The
+// single Sprite-671 child then calls spl(recipient) on frame 13, after 12 frame
+// advances from the placed frame 1. WeakMap keeps this movie-clip-style pending
+// callback attached to the runtime Soldier without inventing a persisted stat.
+const pendingGeneralCommandCallbacks = new WeakMap<Soldier, number>();
 
 export function isSpecialReady(soldier: Soldier, currentTime: number): boolean {
   return currentTime >= soldier.specialReadyAt && hasTechniqueGauge(soldier);
@@ -173,18 +179,20 @@ export function updateSpecialAttacks(
     return recipient.technique === "CAVALRY_CHARGE" ? executeCavalryCharge(recipient, soldiers, obstacles, bases, currentTime, random, { consumeCooldown: false })
       : isSpearTechnique(recipient.technique) ? executeSpearAttack(recipient, soldiers, obstacles, bases, currentTime, random, false)
       : isNinjaTechnique(recipient.technique) ? executeNinjaAttack(recipient, soldiers, obstacles, bases, currentTime, random, "GENERAL_FORCED")
-      : isGeneralTechnique(recipient.technique) ? executeGeneralAttack(recipient, soldiers, obstacles, bases, currentTime, random, false, forceGeneralRecipient)
+      : isGeneralTechnique(recipient.technique) ? executeGeneralAttack(recipient, soldiers, obstacles, bases, currentTime, random, false, scheduleGeneralRecipient)
       : isStrategistTechnique(recipient.technique) ? executeStrategistAttack(recipient, soldiers, obstacles, bases, currentTime, random, false)
       : isMosaTechnique(recipient.technique) ? executeMosaAttack(recipient, soldiers, obstacles, bases, currentTime, random, false)
       : recipient.technique === "PROTOTYPE_AREA" ? executeSpecialAttack(recipient, findSpecialTargets(recipient, soldiers), soldiers, obstacles, bases, currentTime, false, random)
       : null;
   }
-  const forceGeneralRecipient = (recipient: Soldier): boolean => {
+  const scheduleGeneralRecipient = (recipient: Soldier): boolean => {
     if (generalForcedRecipientsThisUpdate.has(recipient.id)) return false;
     generalForcedRecipientsThisUpdate.add(recipient.id);
-    const event = dispatchForcedTechnique(recipient, true);
-    if (event) events.push(event);
-    return event !== null;
+    pendingGeneralCommandCallbacks.set(
+      recipient,
+      currentTime + swfLogicTicksToMs(SWF_GENERAL_COMMAND_CALLBACK_ADVANCE_TICKS),
+    );
+    return true;
   };
 
   const executeWave = (attacker: Soldier): SpecialAttackEvent | null => {
@@ -195,7 +203,7 @@ export function updateSpecialAttacks(
     if (isNinjaTechnique(attacker.technique))
       return executeNinjaAttack(attacker, soldiers, obstacles, bases, currentTime, random, "WAVE");
     if (isGeneralTechnique(attacker.technique))
-      return executeGeneralAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, forceGeneralRecipient, true);
+      return executeGeneralAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, scheduleGeneralRecipient, true);
     if (isStrategistTechnique(attacker.technique))
       return executeStrategistAttack(attacker, soldiers, obstacles, bases, currentTime, random, false, true);
     if (isMosaTechnique(attacker.technique))
@@ -204,6 +212,13 @@ export function updateSpecialAttacks(
   };
 
   for (const attacker of soldiers) {
+    const commandCallbackAt = pendingGeneralCommandCallbacks.get(attacker);
+    if (commandCallbackAt !== undefined && currentTime >= commandCallbackAt) {
+      pendingGeneralCommandCallbacks.delete(attacker);
+      const forced = dispatchForcedTechnique(attacker, true);
+      if (forced) events.push(forced);
+    }
+
     advanceCombatGauge(attacker, currentTime, random);
     while (attacker.pendingMoutaiSpecials > 0) {
       attacker.pendingMoutaiSpecials -= 1;
@@ -237,7 +252,7 @@ export function updateSpecialAttacks(
       : isNinjaTechnique(attacker.technique)
       ? executeNinjaAttack(attacker, soldiers, obstacles, bases, currentTime, random, "NORMAL")
       : isGeneralTechnique(attacker.technique)
-      ? executeGeneralAttack(attacker, soldiers, obstacles, bases, currentTime, random, true, forceGeneralRecipient)
+      ? executeGeneralAttack(attacker, soldiers, obstacles, bases, currentTime, random, true, scheduleGeneralRecipient)
       : isStrategistTechnique(attacker.technique)
       ? executeStrategistAttack(attacker, soldiers, obstacles, bases, currentTime, random, true)
       : isMosaTechnique(attacker.technique)
