@@ -25,9 +25,15 @@ export function isGeneralTechnique(technique: UnitTechnique): technique is Gener
     || technique === "GENERAL_HEAL" || technique === "GENERAL_FURIOUS";
 }
 
+function hasRawCommandSpZero(soldier: Soldier): boolean {
+  // Raw ranged spl() keeps sp at zero and uses k for its 10-tick action lock.
+  // Non-ranged active specials use the reconstruction's explicit special state.
+  return isRangedGaugeTechnique(soldier) || soldier.activeSpecialTechnique === null;
+}
+
 export function findGeneralCommandRecipients(general: Soldier, soldiers: readonly Soldier[]): Soldier[] {
   return soldiers.filter((soldier) => soldier !== general && soldier.team === general.team && soldier.unitType !== "GENERAL"
-    && !soldier.isDead && soldier.hp > 0 && soldier.state !== "HEALING"
+    && !soldier.isDead && soldier.hp > 0 && soldier.state === "NORMAL" && hasRawCommandSpZero(soldier)
     && isPointInTechniqueRectangle("GENERAL_COMMAND", getTechniqueAreaCenter("GENERAL_COMMAND", general), soldier));
 }
 
@@ -97,10 +103,9 @@ export function executeGeneralAttack(
   for (const recipient of findGeneralCommandRecipients(general, soldiers)) {
     event.recipientIds.push(recipient.id);
     clearConfusion(recipient, "GENERAL_COMMAND");
-    // Direct command callback invokes ranged spl() against the recipient's
-    // existing l. Clearing engagement here erased l before spl() and made every
-    // command-forced bow/gun activation a no-op. Keep the latch for ranged
-    // recipients; non-ranged behavior retains the reconstruction's existing reset.
+    // Raw mode 4 only selects fr.gotoAndStop("kb"); the actual spl(recipient)
+    // callback occurs later on Sprite 671 frame 13. Ranged spl() uses the
+    // recipient's existing l, so preserve that latch until the callback.
     if (!isRangedGaugeTechnique(recipient)) clearEngagement(recipient);
     if (recipient.controller === "player") {
       recipient.specialReadyAt = Math.min(recipient.specialReadyAt, currentTime);

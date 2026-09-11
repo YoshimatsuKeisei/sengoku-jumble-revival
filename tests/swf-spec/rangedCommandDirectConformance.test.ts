@@ -4,7 +4,7 @@ import { createSoldier } from "../../src/game/entities/Soldier";
 import type { Soldier } from "../../src/game/types";
 import { createBattleBases } from "../../src/game/systems/baseSystem";
 import { beginTechniqueAction, COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
-import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
+import { SWF_GENERAL_COMMAND_CALLBACK_DELAY_TICKS, updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 import commandSpec from "../../swf-spec/rules/commands.json";
 import combatSpec from "../../swf-spec/rules/combat.json";
@@ -27,6 +27,7 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
       effectSelectorLabel: "kb",
       forcedCallbackSpriteId: 671,
       forcedCallbackFrame: 13,
+      forcedCallbackDelayLogicTicks: 12,
       forcedCallbackFunction: "spl",
     });
 
@@ -89,7 +90,33 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     expect(archer.combatGauge).toBe(100);
   });
 
-  it("collapses two same-update general commands to one forced activation for a non-ranged recipient", () => {
+  it("fires a general-command ranged callback on Sprite 671 frame 13, not on the command tick", () => {
+    const general = unit("general", "player", 500);
+    const archer = unit("forced-archer", "player", 520);
+    const enemy = unit("forced-enemy", "enemy", 600);
+    general.unitType = "GENERAL";
+    general.technique = "GENERAL_COMMAND";
+    general.combatGauge = 10_000;
+    general.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+    archer.unitType = "ARCHER";
+    archer.technique = "ARCHER_ARROW";
+    archer.combatGauge = 0;
+    archer.combatGaugeUpdatedAt = 1_000;
+    archer.targetId = enemy.id;
+
+    const commandTick = updateSpecialAttacks([general, archer, enemy], [], createBattleBases(), 1_000, false, () => 1);
+    expect(commandTick.filter((event) => event.kind === "ARROW")).toHaveLength(0);
+
+    const dueAt = 1_000 + swfLogicTicksToMs(SWF_GENERAL_COMMAND_CALLBACK_DELAY_TICKS);
+    const early = updateSpecialAttacks([general, archer, enemy], [], createBattleBases(), dueAt - 1, false, () => 1);
+    expect(early.filter((event) => event.kind === "ARROW")).toHaveLength(0);
+
+    const due = updateSpecialAttacks([general, archer, enemy], [], createBattleBases(), dueAt, false, () => 1);
+    expect(due.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id)).toHaveLength(1);
+    expect(archer.specialLockUntil).toBe(dueAt + swfLogicTicksToMs(10));
+  });
+
+  it("collapses two same-update general commands to one delayed callback for a non-ranged recipient", () => {
     const generalA = unit("general-a", "player", 500);
     const generalB = unit("general-b", "player", 510);
     const spear = unit("spear", "player", 520);
@@ -102,8 +129,11 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     spear.combatGauge = 0;
     spear.combatGaugeUpdatedAt = 1_000;
 
-    const events = updateSpecialAttacks([generalA, generalB, spear], [], createBattleBases(), 1_000, false, () => 1);
-    const forced = events.filter((event) => event.kind === "SPEAR" && event.attackerId === spear.id);
-    expect(forced).toHaveLength(1);
+    const commandTick = updateSpecialAttacks([generalA, generalB, spear], [], createBattleBases(), 1_000, false, () => 1);
+    expect(commandTick.filter((event) => event.kind === "SPEAR" && event.attackerId === spear.id)).toHaveLength(0);
+
+    const dueAt = 1_000 + swfLogicTicksToMs(SWF_GENERAL_COMMAND_CALLBACK_DELAY_TICKS);
+    const due = updateSpecialAttacks([generalA, generalB, spear], [], createBattleBases(), dueAt, false, () => 1);
+    expect(due.filter((event) => event.kind === "SPEAR" && event.attackerId === spear.id)).toHaveLength(1);
   });
 });

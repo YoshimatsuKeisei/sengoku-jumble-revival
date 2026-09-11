@@ -13,6 +13,7 @@
         "effectSelectorLabel": "kb",
         "forcedCallbackSpriteId": 671,
         "forcedCallbackFrame": 13,
+        "forcedCallbackDelayLogicTicks": 12,
         "forcedCallbackFunction": "spl"
       },
       "evidence": { "reference": "evidence/general_same_tick.md" }
