@@ -1,19 +1,23 @@
-name: Sequential SWF contact prototype v2
+name: Sequential SWF contact integration
 
 on:
   push:
     branches:
       - debug/current-20260907-contact-grid-prototype
     paths:
+      - "src/game/systems/movementSystem.ts"
+      - "src/game/systems/movementFrameSnapshot.ts"
+      - "src/game/systems/baseContactSystem.ts"
       - "src/game/systems/swfSoldierContactSystem.ts"
-      - "tests/swf-spec/soldierContactSequentialRuntime.test.ts"
+      - "tests/swf-spec/**"
+      - "swf-spec/**"
       - ".github/workflows/contact-prototype-ci.yml"
   workflow_dispatch:
 
 jobs:
-  prototype:
+  integration:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,7 +27,30 @@ jobs:
       - run: npm ci
       - name: Vite production bundle
         run: npx vite build
-      - name: Sequential contact prototype
-        run: npx vitest run tests/swf-spec/soldierContactSequentialRuntime.test.ts --reporter=verbose
-      - name: Contact spec conformance
-        run: npx vitest run tests/swf-spec/soldierContactGridSpecConformance.test.ts --reporter=verbose
+      - name: Sequential contact unit and frame integration
+        run: >-
+          npx vitest run
+          tests/swf-spec/soldierContactSequentialRuntime.test.ts
+          tests/swf-spec/soldierContactFrameIntegration.test.ts
+          tests/swf-spec/soldierContactGridSpecConformance.test.ts
+          --reporter=verbose
+      - name: Full SWF conformance suite
+        run: npx vitest run tests/swf-spec --reporter=verbose
+      - name: Movement/base/reaction regressions
+        run: >-
+          npx vitest run
+          src/game/systems/baseContactSystem.test.ts
+          src/game/systems/reactionSystem.test.ts
+          src/game/systems/swfIntegrationPreservation.test.ts
+          src/game/systems/phase3eBattlefield.test.ts
+          src/game/systems/phase3fFidelity.test.ts
+          src/game/systems/phase3gFixes.test.ts
+          src/game/systems/phase3hIntegration.test.ts
+          src/game/systems/phase3jPlayerControl.test.ts
+          --reporter=verbose
+      - name: Strategy regression
+        run: >-
+          npx vitest run
+          src/game/systems/strategyEngagement.test.ts
+          src/game/systems/phase4c1TargetStrategy.test.ts
+          --reporter=verbose
