@@ -92,20 +92,26 @@ function cellIsFree(point: Position, occupancy: ReadonlyMap<string, Soldier>): b
 /**
  * Replays only the raw sequential f[][] selection/spacing layer.
  *
+ * The caller supplies the positions captured immediately before ordinary
+ * player/AI movement. That avoids reverse-engineering start positions from
+ * velocity, which can include unrelated knockback/ability motion in the
+ * revival runtime.
+ *
  * This deliberately does NOT replay the old global all-pairs separator. Each
- * unit starts from its pre-movement position (derived from velocity), its old
- * dynamic grid cell is cleared, and only the proposed destination cell can
- * select a normal contact candidate. The current-target <20 override is also
- * limited to that one target.
+ * unit is restored to its pre-movement position, its old dynamic grid cell is
+ * cleared, and only the proposed destination cell can select a normal contact
+ * candidate. The current-target <20 override is likewise limited to that one
+ * target.
  *
  * Enemy attack resolution remains owned by the existing combat system. For
- * this first isolated replay, opposing-team contacts therefore do not receive
- * the physical 24-unit correction here. The raw k=3/0.7 impulse is likewise a
- * separate follow-up stage so it can be clocked at the SWF's 24 Hz rather than
- * accidentally at the renderer frame rate.
+ * this isolated replay, opposing-team contacts therefore do not receive a
+ * second physical displacement here. The raw k=3/0.7 impulse remains a
+ * separate follow-up stage so it can be clocked at SWF 24 Hz rather than at
+ * renderer cadence.
  */
 export function resolveSequentialSwfSoldierContacts(
   soldiers: Soldier[],
+  movementStartPositions: ReadonlyMap<string, Position>,
 ): SwfSoldierContactResolution {
   const result: SwfSoldierContactResolution = {
     dynamicContacts: 0,
@@ -114,23 +120,18 @@ export function resolveSequentialSwfSoldierContacts(
   };
   const order = getSwfSoldierUpdateOrder(soldiers);
   const proposal = new Map<Soldier, Position>();
-  const start = new Map<Soldier, Position>();
   const occupancy = new Map<string, Soldier>();
 
   for (const soldier of order) {
     if (!isActiveOccupant(soldier)) continue;
     proposal.set(soldier, { x: soldier.x, y: soldier.y });
-    const previous = {
-      x: soldier.x - soldier.velocityX,
-      y: soldier.y - soldier.velocityY,
-    };
-    start.set(soldier, previous);
+    const previous = movementStartPositions.get(soldier.id) ?? { x: soldier.x, y: soldier.y };
     soldier.x = previous.x;
     soldier.y = previous.y;
   }
 
-  // This reproduces the previous frame's final f[][] overwrite semantics:
-  // later raw update IDs win if two units occupy one coarse cell.
+  // Reproduce the previous frame's final f[][] overwrite semantics: later raw
+  // update IDs win if an already-overlapping revival fixture shares a cell.
   for (const soldier of order) {
     if (!isActiveOccupant(soldier)) continue;
     occupancy.set(cellKey(soldier), soldier);
@@ -140,7 +141,8 @@ export function resolveSequentialSwfSoldierContacts(
     if (!isActiveOccupant(soldier)) continue;
 
     // d() clears the current unit's old dynamic cell before evaluating motion.
-    occupancy.delete(cellKey(soldier));
+    const oldKey = cellKey(soldier);
+    if (occupancy.get(oldKey) === soldier) occupancy.delete(oldKey);
 
     const proposed = proposal.get(soldier) ?? { x: soldier.x, y: soldier.y };
     const target = soldier.targetId
@@ -152,11 +154,6 @@ export function resolveSequentialSwfSoldierContacts(
     let candidate: Soldier | null = null;
     if (forcedTarget) {
       result.forcedTargetContacts += 1;
-      const destination = rawSpacingDestination(soldier, forcedTarget);
-      if (destination && cellIsFree(destination, occupancy)) {
-        soldier.x = destination.x;
-        soldier.y = destination.y;
-      }
       candidate = forcedTarget;
     } else {
       const proposedOccupant = occupancy.get(cellKey(proposed)) ?? null;
@@ -171,9 +168,8 @@ export function resolveSequentialSwfSoldierContacts(
 
     result.dynamicContacts += 1;
 
-    // The raw enemy branch may call atck(...,3) and skip physical correction.
-    // Existing combat resolution owns that path in the revival, so this
-    // contact-only replay does not invent a second enemy displacement.
+    // The raw enemy branch may call atck(...,3) and skip the same-team spacing
+    // path. Existing combat resolution owns that enemy path in the revival.
     if (candidate.team === soldier.team
       && soldier.baseContactLockTicks <= 0 && candidate.baseContactLockTicks <= 0) {
       const destination = rawSpacingDestination(soldier, candidate);
