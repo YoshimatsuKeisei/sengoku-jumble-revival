@@ -1,4 +1,8 @@
 import { BATTLEFIELD_CONFIG, OBSTACLE_AVOIDANCE_CONFIG, SOLDIER_RADIUS } from "../config";
+import {
+  battlefieldSwfPointToWorld,
+  battlefieldWorldPointToSwf,
+} from "../battlefieldLayout";
 import type { AvoidanceSide, BattleBase, BattleObstacle, Soldier } from "../types";
 import { getSoldierMoveSpeed } from "../stats/soldierStats";
 import { clearEngagement, distanceBetween } from "./aiSystem";
@@ -9,6 +13,7 @@ import { findArrowTarget, getArrowMovementDecision } from "./arrowAttackSystem";
 import { clearStaleCombatTarget, isValidCombatTarget } from "./combatTargetSystem";
 import { getArrivalToleranceWorld, isWithinNormalContact } from "./techniqueCombatProfiles";
 import { getBaseAttackContactSegment } from "./battlefieldGeometry";
+import { getSwfStaticCollisionCodeAtWorld } from "./swfBaseCollisionGrid";
 
 export interface Direction { x: number; y: number }
 
@@ -308,34 +313,36 @@ export function resolveObstacleOverlaps(soldiers: Soldier[], obstacles: readonly
   }
 }
 
+function placeAtRawContactSpacing(current: Soldier, other: Soldier): void {
+  const currentRaw = battlefieldWorldPointToSwf(current);
+  const otherRaw = battlefieldWorldPointToSwf(other);
+  const dx = otherRaw.x - currentRaw.x;
+  const dy = otherRaw.y - currentRaw.y;
+  if (Math.abs(dx) >= 32 || Math.abs(dy) >= 32) return;
+
+  // Direct d(): atan2(other-current), then round(other - direction*24).
+  // Math.atan2(0, 0) is 0 under the ECMAScript behavior used by AVM1.
+  const angle = Math.atan2(dy, dx);
+  const candidateRaw = {
+    x: Math.round(otherRaw.x - Math.cos(angle) * 24),
+    y: Math.round(otherRaw.y - Math.sin(angle) * 24),
+  };
+  const candidate = battlefieldSwfPointToWorld(candidateRaw);
+  if (getSwfStaticCollisionCodeAtWorld(candidate) !== null) return;
+  current.x = candidate.x;
+  current.y = candidate.y;
+}
+
 export function separateSoldiers(soldiers: Soldier[]): void {
-  const minimumDistance = SOLDIER_RADIUS * 2;
   for (let i = 0; i < soldiers.length; i += 1) {
-    const a = soldiers[i];
-    if (a.isDead || a.state === "HEALING") continue;
+    const current = soldiers[i];
+    if (current.isDead || current.state === "HEALING") continue;
     for (let j = i + 1; j < soldiers.length; j += 1) {
-      const b = soldiers[j];
-      if (b.isDead || b.state === "HEALING") continue;
-      let dx = b.x - a.x;
-      let dy = b.y - a.y;
-      let distance = Math.hypot(dx, dy);
-      if (distance >= minimumDistance) continue;
-      if (distance === 0) { dx = 1; dy = 0; distance = 1; }
-      const overlap = minimumDistance - distance;
-      const aContactLocked = a.baseContactLockTicks > 0;
-      const bContactLocked = b.baseContactLockTicks > 0;
-      if (aContactLocked && bContactLocked) continue;
-      const aPush = bContactLocked ? overlap : aContactLocked ? 0 : overlap / 2;
-      const bPush = aContactLocked ? overlap : bContactLocked ? 0 : overlap / 2;
-      a.x -= (dx / distance) * aPush;
-      a.y -= (dy / distance) * aPush;
-      b.x += (dx / distance) * bPush;
-      b.y += (dy / distance) * bPush;
+      const other = soldiers[j];
+      if (other.isDead || other.state === "HEALING") continue;
+      if (current.baseContactLockTicks > 0 && other.baseContactLockTicks > 0) continue;
+      if (current.baseContactLockTicks > 0) placeAtRawContactSpacing(other, current);
+      else placeAtRawContactSpacing(current, other);
     }
-  }
-  for (const soldier of soldiers) {
-    if (soldier.isDead || soldier.state === "HEALING") continue;
-    soldier.x = Math.max(SOLDIER_RADIUS, Math.min(BATTLEFIELD_CONFIG.width - SOLDIER_RADIUS, soldier.x));
-    soldier.y = Math.max(SOLDIER_RADIUS, Math.min(BATTLEFIELD_CONFIG.height - SOLDIER_RADIUS, soldier.y));
   }
 }
