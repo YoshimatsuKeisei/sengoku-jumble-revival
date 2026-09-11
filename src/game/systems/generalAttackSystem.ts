@@ -3,14 +3,12 @@ import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, BattleObstacle, Soldier, Team, UnitTechnique } from "../types";
 import { applyDamage } from "./combatSystem";
 import { recordSmallRecoveryPulse } from "./meritSystem";
-import { clearConfusion } from "./confusionSystem";
 import { isDamageGuarded } from "./defenseSystem";
 import { calculateSafeNinjaMovement } from "./ninjaAttackSystem";
 import { startHitReaction } from "./reactionSystem";
 import { calculateSuccessfulAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
-import { clearEngagement } from "./aiSystem";
-import { beginTechniqueAction, isRangedGaugeTechnique } from "./combatGaugeSystem";
+import { beginTechniqueAction } from "./combatGaugeSystem";
 import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
 export type GeneralTechnique = "GENERAL_COMMAND" | "GENERAL_HEROIC" | "GENERAL_HEAL" | "GENERAL_FURIOUS";
@@ -25,9 +23,14 @@ export function isGeneralTechnique(technique: UnitTechnique): technique is Gener
     || technique === "GENERAL_HEAL" || technique === "GENERAL_FURIOUS";
 }
 
+/**
+ * Raw sz(i, 4) scans the same-team 11x11 grid, excludes the source, then accepts
+ * only ch != 3 and sp == 0 candidates. The reconstruction maps those source
+ * states to non-general NORMAL soldiers with no active special technique.
+ */
 export function findGeneralCommandRecipients(general: Soldier, soldiers: readonly Soldier[]): Soldier[] {
   return soldiers.filter((soldier) => soldier !== general && soldier.team === general.team && soldier.unitType !== "GENERAL"
-    && !soldier.isDead && soldier.hp > 0 && soldier.state !== "HEALING"
+    && !soldier.isDead && soldier.hp > 0 && soldier.state === "NORMAL" && soldier.activeSpecialTechnique === null
     && isPointInTechniqueRectangle("GENERAL_COMMAND", getTechniqueAreaCenter("GENERAL_COMMAND", general), soldier));
 }
 
@@ -48,7 +51,7 @@ export function canActivateGeneral(general: Soldier, soldiers: readonly Soldier[
 
 export function executeGeneralAttack(
   general: Soldier, soldiers: Soldier[], obstacles: readonly BattleObstacle[], bases: readonly BattleBase[], currentTime: number,
-  random: RandomSource, consumeCooldown: boolean, forceSpecial: (recipient: Soldier) => boolean, isWave = false,
+  random: RandomSource, consumeCooldown: boolean, schedulePlayerCallback: (recipient: Soldier) => boolean, isWave = false,
 ): GeneralAttackEvent | null {
   if (!isGeneralTechnique(general.technique)) return null;
   if (consumeCooldown && !beginTechniqueAction(general, currentTime, random, true)) return null;
@@ -94,19 +97,26 @@ export function executeGeneralAttack(
     }
   }
   if (isWave) return event;
-  for (const recipient of findGeneralCommandRecipients(general, soldiers)) {
-    event.recipientIds.push(recipient.id);
-    clearConfusion(recipient, "GENERAL_COMMAND");
-    // Direct command callback invokes ranged spl() against the recipient's
-    // existing l. Clearing engagement here erased l before spl() and made every
-    // command-forced bow/gun activation a no-op. Keep the latch for ranged
-    // recipients; non-ranged behavior retains the reconstruction's existing reset.
-    if (!isRangedGaugeTechnique(recipient)) clearEngagement(recipient);
-    if (recipient.controller === "player") {
-      recipient.specialReadyAt = Math.min(recipient.specialReadyAt, currentTime);
-      recipient.playerTechniqueGauge = 100;
-      event.playerReadyIds.push(recipient.id);
-    } else if (forceSpecial(recipient)) event.forcedAttackerIds.push(recipient.id);
+
+  if (general.technique === "GENERAL_COMMAND") {
+    const protagonist = soldiers.find((soldier) => soldier.controller === "player" && !soldier.isDead && soldier.hp > 0) ?? null;
+    for (const recipient of findGeneralCommandRecipients(general, soldiers)) {
+      event.recipientIds.push(recipient.id);
+      if (recipient === protagonist) {
+        // Raw mode 4: m200 itself enters fr.gotoAndStop("kb"). Sprite 671 then
+        // invokes spl(m200) from its frame-13 callback; it is not synchronous.
+        if (schedulePlayerCallback(recipient)) event.forcedAttackerIds.push(recipient.id);
+        if (!event.playerReadyIds.includes(recipient.id)) event.playerReadyIds.push(recipient.id);
+        continue;
+      }
+      if (protagonist && protagonist.playerTechniqueGauge < 99) {
+        // Raw sz(mode=4) does not force this AI recipient's spl(). Instead every
+        // accepted non-m200 candidate raises the protagonist m200.kd to 99.
+        protagonist.playerTechniqueGauge = 99;
+        protagonist.playerTechniqueGaugeUpdatedAt = currentTime;
+        if (!event.playerReadyIds.includes(protagonist.id)) event.playerReadyIds.push(protagonist.id);
+      }
+    }
   }
   return event;
 }
