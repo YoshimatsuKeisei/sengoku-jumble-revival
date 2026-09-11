@@ -3,7 +3,13 @@ import type { RandomSource } from "../stats/soldierStats";
 import type { AttackKind, Soldier } from "../types";
 import { cancelAttack } from "./attackRuntime";
 import { isValidCombatTarget } from "./combatTargetSystem";
-import { getRawFiToward, startRawCombatImpulse, SWF_DIRECTION_FX, SWF_DIRECTION_FY } from "./rawCombatImpulseSystem";
+import {
+  getRawFiToward,
+  getRawOppositeFi,
+  startRawCombatImpulse,
+  SWF_DIRECTION_FX,
+  SWF_DIRECTION_FY,
+} from "./rawCombatImpulseSystem";
 import { startHitReaction } from "./reactionSystem";
 import { getTechniqueProfile, SWF_GRID_CELL_SIZE, swfLogicTicksToMs } from "./techniqueCombatProfiles";
 
@@ -95,8 +101,11 @@ export function getRawExplosionGridVictims(
 }
 
 /**
- * Every ranged atck(ss>4), defended or not, assigns defender.k=10 and the normal
- * 10-unit fx/fy impulse. s11's 5-unit guarded branch is skipped for ss>4.
+ * Raw scd() calls normal ranged resolution as atck(target, attacker, 5).
+ * atck() first points target.fi toward the attacker, then rotates that local fi by
+ * four directions before its common impulse tail. Because ss=5 (>4), the close-
+ * contact attacker recoil/half-strength branch is skipped and the target receives
+ * the full 10-unit impulse away from the attacker, guarded or not.
  */
 export function startRawRangedTargetResponse(
   target: Soldier,
@@ -105,17 +114,22 @@ export function startRawRangedTargetResponse(
   random: RandomSource,
   attackKind: AttackKind,
 ): number {
-  const fi = getRawFiToward(target, attacker);
-  target.facingX = SWF_DIRECTION_FX[fi];
-  target.facingY = SWF_DIRECTION_FY[fi];
+  const facingFi = getRawFiToward(target, attacker);
+  target.facingX = SWF_DIRECTION_FX[facingFi];
+  target.facingY = SWF_DIRECTION_FY[facingFi];
   target.abilityActionLockUntil = Math.max(
     target.abilityActionLockUntil,
     currentTime + swfLogicTicksToMs(SWF_RANGED_TARGET_K_TICKS),
   );
   cancelAttack(target);
-  startRawCombatImpulse(target, fi, SWF_RANGED_TARGET_IMPULSE_UNITS, currentTime);
+  startRawCombatImpulse(
+    target,
+    getRawOppositeFi(facingFi),
+    SWF_RANGED_TARGET_IMPULSE_UNITS,
+    currentTime,
+  );
   // Use the existing confirmed k=10 reaction/death-order layer with zero legacy
   // linear knockback; raw fx/fy above owns all displacement.
   startHitReaction(target, attacker, currentTime, 0, random, attackKind);
-  return fi;
+  return facingFi;
 }
