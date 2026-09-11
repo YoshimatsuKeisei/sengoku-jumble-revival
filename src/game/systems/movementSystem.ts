@@ -9,6 +9,8 @@ import { findArrowTarget, getArrowMovementDecision } from "./arrowAttackSystem";
 import { clearStaleCombatTarget, isValidCombatTarget } from "./combatTargetSystem";
 import { getArrivalToleranceWorld, isWithinNormalContact } from "./techniqueCombatProfiles";
 import { getBaseAttackContactSegment } from "./battlefieldGeometry";
+import { battlefieldSwfPointToWorld, battlefieldWorldPointToSwf } from "../battlefieldLayout";
+import { getSwfStaticCollisionCodeAtWorld } from "./swfBaseCollisionGrid";
 
 export interface Direction { x: number; y: number }
 
@@ -308,29 +310,47 @@ export function resolveObstacleOverlaps(soldiers: Soldier[], obstacles: readonly
   }
 }
 
+export const SWF_SOLDIER_CONTACT_AXIS_UNITS = 32;
+export const SWF_SOLDIER_CONTACT_SPACING_UNITS = 24;
+
+function getRawSoldierContactDestination(
+  mover: Soldier,
+  other: Soldier,
+): { x: number; y: number } | null {
+  const moverRaw = battlefieldWorldPointToSwf(mover);
+  const otherRaw = battlefieldWorldPointToSwf(other);
+  const dx = otherRaw.x - moverRaw.x;
+  const dy = otherRaw.y - moverRaw.y;
+  if (Math.abs(dx) >= SWF_SOLDIER_CONTACT_AXIS_UNITS || Math.abs(dy) >= SWF_SOLDIER_CONTACT_AXIS_UNITS) return null;
+  const angle = Math.atan2(dy, dx);
+  return {
+    x: Math.round(otherRaw.x - Math.cos(angle) * SWF_SOLDIER_CONTACT_SPACING_UNITS),
+    y: Math.round(otherRaw.y - Math.sin(angle) * SWF_SOLDIER_CONTACT_SPACING_UNITS),
+  };
+}
+
 export function separateSoldiers(soldiers: Soldier[]): void {
-  const minimumDistance = SOLDIER_RADIUS * 2;
   for (let i = 0; i < soldiers.length; i += 1) {
     const a = soldiers[i];
     if (a.isDead || a.state === "HEALING") continue;
     for (let j = i + 1; j < soldiers.length; j += 1) {
       const b = soldiers[j];
       if (b.isDead || b.state === "HEALING") continue;
-      let dx = b.x - a.x;
-      let dy = b.y - a.y;
-      let distance = Math.hypot(dx, dy);
-      if (distance >= minimumDistance) continue;
-      if (distance === 0) { dx = 1; dy = 0; distance = 1; }
-      const overlap = minimumDistance - distance;
-      const aContactLocked = a.baseContactLockTicks > 0;
-      const bContactLocked = b.baseContactLockTicks > 0;
-      if (aContactLocked && bContactLocked) continue;
-      const aPush = bContactLocked ? overlap : aContactLocked ? 0 : overlap / 2;
-      const bPush = aContactLocked ? overlap : bContactLocked ? 0 : overlap / 2;
-      a.x -= (dx / distance) * aPush;
-      a.y -= (dy / distance) * aPush;
-      b.x += (dx / distance) * bPush;
-      b.y += (dy / distance) * bPush;
+
+      let mover = a;
+      let other = b;
+      if (a.baseContactLockTicks > 0) {
+        if (b.baseContactLockTicks > 0) continue;
+        mover = b;
+        other = a;
+      }
+
+      const destinationRaw = getRawSoldierContactDestination(mover, other);
+      if (!destinationRaw) continue;
+      const destinationWorld = battlefieldSwfPointToWorld(destinationRaw);
+      if (getSwfStaticCollisionCodeAtWorld(destinationWorld) !== null) continue;
+      mover.x = destinationWorld.x;
+      mover.y = destinationWorld.y;
     }
   }
   for (const soldier of soldiers) {
