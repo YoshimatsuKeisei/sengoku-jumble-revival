@@ -1,4 +1,4 @@
-name: Ranged command batch CI
+name: Raw soldier contact probe
 
 on:
   workflow_dispatch:
@@ -6,39 +6,135 @@ on:
     branches:
       - debug/current-20260907-ranged-batch-ci
 
+permissions:
+  contents: write
+
 concurrency:
-  group: ranged-command-batch-${{ github.ref }}
+  group: raw-soldier-contact-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  focused:
+  probe:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: debug/current-20260907-ranged-batch
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+      - name: Apply isolated raw-contact patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/game/systems/movementSystem.ts')
+          text = path.read_text()
+          import_anchor = 'import { getBaseAttackContactSegment } from "./battlefieldGeometry";\n'
+          imports = (
+              'import { battlefieldSwfPointToWorld, battlefieldWorldPointToSwf } from "../battlefieldLayout";\n'
+              'import { getSwfStaticCollisionCodeAtWorld, SWF_BASE_COLLISION_GRID_SIZE } from "./swfBaseCollisionGrid";\n'
+          )
+          assert import_anchor in text
+          if imports not in text:
+              text = text.replace(import_anchor, import_anchor + imports, 1)
+          start = text.index('export function separateSoldiers(')
+          replacement = r'''export const SWF_SOLDIER_CONTACT_AXIS_UNITS = 32;
+          export const SWF_SOLDIER_CONTACT_SPACING_UNITS = 24;
+
+          function rawSoldierCell(point: { x: number; y: number }): { x: number; y: number } {
+            return {
+              x: Math.round(point.x / SWF_BASE_COLLISION_GRID_SIZE),
+              y: Math.round(point.y / SWF_BASE_COLLISION_GRID_SIZE),
+            };
+          }
+
+          function getRawSoldierContactDestination(
+            mover: Soldier,
+            other: Soldier,
+          ): { x: number; y: number } | null {
+            const moverRaw = battlefieldWorldPointToSwf(mover);
+            const otherRaw = battlefieldWorldPointToSwf(other);
+            const dx = otherRaw.x - moverRaw.x;
+            const dy = otherRaw.y - moverRaw.y;
+            if (Math.abs(dx) >= SWF_SOLDIER_CONTACT_AXIS_UNITS || Math.abs(dy) >= SWF_SOLDIER_CONTACT_AXIS_UNITS) return null;
+            const angle = Math.atan2(dy, dx);
+            return {
+              x: Math.round(otherRaw.x - Math.cos(angle) * SWF_SOLDIER_CONTACT_SPACING_UNITS),
+              y: Math.round(otherRaw.y - Math.sin(angle) * SWF_SOLDIER_CONTACT_SPACING_UNITS),
+            };
+          }
+
+          function rawSoldierContactDestinationIsClear(
+            mover: Soldier,
+            destinationRaw: { x: number; y: number },
+            soldiers: readonly Soldier[],
+          ): boolean {
+            const destinationWorld = battlefieldSwfPointToWorld(destinationRaw);
+            if (getSwfStaticCollisionCodeAtWorld(destinationWorld) !== null) return false;
+            const destinationCell = rawSoldierCell(destinationRaw);
+            return !soldiers.some((other) => {
+              if (other === mover || other.isDead || other.state === "HEALING") return false;
+              const cell = rawSoldierCell(battlefieldWorldPointToSwf(other));
+              return cell.x === destinationCell.x && cell.y === destinationCell.y;
+            });
+          }
+
+          export function separateSoldiers(soldiers: Soldier[]): void {
+            for (let i = 0; i < soldiers.length; i += 1) {
+              const a = soldiers[i];
+              if (a.isDead || a.state === "HEALING") continue;
+              for (let j = i + 1; j < soldiers.length; j += 1) {
+                const b = soldiers[j];
+                if (b.isDead || b.state === "HEALING") continue;
+
+                let mover = a;
+                let other = b;
+                if (a.baseContactLockTicks > 0) {
+                  if (b.baseContactLockTicks > 0) continue;
+                  mover = b;
+                  other = a;
+                }
+
+                const destinationRaw = getRawSoldierContactDestination(mover, other);
+                if (!destinationRaw || !rawSoldierContactDestinationIsClear(mover, destinationRaw, soldiers)) continue;
+                const destinationWorld = battlefieldSwfPointToWorld(destinationRaw);
+                mover.x = destinationWorld.x;
+                mover.y = destinationWorld.y;
+              }
+            }
+            for (const soldier of soldiers) {
+              if (soldier.isDead || soldier.state === "HEALING") continue;
+              soldier.x = Math.max(SOLDIER_RADIUS, Math.min(BATTLEFIELD_CONFIG.width - SOLDIER_RADIUS, soldier.x));
+              soldier.y = Math.max(SOLDIER_RADIUS, Math.min(BATTLEFIELD_CONFIG.height - SOLDIER_RADIUS, soldier.y));
+            }
+          }
+          '''
+          path.write_text(text[:start] + replacement)
+          PY
+          git diff --check
+          git diff -- src/game/systems/movementSystem.ts
       - run: npm ci
       - name: Vite production bundle
         run: npx vite build
-      - name: General command, ranged, trap, and runtime conformance
-        run: >-
-          npx vitest run
-          tests/swf-spec/rangedCommandDirectConformance.test.ts
-          tests/swf-spec/rangedGaugeDirectConformance.test.ts
-          tests/swf-spec/rangedTargetAcquisitionDirectConformance.test.ts
-          tests/swf-spec/rangedTargetImpulseConformance.test.ts
-          tests/swf-spec/forcedRangedNoTarget.test.ts
-          tests/swf-spec/runtimeCharacterization.test.ts
-          tests/swf-spec/swfConformance.test.ts
-          --reporter=verbose
+      - name: Contact conformance
+        run: npx vitest run tests/swf-spec/battlefieldCoordinateCollisionConformance.test.ts --reporter=verbose
+      - name: Full SWF conformance suite
+        run: npx vitest run tests/swf-spec --reporter=verbose
       - name: Strategy regression
         run: >-
           npx vitest run
           src/game/systems/strategyEngagement.test.ts
           src/game/systems/phase4c1TargetStrategy.test.ts
           --reporter=verbose
-      - name: Full SWF conformance suite
-        run: npx vitest run tests/swf-spec --reporter=verbose
+      - name: Commit verified runtime patch
+        shell: bash
+        run: |
+          git config user.name "吉松 敬誠"
+          git config user.email "jingchengjisong@gmail.com"
+          git add src/game/systems/movementSystem.ts
+          git commit -m "Replay raw soldier contact spacing"
+          git push origin HEAD:debug/current-20260907-ranged-batch
