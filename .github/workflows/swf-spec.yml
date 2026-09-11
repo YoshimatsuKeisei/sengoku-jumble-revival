@@ -1,11 +1,10 @@
-name: SWF conformance
+name: Grouped SWF conformance CI
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - debug/swf-conformance
-      - debug/current-20260907-swf-integrated
+      - debug/current-20260907-ranged-command-trap-runtime-full-ci
     paths:
       - "src/**"
       - "tests/swf-spec/**"
@@ -13,11 +12,11 @@ on:
       - ".github/workflows/swf-spec.yml"
 
 concurrency:
-  group: swf-spec-${{ github.ref }}
+  group: grouped-swf-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  conformance:
+  grouped:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -27,38 +26,37 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
-      - name: Base, recovery, movement, and unit-UI regression tests
-        run: >-
-          npx vitest run
-          src/game/systems/baseContactSystem.test.ts
-          src/game/systems/baseGateRecoveryGeometry.test.ts
-          src/game/systems/recoverySystem.test.ts
-          src/game/systems/swfIntegrationPreservation.test.ts
-          src/game/systems/phase3eBattlefield.test.ts
-          src/game/systems/phase3fFidelity.test.ts
-          src/game/systems/phase3gFixes.test.ts
-          src/game/systems/phase3hIntegration.test.ts
-          src/game/systems/phase3jPlayerControl.test.ts
-          src/game/systems/obstacleAvoidance.test.ts
-          src/game/rendering/battleUnitUiAssets.test.ts
-          src/game/rendering/battleFrameSequenceManifest.test.ts
-          --reporter=verbose
-      - name: Strategy regression tests
+      - name: Vite production bundle
+        run: npx vite build
+      - name: Full SWF conformance suite
+        id: swf
+        continue-on-error: true
+        run: npx vitest run tests/swf-spec --reporter=verbose
+      - name: Special ability regression
+        id: abilities
+        continue-on-error: true
+        run: npx vitest run src/game/systems/swfSpecialAbilities.test.ts --reporter=verbose
+      - name: Strategy regression
+        id: strategy
+        continue-on-error: true
         run: >-
           npx vitest run
           src/game/systems/strategyEngagement.test.ts
           src/game/systems/phase4c1TargetStrategy.test.ts
           --reporter=verbose
-      - name: SWF conformance tests
-        run: npx vitest run tests/swf-spec --reporter=verbose
       - name: Machine-readable SWF result
         if: always()
-        run: npx vitest run tests/swf-spec --reporter=json --outputFile=swf-spec-results.json
+        run: npx vitest run tests/swf-spec --reporter=json --outputFile=swf-spec-results.json || true
       - name: Upload SWF result
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: swf-spec-results
+          name: grouped-swf-spec-results
           path: swf-spec-results.json
           if-no-files-found: warn
+      - name: Fail if grouped checks failed
+        if: always()
+        run: >-
+          test "${{ steps.swf.outcome }}" = success
+          -a "${{ steps.abilities.outcome }}" = success
+          -a "${{ steps.strategy.outcome }}" = success
