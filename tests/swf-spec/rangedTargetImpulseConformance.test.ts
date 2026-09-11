@@ -39,11 +39,13 @@ describe("raw ranged target impulse", () => {
     expect(gunAfter.y).toBeCloseTo(gunBefore.y, 6);
   });
 
-  it("keeps the full 10-unit target impulse on an IRON_WALL guard and gives the shooter no recoil", () => {
+  it("keeps the full 10-unit target impulse on the raw gun-guard branch and gives the shooter no recoil", () => {
     const gun = gunner();
     const target = unit("target", "enemy", 700);
+    // Raw gun defense only reaches the ordinary defense roll for ninja targets;
+    // non-ninja targets take the forced high-roll branch and cannot guard here.
+    target.unitType = "NINJA";
     target.stats.defense = 200;
-    target.specialAbilities = ["IRON_WALL"];
     const targetBefore = battlefieldWorldPointToSource(target);
     const gunBefore = battlefieldWorldPointToSource(gun);
 
