@@ -65,17 +65,28 @@
       "evidence": { "reference": "evidence/battlefield_coordinates_and_fence_routing.md" }
     },
     {
-      "id": "TRAP_RAW_HALF_BRANCH_AND_PORT_TRIGGER",
+      "id": "TRAP_FENCE_COLLISION_GATE",
       "status": "confirmed",
       "category": "movement",
       "expected": {
-        "rawSwfSourceCenterX": 900,
-        "rawSwfComparisonSpace": "swf-source",
-        "rawSwfContainsOpposingHalfEligibilityBranch": true,
+        "predictedCollisionCodeRegister": "reg4",
+        "collisionCodeGateExpression": "reg4 > 900",
+        "fixedFenceCodes": [901, 902, 903, 904, 905, 906],
+        "sourceCenterX": 900,
+        "sourceCenterXRole": "select defending-team roster lookup inside the high-code collision branch",
+        "sourceCenterXIsStandaloneTrigger": false,
+        "playerInvaderLookupCondition": "_x > 900 && e == 1",
+        "playerInvaderLookupFunction": "eskk",
+        "enemyInvaderLookupCondition": "_x < 900 && e == 2",
+        "enemyInvaderLookupFunction": "mskk",
+        "trapAbilityCode": "s17",
+        "rosterDrawsWithReplacement": 2,
+        "successfulTrapHpDamage": 1,
+        "successfulTrapHpFloor": 2,
+        "commonFenceImpactLockTicks": 10,
+        "commonFenceRouteTicks": 20,
         "activePortTrigger": "new-enemy-fixed-fence-contact",
-        "activePortContactSource": "901..906 raw collision event with alpha-contact fallback",
-        "activePortUsesHalfBoundaryAsCollisionOrTrigger": false,
-        "activePortDecisionDate": "2026-09-07"
+        "activePortUsesHalfBoundaryAsCollisionOrTrigger": false
       },
       "evidence": { "reference": "evidence/trap_boundary.md" }
     }
