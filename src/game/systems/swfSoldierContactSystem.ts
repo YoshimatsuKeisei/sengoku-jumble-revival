@@ -89,6 +89,10 @@ function cellIsFree(point: Position, occupancy: ReadonlyMap<string, Soldier>): b
   return getSwfStaticCollisionCodeAtWorld(point) === null && !occupancy.has(cellKey(point));
 }
 
+function positionsDiffer(first: Position, second: Position): boolean {
+  return first.x !== second.x || first.y !== second.y;
+}
+
 /**
  * Replays only the raw sequential f[][] selection/spacing layer.
  *
@@ -102,6 +106,10 @@ function cellIsFree(point: Position, occupancy: ReadonlyMap<string, Soldier>): b
  * cleared, and only the proposed destination cell can select a normal contact
  * candidate. The current-target <20 override is likewise limited to that one
  * target.
+ *
+ * Base contact is resolved immediately before this layer in BattleScene. A
+ * soldier carrying baseContactLockTicks therefore keeps that already-resolved
+ * bounce and only rewrites its final dynamic grid cell here.
  *
  * Enemy attack resolution remains owned by the existing combat system. For
  * this isolated replay, opposing-team contacts therefore do not receive a
@@ -145,6 +153,16 @@ export function resolveSequentialSwfSoldierContacts(
     if (occupancy.get(oldKey) === soldier) occupancy.delete(oldKey);
 
     const proposed = proposal.get(soldier) ?? { x: soldier.x, y: soldier.y };
+
+    // 996/997 base contact already resolved its bounce before this replay.
+    // Preserve that result instead of feeding it through soldier-contact logic.
+    if (soldier.baseContactLockTicks > 0) {
+      soldier.x = proposed.x;
+      soldier.y = proposed.y;
+      occupancy.set(cellKey(soldier), soldier);
+      continue;
+    }
+
     const target = soldier.targetId
       ? soldiers.find((candidate) => candidate.id === soldier.targetId && isActiveOccupant(candidate)) ?? null
       : null;
@@ -170,8 +188,7 @@ export function resolveSequentialSwfSoldierContacts(
 
     // The raw enemy branch may call atck(...,3) and skip the same-team spacing
     // path. Existing combat resolution owns that enemy path in the revival.
-    if (candidate.team === soldier.team
-      && soldier.baseContactLockTicks <= 0 && candidate.baseContactLockTicks <= 0) {
+    if (candidate.team === soldier.team && candidate.baseContactLockTicks <= 0) {
       const destination = rawSpacingDestination(soldier, candidate);
       if (destination && cellIsFree(destination, occupancy)) {
         soldier.x = destination.x;
@@ -188,6 +205,16 @@ export function resolveSequentialSwfSoldierContacts(
     const clamped = clampToBattlefield(soldier);
     soldier.x = clamped.x;
     soldier.y = clamped.y;
+
+    const start = movementStartPositions.get(soldier.id);
+    const intended = proposal.get(soldier);
+    // Only replace velocity when ordinary movement/base contact actually changed
+    // this frame after the captured start. This avoids erasing unrelated player
+    // hit-reaction velocity that happened before captureSoldierPositions().
+    if (start && intended && positionsDiffer(start, intended)) {
+      soldier.velocityX = soldier.x - start.x;
+      soldier.velocityY = soldier.y - start.y;
+    }
   }
 
   return result;
