@@ -1,0 +1,21 @@
+name: Stable baseline reaction check
+
+on:
+  push:
+    branches:
+      - debug/current-20260907-reaction-baseline-check
+  workflow_dispatch:
+
+jobs:
+  reaction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Stable baseline reaction tests
+        run: npx vitest run src/game/systems/reactionSystem.test.ts --reporter=verbose
