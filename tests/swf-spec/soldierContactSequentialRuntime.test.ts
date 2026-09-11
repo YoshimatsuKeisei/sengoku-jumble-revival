@@ -114,38 +114,39 @@ describe("sequential raw SWF soldier contact replay", () => {
     expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(789.43, 5);
   });
 
-  it("advances k and decay even when the impulse destination cell is occupied", () => {
+  it("advances k and decay even when a fixed-fence cell blocks an impulse tick", () => {
     const protagonist = soldier("player-0", "player", 800, 500);
     const ally = soldier("player-1", "player", 820, 500);
     const firstUnits = [protagonist, ally];
     const firstStart = captureStarts(firstUnits);
     setRawProposal(protagonist, 814, 500);
     resolveSequentialSwfSoldierContacts(firstUnits, firstStart, 1_000);
-    expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(796, 0);
 
-    // First current-unit k tick wants raw x=793. A later roster occupant in the
-    // same 36-unit cell blocks that coordinate update, but raw d() still decays
-    // fx and consumes the k tick.
-    const blocker = soldier("player-2", "player", 793, 500);
-    const blockedUnits = [protagonist, ally, blocker];
-    let frameStarts = captureStarts(blockedUnits);
+    // Preserve protagonist's armed leftward k=3 state, but place it just to the
+    // right of raw fixed-fence 901. Its first -3 source-unit tick targets x=556,
+    // y=540: round(556/36)=15 and round(540/36)=15, i.e. fence code 901.
+    setRawProposal(protagonist, 559, 540);
+    let frameStarts = captureStarts([protagonist]);
     const blockedTick = resolveSequentialSwfSoldierContacts(
-      blockedUnits,
+      [protagonist],
       frameStarts,
       1_000 + SWF_SOLDIER_CONTACT_LOGIC_TICK_MS,
     );
-    expect(blockedTick.impulseTicksApplied).toBeGreaterThanOrEqual(1);
-    expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(796, 6);
+    expect(blockedTick.impulseTicksApplied).toBe(1);
+    expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(559, 6);
+    expect(battlefieldWorldPointToSwf(protagonist).y).toBeCloseTo(540, 6);
 
-    // The next tick uses the already-decayed -2.1 vector, proving that the
-    // blocked tick was consumed rather than retried at -3.
-    frameStarts = captureStarts([protagonist, ally]);
+    // Move the unit back to open ground without touching its WeakMap k state.
+    // The next tick must use the already-decayed -2.1 vector, not retry -3.
+    setRawProposal(protagonist, 800, 500);
+    frameStarts = captureStarts([protagonist]);
     resolveSequentialSwfSoldierContacts(
-      [protagonist, ally],
+      [protagonist],
       frameStarts,
       1_000 + SWF_SOLDIER_CONTACT_LOGIC_TICK_MS * 2,
     );
-    expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(793.9, 6);
+    expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(797.9, 6);
+    expect(battlefieldWorldPointToSwf(protagonist).y).toBeCloseTo(500, 6);
   });
 
   it("does not drag the protagonist when its proposed cell is free", () => {
