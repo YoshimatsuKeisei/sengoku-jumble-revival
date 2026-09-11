@@ -1,25 +1,31 @@
-# TRAP raw half-branch and adopted runtime trigger
+# TRAP fixed-fence entry and half eligibility — direct raw AVM1
 
-## Raw SWF evidence
+Source: recovered `sgjbgm.swf`, SHA-256 `47d397d98ed797e2e5e1f7f96c10ba9c3f93d3a3b54b45fbc61401a553c3399c`, CWS / SWF v7 / 24 fps. The offsets below are from the directly decompressed FWS image.
 
-The recovered AVM1 battle loop contains explicit source-space half checks around the TRAP-related roster lookup branches:
+## The first `> 900` is a collision-code comparison, not X position
 
-- player-side invader branch: `_x > 900`, followed by the enemy-side `eskk()` lookup
-- enemy-side invader branch: `_x < 900`, followed by the player-side `mskk()` lookup
-- successful TRAP effect applies HP -1 with a floor of 2 HP, `k = 10`, and `t = 20`
+The earlier reconstruction note conflated two different values named around 900. Re-reading the raw `d()` action list shows that the branch entering fixed-fence/TRAP handling starts from the battlefield collision grid:
 
-Therefore source X = 900 is a real raw-SWF eligibility boundary and must remain documented as such. The value is in SWF source coordinates, not the 2400x900 reconstruction world coordinates.
+- `2191485..2191549`: read `f[round(candidateX / h)][round(candidateY / h)]` into register 4 (`h = 36`).
+- `2191616..2191628`: test **register 4 > 900**. This is the collision-grid code, not `_x`.
+- `2191642..2191715`: dispatch special codes `996`, `997`, `998`, `999`, `1000` first.
+- `2191720`: every other `>900` code falls through to `2194253`, the common fixed-fence response/TRAP block.
 
-## Reconstruction behavior adopted on 2026-09-07
+The battlefield grid independently identifies the six fixed fences as codes `901..906`, so those are exactly the ordinary codes that enter this default branch. There is therefore no raw invisible X=900 trigger line.
 
-The revival intentionally does **not** use X=900 as an invisible runtime collision/trigger line. During the 2026-09-07 movement investigation, the project requirement was corrected to the observed/remembered original-game behavior: TRAP should be checked when a soldier makes a **new contact with an enemy-owned fixed fence**. Merely crossing or moving inside the opposing half must not stop movement or continuously re-roll TRAP.
+## X=900 is only the opposing-half eligibility test after fence collision
 
-The active implementation therefore uses `updateEnemyFenceTrapContacts()` and tracks `touchingEnemyFenceIds` so that:
+Inside the fixed-fence block, the source X comparison appears only after the collision-code gate:
 
-- entering the opposing half by itself does not roll TRAP;
-- a new enemy fixed-fence contact is eligible for the two roster-slot TRAP draws;
-- remaining on the same fence contact does not re-roll;
-- after a successful TRAP, the confirmed 10-tick action lock and 20-tick trap state still apply;
-- leaving and later making a genuinely new enemy-fence contact can become eligible again.
+- `2194285..2194326`: `_x > 900 && e == 1`; if true, call enemy-side `eskk()` at `2194350`.
+- `2194518..2194559`: mirrored `_x < 900 && e == 2`; if true, call player-side `mskk()` at `2194583`.
 
-This distinction is intentional. The raw X=900 AVM1 branch is preserved as source evidence, while the active revival trigger follows the later project-level gameplay correction instead of recreating the invisible-line bug.
+Thus X=900 chooses whether a soldier already colliding with a >900 fixed-fence cell is on the opposing side. Crossing X=900 by itself does not enter this block and cannot roll TRAP.
+
+On a successful TRAP lookup the raw code plays the explosion response and subtracts one HP with a floor of 2. The common fence tail then establishes `k = 10` at `2194765`, `t = 20` at `2194778`, and calls `vc3()` for the fence response route.
+
+## Reconstruction consequence
+
+The revival's active trigger — a new contact with an enemy-owned fixed fence — is consistent with the raw gate rather than an intentional deviation from it. `touchingEnemyFenceIds` remains useful to prevent reconstruction-side repeated contact processing while a soldier remains geometrically overlapped, but the authoritative reason the event exists is the raw `f[][]` collision-code path for fence codes `901..906`.
+
+The old statement that raw SWF contains a standalone half-field TRAP trigger is withdrawn.
