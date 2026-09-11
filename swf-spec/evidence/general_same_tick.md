@@ -1,24 +1,54 @@
-# Same-tick general command evidence
+# General command mode 4 — direct raw AVM1 evidence
 
-Source: original `sgjbgm.swf`, SHA-256 `47d397d98ed797e2e5e1f7f96c10ba9c3f93d3a3b54b45fbc61401a553c3399c` (3,814,810 bytes, CWS, SWF v7, 24 fps). The statements below were recovered directly from the regenerated AVM1 functions `spl` and `sz` plus the relevant SWF timelines.
+Source: original `sgjbgm.swf`, SHA-256 `47d397d98ed797e2e5e1f7f96c10ba9c3f93d3a3b54b45fbc61401a553c3399c` (3,814,810 bytes, CWS / SWF v7 / 24 fps). Offsets below are from the directly decompressed FWS image.
 
-## Command dispatch
+## Function definitions
 
-General command attack code `14` enters the `spl()` branch that calls `sz(general, 4)`, then shows the general's `as.gri` effect. `sz()` scans nearby same-team soldiers and excludes the source soldier. In mode `4`, the affected recipient must satisfy both:
+The relevant root AVM1 functions were re-parsed directly:
 
-- character code `ch != 3` (generals are excluded), and
-- `sp == 0` (the recipient is not already in a special-action state).
+- `sz(i,u)` DefineFunction2 at `2235788`, body `2235807..2237696`; `i = register 4`, `u = register 11`.
+- `spl(i)` DefineFunction2 at `2243611`, body `2243628..2249241`; `i = register 2`.
 
-For an accepted recipient, mode 4 does not directly invoke a second copy of the recipient technique. It selects the recipient's `fr` effect frame `kb` with `gotoAndStop("kb")`.
+General command attack code `ac == 14` dispatches to `2245327`. That branch sets the source action state and calls `sz(i,4)` at `2245374..2245392`.
 
-## `kb` callback is a single timeline instance
+## What mode 4 actually does
 
-The `fr` selector is SWF Sprite `800`. Its frame 3 is labelled `kb` and places one child Sprite `671` at display-list depth 1. Sprite 671 has a 13-frame timeline. Its frame-13 AVM1 action calls the battle root's `spl(recipient)` with the affected soldier, then returns the recipient movie clip to frame 1.
+`sz()` scans the 11x11 local collision grid around the source. Before mode dispatch, a candidate must be same-team, have `p < 89`, and not be the source (`2236068..2236161`). Mode 4 begins at `2236862` and further requires:
 
-Therefore a command recipient is routed back through the same `spl()` function used by its own technique, rather than through a separate reconstruction-only attack path.
+- `ch != 3` (`2236862..2236887`), excluding generals;
+- `sp == 0` (`2236888..2236910`).
 
-If two generals select the same recipient at the same logical instant, both mode-4 calls address the same recipient `fr` movie clip and the same `kb` frame/depth. Flash display lists cannot hold two independent objects simultaneously at the same depth; the second `gotoAndStop("kb")` does not create a second concurrent Sprite-671 callback. The recipient consequently receives at most one forced `spl()` activation from that same-instant overlap.
+The previous evidence note was wrong in treating every accepted candidate as a forced `spl()` recipient. Raw mode 4 has an explicit `m200` split:
 
-The recipient state checks reinforce this behavior after activation. `sp == 0` is required by mode 4, while ranged `spl()` additionally requires `k == 0`; a successful ranged resolution sets `k = 10`. Thus a later command while the recipient is already active is rejected by the original state machine rather than being blindly stacked.
+### Candidate is `m200`
 
-This confirms the invariant represented by `GENERAL_SAME_TICK_DEDUPE`: overlapping same-logical-instant general commands must not produce more than one forced activation for the same recipient. This does **not** ban a later, genuinely separate general command from triggering another activation after the original recipient state permits it again.
+At `2236915..2236926` the candidate is compared with global `m200`. Only when they are the same does the code execute:
+
+- `2236931..2236953`: `candidate.fr.gotoAndStop("kb")`.
+
+Sprite 800 frame label `kb` places child Sprite 671. Sprite 671 is exactly 13 frames long. Its frame-13 DoAction is at `671801` (action body `671807..671903`) and calls the parent/root `spl()` for the affected `m200`, then returns the parent timeline to frame 1. Because the child begins on frame 1, the callback occurs after 12 frame advances.
+
+### Candidate is not `m200`
+
+The alternate branch does **not** call the candidate's `spl()`:
+
+- `2236959..2236981`: test `m200.kd < 99`;
+- `2236986..2237002`: if so, assign `m200.kd = 99`.
+
+Thus nearby AI allies do not receive immediate technique activations from mode 4. Their presence raises the player-controlled `m200` technique gauge to at least 99.
+
+## `m200.kd` is the player technique gauge
+
+The `m200` EnterFrame action independently confirms the meaning of `kd`:
+
+- `2258980..2259025`: while `kd < 100`, add `kp / 30` each frame;
+- `2259026..2259077`: once `kd > 99`, clamp to `100` and show the full-gauge frame `kbm`;
+- `2260229..2260274`: manual technique activation requires `kd == 100` (plus the input-region check);
+- `2260642..2260665`: activation calls `_parent.spl(this)`;
+- `2261530..2261696`: after manual activation, the normal s21 retention/reset logic handles `kd`.
+
+So the mode-4 assignment to 99 is a near-full player-gauge effect, not an AI forced-attack mechanism.
+
+## Same-instant overlap
+
+If multiple command sources address `m200` while its `kb` selector is already the same timeline/depth, they do not create independent parallel Sprite-671 children. The reconstruction therefore keeps at most one pending `kb` callback for `m200` at a time. This is a callback dedupe for the player object only; it must not be generalized into “one forced technique per nearby AI soldier”.
