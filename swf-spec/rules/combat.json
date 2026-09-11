@@ -57,6 +57,24 @@
       "evidence": { "reference": "evidence/ranged_cycle.md" }
     },
     {
+      "id": "RANGED_TARGET_ACQUISITION",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "normalActivationTargetReferenceVariable": "l",
+        "normalActivationRequiresExistingTargetReference": true,
+        "unlatchedLocalGridScanBaseStates": [14, 15],
+        "unlatchedLocalGridScanStrategy": "wait",
+        "unlatchedScanPersistsTargetReference": false,
+        "gridCellSizeSourceUnits": 36,
+        "scanStartOffsetExpression": "floor(tk / 72)",
+        "scanSpanExpression": "floor(tk / 36)",
+        "scanOriginExpression": "round((_x + x) / 36), round((_y + y) / 36)",
+        "genericRadialFallbackWhenTargetReferenceMissing": false
+      },
+      "evidence": { "reference": "evidence/ranged_cycle.md" }
+    },
+    {
       "id": "NORMAL_CONTACT_CONTEST",
       "status": "confirmed",
       "category": "combat",

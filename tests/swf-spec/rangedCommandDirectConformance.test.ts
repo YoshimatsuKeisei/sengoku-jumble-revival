@@ -64,6 +64,8 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     archer.stats.skill = 100;
     archer.combatGauge = 200;
     archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+    // Raw normal ranged scd() uses the already-established l target.
+    archer.targetId = enemy.id;
 
     const first = updateSpecialAttacks([archer, enemy], [], createBattleBases(), 1_000, false, () => 1);
     expect(first.filter((event) => event.kind === "ARROW")).toHaveLength(1);
@@ -72,7 +74,7 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     expect(beginTechniqueAction(archer, 1_000 + swfLogicTicksToMs(10), () => 1, false)).toBe(true);
   });
 
-  it("emits one ranged launch event for one fresh ranged spl-equivalent activation", () => {
+  it("emits one ranged launch event for one fresh ranged spl-equivalent activation with an existing l target", () => {
     const archer = unit("single-archer", "player", 520);
     const enemy = unit("single-enemy", "enemy", 600);
     archer.unitType = "ARCHER";
@@ -80,6 +82,7 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     archer.stats.skill = 100;
     archer.combatGauge = 200;
     archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+    archer.targetId = enemy.id;
 
     const events = updateSpecialAttacks([archer, enemy], [], createBattleBases(), 1_000, false, () => 1);
     expect(events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id)).toHaveLength(1);

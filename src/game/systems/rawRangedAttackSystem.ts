@@ -21,8 +21,8 @@ function isRawRangedCandidate(attacker: Soldier, candidate: Soldier | null | und
 }
 
 /**
- * Direct scd(): an existing l is not replaced just because it is outside tk.
- * Only l == -1 enters the local f[][] scan.
+ * Direct scd(): ordinary ranged activation uses the already-latched l target.
+ * The l == -1 local f[][] scan exists only for base wait states pp 14/15.
  */
 export function findRawAiRangedTarget(
   attacker: Soldier,
@@ -35,13 +35,16 @@ export function findRawAiRangedTarget(
     if (!isRawRangedCandidate(attacker, latched)) return null;
     return Math.hypot(latched.x - attacker.x, latched.y - attacker.y) < rangeWorld ? latched : null;
   }
-  if (!allowUnlatchedScan) return null;
+  if (!allowUnlatchedScan || attacker.strategy !== "wait") return null;
 
   const rangeCells = getTechniqueProfile(attacker.technique).rangeCells;
   if (rangeCells === null) return null;
 
-  // Raw scd() centers its no-l scan on the predicted next position:
+  // Raw wait-state scd() centers its no-l scan on the predicted next position:
   // round((_x + x) / 36), round((_y + y) / 36).
+  // It starts floor(tk/72) cells before that point and visits
+  // floor(tk/36)+1 cells on each axis. For the normalized profiles below,
+  // rangeCells=tk/36, so floor(rangeCells/2) is the exact raw start offset.
   const origin = battlefieldWorldPointToSwf({
     x: attacker.x + attacker.velocityX,
     y: attacker.y + attacker.velocityY,

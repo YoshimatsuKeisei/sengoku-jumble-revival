@@ -29,6 +29,37 @@ At `scd()` offsets `0x0795..0x0861`:
 
 There is no explicit fixed hard cap, but arbitrary idle banking is also not original behavior because threshold crossings are processed immediately. The ranged branch's subtraction semantics also mean `s21` retention is not governed by a global “at most two activations” rule.
 
+## Ordinary ranged activation uses existing `l`
+
+Direct Sprite 2456 `scd()` disassembly at absolute uncompressed offsets `0x219572..0x219797` shows the normal ranged `ch == 2 || ch == 6` path:
+
+- `kd += kp` and the `kd > 200` consume/retain logic run first;
+- distance is then computed directly from the current soldier to `soldier.l`;
+- the shot requires that distance `< tk`, `k == 0`, active `p < 90`, target `l.p < 95`, and opposing-side `e` sum `== 3`;
+- only then does `atck(l, soldier, 5)` run.
+
+Therefore a normal fresh ranged activation is not a request to discover an arbitrary enemy. It operates on the persistent `l` reference already established by the strategy/engagement state machine.
+
+## The no-`l` local grid scan is wait-only
+
+Immediately before the normal ranged gauge path, `scd()` evaluates the no-target branch at absolute offsets `0x2192f8..0x21956d`. The local `f[][]` scan is entered only when:
+
+- `l == -1`; and
+- base strategy state `pp == 14 || pp == 15`.
+
+Direct strategy evidence identifies p14/p15 as the mirrored **待機 / wait** states. This scan is therefore the stationary wait-state in-range attack behavior, not a generic target-acquisition fallback for all ranged strategies.
+
+The scan geometry is also not a simple radial `distance < tk` test:
+
+- start half-width = `floor(tk / 72)` cells;
+- scan span counter = `floor(tk / 36)`;
+- origin X/Y = `round((_x + x) / h)` and `round((_y + y) / h)`, with battle-grid `h = 36`;
+- loops visit indices `0..floor(tk/36)` on both axes;
+- the first eligible opposing `p < 95` occupant is attacked;
+- the scanned unit is used directly for `atck()` and is not stored into persistent `l` by this branch.
+
+For ordinary bow `tk = 108`, a shooter at source X=520 has center cell `round(520/36)=14`, start cell 13, and visited X cells 13..16. A target at X=590 rounds to cell 16 and can be found; a target at X=600 is only 80 source units away (inside the nominal 108-unit radial distance) but rounds to cell 17 and is **not** found by the wait-state grid scan.
+
 ## Scheduler
 
 A separate direct ClipAction audit confirms `tc = 19` at initialization, `tc++` every EnterFrame, and `scd()` when `tc > 22`, after which `tc = 0`. Thus steady `scd()` cadence is 23 logic frames and the first trigger occurs after 4 frames.
