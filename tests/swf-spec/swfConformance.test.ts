@@ -6,7 +6,7 @@ import type { Soldier } from "../../src/game/types";
 import { captureSoldierPositions, resolveBaseMovementContacts } from "../../src/game/systems/baseContactSystem";
 import { createBattleBases, getBaseForTeam } from "../../src/game/systems/baseSystem";
 import { beginTechniqueAction, COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
-import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
+import { SWF_GENERAL_COMMAND_CALLBACK_DELAY_TICKS, updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
 import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 import { updateEnemyFenceTrapContacts } from "../../src/game/systems/trapAbilitySystem";
 import movementSpec from "../../swf-spec/rules/movement.json";
@@ -20,6 +20,11 @@ function unit(id: string, team: "player" | "enemy", sourceX: number, sourceY = 4
   return createSoldier(id, team, "ai", world.x, world.y);
 }
 
+function playerUnit(id: string, sourceX: number, sourceY = 450): Soldier {
+  const world = battlefieldSourcePointToWorld({ x: sourceX, y: sourceY });
+  return createSoldier(id, "player", "player", world.x, world.y);
+}
+
 function trapRoster(): Soldier[] {
   return Array.from({ length: 30 }, (_, index) => {
     const defender = unit(`enemy-${index}`, "enemy", 1200, 450 + index);
@@ -29,14 +34,14 @@ function trapRoster(): Soldier[] {
 }
 
 describe("SWF conformance: confirmed rules", () => {
-  it("preserves the raw X=900 TRAP branch as evidence without recreating an invisible runtime trigger line", () => {
-    const rule = movementSpec.rules[0];
-    expect(rule.status).toBe("confirmed");
-    expect(rule.expected.rawSwfSourceCenterX).toBe(900);
-    expect(rule.expected.rawSwfComparisonSpace).toBe("swf-source");
-    expect(rule.expected.rawSwfContainsOpposingHalfEligibilityBranch).toBe(true);
-    expect(rule.expected.activePortTrigger).toBe("new-enemy-fixed-fence-contact");
-    expect(rule.expected.activePortUsesHalfBoundaryAsCollisionOrTrigger).toBe(false);
+  it("enters TRAP only from a >900 fence collision code, then uses X=900 as half eligibility", () => {
+    const rule = movementSpec.rules.find((candidate) => candidate.id === "TRAP_FIXED_FENCE_ENTRY_AND_HALF_ELIGIBILITY");
+    expect(rule?.status).toBe("confirmed");
+    expect(rule?.expected.defaultFenceBranchRequiresCollisionCodeGreaterThan).toBe(900);
+    expect(rule?.expected.fixedFenceCodesEnteringDefaultBranch).toEqual([901, 902, 903, 904, 905, 906]);
+    expect(rule?.expected.opposingHalfEligibilitySourceX).toBe(900);
+    expect(rule?.expected.halfBoundaryAloneTriggersTrap).toBe(false);
+    expect(rule?.expected.activePortTrigger).toBe("new-enemy-fixed-fence-contact");
 
     const defenders = trapRoster();
     const halfInvader = unit("half-invader", "player", 901);
@@ -108,6 +113,7 @@ describe("SWF conformance: confirmed rules", () => {
     archer.stats.skill = 100;
     archer.combatGauge = 200;
     archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+    archer.targetId = enemy.id;
 
     const first = updateSpecialAttacks([archer, enemy], [], createBattleBases(), 1_000, false, () => 1);
     expect(first.filter((event) => event.kind === "ARROW")).toHaveLength(1);
@@ -116,30 +122,45 @@ describe("SWF conformance: confirmed rules", () => {
     expect(beginTechniqueAction(archer, 1_000 + swfLogicTicksToMs(10), () => 1, false)).toBe(true);
   });
 
-  it("puts a GENERAL_COMMAND-forced ranged activation into the same confirmed SWF k=10 lock", () => {
-    const rule = combatSpec.rules.find((candidate) => candidate.id === "RANGED_ACTION_FRAME_LOCK");
+  it("routes GENERAL_COMMAND through m200 kb instead of forcing nearby AI ranged spl", () => {
+    const rule = commandSpec.rules.find((candidate) => candidate.id === "GENERAL_SAME_TICK_DEDUPE");
     expect(rule?.status).toBe("confirmed");
+    expect(rule?.expected.nonM200RecipientDirectSpl).toBe(false);
+    expect(rule?.expected.nonM200RecipientEffect).toBe("m200.kd=max(m200.kd,99)");
+    expect(rule?.expected.forcedCallbackFrame).toBe(13);
+    expect(rule?.expected.forcedCallbackDelayLogicTicks).toBe(12);
 
-    const generalA = unit("general-a", "player", 500);
-    const generalB = unit("general-b", "player", 510);
-    const archer = unit("forced-archer", "player", 520);
+    const general = unit("general", "player", 500);
+    const protagonist = playerUnit("m200", 520);
+    const aiArcher = unit("ai-archer", "player", 530);
     const enemy = unit("enemy", "enemy", 600);
-    generalA.unitType = generalB.unitType = "GENERAL";
-    generalA.technique = generalB.technique = "GENERAL_COMMAND";
-    generalA.combatGauge = generalB.combatGauge = 10_000;
-    generalA.combatGaugeUpdatedAt = generalB.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
-    archer.unitType = "ARCHER";
-    archer.technique = "ARCHER_ARROW";
-    archer.combatGauge = 0;
-    archer.combatGaugeUpdatedAt = 1_000;
+    general.unitType = "GENERAL";
+    general.technique = "GENERAL_COMMAND";
+    general.combatGauge = 10_000;
+    general.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+    protagonist.unitType = "ARCHER";
+    protagonist.technique = "ARCHER_ARROW";
+    protagonist.targetId = enemy.id;
+    protagonist.playerTechniqueGauge = 0;
+    protagonist.playerTechniqueGaugeUpdatedAt = 1_000;
+    aiArcher.unitType = "ARCHER";
+    aiArcher.technique = "ARCHER_ARROW";
+    aiArcher.targetId = enemy.id;
+    aiArcher.combatGauge = 0;
+    aiArcher.combatGaugeUpdatedAt = 1_000;
 
-    const events = updateSpecialAttacks(
-      [generalA, generalB, archer, enemy], [], createBattleBases(), 1_000, false, () => 1,
+    const commandTick = updateSpecialAttacks(
+      [general, protagonist, aiArcher, enemy], [], createBattleBases(), 1_000, false, () => 1,
     );
-    const arrows = events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
-    expect(arrows).toHaveLength(1);
-    expect(archer.specialLockUntil).toBe(1_000 + swfLogicTicksToMs(10));
-    expect(archer.activeSpecialTechnique).toBe("ARCHER_ARROW");
+    expect(commandTick.filter((event) => event.kind === "ARROW")).toHaveLength(0);
+
+    const dueAt = 1_000 + swfLogicTicksToMs(SWF_GENERAL_COMMAND_CALLBACK_DELAY_TICKS);
+    const callbackTick = updateSpecialAttacks(
+      [general, protagonist, aiArcher, enemy], [], createBattleBases(), dueAt, false, () => 1,
+    );
+    expect(callbackTick.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === protagonist.id)).toHaveLength(1);
+    expect(callbackTick.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === aiArcher.id)).toHaveLength(0);
+    expect(protagonist.specialLockUntil).toBe(dueAt + swfLogicTicksToMs(10));
   });
 
   it("uses the confirmed 36-unit SWF collision cells for base damage", () => {
