@@ -1,7 +1,9 @@
 import { battlefieldWorldPointToSwf } from "../battlefieldLayout";
 import type { RandomSource } from "../stats/soldierStats";
 import type { AttackKind, Soldier } from "../types";
+import { cancelAttack } from "./attackRuntime";
 import { isValidCombatTarget } from "./combatTargetSystem";
+import { getRawFiToward, startRawCombatImpulse, SWF_DIRECTION_FX, SWF_DIRECTION_FY } from "./rawCombatImpulseSystem";
 import { startHitReaction } from "./reactionSystem";
 import { getTechniqueProfile, SWF_GRID_CELL_SIZE, swfLogicTicksToMs } from "./techniqueCombatProfiles";
 
@@ -93,10 +95,8 @@ export function getRawExplosionGridVictims(
 }
 
 /**
- * Safe b191 port: raw ranged atck() gives the defender k=10 on both hit and guard.
- * This probe reproduces that action lock / hit-stun ordering without importing the
- * old f5 rawCombatImpulse movement layer. The confirmed 10-unit fx/fy displacement
- * is deliberately deferred to a separate visual-regression probe.
+ * Every ranged atck(ss>4), defended or not, assigns defender.k=10 and the normal
+ * 10-unit fx/fy impulse. s11's 5-unit guarded branch is skipped for ss>4.
  */
 export function startRawRangedTargetResponse(
   target: Soldier,
@@ -104,17 +104,18 @@ export function startRawRangedTargetResponse(
   currentTime: number,
   random: RandomSource,
   attackKind: AttackKind,
-): void {
-  const dx = attacker.x - target.x;
-  const dy = attacker.y - target.y;
-  const length = Math.hypot(dx, dy);
-  if (length > 0) {
-    target.facingX = dx / length;
-    target.facingY = dy / length;
-  }
+): number {
+  const fi = getRawFiToward(target, attacker);
+  target.facingX = SWF_DIRECTION_FX[fi];
+  target.facingY = SWF_DIRECTION_FY[fi];
   target.abilityActionLockUntil = Math.max(
     target.abilityActionLockUntil,
     currentTime + swfLogicTicksToMs(SWF_RANGED_TARGET_K_TICKS),
   );
+  cancelAttack(target);
+  startRawCombatImpulse(target, fi, SWF_RANGED_TARGET_IMPULSE_UNITS, currentTime);
+  // Use the existing confirmed k=10 reaction/death-order layer with zero legacy
+  // linear knockback; raw fx/fy above owns all displacement.
   startHitReaction(target, attacker, currentTime, 0, random, attackKind);
+  return fi;
 }
