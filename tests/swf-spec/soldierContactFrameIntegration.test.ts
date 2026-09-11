@@ -44,7 +44,8 @@ describe("BattleScene movement snapshot -> SWF contact integration", () => {
     separateSoldiers(soldiers);
 
     expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(796, 0);
-    expect(battlefieldWorldPointToSwf(ally).x).toBeCloseTo(820, 6);
+    // Later raw-order ally observes its newly armed k=3 in the same update.
+    expect(battlefieldWorldPointToSwf(ally).x).toBeCloseTo(823, 6);
   });
 
   it("preserves a base-contact bounce already resolved before soldier contact", () => {
