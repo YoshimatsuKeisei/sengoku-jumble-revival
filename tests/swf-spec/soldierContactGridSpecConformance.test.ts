@@ -20,8 +20,18 @@ describe("raw SWF soldier contact gating", () => {
     expect(rule?.expected.pairCorrectionSpacingSourceUnits).toBe(24);
     expect(rule?.expected.pairCorrectionDestinationRequiresGridCode).toBe(0);
     expect(rule?.expected.pairCorrectionMovesOnlyCurrentUnitImmediately).toBe(true);
+    expect(rule?.expected.collisionDirectionAngleDivisorRadians).toBe(0.75);
+    expect(rule?.expected.collisionFxTable).toEqual([0, -1, -0.6, 0, 0.6, 1, 0.6, 0, -0.6]);
+    expect(rule?.expected.collisionFyTable).toEqual([0, 0, -0.6, -1, -0.6, 0, 0.6, 1, 0.6]);
+    expect(rule?.expected.collisionImpulseSpeedMultiplierProperty).toBe("s");
+    expect(rule?.expected.normalSpeedPropertyReset).toBe("s=ns");
+    expect(rule?.expected.collisionCurrentDirectionIsCandidatePlusFour).toBe(true);
     expect(rule?.expected.collisionImpulseTicks).toBe(3);
     expect(rule?.expected.collisionImpulseDecayPerTick).toBe(0.7);
+    expect(rule?.expected.collisionImpulseMoveRequiresGridCode).toBe(0);
+    expect(rule?.expected.collisionImpulseSuppressesOrdinaryMovementWhileKNonzero).toBe(true);
+    expect(rule?.expected.candidateImpulseRawGate).toBe("candidate.sp==0 && candidate.fr._currentframe!=6");
+    expect(rule?.expected.currentUnitK3AlwaysSetOnGenericContactBranch).toBe(true);
     expect(rule?.expected.collisionImpulseUsesOppositeDirections).toBe(true);
   });
 });
