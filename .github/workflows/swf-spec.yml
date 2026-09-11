@@ -1,23 +1,17 @@
-name: SWF conformance
+name: Ranged command batch CI
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - debug/swf-conformance
-      - debug/current-20260907-swf-integrated
-    paths:
-      - "src/**"
-      - "tests/swf-spec/**"
-      - "swf-spec/**"
-      - ".github/workflows/swf-spec.yml"
+      - debug/current-20260907-ranged-batch-ci
 
 concurrency:
-  group: swf-spec-${{ github.ref }}
+  group: ranged-command-batch-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  conformance:
+  focused:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -27,38 +21,22 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
-      - name: Base, recovery, movement, and unit-UI regression tests
+      - name: Vite production bundle
+        run: npx vite build
+      - name: General command, ranged, trap, and runtime conformance
         run: >-
           npx vitest run
-          src/game/systems/baseContactSystem.test.ts
-          src/game/systems/baseGateRecoveryGeometry.test.ts
-          src/game/systems/recoverySystem.test.ts
-          src/game/systems/swfIntegrationPreservation.test.ts
-          src/game/systems/phase3eBattlefield.test.ts
-          src/game/systems/phase3fFidelity.test.ts
-          src/game/systems/phase3gFixes.test.ts
-          src/game/systems/phase3hIntegration.test.ts
-          src/game/systems/phase3jPlayerControl.test.ts
-          src/game/systems/obstacleAvoidance.test.ts
-          src/game/rendering/battleUnitUiAssets.test.ts
-          src/game/rendering/battleFrameSequenceManifest.test.ts
+          tests/swf-spec/rangedCommandDirectConformance.test.ts
+          tests/swf-spec/rangedGaugeDirectConformance.test.ts
+          tests/swf-spec/rangedTargetAcquisitionDirectConformance.test.ts
+          tests/swf-spec/rangedTargetImpulseConformance.test.ts
+          tests/swf-spec/forcedRangedNoTarget.test.ts
+          tests/swf-spec/runtimeCharacterization.test.ts
+          tests/swf-spec/swfConformance.test.ts
           --reporter=verbose
-      - name: Strategy regression tests
+      - name: Strategy regression
         run: >-
           npx vitest run
           src/game/systems/strategyEngagement.test.ts
           src/game/systems/phase4c1TargetStrategy.test.ts
           --reporter=verbose
-      - name: SWF conformance tests
-        run: npx vitest run tests/swf-spec --reporter=verbose
-      - name: Machine-readable SWF result
-        if: always()
-        run: npx vitest run tests/swf-spec --reporter=json --outputFile=swf-spec-results.json
-      - name: Upload SWF result
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: swf-spec-results
-          path: swf-spec-results.json
-          if-no-files-found: warn
