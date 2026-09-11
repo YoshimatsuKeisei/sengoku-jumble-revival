@@ -153,14 +153,25 @@ describe("raw fence routing and crowd movement", () => {
     expect(bitmap.y).toBeLessThanOrEqual(base.y + base.height);
   });
 
-  it("uses the raw <32 axis / 24-unit correction instead of a 16-world-pixel pileup radius", () => {
+  it("does not replay the raw <32 / 24 contact branch as an unconditional all-pairs separator", () => {
     const first = battlefieldSwfPointToWorld({ x: 800, y: 500 });
-    const second = battlefieldSwfPointToWorld({ x: 810, y: 505 });
+    const second = battlefieldSwfPointToWorld({ x: 820, y: 520 });
     const a = createSoldier("a", "player", "ai", first.x, first.y, "melee", FIXED_STATS);
     const b = createSoldier("b", "player", "ai", second.x, second.y, "melee", FIXED_STATS);
-    separateSoldiers([a, b]);
+    const beforeA = { x: a.x, y: a.y };
+    const beforeB = { x: b.x, y: b.y };
+
     const rawA = battlefieldWorldPointToSwf(a);
     const rawB = battlefieldWorldPointToSwf(b);
-    expect(Math.hypot(rawB.x - rawA.x, rawB.y - rawA.y)).toBeCloseTo(24, 0);
+    expect(Math.abs(rawB.x - rawA.x)).toBeLessThan(32);
+    expect(Math.abs(rawB.y - rawA.y)).toBeLessThan(32);
+    expect(Math.round(rawA.x / 36)).not.toBe(Math.round(rawB.x / 36));
+
+    separateSoldiers([a, b]);
+
+    expect(a.x).toBeCloseTo(beforeA.x, 8);
+    expect(a.y).toBeCloseTo(beforeA.y, 8);
+    expect(b.x).toBeCloseTo(beforeB.x, 8);
+    expect(b.y).toBeCloseTo(beforeB.y, 8);
   });
 });
