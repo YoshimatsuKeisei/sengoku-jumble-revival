@@ -13,7 +13,10 @@
         "effectSelectorLabel": "kb",
         "forcedCallbackSpriteId": 671,
         "forcedCallbackFrame": 13,
-        "forcedCallbackFunction": "spl"
+        "forcedCallbackFrameAdvanceTicks": 12,
+        "forcedCallbackFunction": "spl",
+        "playerControlledRecipientGaugeFloor": 99,
+        "forcedCallbackIsImmediate": false
       },
       "evidence": { "reference": "evidence/general_same_tick.md" }
     }
