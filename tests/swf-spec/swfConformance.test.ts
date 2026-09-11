@@ -6,7 +6,10 @@ import type { Soldier } from "../../src/game/types";
 import { captureSoldierPositions, resolveBaseMovementContacts } from "../../src/game/systems/baseContactSystem";
 import { createBattleBases, getBaseForTeam } from "../../src/game/systems/baseSystem";
 import { beginTechniqueAction, COMBAT_GAUGE_UPDATE_INTERVAL_MS } from "../../src/game/systems/combatGaugeSystem";
-import { updateSpecialAttacks } from "../../src/game/systems/specialAttackSystem";
+import {
+  SWF_GENERAL_COMMAND_CALLBACK_DELAY_TICKS,
+  updateSpecialAttacks,
+} from "../../src/game/systems/specialAttackSystem";
 import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 import { updateEnemyFenceTrapContacts } from "../../src/game/systems/trapAbilitySystem";
 import movementSpec from "../../swf-spec/rules/movement.json";
@@ -29,14 +32,20 @@ function trapRoster(): Soldier[] {
 }
 
 describe("SWF conformance: confirmed rules", () => {
-  it("preserves the raw X=900 TRAP branch as evidence without recreating an invisible runtime trigger line", () => {
-    const rule = movementSpec.rules[0];
-    expect(rule.status).toBe("confirmed");
-    expect(rule.expected.rawSwfSourceCenterX).toBe(900);
-    expect(rule.expected.rawSwfComparisonSpace).toBe("swf-source");
-    expect(rule.expected.rawSwfContainsOpposingHalfEligibilityBranch).toBe(true);
-    expect(rule.expected.activePortTrigger).toBe("new-enemy-fixed-fence-contact");
-    expect(rule.expected.activePortUsesHalfBoundaryAsCollisionOrTrigger).toBe(false);
+  it("requires a fixed-fence collision before the raw X=900 TRAP side-selection branch", () => {
+    const rule = movementSpec.rules.find((candidate) => candidate.id === "TRAP_FENCE_COLLISION_GATE");
+    expect(rule?.status).toBe("confirmed");
+    expect(rule?.expected).toMatchObject({
+      collisionCodeGateExpression: "reg4 > 900",
+      fixedFenceCodes: [901, 902, 903, 904, 905, 906],
+      sourceCenterX: 900,
+      sourceCenterXIsStandaloneTrigger: false,
+      playerInvaderLookupFunction: "eskk",
+      enemyInvaderLookupFunction: "mskk",
+      trapAbilityCode: "s17",
+      rosterDrawsWithReplacement: 2,
+      activePortUsesHalfBoundaryAsCollisionOrTrigger: false,
+    });
 
     const defenders = trapRoster();
     const halfInvader = unit("half-invader", "player", 901);
@@ -108,6 +117,7 @@ describe("SWF conformance: confirmed rules", () => {
     archer.stats.skill = 100;
     archer.combatGauge = 200;
     archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+    archer.targetId = enemy.id;
 
     const first = updateSpecialAttacks([archer, enemy], [], createBattleBases(), 1_000, false, () => 1);
     expect(first.filter((event) => event.kind === "ARROW")).toHaveLength(1);
@@ -116,29 +126,36 @@ describe("SWF conformance: confirmed rules", () => {
     expect(beginTechniqueAction(archer, 1_000 + swfLogicTicksToMs(10), () => 1, false)).toBe(true);
   });
 
-  it("puts a GENERAL_COMMAND-forced ranged activation into the same confirmed SWF k=10 lock", () => {
-    const rule = combatSpec.rules.find((candidate) => candidate.id === "RANGED_ACTION_FRAME_LOCK");
-    expect(rule?.status).toBe("confirmed");
+  it("delays a GENERAL_COMMAND-forced ranged spl until Sprite 671 frame 13", () => {
+    const commandRule = commandSpec.rules.find((candidate) => candidate.id === "GENERAL_SAME_TICK_DEDUPE");
+    expect(commandRule?.status).toBe("confirmed");
+    expect(commandRule?.expected.forcedCallbackDelayLogicTicks).toBe(12);
 
-    const generalA = unit("general-a", "player", 500);
-    const generalB = unit("general-b", "player", 510);
+    const general = unit("general", "player", 500);
     const archer = unit("forced-archer", "player", 520);
     const enemy = unit("enemy", "enemy", 600);
-    generalA.unitType = generalB.unitType = "GENERAL";
-    generalA.technique = generalB.technique = "GENERAL_COMMAND";
-    generalA.combatGauge = generalB.combatGauge = 10_000;
-    generalA.combatGaugeUpdatedAt = generalB.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+    general.unitType = "GENERAL";
+    general.technique = "GENERAL_COMMAND";
+    general.combatGauge = 10_000;
+    general.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
     archer.unitType = "ARCHER";
     archer.technique = "ARCHER_ARROW";
     archer.combatGauge = 0;
     archer.combatGaugeUpdatedAt = 1_000;
+    archer.targetId = enemy.id;
 
-    const events = updateSpecialAttacks(
-      [generalA, generalB, archer, enemy], [], createBattleBases(), 1_000, false, () => 1,
+    const commandTick = updateSpecialAttacks(
+      [general, archer, enemy], [], createBattleBases(), 1_000, false, () => 1,
     );
-    const arrows = events.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
+    expect(commandTick.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id)).toHaveLength(0);
+
+    const dueAt = 1_000 + swfLogicTicksToMs(SWF_GENERAL_COMMAND_CALLBACK_DELAY_TICKS);
+    const callbackTick = updateSpecialAttacks(
+      [general, archer, enemy], [], createBattleBases(), dueAt, false, () => 1,
+    );
+    const arrows = callbackTick.filter((event) => event.kind === "ARROW" && event.projectile.shooterId === archer.id);
     expect(arrows).toHaveLength(1);
-    expect(archer.specialLockUntil).toBe(1_000 + swfLogicTicksToMs(10));
+    expect(archer.specialLockUntil).toBe(dueAt + swfLogicTicksToMs(10));
     expect(archer.activeSpecialTechnique).toBe("ARCHER_ARROW");
   });
 
