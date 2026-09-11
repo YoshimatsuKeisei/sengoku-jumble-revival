@@ -11,6 +11,9 @@ describe("raw SWF soldier contact gating", () => {
     expect(rule?.expected.newCellWrittenAfterOwnMovement).toBe(true);
     expect(rule?.expected.freeProposedCellMovesDirectly).toBe(true);
     expect(rule?.expected.unconditionalAllPairsPostPass).toBe(false);
+    expect(rule?.expected.frameUpdateOrder).toEqual(["m200", "m1..m59 ascending"]);
+    expect(rule?.expected.m200EnterFrameCallsDThenAl).toBe(true);
+    expect(rule?.expected.alNormalRouteCallsD).toBe(true);
     expect(rule?.expected.forcedCurrentTargetAxisThresholdExclusiveSourceUnits).toBe(20);
     expect(rule?.expected.forcedCurrentTargetOverridesGridCandidate).toBe(true);
     expect(rule?.expected.pairCorrectionAxisThresholdExclusiveSourceUnits).toBe(32);
