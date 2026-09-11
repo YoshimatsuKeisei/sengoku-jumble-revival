@@ -13,6 +13,8 @@ import { clearEngagement } from "./aiSystem";
 import { beginTechniqueAction, isRangedGaugeTechnique } from "./combatGaugeSystem";
 import { getTechniqueAreaCenter, getTechniqueAreaWorld, getTechniqueSelfAdvanceWorld, isPointInTechniqueRectangle } from "./techniqueCombatProfiles";
 
+export const SWF_GENERAL_COMMAND_CALLBACK_ADVANCE_TICKS = 12;
+
 export type GeneralTechnique = "GENERAL_COMMAND" | "GENERAL_HEROIC" | "GENERAL_HEAL" | "GENERAL_FURIOUS";
 export interface GeneralAttackEvent {
   kind: "GENERAL"; attackerId: string; team: Team; technique: GeneralTechnique; x: number; y: number;
@@ -48,7 +50,7 @@ export function canActivateGeneral(general: Soldier, soldiers: readonly Soldier[
 
 export function executeGeneralAttack(
   general: Soldier, soldiers: Soldier[], obstacles: readonly BattleObstacle[], bases: readonly BattleBase[], currentTime: number,
-  random: RandomSource, consumeCooldown: boolean, forceSpecial: (recipient: Soldier) => boolean, isWave = false,
+  random: RandomSource, consumeCooldown: boolean, scheduleSpecial: (recipient: Soldier) => boolean, isWave = false,
 ): GeneralAttackEvent | null {
   if (!isGeneralTechnique(general.technique)) return null;
   if (consumeCooldown && !beginTechniqueAction(general, currentTime, random, true)) return null;
@@ -97,16 +99,16 @@ export function executeGeneralAttack(
   for (const recipient of findGeneralCommandRecipients(general, soldiers)) {
     event.recipientIds.push(recipient.id);
     clearConfusion(recipient, "GENERAL_COMMAND");
-    // Direct command callback invokes ranged spl() against the recipient's
-    // existing l. Clearing engagement here erased l before spl() and made every
-    // command-forced bow/gun activation a no-op. Keep the latch for ranged
-    // recipients; non-ranged behavior retains the reconstruction's existing reset.
+    // Raw mode-4 command does not call spl() immediately. Ordinary AI recipients
+    // enter fr."kb"; Sprite 671 calls spl(recipient) on child frame 13. Preserve
+    // ranged l until that callback. Non-ranged behavior keeps the existing reset.
     if (!isRangedGaugeTechnique(recipient)) clearEngagement(recipient);
     if (recipient.controller === "player") {
+      // Raw m200 is not routed through the kb callback. Its kd is raised to 99.
       recipient.specialReadyAt = Math.min(recipient.specialReadyAt, currentTime);
       recipient.playerTechniqueGauge = 100;
       event.playerReadyIds.push(recipient.id);
-    } else if (forceSpecial(recipient)) event.forcedAttackerIds.push(recipient.id);
+    } else if (scheduleSpecial(recipient)) event.forcedAttackerIds.push(recipient.id);
   }
   return event;
 }
