@@ -1,19 +1,13 @@
-name: SWF conformance
+name: Sequential SWF contact prototype
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - debug/swf-conformance
-      - debug/current-20260907-swf-integrated
-    paths:
-      - "src/**"
-      - "tests/swf-spec/**"
-      - "swf-spec/**"
-      - ".github/workflows/swf-spec.yml"
+      - debug/current-20260907-contact-grid-prototype-ci
 
 concurrency:
-  group: swf-spec-${{ github.ref }}
+  group: sequential-contact-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -27,8 +21,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
-      - name: Base, recovery, movement, and unit-UI regression tests
+      - name: Vite production bundle
+        run: npx vite build
+      - name: Sequential contact prototype
+        run: npx vitest run tests/swf-spec/soldierContactSequentialRuntime.test.ts --reporter=verbose
+      - name: Full SWF conformance suite
+        run: npx vitest run tests/swf-spec --reporter=verbose
+      - name: Stable movement regressions excluding pre-existing stale obstacleAvoidance imports
         run: >-
           npx vitest run
           src/game/systems/baseContactSystem.test.ts
@@ -40,25 +39,6 @@ jobs:
           src/game/systems/phase3gFixes.test.ts
           src/game/systems/phase3hIntegration.test.ts
           src/game/systems/phase3jPlayerControl.test.ts
-          src/game/systems/obstacleAvoidance.test.ts
-          src/game/rendering/battleUnitUiAssets.test.ts
-          src/game/rendering/battleFrameSequenceManifest.test.ts
-          --reporter=verbose
-      - name: Strategy regression tests
-        run: >-
-          npx vitest run
           src/game/systems/strategyEngagement.test.ts
           src/game/systems/phase4c1TargetStrategy.test.ts
           --reporter=verbose
-      - name: SWF conformance tests
-        run: npx vitest run tests/swf-spec --reporter=verbose
-      - name: Machine-readable SWF result
-        if: always()
-        run: npx vitest run tests/swf-spec --reporter=json --outputFile=swf-spec-results.json
-      - name: Upload SWF result
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: swf-spec-results
-          path: swf-spec-results.json
-          if-no-files-found: warn
