@@ -16,13 +16,14 @@ function soldier(id: string, team: "player" | "enemy", rawX: number, rawY: numbe
   return createSoldier(id, team, id === "player-0" ? "player" : "ai", point.x, point.y, "melee", STATS);
 }
 
+function captureStarts(units: ReturnType<typeof soldier>[]): Map<string, { x: number; y: number }> {
+  return new Map(units.map((unit) => [unit.id, { x: unit.x, y: unit.y }]));
+}
+
 function setRawProposal(unit: ReturnType<typeof soldier>, rawX: number, rawY: number): void {
-  const previous = { x: unit.x, y: unit.y };
   const next = battlefieldSwfPointToWorld({ x: rawX, y: rawY });
   unit.x = next.x;
   unit.y = next.y;
-  unit.velocityX = next.x - previous.x;
-  unit.velocityY = next.y - previous.y;
 }
 
 describe("sequential raw SWF soldier contact replay", () => {
@@ -46,26 +47,26 @@ describe("sequential raw SWF soldier contact replay", () => {
   it("does not apply 32/24 correction merely because two allies are nearby", () => {
     const protagonist = soldier("player-0", "player", 800, 500);
     const ally = soldier("player-1", "player", 820, 520);
-    const before = [
-      { x: protagonist.x, y: protagonist.y },
-      { x: ally.x, y: ally.y },
-    ];
+    const units = [protagonist, ally];
+    const starts = captureStarts(units);
 
-    const result = resolveSequentialSwfSoldierContacts([protagonist, ally]);
+    const result = resolveSequentialSwfSoldierContacts(units, starts);
 
     expect(result.dynamicContacts).toBe(0);
-    expect(protagonist.x).toBeCloseTo(before[0].x, 8);
-    expect(protagonist.y).toBeCloseTo(before[0].y, 8);
-    expect(ally.x).toBeCloseTo(before[1].x, 8);
-    expect(ally.y).toBeCloseTo(before[1].y, 8);
+    expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(800, 6);
+    expect(battlefieldWorldPointToSwf(protagonist).y).toBeCloseTo(500, 6);
+    expect(battlefieldWorldPointToSwf(ally).x).toBeCloseTo(820, 6);
+    expect(battlefieldWorldPointToSwf(ally).y).toBeCloseTo(520, 6);
   });
 
   it("selects only the occupant of the mover's proposed 36-unit cell", () => {
     const protagonist = soldier("player-0", "player", 800, 500);
     const ally = soldier("player-1", "player", 820, 500);
-    setRawProposal(protagonist, 810, 500);
+    const units = [protagonist, ally];
+    const starts = captureStarts(units);
+    setRawProposal(protagonist, 814, 500);
 
-    const result = resolveSequentialSwfSoldierContacts([protagonist, ally]);
+    const result = resolveSequentialSwfSoldierContacts(units, starts);
     const raw = battlefieldWorldPointToSwf(protagonist);
 
     expect(result.dynamicContacts).toBe(1);
@@ -78,22 +79,26 @@ describe("sequential raw SWF soldier contact replay", () => {
   it("does not drag the protagonist when its proposed cell is free", () => {
     const protagonist = soldier("player-0", "player", 800, 500);
     const ally = soldier("player-1", "player", 820, 500);
-    setRawProposal(protagonist, 802, 500);
+    const units = [protagonist, ally];
+    const starts = captureStarts(units);
+    setRawProposal(protagonist, 804, 500);
 
-    const result = resolveSequentialSwfSoldierContacts([protagonist, ally]);
+    const result = resolveSequentialSwfSoldierContacts(units, starts);
     const raw = battlefieldWorldPointToSwf(protagonist);
 
     expect(result.dynamicContacts).toBe(0);
-    expect(raw.x).toBeCloseTo(802, 6);
+    expect(raw.x).toBeCloseTo(804, 6);
     expect(raw.y).toBeCloseTo(500, 6);
   });
 
   it("keeps opposing-team displacement owned by the existing combat path", () => {
     const protagonist = soldier("player-0", "player", 800, 500);
     const enemy = soldier("enemy-0", "enemy", 820, 500);
-    setRawProposal(protagonist, 810, 500);
+    const units = [protagonist, enemy];
+    const starts = captureStarts(units);
+    setRawProposal(protagonist, 814, 500);
 
-    const result = resolveSequentialSwfSoldierContacts([protagonist, enemy]);
+    const result = resolveSequentialSwfSoldierContacts(units, starts);
     const raw = battlefieldWorldPointToSwf(protagonist);
 
     expect(result.dynamicContacts).toBe(1);
