@@ -6,13 +6,16 @@ import { applyBaseAttackBounce } from "./baseAttackBounceSystem";
 import { damageBase } from "./baseSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { recordBaseAttack } from "./meritSystem";
+import { rememberMovementFrameStart } from "./movementFrameSnapshot";
 import { calculateBaseAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { getSwfBaseCollisionCodeAtWorld, getSwfBaseDamageTileForTeam } from "./swfBaseCollisionGrid";
 
 export interface SoldierPosition { x: number; y: number }
 
 export function captureSoldierPositions(soldiers: readonly Soldier[]): Map<string, SoldierPosition> {
-  return new Map(soldiers.map((soldier) => [soldier.id, { x: soldier.x, y: soldier.y }]));
+  const positions = new Map(soldiers.map((soldier) => [soldier.id, { x: soldier.x, y: soldier.y }]));
+  rememberMovementFrameStart(soldiers, positions);
+  return positions;
 }
 
 function randomSlotIndex(random: RandomSource): number {
