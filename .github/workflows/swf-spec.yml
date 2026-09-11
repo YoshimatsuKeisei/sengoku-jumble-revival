@@ -36,7 +36,7 @@ jobs:
           import_anchor = 'import { getBaseAttackContactSegment } from "./battlefieldGeometry";\n'
           imports = (
               'import { battlefieldSwfPointToWorld, battlefieldWorldPointToSwf } from "../battlefieldLayout";\n'
-              'import { getSwfStaticCollisionCodeAtWorld, SWF_BASE_COLLISION_GRID_SIZE } from "./swfBaseCollisionGrid";\n'
+              'import { getSwfStaticCollisionCodeAtWorld } from "./swfBaseCollisionGrid";\n'
           )
           assert import_anchor in text
           if imports not in text:
@@ -44,13 +44,6 @@ jobs:
           start = text.index('export function separateSoldiers(')
           replacement = r'''export const SWF_SOLDIER_CONTACT_AXIS_UNITS = 32;
           export const SWF_SOLDIER_CONTACT_SPACING_UNITS = 24;
-
-          function rawSoldierCell(point: { x: number; y: number }): { x: number; y: number } {
-            return {
-              x: Math.round(point.x / SWF_BASE_COLLISION_GRID_SIZE),
-              y: Math.round(point.y / SWF_BASE_COLLISION_GRID_SIZE),
-            };
-          }
 
           function getRawSoldierContactDestination(
             mover: Soldier,
@@ -66,21 +59,6 @@ jobs:
               x: Math.round(otherRaw.x - Math.cos(angle) * SWF_SOLDIER_CONTACT_SPACING_UNITS),
               y: Math.round(otherRaw.y - Math.sin(angle) * SWF_SOLDIER_CONTACT_SPACING_UNITS),
             };
-          }
-
-          function rawSoldierContactDestinationIsClear(
-            mover: Soldier,
-            destinationRaw: { x: number; y: number },
-            soldiers: readonly Soldier[],
-          ): boolean {
-            const destinationWorld = battlefieldSwfPointToWorld(destinationRaw);
-            if (getSwfStaticCollisionCodeAtWorld(destinationWorld) !== null) return false;
-            const destinationCell = rawSoldierCell(destinationRaw);
-            return !soldiers.some((other) => {
-              if (other === mover || other.isDead || other.state === "HEALING") return false;
-              const cell = rawSoldierCell(battlefieldWorldPointToSwf(other));
-              return cell.x === destinationCell.x && cell.y === destinationCell.y;
-            });
           }
 
           export function separateSoldiers(soldiers: Soldier[]): void {
@@ -100,8 +78,9 @@ jobs:
                 }
 
                 const destinationRaw = getRawSoldierContactDestination(mover, other);
-                if (!destinationRaw || !rawSoldierContactDestinationIsClear(mover, destinationRaw, soldiers)) continue;
+                if (!destinationRaw) continue;
                 const destinationWorld = battlefieldSwfPointToWorld(destinationRaw);
+                if (getSwfStaticCollisionCodeAtWorld(destinationWorld) !== null) continue;
                 mover.x = destinationWorld.x;
                 mover.y = destinationWorld.y;
               }
