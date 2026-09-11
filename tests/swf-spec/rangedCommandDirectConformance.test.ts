@@ -14,20 +14,31 @@ function unit(id: string, team: "player" | "enemy", sourceX: number, sourceY = 4
   return createSoldier(id, team, "ai", point.x, point.y);
 }
 
+function playerUnit(id: string, sourceX: number, sourceY = 450): Soldier {
+  const point = battlefieldSourcePointToWorld({ x: sourceX, y: sourceY });
+  return createSoldier(id, "player", "player", point.x, point.y);
+}
+
 describe("SWF conformance: direct ranged and general-command AVM1", () => {
   it("records the direct SWF command callback and ranged launch metadata as confirmed", () => {
     const command = commandSpec.rules.find((rule) => rule.id === "GENERAL_SAME_TICK_DEDUPE");
     expect(command?.status).toBe("confirmed");
     expect(command?.expected).toMatchObject({
-      maxForcedActivationsPerSoldierPerTick: 1,
       swfMode: 4,
+      sourceAttackCode: 14,
       recipientGeneralCharacterCodeExcluded: 3,
       recipientRequiresSpZero: true,
+      nonM200RecipientDirectSpl: false,
+      nonM200RecipientEffect: "m200.kd=max(m200.kd,99)",
+      m200RecipientEffect: "fr.gotoAndStop(kb)",
       effectSelectorSpriteId: 800,
       effectSelectorLabel: "kb",
       forcedCallbackSpriteId: 671,
       forcedCallbackFrame: 13,
+      forcedCallbackDelayLogicTicks: 12,
       forcedCallbackFunction: "spl",
+      maxPendingM200Callbacks: 1,
+      mustNotForceNearbyAiTechniques: true,
     });
 
     const launch = combatSpec.rules.find((rule) => rule.id === "RANGED_ATTACK_CYCLE_SINGLE_LAUNCH");
@@ -64,7 +75,6 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     archer.stats.skill = 100;
     archer.combatGauge = 200;
     archer.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
-    // Raw normal ranged scd() uses the already-established l target.
     archer.targetId = enemy.id;
 
     const first = updateSpecialAttacks([archer, enemy], [], createBattleBases(), 1_000, false, () => 1);
@@ -89,21 +99,23 @@ describe("SWF conformance: direct ranged and general-command AVM1", () => {
     expect(archer.combatGauge).toBe(100);
   });
 
-  it("collapses two same-update general commands to one forced activation for a non-ranged recipient", () => {
-    const generalA = unit("general-a", "player", 500);
-    const generalB = unit("general-b", "player", 510);
+  it("does not force a non-m200 AI technique and instead raises m200 kd to 99", () => {
+    const general = unit("general", "player", 500);
     const spear = unit("spear", "player", 520);
-    generalA.unitType = generalB.unitType = "GENERAL";
-    generalA.technique = generalB.technique = "GENERAL_COMMAND";
-    generalA.combatGauge = generalB.combatGauge = 10_000;
-    generalA.combatGaugeUpdatedAt = generalB.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
+    const protagonist = playerUnit("m200", 1200);
+    general.unitType = "GENERAL";
+    general.technique = "GENERAL_COMMAND";
+    general.combatGauge = 10_000;
+    general.combatGaugeUpdatedAt = 1_000 - COMBAT_GAUGE_UPDATE_INTERVAL_MS;
     spear.unitType = "ASHIGARU";
     spear.technique = "ASHIGARU_SPEAR_STRIKE";
     spear.combatGauge = 0;
     spear.combatGaugeUpdatedAt = 1_000;
+    protagonist.playerTechniqueGauge = 0;
+    protagonist.playerTechniqueGaugeUpdatedAt = 1_000;
 
-    const events = updateSpecialAttacks([generalA, generalB, spear], [], createBattleBases(), 1_000, false, () => 1);
-    const forced = events.filter((event) => event.kind === "SPEAR" && event.attackerId === spear.id);
-    expect(forced).toHaveLength(1);
+    const events = updateSpecialAttacks([general, spear, protagonist], [], createBattleBases(), 1_000, false, () => 1);
+    expect(events.filter((event) => event.kind === "SPEAR" && event.attackerId === spear.id)).toHaveLength(0);
+    expect(protagonist.playerTechniqueGauge).toBe(99);
   });
 });
