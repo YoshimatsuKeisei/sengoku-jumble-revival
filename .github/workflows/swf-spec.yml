@@ -6,6 +6,7 @@ on:
     branches:
       - debug/swf-conformance
       - debug/current-20260907-swf-integrated
+      - debug/current-20260907-ranged-resolution-device-stage-ci
     paths:
       - "src/**"
       - "tests/swf-spec/**"
