@@ -95,7 +95,7 @@ export function drawRosterSlotAbilityHolder(
   return null;
 }
 export function countRosterSlotAbility(soldiers: readonly Soldier[], team: Team, ability: CommonSpecialAbilityId): number {
-  return getTeamRosterSlots(soldiers, team).filter((slot) => slot && hasSpecialAbility(slot, id)).length;
+  return getTeamRosterSlots(soldiers, team).filter((slot) => slot && hasSpecialAbility(slot, ability)).length;
 }
 export function applyFieldHospitalArrival(patient: Soldier, soldiers: readonly Soldier[], random: RandomSource = Math.random): number {
   const holder = drawRosterSlotAbilityHolder(soldiers, patient.team, "FIELD_HOSPITAL", 3, random);
