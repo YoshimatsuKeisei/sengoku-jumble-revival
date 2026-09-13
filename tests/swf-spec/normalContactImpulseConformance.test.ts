@@ -53,6 +53,28 @@ describe("raw mode-0 normal-contact k lock and impulse", () => {
     expect(before - sourceX(defender)).toBeCloseTo(SWF_NORMAL_CONTACT_IMPULSE_UNITS, 6);
   });
 
+  it("consumes a blocked k tick without sliding through an occupied raw f[][] cell", () => {
+    const defender = unit("defender", "player", 630);
+    const attacker = unit("attacker", "enemy", 640);
+    const blocker = unit("blocker", "player", 616);
+    const hitAt = resolveAtHit(attacker, defender, () => 0.99);
+    const before = sourceX(defender);
+    const tick = swfLogicTicksToMs(1);
+
+    // 630 -> 620 crosses from round(x/36)=18 into cell 17, which the blocker occupies.
+    updateReactions([attacker, defender, blocker], [], hitAt + tick, tick);
+    expect(sourceX(defender)).toBeCloseTo(before, 6);
+
+    const clear = battlefieldSourcePointToWorld({ x: 700, y: 500 });
+    blocker.x = clear.x;
+    blocker.y = clear.y;
+    updateReactions([attacker, defender, blocker], [], hitAt + 2 * tick, tick);
+
+    // The blocked first tick still consumed k and decayed fx, so the next free
+    // displacement is 10 * 0.7 = 7 source units rather than replaying 10.
+    expect(before - sourceX(defender)).toBeCloseTo(7, 6);
+  });
+
   it("uses the same 10-unit outward impulse for an ordinary successful guard", () => {
     const defender = unit("defender", "player", 500);
     const attacker = unit("attacker", "enemy", 510);
