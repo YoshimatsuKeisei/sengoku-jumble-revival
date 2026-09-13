@@ -1,0 +1,51 @@
+name: Validate normal contact damage
+
+on:
+  push:
+    branches:
+      - debug/current-20260907-normal-contact-damage-stage
+    paths:
+      - "src/game/systems/specialAbilitySystem.ts"
+      - "swf-spec/rules/combat.json"
+      - "swf-spec/evidence/normal_contact_damage_avm1.md"
+      - "swf-spec/progress/normal_melee_selective_replay.md"
+      - "tests/swf-spec/normalContactDamageConformance.test.ts"
+      - ".github/workflows/normal-contact-damage-validation.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Vite production bundle
+        run: npx vite build
+      - name: Normal-contact damage and shared-helper regressions
+        run: >-
+          npx vitest run
+          tests/swf-spec/normalContactDamageConformance.test.ts
+          tests/swf-spec/normalContactDefenseConformance.test.ts
+          tests/swf-spec/normalMeleeFacingConformance.test.ts
+          tests/swf-spec/normalContactAttackerSelectionBridge.test.ts
+          src/game/systems/specialAbilitySystem.test.ts
+          src/game/systems/swfSpecialAbilities.test.ts
+          --reporter=verbose
+      - name: Full SWF conformance suite
+        run: npx vitest run tests/swf-spec --reporter=verbose
+      - name: Stable movement and base regressions
+        run: >-
+          npx vitest run
+          src/game/systems/baseContactSystem.test.ts
+          src/game/systems/swfIntegrationPreservation.test.ts
+          src/game/systems/phase3eBattlefield.test.ts
+          src/game/systems/phase3fFidelity.test.ts
+          src/game/systems/phase3gFixes.test.ts
+          src/game/systems/phase3hIntegration.test.ts
+          src/game/systems/phase3jPlayerControl.test.ts
+          --reporter=verbose
