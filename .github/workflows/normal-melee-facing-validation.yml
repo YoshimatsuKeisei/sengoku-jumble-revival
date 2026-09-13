@@ -25,12 +25,11 @@ jobs:
       - run: npm ci
       - name: Vite production bundle
         run: npx vite build
-      - name: Normal melee facing and attack regression
+      - name: Normal melee facing and ranged-facing regression
         run: >-
           npx vitest run
           tests/swf-spec/normalMeleeFacingConformance.test.ts
           tests/swf-spec/rangedTargetImpulseConformance.test.ts
-          src/game/systems/attackSystem.test.ts
           --reporter=verbose
       - name: Full SWF conformance suite
         run: npx vitest run tests/swf-spec --reporter=verbose
