@@ -77,8 +77,6 @@ describe("sequential raw SWF soldier contact replay", () => {
     expect(result.impulseTicksApplied).toBe(1);
     expect(raw.x).toBeCloseTo(796, 0);
     expect(raw.y).toBeCloseTo(500, 0);
-    // player-1 is later in raw order, so its newly armed k=3 executes the first
-    // +s impulse immediately in the same logic frame: 820 + foot(3) = 823.
     expect(battlefieldWorldPointToSwf(ally).x).toBeCloseTo(823, 6);
   });
 
@@ -90,12 +88,10 @@ describe("sequential raw SWF soldier contact replay", () => {
     setRawProposal(protagonist, 814, 500);
     resolveSequentialSwfSoldierContacts(units, start, 1_000);
 
-    // Extra renderer frame before the next SWF logic tick: current unit holds.
     let frameStarts = captureStarts(units);
     resolveSequentialSwfSoldierContacts(units, frameStarts, 1_000 + SWF_SOLDIER_CONTACT_LOGIC_TICK_MS / 2);
     expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(796, 6);
 
-    // Current unit then receives -3, -2.1, -1.47 source-unit ticks.
     frameStarts = captureStarts(units);
     resolveSequentialSwfSoldierContacts(units, frameStarts, 1_000 + SWF_SOLDIER_CONTACT_LOGIC_TICK_MS);
     expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(793, 6);
@@ -122,9 +118,6 @@ describe("sequential raw SWF soldier contact replay", () => {
     setRawProposal(protagonist, 814, 500);
     resolveSequentialSwfSoldierContacts(firstUnits, firstStart, 1_000);
 
-    // Preserve protagonist's armed leftward k=3 state, but place it just to the
-    // right of raw fixed-fence 901. Its first -3 source-unit tick targets x=556,
-    // y=540: round(556/36)=15 and round(540/36)=15, i.e. fence code 901.
     setRawProposal(protagonist, 559, 540);
     let frameStarts = captureStarts([protagonist]);
     const blockedTick = resolveSequentialSwfSoldierContacts(
@@ -136,8 +129,6 @@ describe("sequential raw SWF soldier contact replay", () => {
     expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(559, 6);
     expect(battlefieldWorldPointToSwf(protagonist).y).toBeCloseTo(540, 6);
 
-    // Move the unit back to open ground without touching its WeakMap k state.
-    // The next tick must use the already-decayed -2.1 vector, not retry -3.
     setRawProposal(protagonist, 800, 500);
     frameStarts = captureStarts([protagonist]);
     resolveSequentialSwfSoldierContacts(
@@ -165,20 +156,21 @@ describe("sequential raw SWF soldier contact replay", () => {
     expect(raw.y).toBeCloseTo(500, 6);
   });
 
-  it("keeps enemy attack damage owned by the existing combat path while replaying physical contact", () => {
+  it("skips the physical k=3 branch when the selected enemy attack starts", () => {
     const protagonist = soldier("player-0", "player", 800, 500);
     const enemy = soldier("enemy-0", "enemy", 820, 500);
     const units = [protagonist, enemy];
     const starts = captureStarts(units);
     setRawProposal(protagonist, 814, 500);
 
-    const result = resolveSequentialSwfSoldierContacts(units, starts, 1_000);
-    const raw = battlefieldWorldPointToSwf(protagonist);
+    const result = resolveSequentialSwfSoldierContacts(units, starts, 1_000, () => 0);
 
-    expect(result.dynamicContacts).toBe(1);
+    expect(result.dynamicContacts).toBeGreaterThanOrEqual(1);
     expect(result.spacingCorrections).toBe(0);
-    expect(result.impulsesArmed).toBe(2);
-    expect(raw.x).toBeCloseTo(800, 6);
-    expect(battlefieldWorldPointToSwf(enemy).x).toBeCloseTo(823, 6);
+    expect(result.impulsesArmed).toBe(0);
+    expect(protagonist.combatActionState).toBe("ATTACK_WINDUP");
+    expect(protagonist.attackTargetId).toBe(enemy.id);
+    expect(battlefieldWorldPointToSwf(protagonist).x).toBeCloseTo(800, 6);
+    expect(battlefieldWorldPointToSwf(enemy).x).toBeCloseTo(820, 6);
   });
 });
