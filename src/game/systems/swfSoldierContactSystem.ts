@@ -4,14 +4,14 @@ import {
   battlefieldWorldPointToSwf,
 } from "../battlefieldLayout";
 import type { Soldier } from "../types";
+import { getSwfStaticCollisionCodeAtWorld } from "./swfBaseCollisionGrid";
 import {
-  getSwfBaseCollisionCell,
-  getSwfStaticCollisionCodeAtWorld,
-} from "./swfBaseCollisionGrid";
+  getSwfDynamicContactCellKey,
+  selectSwfDynamicContactCandidate,
+} from "./swfContactCandidateSelection";
 
 export const SWF_SOLDIER_CONTACT_AXIS_UNITS = 32;
 export const SWF_SOLDIER_CONTACT_SPACING_UNITS = 24;
-export const SWF_CURRENT_TARGET_CONTACT_AXIS_UNITS = 20;
 export const SWF_SOLDIER_CONTACT_IMPULSE_TICKS = 3;
 export const SWF_SOLDIER_CONTACT_IMPULSE_DECAY = 0.7;
 export const SWF_SOLDIER_CONTACT_LOGIC_TICK_MS = 1000 / 24;
@@ -67,8 +67,7 @@ export function getSwfSoldierUpdateOrder(soldiers: readonly Soldier[]): Soldier[
 }
 
 function cellKey(point: Position): string {
-  const cell = getSwfBaseCollisionCell(point);
-  return `${cell.x},${cell.y}`;
+  return getSwfDynamicContactCellKey(point);
 }
 
 function isActiveOccupant(soldier: Soldier): boolean {
@@ -80,12 +79,6 @@ function clampToBattlefield(point: Position): Position {
     x: Math.max(SOLDIER_RADIUS, Math.min(BATTLEFIELD_CONFIG.width - SOLDIER_RADIUS, point.x)),
     y: Math.max(SOLDIER_RADIUS, Math.min(BATTLEFIELD_CONFIG.height - SOLDIER_RADIUS, point.y)),
   };
-}
-
-function rawAxisClose(first: Position, second: Position, threshold: number): boolean {
-  const a = battlefieldWorldPointToSwf(first);
-  const b = battlefieldWorldPointToSwf(second);
-  return Math.abs(b.x - a.x) < threshold && Math.abs(b.y - a.y) < threshold;
 }
 
 function rawSpacingDestination(mover: Position, other: Position): Position | null {
@@ -255,27 +248,21 @@ export function resolveSequentialSwfSoldierContacts(
       continue;
     }
 
-    const target = soldier.targetId
-      ? soldiers.find((candidate) => candidate.id === soldier.targetId && isActiveOccupant(candidate)) ?? null
-      : null;
-    const forcedTarget = target && rawAxisClose(soldier, target, SWF_CURRENT_TARGET_CONTACT_AXIS_UNITS)
-      ? target : null;
-
-    let candidate: Soldier | null = null;
-    if (forcedTarget) {
-      result.forcedTargetContacts += 1;
-      candidate = forcedTarget;
-    } else {
-      const proposedOccupant = occupancy.get(cellKey(proposed)) ?? null;
-      if (!proposedOccupant) {
-        soldier.x = proposed.x;
-        soldier.y = proposed.y;
-        occupancy.set(cellKey(soldier), soldier);
-        processed.add(soldier);
-        continue;
-      }
-      candidate = proposedOccupant;
+    const selection = selectSwfDynamicContactCandidate(
+      soldier,
+      soldiers,
+      proposed,
+      occupancy,
+    );
+    const candidate = selection.candidate;
+    if (!candidate) {
+      soldier.x = proposed.x;
+      soldier.y = proposed.y;
+      occupancy.set(cellKey(soldier), soldier);
+      processed.add(soldier);
+      continue;
     }
+    if (selection.source === "FORCED_TARGET") result.forcedTargetContacts += 1;
 
     result.dynamicContacts += 1;
     const currentRaw = battlefieldWorldPointToSwf(soldier);
