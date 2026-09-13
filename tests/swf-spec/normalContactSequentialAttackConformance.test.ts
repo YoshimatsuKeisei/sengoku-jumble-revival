@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { battlefieldSwfPointToWorld } from "../../src/game/battlefieldLayout";
+import {
+  battlefieldSwfPointToWorld,
+  battlefieldWorldPointToSwf,
+} from "../../src/game/battlefieldLayout";
 import { createSoldier } from "../../src/game/entities/Soldier";
 import { updateNormalCombatContests } from "../../src/game/systems/normalCombatSystem";
 import {
@@ -7,7 +10,9 @@ import {
   isRawNormalContactGuarded,
   resolveRawNormalContactAttack,
 } from "../../src/game/systems/normalContactAttackSystem";
+import { updateReactions } from "../../src/game/systems/reactionSystem";
 import { resolveSequentialSwfSoldierContacts } from "../../src/game/systems/swfSoldierContactSystem";
+import { swfLogicTicksToMs } from "../../src/game/systems/techniqueCombatProfiles";
 
 const STATS = { maxHp: 60, skill: 50, foot: 3, combat: 50, defense: 50 } as const;
 
@@ -108,5 +113,117 @@ describe("raw sequential normal-contact attack integration", () => {
     expect(result.guarded).toBe(true);
     expect(result.appliedDamage).toBe(0);
     expect(defender.combatFeedbackMarker).toBe("S");
+  });
+
+  it("keeps both participants out of a repeat contact attack during the raw k=10 response", () => {
+    const player = unit("player-0", "player", 800, 500);
+    const enemy = unit("enemy-0", "enemy", 820, 500);
+    player.stats.combat = 100;
+    enemy.stats.combat = 1;
+    enemy.stats.defense = 0;
+    const roster = [player, enemy];
+    let frameStart = starts(roster);
+    propose(player, 814, 500);
+    const first = resolveSequentialSwfSoldierContacts(roster, frameStart, 1_000, sequence(0, 1));
+    expect(first.normalContactAttacks).toBe(1);
+    const afterFirst = enemy.hp;
+
+    frameStart = starts(roster);
+    const locked = resolveSequentialSwfSoldierContacts(
+      roster,
+      frameStart,
+      1_000 + swfLogicTicksToMs(5),
+      sequence(0, 1),
+    );
+    expect(locked.normalContactAttacks).toBe(0);
+    expect(enemy.hp).toBe(afterFirst);
+  });
+
+  it("requires both units to differ from their stored bx/by positions before another mode-0 contact attack", () => {
+    const player = unit("player-0", "player", 800, 500);
+    const enemy = unit("enemy-0", "enemy", 820, 500);
+    player.stats.combat = 100;
+    enemy.stats.combat = 1;
+    enemy.stats.defense = 0;
+    const roster = [player, enemy];
+    let frameStart = starts(roster);
+    propose(player, 814, 500);
+    resolveSequentialSwfSoldierContacts(roster, frameStart, 1_000, sequence(0, 1));
+    const afterFirst = enemy.hp;
+
+    updateReactions(roster, [], 1_000 + swfLogicTicksToMs(10), swfLogicTicksToMs(10));
+
+    // Only the candidate differs from stored bx/by: target override selects the pair,
+    // but the attack gate must fail because player/m200 is still at its stored X/Y.
+    propose(player, 800, 500);
+    propose(enemy, 819, 500);
+    frameStart = starts(roster);
+    const oneMoved = resolveSequentialSwfSoldierContacts(
+      roster,
+      frameStart,
+      1_000 + swfLogicTicksToMs(11),
+      sequence(0, 1),
+    );
+    expect(oneMoved.dynamicContacts).toBeGreaterThan(0);
+    expect(oneMoved.normalContactAttacks).toBe(0);
+    expect(enemy.hp).toBe(afterFirst);
+
+    // Now both differ from the attack-time bx/by snapshot; the same target override
+    // is eligible for a fresh cubic contest and synchronous atck(mode=0).
+    propose(player, 801, 500);
+    propose(enemy, 819, 500);
+    frameStart = starts(roster);
+    const bothMoved = resolveSequentialSwfSoldierContacts(
+      roster,
+      frameStart,
+      1_000 + swfLogicTicksToMs(12),
+      sequence(0, 1),
+    );
+    expect(bothMoved.normalContactAttacks).toBe(1);
+    expect(enemy.hp).toBe(afterFirst - 1);
+  });
+
+  it("applies the ordinary defender 10-unit raw impulse on the first k tick", () => {
+    const attacker = unit("player-1", "player", 500, 500);
+    const defender = unit("enemy-0", "enemy", 520, 500);
+    defender.stats.defense = 0;
+    const start = battlefieldWorldPointToSwf(defender);
+    resolveRawNormalContactAttack(attacker, defender, 2_000, () => 1);
+    updateReactions([attacker, defender], [], 2_000 + swfLogicTicksToMs(1), swfLogicTicksToMs(1));
+    const after = battlefieldWorldPointToSwf(defender);
+    expect(after.x - start.x).toBeCloseTo(-10, 6);
+    expect(after.y - start.y).toBeCloseTo(0, 6);
+  });
+
+  it("uses IRON_WALL guard as defender 5-unit plus opposite attacker 10-unit impulse", () => {
+    const attacker = unit("player-1", "player", 500, 500);
+    const defender = unit("enemy-0", "enemy", 520, 500);
+    defender.stats.defense = 100;
+    defender.specialAbilities = ["IRON_WALL"];
+    const attackerStart = battlefieldWorldPointToSwf(attacker);
+    const defenderStart = battlefieldWorldPointToSwf(defender);
+    const result = resolveRawNormalContactAttack(attacker, defender, 2_000, () => 0);
+    expect(result.guarded).toBe(true);
+    updateReactions([attacker, defender], [], 2_000 + swfLogicTicksToMs(1), swfLogicTicksToMs(1));
+    const attackerAfter = battlefieldWorldPointToSwf(attacker);
+    const defenderAfter = battlefieldWorldPointToSwf(defender);
+    expect(defenderAfter.x - defenderStart.x).toBeCloseTo(-5, 6);
+    expect(attackerAfter.x - attackerStart.x).toBeCloseTo(10, 6);
+  });
+
+  it("keeps fatal HP at zero through the k reaction and finalizes battle-out only when it completes", () => {
+    const attacker = unit("player-1", "player", 500, 500);
+    const defender = unit("enemy-0", "enemy", 520, 500);
+    defender.stats.defense = 0;
+    defender.hp = 1;
+    resolveRawNormalContactAttack(attacker, defender, 3_000, () => 1);
+    expect(defender.hp).toBe(0);
+    expect(defender.isDead).toBe(false);
+
+    updateReactions([attacker, defender], [], 3_000 + swfLogicTicksToMs(9), swfLogicTicksToMs(9));
+    expect(defender.isDead).toBe(false);
+    updateReactions([attacker, defender], [], 3_000 + swfLogicTicksToMs(10), swfLogicTicksToMs(1));
+    expect(defender.isDead).toBe(true);
+    expect(defender.battleOutState).toBe("EXITING");
   });
 });
