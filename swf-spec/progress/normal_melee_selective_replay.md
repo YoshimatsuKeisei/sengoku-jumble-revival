@@ -22,7 +22,12 @@ This file tracks the safe re-introduction of raw-SWF normal melee/contact behavi
 | Attack-branch physical skip | `cb10b78a...` | device approved | once selected attack actually starts, do not also arm the k=3 physical-contact branch |
 | Mode-0 defense / HORO ordering | `98aaae2e...` | device approved | `random*200` first, HORO extra `random*100`, strict `>30` forces defense roll 0 |
 | Mode-0 damage ordering | `b78cb13a...` | device approved | base -> MIGHT -> FINISHER threshold -> NINJA_HUNTER |
-| k=10 + melee impulse bundle | current stage | CI green / device pending | both-participant k=10 compatibility lock; defender faces attacker but moves away; ordinary 10-unit impulse; IRON_WALL defender 5 + attacker recoil 10; attacker opposite facing |
+| k=10 + melee impulse bundle | `47def17a...` | device partial / distance rejected | direction/facing visibly improved, but user reported excessive knockback distance; do not accept as final baseline |
+| k=10 contact-branch suppression correction | current stage | CI green / device pending | while atck-created k=10 is active, skip the separate sequential k=3 physical-contact branch so raw 10->0.7 decay is not stacked with contact rebound |
+
+## Device finding after `47def17a...`
+
+The user confirmed the outward direction/facing change was present but reported that the blowback distance felt too large. Raw AVM1 re-audit showed the initial ordinary value really is 10 with ten 0.7-decay k updates, so the implementation must not tune that constant by eye. The revival bug was that the sequential contact resolver did not know about the atck-created k=10 lock and could re-arm its independent k=3 contact impulse while the raw combat impulse was still active. Raw `d(i)` cannot do this because its `k != 0` branch jumps over ordinary contact logic entirely.
 
 ## Still intentionally retained as compatibility safety nets
 
@@ -38,12 +43,10 @@ Never remove the all-pairs fallback merely because a raw candidate was selected.
 
 The earlier long checklist is now grouped by dependency. Git history/evidence may still use smaller changes, but strongly coupled behavior should be validated together rather than forcing one device run per tiny rule.
 
-1. **Current impulse bundle** — device-check k=10 behavior, outward normal hit/guard movement, IRON_WALL recoil, and attacker facing together.
+1. **Corrected impulse bundle** — device-check that the outward direction remains correct but the excessive distance is gone; also recheck guard/IRON_WALL and no freeze/circular drift.
 2. **Exact entry/history bundle** — reproduce the direct `d(i)` attack-entry checks (`bx/by`, opposing team, both `sp==0`, candidate `p<95`, candidate `fr._currentframe!=6`) plus the exact post-`atck` `bx/by` updates. The `fr` frame-6 runtime mapping must be established from raw SWF before implementation; do not guess it.
 3. **Synchronous atck/post-attack bundle** — move the selected raw event away from revival WINDUP toward synchronous `atck(...,0)` semantics and reproduce the post-defense/damage `l`/engagement + RUSH ordering/boundaries. Keep compatibility fallback during this checkpoint.
 4. **Fallback-removal/final audit** — only after the selected raw path and non-attack physical branch cover the formerly unsafe cases, remove the legacy all-pairs fallback, re-audit `moveAiSoldiers()` contact stopping, then run dense-crowd, retreat, fatal-hit, ranged, base/movement, and full-device battle regressions.
-
-So after the current bundle passes, the risky normal-melee block should require roughly **two more migration device checkpoints plus one final integration checkpoint**, not one device run for every old checklist item.
 
 ## Already outside this risky normal-melee block
 
