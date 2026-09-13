@@ -1,0 +1,444 @@
+name: Stage raw sequential normal contact attack
+
+on:
+  push:
+    branches:
+      - debug/current-20260907-normal-contact-attack-stage
+    paths:
+      - ".github/workflows/normal-contact-attack-stage.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Apply raw contact attack patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          helper = r'''import { STRATEGY_AI_CONFIG } from "../config";
+          import type { RandomSource } from "../stats/soldierStats";
+          import type { Soldier } from "../types";
+          import { startEngagement } from "./aiSystem";
+          import { cancelAttack } from "./attackRuntime";
+          import { applyDamage } from "./combatSystem";
+          import { recordNormalCombatResult } from "./meritSystem";
+          import {
+            getRawFiToward,
+            getRawOppositeFi,
+            startRawCombatImpulse,
+            SWF_DIRECTION_FX,
+            SWF_DIRECTION_FY,
+          } from "./rawCombatImpulseSystem";
+          import { startHitReaction } from "./reactionSystem";
+          import { hasSpecialAbility } from "./specialAbilitySystem";
+          import { swfLogicTicksToMs } from "./techniqueCombatProfiles";
+
+          export const SWF_NORMAL_CONTACT_K_TICKS = 10;
+          export const SWF_NORMAL_CONTACT_IMPULSE_UNITS = 10;
+          export const SWF_IRON_WALL_GUARD_IMPULSE_UNITS = 5;
+          export const SWF_NORMAL_CONTACT_DEFENSE_RANDOM_SCALE = 200;
+          export const SWF_HORO_GUARD_THRESHOLD_PERCENT = 30;
+
+          export interface RawNormalContactAttackResult {
+            resolved: boolean;
+            guarded: boolean;
+            appliedDamage: number;
+            defenderFi: number;
+          }
+
+          const rawNormalContactKResumeAt = new WeakMap<Soldier, number>();
+
+          function rawKResumeAt(currentTime: number): number {
+            // atck() sets k=10 after the current d() already passed its k==0 gate.
+            // Ten following d() calls consume k=10..1; ordinary behavior resumes after that.
+            return currentTime + swfLogicTicksToMs(SWF_NORMAL_CONTACT_K_TICKS + 1);
+          }
+
+          function applyRawKLock(soldier: Soldier, currentTime: number): void {
+            const resumeAt = rawKResumeAt(currentTime);
+            rawNormalContactKResumeAt.set(soldier, resumeAt);
+            soldier.abilityActionLockUntil = Math.max(soldier.abilityActionLockUntil, resumeAt);
+          }
+
+          export function isRawNormalContactKLocked(soldier: Soldier, currentTime: number): boolean {
+            return currentTime < (rawNormalContactKResumeAt.get(soldier) ?? 0);
+          }
+
+          function isRushCharge(soldier: Soldier): boolean {
+            return soldier.strategy === "charge" && hasSpecialAbility(soldier, "RUSH");
+          }
+
+          function canReceiveNormalContactEngagement(soldier: Soldier): boolean {
+            // Raw l assignment is gated by p<89. NORMAL is the revival-side equivalent.
+            return !soldier.isDead && soldier.hp > 0 && soldier.state === "NORMAL";
+          }
+
+          function applyRawPostAttackEngagements(
+            attacker: Soldier,
+            defender: Soldier,
+            currentTime: number,
+            random: RandomSource,
+          ): void {
+            // These branches occur after the defense/damage section inside atck().
+            // Defender mode-0 has a fallback that still assigns l even when RUSH keeps its prior target;
+            // the RUSH draw is nevertheless consumed first.
+            if (canReceiveNormalContactEngagement(defender)) {
+              if (isRushCharge(defender)) random();
+              startEngagement(defender, attacker, currentTime);
+            }
+
+            if (!canReceiveNormalContactEngagement(attacker)) return;
+            const rushKeepsPriorTarget = isRushCharge(attacker)
+              && random() * 100 <= STRATEGY_AI_CONFIG.rushRetargetIgnoreChance * 100;
+            if (!rushKeepsPriorTarget) startEngagement(attacker, defender, currentTime);
+          }
+
+          export function calculateRawNormalContactDamage(attacker: Soldier, defender: Soldier): number {
+            // Direct atck() order: basic -> s10 MIGHT -> s9 FINISHER threshold -> s34 NINJA_HUNTER.
+            let damage = 1;
+            if (hasSpecialAbility(attacker, "MIGHT")) damage += 1;
+            if (hasSpecialAbility(attacker, "FINISHER") && defender.hp - damage < 6) damage += 1;
+            if (attacker.rareSpecialAbilities.includes("NINJA_HUNTER") && defender.unitType === "NINJA") damage += 1;
+            return damage;
+          }
+
+          export function isRawNormalContactGuarded(
+            attacker: Soldier,
+            defender: Soldier,
+            random: RandomSource = Math.random,
+          ): boolean {
+            // Raw mode-0 always consumes the ordinary random*200 roll first.
+            let roll = random() * SWF_NORMAL_CONTACT_DEFENSE_RANDOM_SCALE;
+            // TEPPOU(ch6) -> NINJA(ch7) forces 999 and skips s12/HORO.
+            if (attacker.unitType === "TEPPOU" && defender.unitType === "NINJA") {
+              roll = 999;
+            } else if (hasSpecialAbility(defender, "HORO")) {
+              // s12 succeeds only on strict random*100 > 30; equality does not overwrite the roll.
+              if (random() * 100 > SWF_HORO_GUARD_THRESHOLD_PERCENT) roll = 0;
+            }
+            return roll <= defender.stats.defense;
+          }
+
+          function setAttackerPoseLock(attacker: Soldier, defender: Soldier, currentTime: number): void {
+            cancelAttack(attacker);
+            attacker.combatActionState = "ATTACK_RECOVERY";
+            attacker.attackStartedAt = currentTime;
+            attacker.attackHitAt = currentTime;
+            attacker.attackRecoveryEndsAt = rawKResumeAt(currentTime);
+            attacker.attackTargetKind = "SOLDIER";
+            attacker.attackTargetId = defender.id;
+            attacker.attackHitApplied = true;
+            attacker.lastAttackAt = currentTime;
+          }
+
+          export function resolveRawNormalContactAttack(
+            attacker: Soldier,
+            defender: Soldier,
+            currentTime: number,
+            random: RandomSource = Math.random,
+          ): RawNormalContactAttackResult {
+            if (attacker.isDead || defender.isDead || attacker.hp <= 0 || defender.hp <= 0
+              || attacker.team === defender.team || defender.state === "HEALING") {
+              return { resolved: false, guarded: false, appliedDamage: 0, defenderFi: 0 };
+            }
+
+            const defenderFi = getRawFiToward(defender, attacker);
+            const attackerFi = getRawOppositeFi(defenderFi);
+            const guarded = isRawNormalContactGuarded(attacker, defender, random);
+            const ironWallGuard = guarded && hasSpecialAbility(defender, "IRON_WALL");
+
+            applyRawKLock(defender, currentTime);
+            applyRawKLock(attacker, currentTime);
+            setAttackerPoseLock(attacker, defender, currentTime);
+
+            defender.facingX = SWF_DIRECTION_FX[defenderFi];
+            defender.facingY = SWF_DIRECTION_FY[defenderFi];
+            attacker.facingX = SWF_DIRECTION_FX[attackerFi];
+            attacker.facingY = SWF_DIRECTION_FY[attackerFi];
+
+            startRawCombatImpulse(
+              defender,
+              defenderFi,
+              ironWallGuard ? SWF_IRON_WALL_GUARD_IMPULSE_UNITS : SWF_NORMAL_CONTACT_IMPULSE_UNITS,
+              currentTime,
+            );
+            if (ironWallGuard) {
+              startRawCombatImpulse(attacker, attackerFi, SWF_NORMAL_CONTACT_IMPULSE_UNITS, currentTime);
+            }
+
+            let appliedDamage = 0;
+            if (guarded) {
+              cancelAttack(defender);
+              defender.combatFeedbackMarker = "S";
+              defender.combatFeedbackUntil = currentTime + swfLogicTicksToMs(SWF_NORMAL_CONTACT_K_TICKS);
+            } else {
+              const damage = applyDamage(defender, calculateRawNormalContactDamage(attacker, defender), attacker);
+              appliedDamage = damage.appliedDamage;
+              defender.combatFeedbackMarker = "H";
+              defender.combatFeedbackUntil = currentTime + swfLogicTicksToMs(SWF_NORMAL_CONTACT_K_TICKS);
+              // atck() owns the raw fx/fy impulse, so suppress the revival's legacy linear knockback.
+              startHitReaction(defender, attacker, currentTime, 0, random, "NORMAL_ATTACK");
+            }
+
+            // Raw l/pp updates occur after the defense/damage section.
+            applyRawPostAttackEngagements(attacker, defender, currentTime, random);
+            recordNormalCombatResult(attacker, defender);
+            return { resolved: true, guarded, appliedDamage, defenderFi };
+          }
+          '''
+          Path('src/game/systems/normalContactAttackSystem.ts').write_text(helper.replace('\n          ', '\n').lstrip(), encoding='utf-8')
+
+          p = Path('src/game/systems/normalCombatSystem.ts')
+          s = p.read_text(encoding='utf-8')
+          anchor = 'import { isWithinNormalContact } from "./techniqueCombatProfiles";\n'
+          insert = anchor + '\nconst sequentialContactResolvedRosters = new WeakSet<Soldier[]>();\n\nexport function markSequentialContactCombatResolved(soldiers: Soldier[]): void {\n  sequentialContactResolvedRosters.add(soldiers);\n}\n'
+          assert anchor in s and 'markSequentialContactCombatResolved' not in s
+          s = s.replace(anchor, insert, 1)
+          old = '''export function updateNormalCombatContests(\n  soldiers: Soldier[],\n  currentTime: number,\n  random: RandomSource = Math.random,\n): void {\n  for (let firstIndex = 0; firstIndex < soldiers.length; firstIndex += 1) {'''
+          new = '''export function updateNormalCombatContests(\n  soldiers: Soldier[],\n  currentTime: number,\n  random: RandomSource = Math.random,\n): void {\n  // BattleScene's raw sequential f[][] resolver already owns normal contact.\n  // Keep the legacy all-pairs fallback only for isolated callers that do not run that layer.\n  if (sequentialContactResolvedRosters.delete(soldiers)) return;\n  for (let firstIndex = 0; firstIndex < soldiers.length; firstIndex += 1) {'''
+          assert old in s
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+
+          p = Path('src/game/systems/swfSoldierContactSystem.ts')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('import type { Soldier } from "../types";\n', 'import type { RandomSource } from "../stats/soldierStats";\nimport type { Soldier } from "../types";\n', 1)
+          anchor = '''import {\n  getSwfBaseCollisionCell,\n  getSwfStaticCollisionCodeAtWorld,\n} from "./swfBaseCollisionGrid";\n'''
+          replacement = anchor + '''import {\n  isRawNormalContactKLocked,\n  resolveRawNormalContactAttack,\n} from "./normalContactAttackSystem";\nimport { markSequentialContactCombatResolved } from "./normalCombatSystem";\n'''
+          assert anchor in s
+          s = s.replace(anchor, replacement, 1)
+          s = s.replace('const contactImpulseStates = new WeakMap<Soldier, ContactImpulseState>();\n', 'const contactImpulseStates = new WeakMap<Soldier, ContactImpulseState>();\nconst lastContactAttackPositions = new WeakMap<Soldier, Position>();\n', 1)
+          s = s.replace('  impulseTicksApplied: number;\n}', '  impulseTicksApplied: number;\n  normalContactAttacks: number;\n}', 1)
+
+          marker = '''function positionsDiffer(first: Position, second: Position): boolean {\n  return first.x !== second.x || first.y !== second.y;\n}\n'''
+          addition = marker + '''\nfunction rawMovedSinceLastContactAttack(soldier: Soldier): boolean {\n  const current = battlefieldWorldPointToSwf(soldier);\n  const previous = lastContactAttackPositions.get(soldier) ?? { x: 0, y: 0 };\n  return current.x !== previous.x || current.y !== previous.y;\n}\n\nfunction rememberRawContactAttackPosition(soldier: Soldier): void {\n  const raw = battlefieldWorldPointToSwf(soldier);\n  lastContactAttackPositions.set(soldier, { x: raw.x, y: raw.y });\n}\n\nfunction canResolveRawNormalContactAttack(\n  current: Soldier,\n  candidate: Soldier,\n  currentTime: number,\n): boolean {\n  return current.team !== candidate.team\n    && current.activeSpecialTechnique === null\n    && candidate.activeSpecialTechnique === null\n    && current.reactionState === "NONE"\n    // Raw fr._currentframe != 6 is the candidate hit/reaction visual gate.\n    && candidate.reactionState === "NONE"\n    && candidate.state !== "HEALING"\n    && currentTime >= current.abilityActionLockUntil\n    && rawMovedSinceLastContactAttack(current)\n    && rawMovedSinceLastContactAttack(candidate);\n}\n\nfunction resolveRawContactContest(\n  current: Soldier,\n  candidate: Soldier,\n  random: RandomSource,\n): { attacker: Soldier; defender: Soldier } {\n  const currentCombat = Math.max(0, current.stats.combat);\n  const candidateCombat = Math.max(0, candidate.stats.combat);\n  const currentPower = currentCombat ** 3;\n  const candidatePower = candidateCombat ** 3;\n  const sum = currentPower + candidatePower;\n  // AVM1 branches to the current soldier when random*(pwA+pwB) <= pwA.\n  const currentWins = sum === 0 || random() * sum <= currentPower;\n  return currentWins\n    ? { attacker: current, defender: candidate }\n    : { attacker: candidate, defender: current };\n}\n'''
+          assert marker in s
+          s = s.replace(marker, addition, 1)
+
+          old_doc = ''' * Enemy attack resolution itself remains owned by the existing combat system;\n * this layer only reproduces the physical grid/contact response.\n */'''
+          new_doc = ''' * Opposing-team normal attacks are resolved inside this same selected-contact\n * branch, matching raw d(): a successful attack gate skips the 24-unit/k=3\n * physical branch for that contact event.\n */'''
+          assert old_doc in s
+          s = s.replace(old_doc, new_doc, 1)
+
+          old_sig = '''export function resolveSequentialSwfSoldierContacts(\n  soldiers: Soldier[],\n  movementStartPositions: ReadonlyMap<string, Position>,\n  currentTime = performance.now(),\n): SwfSoldierContactResolution {'''
+          new_sig = '''export function resolveSequentialSwfSoldierContacts(\n  soldiers: Soldier[],\n  movementStartPositions: ReadonlyMap<string, Position>,\n  currentTime = performance.now(),\n  random: RandomSource = Math.random,\n): SwfSoldierContactResolution {'''
+          assert old_sig in s
+          s = s.replace(old_sig, new_sig, 1)
+          s = s.replace('    impulseTicksApplied: 0,\n  };', '    impulseTicksApplied: 0,\n    normalContactAttacks: 0,\n  };\n  markSequentialContactCombatResolved(soldiers);', 1)
+
+          anchor = '''    const proposed = proposal.get(soldier) ?? { x: soldier.x, y: soldier.y };\n\n    // A 996/997 base bounce uses the same raw k slot with a stronger k=10'''
+          repl = '''    const proposed = proposal.get(soldier) ?? { x: soldier.x, y: soldier.y };\n\n    // A mode-0 atck from an earlier raw-order soldier may have assigned this\n    // unit k=10 before its own d() turn. Suppress its precomputed ordinary proposal.\n    if (isRawNormalContactKLocked(soldier, currentTime)) {\n      occupancy.set(cellKey(soldier), soldier);\n      processed.add(soldier);\n      continue;\n    }\n\n    // A 996/997 base bounce uses the same raw k slot with a stronger k=10'''
+          assert anchor in s
+          s = s.replace(anchor, repl, 1)
+
+          old_block = '''    result.dynamicContacts += 1;\n    const currentRaw = battlefieldWorldPointToSwf(soldier);\n    const candidateRaw = battlefieldWorldPointToSwf(candidate);\n    const angle = Math.atan2(candidateRaw.y - currentRaw.y, candidateRaw.x - currentRaw.x);\n\n    if (candidate.team === soldier.team && candidate.baseContactLockTicks <= 0) {\n      const destination = rawSpacingDestination(soldier, candidate);'''
+          new_block = '''    result.dynamicContacts += 1;\n\n    if (canResolveRawNormalContactAttack(soldier, candidate, currentTime)) {\n      const { attacker, defender } = resolveRawContactContest(soldier, candidate, random);\n      const attack = resolveRawNormalContactAttack(attacker, defender, currentTime, random);\n      rememberRawContactAttackPosition(soldier);\n      rememberRawContactAttackPosition(candidate);\n      if (attack.resolved) result.normalContactAttacks += 1;\n      // Raw d() jumps past the 24-unit/k=3 physical branch after atck(...,0).\n      occupancy.set(cellKey(soldier), soldier);\n      processed.add(soldier);\n      continue;\n    }\n\n    const currentRaw = battlefieldWorldPointToSwf(soldier);\n    const candidateRaw = battlefieldWorldPointToSwf(candidate);\n    const angle = Math.atan2(candidateRaw.y - currentRaw.y, candidateRaw.x - currentRaw.x);\n\n    if (candidate.baseContactLockTicks <= 0) {\n      const destination = rawSpacingDestination(soldier, candidate);'''
+          assert old_block in s
+          s = s.replace(old_block, new_block, 1)
+          p.write_text(s, encoding='utf-8')
+
+          p = Path('tests/swf-spec/soldierContactSequentialRuntime.test.ts')
+          s = p.read_text(encoding='utf-8')
+          old = '''  it("keeps enemy attack damage owned by the existing combat path while replaying physical contact", () => {\n    const protagonist = soldier("player-0", "player", 800, 500);\n    const enemy = soldier("enemy-0", "enemy", 820, 500);\n    const units = [protagonist, enemy];\n    const starts = captureStarts(units);\n    setRawProposal(protagonist, 814, 500);\n\n    const result = resolveSequentialSwfSoldierContacts(units, starts, 1_000);\n    const raw = battlefieldWorldPointToSwf(protagonist);\n\n    expect(result.dynamicContacts).toBe(1);\n    expect(result.spacingCorrections).toBe(0);\n    expect(result.impulsesArmed).toBe(2);\n    expect(raw.x).toBeCloseTo(800, 6);\n    expect(battlefieldWorldPointToSwf(enemy).x).toBeCloseTo(823, 6);\n  });'''
+          new = '''  it("routes an eligible selected enemy contact into atck(mode=0) and skips k=3 spacing", () => {\n    const protagonist = soldier("player-0", "player", 800, 500);\n    const enemy = soldier("enemy-0", "enemy", 820, 500);\n    const units = [protagonist, enemy];\n    const starts = captureStarts(units);\n    setRawProposal(protagonist, 814, 500);\n\n    const result = resolveSequentialSwfSoldierContacts(units, starts, 1_000);\n    const raw = battlefieldWorldPointToSwf(protagonist);\n\n    expect(result.dynamicContacts).toBe(1);\n    expect(result.normalContactAttacks).toBe(1);\n    expect(result.spacingCorrections).toBe(0);\n    expect(result.impulsesArmed).toBe(0);\n    expect(raw.x).toBeCloseTo(800, 6);\n    expect(battlefieldWorldPointToSwf(enemy).x).toBeCloseTo(820, 6);\n  });'''
+          assert old in s
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+
+          test = r'''import { describe, expect, it } from "vitest";
+          import { battlefieldSwfPointToWorld } from "../../src/game/battlefieldLayout";
+          import { createSoldier } from "../../src/game/entities/Soldier";
+          import { updateNormalCombatContests } from "../../src/game/systems/normalCombatSystem";
+          import {
+            calculateRawNormalContactDamage,
+            isRawNormalContactGuarded,
+            resolveRawNormalContactAttack,
+          } from "../../src/game/systems/normalContactAttackSystem";
+          import { resolveSequentialSwfSoldierContacts } from "../../src/game/systems/swfSoldierContactSystem";
+
+          const STATS = { maxHp: 60, skill: 50, foot: 3, combat: 50, defense: 50 } as const;
+
+          function unit(id: string, team: "player" | "enemy", rawX: number, rawY: number) {
+            const point = battlefieldSwfPointToWorld({ x: rawX, y: rawY });
+            return createSoldier(id, team, id === "player-0" ? "player" : "ai", point.x, point.y, "melee", STATS);
+          }
+          function starts(units: ReturnType<typeof unit>[]) {
+            return new Map(units.map((soldier) => [soldier.id, { x: soldier.x, y: soldier.y }]));
+          }
+          function propose(soldier: ReturnType<typeof unit>, rawX: number, rawY: number) {
+            const point = battlefieldSwfPointToWorld({ x: rawX, y: rawY });
+            soldier.x = point.x; soldier.y = point.y;
+          }
+          function sequence(...values: number[]): () => number {
+            let index = 0;
+            return () => values[Math.min(index++, values.length - 1)] ?? 0;
+          }
+
+          describe("raw sequential normal-contact attack integration", () => {
+            it("does not attack a merely nearby radial enemy when the proposed f[][] cell is free", () => {
+              const player = unit("player-0", "player", 800, 500);
+              const enemy = unit("enemy-0", "enemy", 820, 500);
+              const roster = [player, enemy];
+              const before = enemy.hp;
+              const frameStart = starts(roster);
+              propose(player, 804, 500);
+              const result = resolveSequentialSwfSoldierContacts(roster, frameStart, 1_000, sequence(0, 1));
+              expect(result.dynamicContacts).toBe(0);
+              expect(result.normalContactAttacks).toBe(0);
+              expect(enemy.hp).toBe(before);
+            });
+
+            it("resolves only the selected occupied-cell enemy synchronously and skips the k=3 branch", () => {
+              const player = unit("player-0", "player", 800, 500);
+              const enemy = unit("enemy-0", "enemy", 820, 500);
+              player.stats.combat = 100;
+              enemy.stats.combat = 1;
+              enemy.stats.defense = 0;
+              const roster = [player, enemy];
+              const before = enemy.hp;
+              const frameStart = starts(roster);
+              propose(player, 814, 500);
+              const result = resolveSequentialSwfSoldierContacts(roster, frameStart, 1_000, sequence(0, 1));
+              expect(result.normalContactAttacks).toBe(1);
+              expect(result.spacingCorrections).toBe(0);
+              expect(result.impulsesArmed).toBe(0);
+              expect(enemy.hp).toBe(before - 1);
+              expect(enemy.reactionState).toBe("HIT_STUN");
+              expect(player.combatActionState).toBe("ATTACK_RECOVERY");
+            });
+
+            it("suppresses the later legacy all-pairs BattleScene pass for the same roster", () => {
+              const player = unit("player-0", "player", 800, 500);
+              const enemy = unit("enemy-0", "enemy", 820, 500);
+              player.stats.combat = 100;
+              enemy.stats.combat = 1;
+              enemy.stats.defense = 0;
+              const roster = [player, enemy];
+              const frameStart = starts(roster);
+              propose(player, 814, 500);
+              resolveSequentialSwfSoldierContacts(roster, frameStart, 1_000, sequence(0, 1));
+              const afterSequential = enemy.hp;
+              updateNormalCombatContests(roster, 1_000, () => 0);
+              expect(enemy.hp).toBe(afterSequential);
+            });
+
+            it("consumes normal defense before HORO and lets HORO guard ordinary contact", () => {
+              const attacker = unit("player-1", "player", 500, 500);
+              const defender = unit("enemy-0", "enemy", 520, 500);
+              defender.stats.defense = 0;
+              defender.specialAbilities = ["HORO"];
+              let calls = 0;
+              const guarded = isRawNormalContactGuarded(attacker, defender, () => {
+                calls += 1;
+                return calls === 1 ? 1 : 0.31;
+              });
+              expect(calls).toBe(2);
+              expect(guarded).toBe(true);
+            });
+
+            it("uses basic -> MIGHT -> FINISHER -> NINJA_HUNTER damage order", () => {
+              const attacker = unit("player-1", "player", 500, 500);
+              const defender = unit("enemy-0", "enemy", 520, 500);
+              defender.unitType = "NINJA";
+              defender.hp = 7;
+              attacker.specialAbilities = ["FINISHER"];
+              attacker.rareSpecialAbilities = ["NINJA_HUNTER"];
+              expect(calculateRawNormalContactDamage(attacker, defender)).toBe(2);
+            });
+
+            it("keeps defense equality as guard and marks mode-0 resolution synchronously", () => {
+              const attacker = unit("player-1", "player", 500, 500);
+              const defender = unit("enemy-0", "enemy", 520, 500);
+              defender.stats.defense = 100;
+              const result = resolveRawNormalContactAttack(attacker, defender, 2_000, () => 0.5);
+              expect(result.resolved).toBe(true);
+              expect(result.guarded).toBe(true);
+              expect(result.appliedDamage).toBe(0);
+              expect(defender.combatFeedbackMarker).toBe("S");
+            });
+          });
+          '''
+          Path('tests/swf-spec/normalContactSequentialAttackConformance.test.ts').write_text(test.replace('\n          ', '\n').lstrip(), encoding='utf-8')
+
+          evidence = '''# Sequential normal-contact attack — direct AVM1 integration\n\nSource of truth: recovered `sgjbgm.swf` SHA-256 `47d397d98ed797e2e5e1f7f96c10ba9c3f93d3a3b54b45fbc61401a553c3399c`, Sprite2456.\n\n- `d()` resolves exactly one dynamic candidate from the proposed 36-unit `f[][]` cell (or the current-target override). There is no independent all-pairs radial attack scan.\n- Attack gate `0x217dfd..0x217ec8` requires both participants to differ from stored `bx/by`, opposite teams, both `sp==0`, candidate `p<95`, and candidate `fr._currentframe!=6`.\n- `shk()` initializes each soldier `bx=0`, `by=0` at `0x21bb7e..0x21bba7`. A successful contact attack stores both participants' current `_x/_y` back to `bx/by` at `0x217f3b..0x217f6e`.\n- Cubic `pw` contest immediately calls `atck(...,0)` at `0x217f04..0x217f3a`; the branch then jumps past the 24-unit/k=3 physical-contact response.\n- In `atck()`, ordinary `random*200` defense is consumed before s12/HORO; mode-0 guard includes equality. HORO is valid for normal contact.\n- Damage order is base 1, s10/MIGHT, s9/FINISHER threshold, then s34/NINJA_HUNTER.\n- Both participants receive the mode-0 k=10 lock. Defender impulse is 10 source units normally; successful s11/IRON_WALL guard changes defender to 5 and gives attacker the opposite 10-unit impulse.\n- HP mutates synchronously; fatal cleanup waits for the k response.\n\nReconstruction consequence: normal contact attack must be owned by the same sequential `f[][]` resolver that selected the pair. The old revival-only unordered radial pass is suppressed whenever that resolver ran for the roster.\n'''
+          Path('swf-spec/evidence/normal_contact_attack_sequential_avm1.md').write_text(evidence, encoding='utf-8')
+
+          p = Path('swf-spec/rules/combat.json')
+          data = json.loads(p.read_text(encoding='utf-8'))
+          if not any(rule.get('id') == 'NORMAL_CONTACT_ATTACK_TIMING' for rule in data['rules']):
+              data['rules'].append({
+                  'id': 'NORMAL_CONTACT_ATTACK_TIMING',
+                  'status': 'confirmed',
+                  'category': 'combat',
+                  'expected': {
+                      'candidateSource': 'sequential proposed f[][] dynamic occupant or current-target override',
+                      'independentAllPairsRadialPass': False,
+                      'requiresBothMovedSinceBxBy': True,
+                      'bxByInitialValue': 0,
+                      'atckMode': 0,
+                      'resolutionIsSynchronousWithContactContest': True,
+                      'successfulAttackSkipsPhysicalK3Branch': True,
+                      'defenseRandomScale': 200,
+                      'guardIncludesEquality': True,
+                      'horoAppliesToNormalContact': True,
+                      'damageOrder': ['basic', 'MIGHT', 'FINISHER', 'NINJA_HUNTER'],
+                      'kAssignedToDefender': 10,
+                      'kAssignedToAttacker': 10,
+                      'normalDefenderInitialImpulseUnits': 10,
+                      'ironWallGuardDefenderInitialImpulseUnits': 5,
+                      'ironWallGuardAttackerOppositeInitialImpulseUnits': 10,
+                      'fatalCleanupWaitsForKResponse': True,
+                  },
+                  'evidence': {'reference': 'evidence/normal_contact_attack_sequential_avm1.md'},
+              })
+          p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Vite production bundle
+        run: npx vite build
+      - name: Sequential contact and normal attack conformance
+        run: >-
+          npx vitest run
+          tests/swf-spec/soldierContactSequentialRuntime.test.ts
+          tests/swf-spec/soldierContactFrameIntegration.test.ts
+          tests/swf-spec/soldierContactCrowdRegression.test.ts
+          tests/swf-spec/soldierContactGridSpecConformance.test.ts
+          tests/swf-spec/normalContactSequentialAttackConformance.test.ts
+          --reporter=verbose
+      - name: Full SWF conformance suite
+        run: npx vitest run tests/swf-spec --reporter=verbose
+      - name: Stable movement/base regressions
+        run: >-
+          npx vitest run
+          src/game/systems/baseContactSystem.test.ts
+          src/game/systems/swfIntegrationPreservation.test.ts
+          src/game/systems/phase3eBattlefield.test.ts
+          src/game/systems/phase3fFidelity.test.ts
+          src/game/systems/phase3gFixes.test.ts
+          src/game/systems/phase3hIntegration.test.ts
+          src/game/systems/phase3jPlayerControl.test.ts
+          --reporter=verbose
+      - name: Strategy regression
+        run: npx vitest run src/game/systems/strategyEngagement.test.ts src/game/systems/phase4c1TargetStrategy.test.ts --reporter=verbose
+      - name: Publish green candidate branch
+        shell: bash
+        run: |
+          rm .github/workflows/normal-contact-attack-stage.yml
+          git config user.name "OpenAI SWF integration"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b debug/current-20260907-normal-contact-attack-candidate
+          git add -A
+          git commit -m "Integrate raw sequential normal contact attacks"
+          git push origin HEAD:refs/heads/debug/current-20260907-normal-contact-attack-candidate
