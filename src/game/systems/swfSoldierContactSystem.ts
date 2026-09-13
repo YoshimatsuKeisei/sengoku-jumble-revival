@@ -3,12 +3,16 @@ import {
   battlefieldSwfPointToWorld,
   battlefieldWorldPointToSwf,
 } from "../battlefieldLayout";
+import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier } from "../types";
+import { canStartSoldierAttack, startSoldierAttack } from "./attackRuntime";
 import { getSwfStaticCollisionCodeAtWorld } from "./swfBaseCollisionGrid";
 import {
   getSwfDynamicContactCellKey,
   selectSwfDynamicContactCandidate,
 } from "./swfContactCandidateSelection";
+import { resolveSwfContactContest } from "./swfContactContestSystem";
+import { markSwfSelectedContactBranchStarted } from "./swfSelectedContactBranchRuntime";
 
 export const SWF_SOLDIER_CONTACT_AXIS_UNITS = 32;
 export const SWF_SOLDIER_CONTACT_SPACING_UNITS = 24;
@@ -47,11 +51,6 @@ function rosterIndex(id: string, prefix: string): number | null {
   return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
 }
 
-/**
- * Raw normal-battle order confirmed from m200 EnterFrame + al():
- * m200 first, then m1..m59. Revival roster IDs map to that as
- * player-0, player-1..29, enemy-0..29.
- */
 export function getSwfSoldierUpdateOrder(soldiers: readonly Soldier[]): Soldier[] {
   const originalIndex = new Map(soldiers.map((soldier, index) => [soldier, index]));
   return [...soldiers].sort((a, b) => {
@@ -68,6 +67,12 @@ export function getSwfSoldierUpdateOrder(soldiers: readonly Soldier[]): Soldier[
 
 function cellKey(point: Position): string {
   return getSwfDynamicContactCellKey(point);
+}
+
+function unorderedPairKey(first: Soldier, second: Soldier): string {
+  return first.id < second.id
+    ? `${first.id}\u0000${second.id}`
+    : `${second.id}\u0000${first.id}`;
 }
 
 function isActiveOccupant(soldier: Soldier): boolean {
@@ -120,9 +125,6 @@ function armContactImpulse(
   directionIndex: number,
   nextTickAt: number,
 ): void {
-  // Raw d() multiplies the global 8-way fx/fy table by i.s. In the revival,
-  // normal i.s is represented by the soldier's foot stat; one raw logic tick
-  // therefore moves `foot` source units before the 0.7 decay.
   const speedSource = Math.max(0, soldier.stats.foot);
   contactImpulseStates.set(soldier, {
     fxSource: SWF_CONTACT_FX[directionIndex] * speedSource,
@@ -133,9 +135,6 @@ function armContactImpulse(
 }
 
 function canArmOtherContactImpulse(soldier: Soldier): boolean {
-  // Raw candidate branch requires sp==0 and fr._currentframe!=6 before k=3.
-  // The revival does not expose that exact MovieClip frame, so use the states
-  // that represent the same "not in an overriding action/reaction" envelope.
   return soldier.activeSpecialTechnique === null
     && soldier.reactionState === "NONE"
     && soldier.combatActionState === "IDLE";
@@ -165,24 +164,28 @@ function applyContactImpulseTick(
   return moved;
 }
 
-/**
- * Replays the raw sequential f[][] soldier-contact layer.
- *
- * The caller supplies positions captured immediately before ordinary
- * player/AI movement. Units are then replayed in raw order (m200, m1..m59),
- * clearing their old dynamic cell before checking only the proposed cell.
- *
- * Contact impulse follows the raw k branch: k=3, source-space fx/fy based on
- * the unit's own s, one 24-Hz logic tick at a time, and 0.7 decay after each
- * attempted move. While k is active, ordinary movement is suppressed.
- *
- * Enemy attack resolution itself remains owned by the existing combat system;
- * this layer only reproduces the physical grid/contact response.
- */
+function tryStartSelectedEnemyContactBranch(
+  current: Soldier,
+  candidate: Soldier,
+  soldiers: readonly Soldier[],
+  currentTime: number,
+  random: RandomSource,
+): boolean {
+  if (candidate.team === current.team) return false;
+  if (!canStartSoldierAttack(current, candidate, currentTime)
+    || !canStartSoldierAttack(candidate, current, currentTime)) return false;
+  const attacker = resolveSwfContactContest(current, candidate, random);
+  const defender = attacker === current ? candidate : current;
+  if (!startSoldierAttack(attacker, defender, currentTime)) return false;
+  markSwfSelectedContactBranchStarted(soldiers, current, candidate, attacker, defender);
+  return true;
+}
+
 export function resolveSequentialSwfSoldierContacts(
   soldiers: Soldier[],
   movementStartPositions: ReadonlyMap<string, Position>,
   currentTime = performance.now(),
+  random: RandomSource = Math.random,
 ): SwfSoldierContactResolution {
   const result: SwfSoldierContactResolution = {
     dynamicContacts: 0,
@@ -196,6 +199,7 @@ export function resolveSequentialSwfSoldierContacts(
   const occupancy = new Map<string, Soldier>();
   const processed = new Set<Soldier>();
   const movedByContact = new Set<Soldier>();
+  const startedContactPairs = new Set<string>();
 
   for (const soldier of order) {
     if (!isActiveOccupant(soldier)) {
@@ -208,8 +212,6 @@ export function resolveSequentialSwfSoldierContacts(
     soldier.y = previous.y;
   }
 
-  // Previous frame's final f[][] overwrite semantics: later raw update IDs win
-  // if a revival fixture already contains multiple units in one coarse cell.
   for (const soldier of order) {
     if (!isActiveOccupant(soldier)) continue;
     occupancy.set(cellKey(soldier), soldier);
@@ -218,14 +220,11 @@ export function resolveSequentialSwfSoldierContacts(
   for (const soldier of order) {
     if (!isActiveOccupant(soldier)) continue;
 
-    // d() clears the current unit's old dynamic cell before evaluating k/motion.
     const oldKey = cellKey(soldier);
     if (occupancy.get(oldKey) === soldier) occupancy.delete(oldKey);
 
     const proposed = proposal.get(soldier) ?? { x: soldier.x, y: soldier.y };
 
-    // A 996/997 base bounce uses the same raw k slot with a stronger k=10
-    // response, so it supersedes a soldier-contact impulse.
     if (soldier.baseContactLockTicks > 0) {
       contactImpulseStates.delete(soldier);
       soldier.x = proposed.x;
@@ -237,8 +236,6 @@ export function resolveSequentialSwfSoldierContacts(
 
     const impulse = contactImpulseStates.get(soldier);
     if (impulse) {
-      // Between 24-Hz logic ticks the revival may render extra frames. Hold the
-      // raw position and suppress ordinary movement until the next k tick.
       if (currentTime + 1e-6 >= impulse.nextTickAt) {
         if (applyContactImpulseTick(soldier, impulse, occupancy)) movedByContact.add(soldier);
         result.impulseTicksApplied += 1;
@@ -265,6 +262,26 @@ export function resolveSequentialSwfSoldierContacts(
     if (selection.source === "FORCED_TARGET") result.forcedTargetContacts += 1;
 
     result.dynamicContacts += 1;
+    const selectedPairKey = unorderedPairKey(soldier, candidate);
+    if (startedContactPairs.has(selectedPairKey)) {
+      occupancy.set(cellKey(soldier), soldier);
+      processed.add(soldier);
+      continue;
+    }
+
+    if (tryStartSelectedEnemyContactBranch(soldier, candidate, soldiers, currentTime, random)) {
+      // Raw d(i): successful atck(...,0) updates bx/by and jumps over the
+      // physical 32/24 + k=3 branch. Remove any provisional contact impulse on
+      // either participant so the skipped branch cannot leak back in later in
+      // this reconstruction frame.
+      contactImpulseStates.delete(soldier);
+      contactImpulseStates.delete(candidate);
+      startedContactPairs.add(selectedPairKey);
+      occupancy.set(cellKey(soldier), soldier);
+      processed.add(soldier);
+      continue;
+    }
+
     const currentRaw = battlefieldWorldPointToSwf(soldier);
     const candidateRaw = battlefieldWorldPointToSwf(candidate);
     const angle = Math.atan2(candidateRaw.y - currentRaw.y, candidateRaw.x - currentRaw.x);
@@ -279,17 +296,12 @@ export function resolveSequentialSwfSoldierContacts(
       }
     }
 
-    // Raw d(): candidate gets the direction toward the current unit and current
-    // unit gets +4 (180 degrees). Current k=3 is unconditional on this branch.
     const candidateDirection = rawContactDirectionIndex(angle);
     const currentDirection = oppositeDirectionIndex(candidateDirection);
     armContactImpulse(soldier, currentDirection, currentTime + SWF_SOLDIER_CONTACT_LOGIC_TICK_MS);
     result.impulsesArmed += 1;
 
     if (candidate.baseContactLockTicks <= 0 && canArmOtherContactImpulse(candidate)) {
-      // If candidate's raw update has not happened yet this frame, its newly set
-      // k=3 is observed immediately by its later d() call. Otherwise first tick
-      // occurs on the next 24-Hz logic update.
       armContactImpulse(
         candidate,
         candidateDirection,
@@ -310,9 +322,6 @@ export function resolveSequentialSwfSoldierContacts(
 
     const start = movementStartPositions.get(soldier.id);
     const intended = proposal.get(soldier);
-    // Preserve unrelated pre-capture reaction velocity when no ordinary/contact
-    // movement happened, but expose the actual final delta whenever this layer
-    // changed the unit's frame position.
     if (start && intended && (positionsDiffer(start, intended) || movedByContact.has(soldier))) {
       soldier.velocityX = soldier.x - start.x;
       soldier.velocityY = soldier.y - start.y;
