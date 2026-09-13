@@ -13,6 +13,7 @@ import {
   SWF_DIRECTION_FX,
   SWF_DIRECTION_FY,
 } from "./rawCombatImpulseSystem";
+import { startRawNormalContactKLock } from "./rawNormalContactKLockSystem";
 export { cancelAttack, resetAttackRuntime, canStartSoldierAttack, startSoldierAttack } from "./attackRuntime";
 import { cancelAttack, resetAttackRuntime } from "./attackRuntime";
 import { isWithinNormalContact, swfLogicTicksToMs } from "./techniqueCombatProfiles";
@@ -28,7 +29,7 @@ function rawNormalContactResumeAt(currentTime: number): number {
 }
 
 function applyRawNormalContactKLock(soldier: Soldier, currentTime: number): void {
-  soldier.abilityActionLockUntil = Math.max(soldier.abilityActionLockUntil, rawNormalContactResumeAt(currentTime));
+  startRawNormalContactKLock(soldier, rawNormalContactResumeAt(currentTime));
 }
 
 function faceNormalMeleePair(target: Soldier, attacker: Soldier): number {
