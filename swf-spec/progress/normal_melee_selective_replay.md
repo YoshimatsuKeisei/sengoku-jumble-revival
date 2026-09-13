@@ -9,6 +9,7 @@ This file tracks the safe re-introduction of raw-SWF normal melee/contact behavi
 - Rejected historical references only:
   - `cf0ef57f5aac12bd0a0ccf10978be8315562d024` — unconditional/all-pairs contact spacing caused circular movement and protagonist ally dragging.
   - `e82ac536a58173279b04d3488ef7ca83d3ee9cf1` — broad normal-contact attack integration caused freezes and wrong knockback direction.
+  - `47def17abc72f30fcf3c0a413228aec7f6fd1966` — corrected direction/k=10 bundle but device rejected for excessive visible knockback; runtime omitted the raw dynamic `f[][]` gate on each k tick.
   - `f5babceaffd699f332f24f5830fb4fc27b900c09` — useful AVM1 reference, but never replay wholesale.
 
 ## Selective replay completed so far
@@ -22,7 +23,7 @@ This file tracks the safe re-introduction of raw-SWF normal melee/contact behavi
 | Attack-branch physical skip | `cb10b78a...` | device approved | once selected attack actually starts, do not also arm the k=3 physical-contact branch |
 | Mode-0 defense / HORO ordering | `98aaae2e...` | device approved | `random*200` first, HORO extra `random*100`, strict `>30` forces defense roll 0 |
 | Mode-0 damage ordering | `b78cb13a...` | device approved | base -> MIGHT -> FINISHER threshold -> NINJA_HUNTER |
-| k=10 + melee impulse bundle | current stage | CI green / device pending | both-participant k=10 compatibility lock; defender faces attacker but moves away; ordinary 10-unit impulse; IRON_WALL defender 5 + attacker recoil 10; attacker opposite facing |
+| Corrected k=10 + melee impulse bundle | current stage | CI green / device pending | both-participant k=10 compatibility lock; defender faces attacker but moves away; ordinary 10-unit initial impulse; IRON_WALL defender 5 + attacker recoil 10; attacker opposite facing; each locked tick obeys raw 36-unit dynamic `f[][]` occupancy and blocked ticks still decay |
 
 ## Still intentionally retained as compatibility safety nets
 
@@ -36,14 +37,14 @@ Never remove the all-pairs fallback merely because a raw candidate was selected.
 
 ## Remaining device checkpoints
 
-The earlier long checklist is now grouped by dependency. Git history/evidence may still use smaller changes, but strongly coupled behavior should be validated together rather than forcing one device run per tiny rule.
+The earlier long checklist is grouped by dependency. Git history/evidence may still use smaller changes, but strongly coupled behavior should be validated together rather than forcing one device run per tiny rule.
 
-1. **Current impulse bundle** — device-check k=10 behavior, outward normal hit/guard movement, IRON_WALL recoil, and attacker facing together.
+1. **Current corrected impulse bundle** — device-check that dynamic f-grid blocking removes the excessive knockback while preserving k=10 behavior, outward hit/guard movement, IRON_WALL recoil, and attacker facing.
 2. **Exact entry/history bundle** — reproduce the direct `d(i)` attack-entry checks (`bx/by`, opposing team, both `sp==0`, candidate `p<95`, candidate `fr._currentframe!=6`) plus the exact post-`atck` `bx/by` updates. The `fr` frame-6 runtime mapping must be established from raw SWF before implementation; do not guess it.
 3. **Synchronous atck/post-attack bundle** — move the selected raw event away from revival WINDUP toward synchronous `atck(...,0)` semantics and reproduce the post-defense/damage `l`/engagement + RUSH ordering/boundaries. Keep compatibility fallback during this checkpoint.
 4. **Fallback-removal/final audit** — only after the selected raw path and non-attack physical branch cover the formerly unsafe cases, remove the legacy all-pairs fallback, re-audit `moveAiSoldiers()` contact stopping, then run dense-crowd, retreat, fatal-hit, ranged, base/movement, and full-device battle regressions.
 
-So after the current bundle passes, the risky normal-melee block should require roughly **two more migration device checkpoints plus one final integration checkpoint**, not one device run for every old checklist item.
+If the corrected impulse bundle passes device validation, the risky normal-melee block should still require roughly **two more migration device checkpoints plus one final integration checkpoint**.
 
 ## Already outside this risky normal-melee block
 
