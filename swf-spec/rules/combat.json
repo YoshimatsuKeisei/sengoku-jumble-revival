@@ -135,6 +135,28 @@
       "evidence": { "reference": "evidence/normal_contact_defense_avm1.md" }
     },
     {
+      "id": "NORMAL_CONTACT_DAMAGE_ORDER",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "atckMode": 0,
+        "baseDamage": 1,
+        "damageOrder": ["BASE", "MIGHT", "FINISHER", "NINJA_HUNTER"],
+        "mightAbilityCode": "s10",
+        "mightExtraDamage": 1,
+        "finisherAbilityCode": "s9s",
+        "finisherHpCheckOccursAfter": ["BASE", "MIGHT"],
+        "finisherHpThresholdExclusive": 6,
+        "finisherExtraDamage": 1,
+        "ninjaHunterAbilityCode": "s34",
+        "ninjaCharacterCode": 7,
+        "ninjaHunterExtraDamage": 1,
+        "ninjaHunterContributesToFinisherThreshold": false,
+        "sharedTechniqueDamageHelperChangedByThisStage": false
+      },
+      "evidence": { "reference": "evidence/normal_contact_damage_avm1.md" }
+    },
+    {
       "id": "NORMAL_PURSUIT_LIFECYCLE",
       "status": "confirmed",
       "category": "combat",
