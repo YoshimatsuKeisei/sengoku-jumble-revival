@@ -3,7 +3,7 @@ import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, Soldier, Team } from "../types";
 import { applyDamage } from "./combatSystem";
 import { startHitReaction } from "./reactionSystem";
-import { isDamageGuarded } from "./defenseSystem";
+import { isRawNormalContactGuarded } from "./defenseSystem";
 import { applyForcedMovement } from "./movementSystem";
 import { calculateNormalAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
@@ -23,7 +23,7 @@ function resolveSoldierHit(attacker: Soldier, soldiers: Soldier[], currentTime: 
   if (!isValidCombatTarget(attacker, target) || attacker.isDead || attacker.state !== "NORMAL") return;
   if (!isWithinNormalContact(attacker, target)) return;
   faceNormalMeleeDefenderAtAttacker(target, attacker);
-  if (isDamageGuarded(target, "NORMAL_ATTACK", random)) {
+  if (isRawNormalContactGuarded(target, random)) {
     target.combatFeedbackMarker = "S";
     target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
     applyForcedMovement(target, target.x - attacker.x, target.y - attacker.y,
