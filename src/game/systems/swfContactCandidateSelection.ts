@@ -15,6 +15,13 @@ export interface SwfContactCandidateSelection {
   source: "FORCED_TARGET" | "PROPOSED_CELL" | "NONE";
 }
 
+export interface SwfSelectedEnemyContactPair {
+  currentId: string;
+  candidateId: string;
+}
+
+const pendingSelectedEnemyContacts = new WeakMap<readonly Soldier[], SwfSelectedEnemyContactPair[]>();
+
 export function getSwfDynamicContactCellKey(point: SwfContactPoint): string {
   const cell = getSwfBaseCollisionCell(point);
   return `${cell.x},${cell.y}`;
@@ -39,6 +46,42 @@ function isInsideForcedTargetAxisWindow(first: SwfContactPoint, second: SwfConta
     && rawStrictAxisLessThan(b.y - a.y, SWF_FORCED_TARGET_CONTACT_AXIS_UNITS);
 }
 
+function sameUnorderedPair(
+  pair: SwfSelectedEnemyContactPair,
+  first: Soldier,
+  second: Soldier,
+): boolean {
+  return (pair.currentId === first.id && pair.candidateId === second.id)
+    || (pair.currentId === second.id && pair.candidateId === first.id);
+}
+
+function recordSelectedEnemyContact(
+  current: Soldier,
+  candidate: Soldier,
+  soldiers: readonly Soldier[],
+): void {
+  if (candidate.team === current.team) return;
+  const pending = pendingSelectedEnemyContacts.get(soldiers) ?? [];
+  if (!pending.some((pair) => sameUnorderedPair(pair, current, candidate))) {
+    pending.push({ currentId: current.id, candidateId: candidate.id });
+  }
+  pendingSelectedEnemyContacts.set(soldiers, pending);
+}
+
+/**
+ * Returns the selected opposing contact pairs accumulated by the raw candidate
+ * lookup since the previous consume for this exact roster array. BattleScene's
+ * normal frame path calls the selector during movement/contact and consumes the
+ * result once during normal-combat resolution later in the same frame.
+ */
+export function consumeSwfSelectedEnemyContactPairs(
+  soldiers: readonly Soldier[],
+): SwfSelectedEnemyContactPair[] {
+  const pending = pendingSelectedEnemyContacts.get(soldiers) ?? [];
+  pendingSelectedEnemyContacts.delete(soldiers);
+  return pending.map((pair) => ({ ...pair }));
+}
+
 /**
  * Pure reconstruction of the raw d(i) dynamic-contact candidate choice.
  *
@@ -50,6 +93,9 @@ function isInsideForcedTargetAxisWindow(first: SwfContactPoint, second: SwfConta
  * It deliberately performs no movement, attack, damage, k lock, facing, or
  * impulse mutation. Those behaviors must remain separate until independently
  * confirmed against raw AVM1 and real-device behavior.
+ *
+ * As integration metadata only, opposing selections are also queued for the
+ * normal-combat layer. Queuing does not itself mutate either soldier.
  */
 export function selectSwfDynamicContactCandidate(
   current: Soldier,
@@ -62,12 +108,14 @@ export function selectSwfDynamicContactCandidate(
       (candidate) => candidate.id === current.targetId && isActiveDynamicOccupant(candidate),
     ) ?? null;
     if (target && isInsideForcedTargetAxisWindow(current, target)) {
+      recordSelectedEnemyContact(current, target, soldiers);
       return { candidate: target, source: "FORCED_TARGET" };
     }
   }
 
   const occupant = occupancy.get(getSwfDynamicContactCellKey(proposed)) ?? null;
   if (occupant && occupant !== current && isActiveDynamicOccupant(occupant)) {
+    recordSelectedEnemyContact(current, occupant, soldiers);
     return { candidate: occupant, source: "PROPOSED_CELL" };
   }
 

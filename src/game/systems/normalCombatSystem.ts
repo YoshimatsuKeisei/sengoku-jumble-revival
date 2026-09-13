@@ -2,11 +2,15 @@ import { BATTLE_OBSTACLES, STRATEGY_AI_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier } from "../types";
 import { startEngagement } from "./aiSystem";
-import { startSoldierAttack } from "./attackSystem";
+import { canStartSoldierAttack, startSoldierAttack } from "./attackSystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
 import { getRawCloseEngagementPoint } from "./engagementPositioningSystem";
 import { recordNormalCombatResult } from "./meritSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
+import {
+  consumeSwfSelectedEnemyContactPairs,
+  type SwfSelectedEnemyContactPair,
+} from "./swfContactCandidateSelection";
 import { isWithinNormalContact } from "./techniqueCombatProfiles";
 
 export function getCombatWinProbability(combatA: number, combatB: number): number {
@@ -74,22 +78,91 @@ function applyRawClosePairSpacing(first: Soldier, second: Soldier): void {
   if (secondPoint) { second.x = secondPoint.x; second.y = secondPoint.y; }
 }
 
-/** Resolves every unordered normal-contact pair at most once in this update. */
+function pairKey(first: Soldier, second: Soldier): string {
+  return first.id < second.id
+    ? `${first.id}\u0000${second.id}`
+    : `${second.id}\u0000${first.id}`;
+}
+
+function findSelectedPairSoldiers(
+  soldiers: Soldier[],
+  pair: SwfSelectedEnemyContactPair,
+): [Soldier, Soldier] | null {
+  const current = soldiers.find((soldier) => soldier.id === pair.currentId) ?? null;
+  const candidate = soldiers.find((soldier) => soldier.id === pair.candidateId) ?? null;
+  return current && candidate ? [current, candidate] : null;
+}
+
+/**
+ * Staged bridge from the raw f[][] candidate selector to the existing safe
+ * attack state machine. It only takes ownership when both members are already
+ * eligible to start the revival's current normal attack. Otherwise it returns
+ * false without mutating combat state so the legacy all-pairs path remains a
+ * compatibility fallback instead of recreating the previous freeze bug.
+ */
+function tryResolveSelectedRawContact(
+  first: Soldier,
+  second: Soldier,
+  currentTime: number,
+  random: RandomSource,
+): boolean {
+  if (!isContactPair(first, second)) return false;
+  if (!canStartSoldierAttack(first, second, currentTime)
+    || !canStartSoldierAttack(second, first, currentTime)) return false;
+
+  const attacker = resolveCombatContest(first, second, random);
+  const defender = attacker === first ? second : first;
+  if (!startSoldierAttack(attacker, defender, currentTime)) return false;
+
+  // Keep damage/guard/reaction/k/knockback owned by the already approved attack
+  // path. This stage only chooses the attacker for the selected raw contact.
+  applyNormalContactEngagements(attacker, defender, currentTime, random);
+  recordNormalCombatResult(attacker, defender);
+  return true;
+}
+
+function resolveLegacyContactPair(
+  first: Soldier,
+  second: Soldier,
+  currentTime: number,
+  random: RandomSource,
+): void {
+  if (!isContactPair(first, second)) return;
+  const attacker = resolveCombatContest(first, second, random);
+  const defender = attacker === first ? second : first;
+  applyNormalContactEngagements(attacker, defender, currentTime, random);
+  applyRawClosePairSpacing(first, second);
+  if (startSoldierAttack(attacker, defender, currentTime)) recordNormalCombatResult(attacker, defender);
+}
+
+/**
+ * Resolves raw-selected contacts first, then retains the previous all-pairs
+ * resolver only as a staged compatibility fallback. A selected pair suppresses
+ * its legacy duplicate only after the selected attacker actually starts.
+ */
 export function updateNormalCombatContests(
   soldiers: Soldier[],
   currentTime: number,
   random: RandomSource = Math.random,
 ): void {
+  const selectedPairs = consumeSwfSelectedEnemyContactPairs(soldiers);
+  const resolvedSelectedPairs = new Set<string>();
+
+  for (const selectedPair of selectedPairs) {
+    const pair = findSelectedPairSoldiers(soldiers, selectedPair);
+    if (!pair) continue;
+    const [first, second] = pair;
+    if (tryResolveSelectedRawContact(first, second, currentTime, random)) {
+      resolvedSelectedPairs.add(pairKey(first, second));
+    }
+  }
+
   for (let firstIndex = 0; firstIndex < soldiers.length; firstIndex += 1) {
     const first = soldiers[firstIndex];
     for (let secondIndex = firstIndex + 1; secondIndex < soldiers.length; secondIndex += 1) {
       const second = soldiers[secondIndex];
-      if (!isContactPair(first, second)) continue;
-      const attacker = resolveCombatContest(first, second, random);
-      const defender = attacker === first ? second : first;
-      applyNormalContactEngagements(attacker, defender, currentTime, random);
-      applyRawClosePairSpacing(first, second);
-      if (startSoldierAttack(attacker, defender, currentTime)) recordNormalCombatResult(attacker, defender);
+      if (resolvedSelectedPairs.has(pairKey(first, second))) continue;
+      resolveLegacyContactPair(first, second, currentTime, random);
     }
   }
 }
