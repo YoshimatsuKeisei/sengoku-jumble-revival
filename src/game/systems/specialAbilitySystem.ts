@@ -32,14 +32,25 @@ export function createRandomCommonSpecialAbilities(random: RandomSource = Math.r
   return result;
 }
 
-/** Common atck() order: basic, 将力, 忍狩, then 討取 against the resulting HP. */
+/** Shared successful-technique helper retained for non-normal-contact callers. */
 export function calculateSuccessfulAttackDamage(attacker: Soldier, defender: Soldier, basicDamage = 1): number {
   const beforeFinisher = basicDamage
     + Number(hasSpecialAbility(attacker, "MIGHT"))
     + Number(attacker.rareSpecialAbilities.includes("NINJA_HUNTER") && defender.unitType === "NINJA");
   return beforeFinisher + Number(hasSpecialAbility(attacker, "FINISHER") && defender.hp - beforeFinisher < 6);
 }
-export const calculateNormalAttackDamage = calculateSuccessfulAttackDamage;
+
+/** Raw atck(..., 0): base -> s10/MIGHT -> s9/FINISHER HP check -> s34/NINJA_HUNTER. */
+export function calculateNormalAttackDamage(attacker: Soldier, defender: Soldier): number {
+  const beforeFinisher = 1 + Number(hasSpecialAbility(attacker, "MIGHT"));
+  const finisherDamage = Number(
+    hasSpecialAbility(attacker, "FINISHER") && defender.hp - beforeFinisher < 6,
+  );
+  const ninjaHunterDamage = Number(
+    attacker.rareSpecialAbilities.includes("NINJA_HUNTER") && defender.unitType === "NINJA",
+  );
+  return beforeFinisher + finisherDamage + ninjaHunterDamage;
+}
 export function calculateBaseAttackDamage(attacker: Soldier): number { return hasSpecialAbility(attacker, "SIEGE") ? 2 : 1; }
 export function calculateRetreatMoveSpeed(baseSpeed: number, soldier: Soldier): number {
   if (!hasSpecialAbility(soldier, "FLEET_FOOT")) return baseSpeed;
