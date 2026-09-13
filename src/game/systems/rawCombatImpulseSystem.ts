@@ -5,6 +5,8 @@ import {
 } from "../battlefieldLayout";
 import type { BattleObstacle, Soldier } from "../types";
 import { applyForcedMovement } from "./movementSystem";
+import { getSwfDynamicContactCellKey } from "./swfContactCandidateSelection";
+import { getSwfSoldierUpdateOrder } from "./swfSoldierContactSystem";
 import { swfLogicTicksToMs } from "./techniqueCombatProfiles";
 
 export const SWF_RAW_IMPULSE_TICKS = 10;
@@ -22,6 +24,10 @@ interface RawImpulseRuntime {
 }
 
 const rawImpulses = new WeakMap<Soldier, RawImpulseRuntime>();
+
+function isActiveDynamicOccupant(soldier: Soldier): boolean {
+  return !soldier.isDead && soldier.hp > 0 && soldier.state !== "HEALING";
+}
 
 export function getRawFiToward(source: Soldier, target: Soldier): number {
   const from = battlefieldWorldPointToSource(source);
@@ -53,9 +59,28 @@ export function updateRawCombatImpulses(
   currentTime: number,
 ): void {
   const tickMs = swfLogicTicksToMs(1);
-  for (const soldier of soldiers) {
+  const order = getSwfSoldierUpdateOrder(soldiers);
+  const occupancy = new Map<string, Soldier>();
+
+  // Raw d(i) uses the shared 36-unit f[][] table for k movement too. Keep the
+  // current dynamic occupant of every active cell so a combat impulse cannot
+  // slide through another soldier merely because the visual obstacle list is free.
+  for (const soldier of order) {
+    if (!isActiveDynamicOccupant(soldier)) continue;
+    occupancy.set(getSwfDynamicContactCellKey(soldier), soldier);
+  }
+
+  for (const soldier of order) {
     const runtime = rawImpulses.get(soldier);
     if (!runtime) continue;
+    if (!isActiveDynamicOccupant(soldier)) {
+      rawImpulses.delete(soldier);
+      continue;
+    }
+
+    const oldCell = getSwfDynamicContactCellKey(soldier);
+    if (occupancy.get(oldCell) === soldier) occupancy.delete(oldCell);
+
     const elapsedTicks = Math.min(
       SWF_RAW_IMPULSE_TICKS,
       Math.max(0, Math.floor((currentTime - runtime.startedAt) / tickMs + 1e-9)),
@@ -66,10 +91,18 @@ export function updateRawCombatImpulses(
       const sourceDy = SWF_DIRECTION_FY[runtime.fi] * runtime.initialUnits * decay;
       const worldDx = battlefieldSourceDistanceToWorldX(sourceDx);
       const worldDy = battlefieldSourceDistanceToWorldY(sourceDy);
-      const distance = Math.hypot(worldDx, worldDy);
-      if (distance > 0) applyForcedMovement(soldier, worldDx, worldDy, distance, obstacles);
+      const destination = { x: soldier.x + worldDx, y: soldier.y + worldDy };
+
+      // Raw d(i) always consumes k and decays fx/fy, even when f[][] blocks the
+      // proposed cell. Only the position write is skipped.
+      if (!occupancy.has(getSwfDynamicContactCellKey(destination))) {
+        const distance = Math.hypot(worldDx, worldDy);
+        if (distance > 0) applyForcedMovement(soldier, worldDx, worldDy, distance, obstacles);
+      }
       runtime.appliedTicks += 1;
     }
+
+    occupancy.set(getSwfDynamicContactCellKey(soldier), soldier);
     if (runtime.appliedTicks >= SWF_RAW_IMPULSE_TICKS) rawImpulses.delete(soldier);
   }
 }
