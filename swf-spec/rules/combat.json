@@ -116,6 +116,25 @@
       "evidence": { "reference": "evidence/normal_melee_facing_avm1.md" }
     },
     {
+      "id": "NORMAL_CONTACT_DEFENSE",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "atckMode": 0,
+        "ordinaryDefenseRandomScale": 200,
+        "ordinaryDefenseRollConsumedBeforeHoroRoll": true,
+        "guardComparison": "roll <= df",
+        "hitComparison": "roll > df",
+        "horoAbilityCode": "s12",
+        "horoExtraRandomScale": 100,
+        "horoForceGuardWhenPercentStrictlyGreaterThan": 30,
+        "horoBoundary30ForcesGuard": false,
+        "horoForcedDefenseRoll": 0,
+        "rangedDefenseIntegrationChangedByThisStage": false
+      },
+      "evidence": { "reference": "evidence/normal_contact_defense_avm1.md" }
+    },
+    {
       "id": "NORMAL_PURSUIT_LIFECYCLE",
       "status": "confirmed",
       "category": "combat",
