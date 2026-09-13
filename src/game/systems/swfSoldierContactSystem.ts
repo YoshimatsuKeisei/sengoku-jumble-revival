@@ -13,6 +13,7 @@ import {
 } from "./swfContactCandidateSelection";
 import { resolveSwfContactContest } from "./swfContactContestSystem";
 import { markSwfSelectedContactBranchStarted } from "./swfSelectedContactBranchRuntime";
+import { isRawNormalContactKLocked } from "./rawNormalContactKLockSystem";
 
 export const SWF_SOLDIER_CONTACT_AXIS_UNITS = 32;
 export const SWF_SOLDIER_CONTACT_SPACING_UNITS = 24;
@@ -226,6 +227,18 @@ export function resolveSequentialSwfSoldierContacts(
     const proposed = proposal.get(soldier) ?? { x: soldier.x, y: soldier.y };
 
     if (soldier.baseContactLockTicks > 0) {
+      contactImpulseStates.delete(soldier);
+      soldier.x = proposed.x;
+      soldier.y = proposed.y;
+      occupancy.set(cellKey(soldier), soldier);
+      processed.add(soldier);
+      continue;
+    }
+
+    if (isRawNormalContactKLocked(soldier, currentTime)) {
+      // Raw d(i) enters its k>0 branch before all ordinary contact logic.
+      // Preserve the movement already produced by the raw combat impulse, but
+      // do not let the separate physical-contact k=3 branch stack on top of it.
       contactImpulseStates.delete(soldier);
       soldier.x = proposed.x;
       soldier.y = proposed.y;
