@@ -9,6 +9,12 @@ import { recordNormalCombatResult } from "./meritSystem";
 import { hasSpecialAbility } from "./specialAbilitySystem";
 import { isWithinNormalContact } from "./techniqueCombatProfiles";
 
+const sequentialContactResolvedRosters = new WeakSet<Soldier[]>();
+
+export function markSequentialContactCombatResolved(soldiers: Soldier[]): void {
+  sequentialContactResolvedRosters.add(soldiers);
+}
+
 export function getCombatWinProbability(combatA: number, combatB: number): number {
   const valueA = Math.max(0, combatA);
   const valueB = Math.max(0, combatB);
@@ -80,6 +86,9 @@ export function updateNormalCombatContests(
   currentTime: number,
   random: RandomSource = Math.random,
 ): void {
+  // BattleScene's raw sequential f[][] resolver already owns normal contact.
+  // Keep the legacy all-pairs fallback only for isolated callers that do not run that layer.
+  if (sequentialContactResolvedRosters.delete(soldiers)) return;
   for (let firstIndex = 0; firstIndex < soldiers.length; firstIndex += 1) {
     const first = soldiers[firstIndex];
     for (let secondIndex = firstIndex + 1; secondIndex < soldiers.length; secondIndex += 1) {

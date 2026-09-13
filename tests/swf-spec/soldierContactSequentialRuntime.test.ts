@@ -165,7 +165,7 @@ describe("sequential raw SWF soldier contact replay", () => {
     expect(raw.y).toBeCloseTo(500, 6);
   });
 
-  it("keeps enemy attack damage owned by the existing combat path while replaying physical contact", () => {
+  it("routes an eligible selected enemy contact into atck(mode=0) and skips k=3 spacing", () => {
     const protagonist = soldier("player-0", "player", 800, 500);
     const enemy = soldier("enemy-0", "enemy", 820, 500);
     const units = [protagonist, enemy];
@@ -176,9 +176,10 @@ describe("sequential raw SWF soldier contact replay", () => {
     const raw = battlefieldWorldPointToSwf(protagonist);
 
     expect(result.dynamicContacts).toBe(1);
+    expect(result.normalContactAttacks).toBe(1);
     expect(result.spacingCorrections).toBe(0);
-    expect(result.impulsesArmed).toBe(2);
+    expect(result.impulsesArmed).toBe(0);
     expect(raw.x).toBeCloseTo(800, 6);
-    expect(battlefieldWorldPointToSwf(enemy).x).toBeCloseTo(823, 6);
+    expect(battlefieldWorldPointToSwf(enemy).x).toBeCloseTo(820, 6);
   });
 });

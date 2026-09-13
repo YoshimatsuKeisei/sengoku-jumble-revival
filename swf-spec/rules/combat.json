@@ -11,11 +11,17 @@
         "projectileInstanceName": "ya",
         "projectileChildInstancesPerDirectionalPose": 1,
         "projectileChildTimelineFrames": 5,
-        "projectileVisualFrames": [2, 3, 4],
+        "projectileVisualFrames": [
+          2,
+          3,
+          4
+        ],
         "projectileStopFrame": 5,
         "projectileChildLoops": false
       },
-      "evidence": { "reference": "evidence/ranged_cycle.md" }
+      "evidence": {
+        "reference": "evidence/ranged_cycle.md"
+      }
     },
     {
       "id": "RANGED_ACTION_FRAME_LOCK",
@@ -31,7 +37,9 @@
         "actionLockLogicTicks": 10,
         "minimumFreshActivationIntervalTicks": 10
       },
-      "evidence": { "reference": "evidence/ranged_cycle.md" }
+      "evidence": {
+        "reference": "evidence/ranged_cycle.md"
+      }
     },
     {
       "id": "RANGED_GAUGE_BANKING_LIMIT",
@@ -40,7 +48,10 @@
       "expected": {
         "swfGaugeVariable": "kd",
         "swfSkillIncrementVariable": "kp",
-        "rangedCharacterCodes": [2, 6],
+        "rangedCharacterCodes": [
+          2,
+          6
+        ],
         "gaugeStepAddsSkillBeforeThresholdCheck": true,
         "activationThresholdExclusive": 200,
         "normalThresholdConsumption": 200,
@@ -54,7 +65,9 @@
         "arbitraryUnboundedBankingAllowed": false,
         "mustNotInventFixedCap": true
       },
-      "evidence": { "reference": "evidence/ranged_cycle.md" }
+      "evidence": {
+        "reference": "evidence/ranged_cycle.md"
+      }
     },
     {
       "id": "RANGED_TARGET_ACQUISITION",
@@ -63,7 +76,10 @@
       "expected": {
         "normalActivationTargetReferenceVariable": "l",
         "normalActivationRequiresExistingTargetReference": true,
-        "unlatchedLocalGridScanBaseStates": [14, 15],
+        "unlatchedLocalGridScanBaseStates": [
+          14,
+          15
+        ],
         "unlatchedLocalGridScanStrategy": "wait",
         "unlatchedScanPersistsTargetReference": false,
         "gridCellSizeSourceUnits": 36,
@@ -72,7 +88,9 @@
         "scanOriginExpression": "round((_x + x) / 36), round((_y + y) / 36)",
         "genericRadialFallbackWhenTargetReferenceMissing": false
       },
-      "evidence": { "reference": "evidence/ranged_cycle.md" }
+      "evidence": {
+        "reference": "evidence/ranged_cycle.md"
+      }
     },
     {
       "id": "NORMAL_CONTACT_CONTEST",
@@ -92,7 +110,9 @@
         "rushChargeAttackerKeepPriorTargetInclusiveAt70": true,
         "participantsEvaluatedIndependently": true
       },
-      "evidence": { "reference": "evidence/normal_melee_combat.md" }
+      "evidence": {
+        "reference": "evidence/normal_melee_combat.md"
+      }
     },
     {
       "id": "NORMAL_PURSUIT_LIFECYCLE",
@@ -100,8 +120,14 @@
       "category": "combat",
       "expected": {
         "continuousLiveTargetCoordinatesEveryFrame": false,
-        "storedTargetCoordinateVariables": ["tx", "ty"],
-        "storedVelocityVariables": ["x", "y"],
+        "storedTargetCoordinateVariables": [
+          "tx",
+          "ty"
+        ],
+        "storedVelocityVariables": [
+          "x",
+          "y"
+        ],
         "velocityFunction": "vc",
         "velocityExpression": "atan2(ty-_y, tx-_x) then cos/sin * s",
         "ordinaryMovementAddsStoredVelocityEveryFrame": true,
@@ -121,9 +147,46 @@
         "deathReleaseFunction": "led",
         "deathReleaseRestoresStateExpression": "p = pp",
         "retreatRemainsPursuableBeforeEntryCommit": true,
-        "retreatReleaseStates": [93, 94]
+        "retreatReleaseStates": [
+          93,
+          94
+        ]
       },
-      "evidence": { "reference": "evidence/normal_melee_ai_reaudit_avm1.md" }
+      "evidence": {
+        "reference": "evidence/normal_melee_ai_reaudit_avm1.md"
+      }
+    },
+    {
+      "id": "NORMAL_CONTACT_ATTACK_TIMING",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "candidateSource": "sequential proposed f[][] dynamic occupant or current-target override",
+        "independentAllPairsRadialPass": false,
+        "requiresBothMovedSinceBxBy": true,
+        "bxByInitialValue": 0,
+        "atckMode": 0,
+        "resolutionIsSynchronousWithContactContest": true,
+        "successfulAttackSkipsPhysicalK3Branch": true,
+        "defenseRandomScale": 200,
+        "guardIncludesEquality": true,
+        "horoAppliesToNormalContact": true,
+        "damageOrder": [
+          "basic",
+          "MIGHT",
+          "FINISHER",
+          "NINJA_HUNTER"
+        ],
+        "kAssignedToDefender": 10,
+        "kAssignedToAttacker": 10,
+        "normalDefenderInitialImpulseUnits": 10,
+        "ironWallGuardDefenderInitialImpulseUnits": 5,
+        "ironWallGuardAttackerOppositeInitialImpulseUnits": 10,
+        "fatalCleanupWaitsForKResponse": true
+      },
+      "evidence": {
+        "reference": "evidence/normal_contact_attack_sequential_avm1.md"
+      }
     }
   ]
 }

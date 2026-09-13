@@ -3,11 +3,17 @@ import {
   battlefieldSwfPointToWorld,
   battlefieldWorldPointToSwf,
 } from "../battlefieldLayout";
+import type { RandomSource } from "../stats/soldierStats";
 import type { Soldier } from "../types";
 import {
   getSwfBaseCollisionCell,
   getSwfStaticCollisionCodeAtWorld,
 } from "./swfBaseCollisionGrid";
+import {
+  isRawNormalContactKLocked,
+  resolveRawNormalContactAttack,
+} from "./normalContactAttackSystem";
+import { markSequentialContactCombatResolved } from "./normalCombatSystem";
 
 export const SWF_SOLDIER_CONTACT_AXIS_UNITS = 32;
 export const SWF_SOLDIER_CONTACT_SPACING_UNITS = 24;
@@ -32,6 +38,7 @@ interface ContactImpulseState {
 }
 
 const contactImpulseStates = new WeakMap<Soldier, ContactImpulseState>();
+const lastContactAttackPositions = new WeakMap<Soldier, Position>();
 
 export interface SwfSoldierContactResolution {
   dynamicContacts: number;
@@ -39,6 +46,7 @@ export interface SwfSoldierContactResolution {
   forcedTargetContacts: number;
   impulsesArmed: number;
   impulseTicksApplied: number;
+  normalContactAttacks: number;
 }
 
 function rosterIndex(id: string, prefix: string): number | null {
@@ -108,6 +116,51 @@ function cellIsFree(point: Position, occupancy: ReadonlyMap<string, Soldier>): b
 
 function positionsDiffer(first: Position, second: Position): boolean {
   return first.x !== second.x || first.y !== second.y;
+}
+
+function rawMovedSinceLastContactAttack(soldier: Soldier): boolean {
+  const current = battlefieldWorldPointToSwf(soldier);
+  const previous = lastContactAttackPositions.get(soldier) ?? { x: 0, y: 0 };
+  return current.x !== previous.x || current.y !== previous.y;
+}
+
+function rememberRawContactAttackPosition(soldier: Soldier): void {
+  const raw = battlefieldWorldPointToSwf(soldier);
+  lastContactAttackPositions.set(soldier, { x: raw.x, y: raw.y });
+}
+
+function canResolveRawNormalContactAttack(
+  current: Soldier,
+  candidate: Soldier,
+  currentTime: number,
+): boolean {
+  return current.team !== candidate.team
+    && current.activeSpecialTechnique === null
+    && candidate.activeSpecialTechnique === null
+    && current.reactionState === "NONE"
+    // Raw fr._currentframe != 6 is the candidate hit/reaction visual gate.
+    && candidate.reactionState === "NONE"
+    && candidate.state !== "HEALING"
+    && currentTime >= current.abilityActionLockUntil
+    && rawMovedSinceLastContactAttack(current)
+    && rawMovedSinceLastContactAttack(candidate);
+}
+
+function resolveRawContactContest(
+  current: Soldier,
+  candidate: Soldier,
+  random: RandomSource,
+): { attacker: Soldier; defender: Soldier } {
+  const currentCombat = Math.max(0, current.stats.combat);
+  const candidateCombat = Math.max(0, candidate.stats.combat);
+  const currentPower = currentCombat ** 3;
+  const candidatePower = candidateCombat ** 3;
+  const sum = currentPower + candidatePower;
+  // AVM1 branches to the current soldier when random*(pwA+pwB) <= pwA.
+  const currentWins = sum === 0 || random() * sum <= currentPower;
+  return currentWins
+    ? { attacker: current, defender: candidate }
+    : { attacker: candidate, defender: current };
 }
 
 function rawContactDirectionIndex(angle: number): number {
@@ -183,13 +236,15 @@ function applyContactImpulseTick(
  * the unit's own s, one 24-Hz logic tick at a time, and 0.7 decay after each
  * attempted move. While k is active, ordinary movement is suppressed.
  *
- * Enemy attack resolution itself remains owned by the existing combat system;
- * this layer only reproduces the physical grid/contact response.
+ * Opposing-team normal attacks are resolved inside this same selected-contact
+ * branch, matching raw d(): a successful attack gate skips the 24-unit/k=3
+ * physical branch for that contact event.
  */
 export function resolveSequentialSwfSoldierContacts(
   soldiers: Soldier[],
   movementStartPositions: ReadonlyMap<string, Position>,
   currentTime = performance.now(),
+  random: RandomSource = Math.random,
 ): SwfSoldierContactResolution {
   const result: SwfSoldierContactResolution = {
     dynamicContacts: 0,
@@ -197,7 +252,9 @@ export function resolveSequentialSwfSoldierContacts(
     forcedTargetContacts: 0,
     impulsesArmed: 0,
     impulseTicksApplied: 0,
+    normalContactAttacks: 0,
   };
+  markSequentialContactCombatResolved(soldiers);
   const order = getSwfSoldierUpdateOrder(soldiers);
   const proposal = new Map<Soldier, Position>();
   const occupancy = new Map<string, Soldier>();
@@ -230,6 +287,14 @@ export function resolveSequentialSwfSoldierContacts(
     if (occupancy.get(oldKey) === soldier) occupancy.delete(oldKey);
 
     const proposed = proposal.get(soldier) ?? { x: soldier.x, y: soldier.y };
+
+    // A mode-0 atck from an earlier raw-order soldier may have assigned this
+    // unit k=10 before its own d() turn. Suppress its precomputed ordinary proposal.
+    if (isRawNormalContactKLocked(soldier, currentTime)) {
+      occupancy.set(cellKey(soldier), soldier);
+      processed.add(soldier);
+      continue;
+    }
 
     // A 996/997 base bounce uses the same raw k slot with a stronger k=10
     // response, so it supersedes a soldier-contact impulse.
@@ -278,11 +343,24 @@ export function resolveSequentialSwfSoldierContacts(
     }
 
     result.dynamicContacts += 1;
+
+    if (canResolveRawNormalContactAttack(soldier, candidate, currentTime)) {
+      const { attacker, defender } = resolveRawContactContest(soldier, candidate, random);
+      const attack = resolveRawNormalContactAttack(attacker, defender, currentTime, random);
+      rememberRawContactAttackPosition(soldier);
+      rememberRawContactAttackPosition(candidate);
+      if (attack.resolved) result.normalContactAttacks += 1;
+      // Raw d() jumps past the 24-unit/k=3 physical branch after atck(...,0).
+      occupancy.set(cellKey(soldier), soldier);
+      processed.add(soldier);
+      continue;
+    }
+
     const currentRaw = battlefieldWorldPointToSwf(soldier);
     const candidateRaw = battlefieldWorldPointToSwf(candidate);
     const angle = Math.atan2(candidateRaw.y - currentRaw.y, candidateRaw.x - currentRaw.x);
 
-    if (candidate.team === soldier.team && candidate.baseContactLockTicks <= 0) {
+    if (candidate.baseContactLockTicks <= 0) {
       const destination = rawSpacingDestination(soldier, candidate);
       if (destination && cellIsFree(destination, occupancy)) {
         soldier.x = destination.x;
