@@ -1,42 +1,84 @@
-import { DEFENSE_CONFIG, REACTION_CONFIG, SPECIAL_ABILITY_CONFIG } from "../config";
+import { DEFENSE_CONFIG } from "../config";
 import type { RandomSource } from "../stats/soldierStats";
 import type { BattleBase, Soldier, Team } from "../types";
 import { applyDamage } from "./combatSystem";
 import { startHitReaction } from "./reactionSystem";
 import { isRawNormalContactGuarded } from "./defenseSystem";
-import { applyForcedMovement } from "./movementSystem";
 import { calculateNormalAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
-import { getRawFiToward, SWF_DIRECTION_FX, SWF_DIRECTION_FY } from "./rawCombatImpulseSystem";
+import {
+  getRawFiToward,
+  getRawOppositeFi,
+  startRawCombatImpulse,
+  SWF_DIRECTION_FX,
+  SWF_DIRECTION_FY,
+} from "./rawCombatImpulseSystem";
 export { cancelAttack, resetAttackRuntime, canStartSoldierAttack, startSoldierAttack } from "./attackRuntime";
 import { cancelAttack, resetAttackRuntime } from "./attackRuntime";
-import { isWithinNormalContact } from "./techniqueCombatProfiles";
+import { isWithinNormalContact, swfLogicTicksToMs } from "./techniqueCombatProfiles";
 
-function faceNormalMeleeDefenderAtAttacker(target: Soldier, attacker: Soldier): void {
-  const fi = getRawFiToward(target, attacker);
-  target.facingX = SWF_DIRECTION_FX[fi];
-  target.facingY = SWF_DIRECTION_FY[fi];
+export const SWF_NORMAL_CONTACT_K_TICKS = 10;
+export const SWF_NORMAL_CONTACT_IMPULSE_UNITS = 10;
+export const SWF_IRON_WALL_GUARD_IMPULSE_UNITS = 5;
+
+function rawNormalContactResumeAt(currentTime: number): number {
+  // atck() sets k=10 after the current d() has already passed its k==0 gate.
+  // The next ten d() calls consume k=10..1, and ordinary logic resumes on call 11.
+  return currentTime + swfLogicTicksToMs(SWF_NORMAL_CONTACT_K_TICKS + 1);
+}
+
+function applyRawNormalContactKLock(soldier: Soldier, currentTime: number): void {
+  soldier.abilityActionLockUntil = Math.max(soldier.abilityActionLockUntil, rawNormalContactResumeAt(currentTime));
+}
+
+function faceNormalMeleePair(target: Soldier, attacker: Soldier): number {
+  const defenderFacingFi = getRawFiToward(target, attacker);
+  const attackerFacingFi = getRawOppositeFi(defenderFacingFi);
+  target.facingX = SWF_DIRECTION_FX[defenderFacingFi];
+  target.facingY = SWF_DIRECTION_FY[defenderFacingFi];
+  attacker.facingX = SWF_DIRECTION_FX[attackerFacingFi];
+  attacker.facingY = SWF_DIRECTION_FY[attackerFacingFi];
+  return defenderFacingFi;
 }
 
 function resolveSoldierHit(attacker: Soldier, soldiers: Soldier[], currentTime: number, random: RandomSource): void {
   const target = soldiers.find((candidate) => candidate.id === attacker.attackTargetId);
   if (!isValidCombatTarget(attacker, target) || attacker.isDead || attacker.state !== "NORMAL") return;
   if (!isWithinNormalContact(attacker, target)) return;
-  faceNormalMeleeDefenderAtAttacker(target, attacker);
+
+  const defenderFacingFi = faceNormalMeleePair(target, attacker);
+  const defenderOutwardFi = getRawOppositeFi(defenderFacingFi);
+  applyRawNormalContactKLock(attacker, currentTime);
+  applyRawNormalContactKLock(target, currentTime);
+
   if (isRawNormalContactGuarded(target, random)) {
     target.combatFeedbackMarker = "S";
     target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
-    applyForcedMovement(target, target.x - attacker.x, target.y - attacker.y,
-      hasSpecialAbility(target, "IRON_WALL")
-        ? REACTION_CONFIG.ironWallGuardKnockbackDistance
-        : SPECIAL_ABILITY_CONFIG.guardKnockbackDistance);
+    const ironWall = hasSpecialAbility(target, "IRON_WALL");
+    startRawCombatImpulse(
+      target,
+      defenderOutwardFi,
+      ironWall ? SWF_IRON_WALL_GUARD_IMPULSE_UNITS : SWF_NORMAL_CONTACT_IMPULSE_UNITS,
+      currentTime,
+    );
+    if (ironWall) {
+      // Defender-facing fi points from defender -> attacker, so it is also the
+      // attacker's outward direction away from the defender.
+      startRawCombatImpulse(attacker, defenderFacingFi, SWF_NORMAL_CONTACT_IMPULSE_UNITS, currentTime);
+    }
     return;
   }
+
   const damage = calculateNormalAttackDamage(attacker, target);
   applyDamage(target, damage, attacker);
   target.combatFeedbackMarker = "H";
   target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
-  if (!target.isDead) startHitReaction(target, attacker, currentTime, undefined, random, "NORMAL_ATTACK");
+  startRawCombatImpulse(target, defenderOutwardFi, SWF_NORMAL_CONTACT_IMPULSE_UNITS, currentTime);
+  if (!target.isDead) {
+    // Raw atck() owns the decaying fx/fy displacement. Keep HIT_STUN timing but
+    // suppress the revival's older proportional linear knockback.
+    startHitReaction(target, attacker, currentTime, 0, random, "NORMAL_ATTACK");
+  }
 }
 
 export function updateAttackStates(
