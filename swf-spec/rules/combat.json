@@ -80,11 +80,16 @@
       "category": "combat",
       "expected": {
         "contactAxisBoundsExclusiveSourceUnits": 32,
+        "dynamicCandidateCountPerCurrentUpdate": 1,
+        "dynamicCandidateSelectionOrder": ["currentTargetInsideStrict20AxisWindow", "proposed36UnitGridCellOccupant"],
+        "contestScope": "selectedDynamicCandidateOnly",
         "combatRawVariable": "pw2",
         "combatWeightVariable": "pw",
         "combatWeightExpression": "pow(rawCombat, 3)",
         "attackSideProbabilityExpression": "pwA / (pwA + pwB)",
+        "selectedPairAttackerCount": 1,
         "atckMode": 0,
+        "selectedAttackBranchSkipsPhysicalContactBranch": true,
         "targetReferenceVariable": "l",
         "engagementStateExpression": "pp + 20",
         "defenderNormalContactHasModeZeroRetargetFallback": true,
@@ -92,7 +97,7 @@
         "rushChargeAttackerKeepPriorTargetInclusiveAt70": true,
         "participantsEvaluatedIndependently": true
       },
-      "evidence": { "reference": "evidence/normal_melee_combat.md" }
+      "evidence": { "reference": "evidence/normal_contact_attacker_selection_avm1.md" }
     },
     {
       "id": "NORMAL_MELEE_FACING",
