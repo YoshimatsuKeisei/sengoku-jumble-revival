@@ -78,8 +78,10 @@ export function updateRawCombatImpulses(
       continue;
     }
 
-    const oldCell = getSwfDynamicContactCellKey(soldier);
-    if (occupancy.get(oldCell) === soldier) occupancy.delete(oldCell);
+    // Raw d(i) clears f[round(_x/36)][round(_y/36)] whenever the stored code is
+    // dynamic (<900); it does not verify that the stored slot still equals i.
+    // This matters when two close combatants temporarily quantize to one cell.
+    occupancy.delete(getSwfDynamicContactCellKey(soldier));
 
     const elapsedTicks = Math.min(
       SWF_RAW_IMPULSE_TICKS,
