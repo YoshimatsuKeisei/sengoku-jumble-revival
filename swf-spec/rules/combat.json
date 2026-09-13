@@ -95,6 +95,22 @@
       "evidence": { "reference": "evidence/normal_melee_combat.md" }
     },
     {
+      "id": "NORMAL_MELEE_FACING",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "atckMode": 0,
+        "defenderFacesAttackerBeforeDefenseResolution": true,
+        "appliesOnHit": true,
+        "appliesOnGuard": true,
+        "directionCount": 8,
+        "directionExpression": "round(atan2(attackerY-defenderY, attackerX-defenderX) / 0.75) + 5, wrapped 1..8",
+        "continuousAngleFacing": false,
+        "attackerUsesOppositeDirectionAfterResolutionWhileDefenderAlive": true
+      },
+      "evidence": { "reference": "evidence/normal_melee_facing_avm1.md" }
+    },
+    {
       "id": "NORMAL_PURSUIT_LIFECYCLE",
       "status": "confirmed",
       "category": "combat",
