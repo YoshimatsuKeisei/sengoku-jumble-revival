@@ -139,7 +139,7 @@ describe("raw sequential normal-contact attack integration", () => {
     expect(enemy.hp).toBe(afterFirst);
   });
 
-  it("requires both units to differ from their stored bx/by positions before another mode-0 contact attack", () => {
+  it("rejects a repeat mode-0 attack when only one unit differs from stored bx/by", () => {
     const player = unit("player-0", "player", 800, 500);
     const enemy = unit("enemy-0", "enemy", 820, 500);
     player.stats.combat = 100;
@@ -152,9 +152,6 @@ describe("raw sequential normal-contact attack integration", () => {
     const afterFirst = enemy.hp;
 
     updateReactions(roster, [], 1_000 + swfLogicTicksToMs(10), swfLogicTicksToMs(10));
-
-    // Only the candidate differs from stored bx/by: target override selects the pair,
-    // but the attack gate must fail because player/m200 is still at its stored X/Y.
     propose(player, 800, 500);
     propose(enemy, 819, 500);
     frameStart = starts(roster);
@@ -167,16 +164,28 @@ describe("raw sequential normal-contact attack integration", () => {
     expect(oneMoved.dynamicContacts).toBeGreaterThan(0);
     expect(oneMoved.normalContactAttacks).toBe(0);
     expect(enemy.hp).toBe(afterFirst);
+  });
 
-    // Now both differ from the attack-time bx/by snapshot; the same target override
-    // is eligible for a fresh cubic contest and synchronous atck(mode=0).
+  it("allows another mode-0 attack after k response once both units differ from stored bx/by", () => {
+    const player = unit("player-0", "player", 800, 500);
+    const enemy = unit("enemy-0", "enemy", 820, 500);
+    player.stats.combat = 100;
+    enemy.stats.combat = 1;
+    enemy.stats.defense = 0;
+    const roster = [player, enemy];
+    let frameStart = starts(roster);
+    propose(player, 814, 500);
+    resolveSequentialSwfSoldierContacts(roster, frameStart, 1_000, sequence(0, 1));
+    const afterFirst = enemy.hp;
+
+    updateReactions(roster, [], 1_000 + swfLogicTicksToMs(10), swfLogicTicksToMs(10));
     propose(player, 801, 500);
     propose(enemy, 819, 500);
     frameStart = starts(roster);
     const bothMoved = resolveSequentialSwfSoldierContacts(
       roster,
       frameStart,
-      1_000 + swfLogicTicksToMs(12),
+      1_000 + swfLogicTicksToMs(11),
       sequence(0, 1),
     );
     expect(bothMoved.normalContactAttacks).toBe(1);
