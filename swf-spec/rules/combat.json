@@ -157,6 +157,33 @@
       "evidence": { "reference": "evidence/normal_contact_damage_avm1.md" }
     },
     {
+      "id": "NORMAL_CONTACT_K_LOCK_AND_IMPULSE",
+      "status": "confirmed",
+      "category": "combat",
+      "expected": {
+        "atckMode": 0,
+        "lockVariable": "k",
+        "lockValueAssignedToBothParticipants": 10,
+        "subsequentLockedLogicCalls": 10,
+        "ordinaryLogicResumesOnFollowingCall": true,
+        "defenderFacesAttacker": true,
+        "defenderPhysicalDirection": "opposite defender facing fi",
+        "ordinaryDefenderInitialImpulseSourceUnits": 10,
+        "impulseDecay": 0.7,
+        "dynamicImpulseGridCellSizeSourceUnits": 36,
+        "currentDynamicCellClearedBeforeLockedMove": true,
+        "lockedMoveWritesPositionOnlyWhenProposedFCellIsZero": true,
+        "blockedLockedTickStillConsumesK": true,
+        "blockedLockedTickStillDecaysImpulse": true,
+        "ironWallAbilityCode": "s11",
+        "ironWallDefenderInitialImpulseSourceUnits": 5,
+        "ironWallAttackerRecoilSourceUnits": 10,
+        "attackerFacesOppositeDefenderFacingFi": true,
+        "legacyLinearNormalMeleeKnockbackRetained": false
+      },
+      "evidence": { "reference": "evidence/normal_contact_impulse_avm1.md" }
+    },
+    {
       "id": "NORMAL_PURSUIT_LIFECYCLE",
       "status": "confirmed",
       "category": "combat",
