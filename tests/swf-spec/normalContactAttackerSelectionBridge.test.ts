@@ -24,9 +24,6 @@ function selectedPairFixture(): {
   soldiers: Soldier[];
   movementStart: Map<string, { x: number; y: number }>;
 } {
-  // candidate is processed first and remains in raw cell round(498/36)=14.
-  // current starts in cell 13 but proposes source x=490 into cell 14, so the
-  // raw f[][] lookup selects exactly candidate without relying on proximity.
   const candidate = unit("candidate", "enemy", 498);
   const current = unit("current", "player", 490);
   const soldiers = [candidate, current];
@@ -54,44 +51,45 @@ describe("selected raw contact -> attacker contest bridge", () => {
     expect(getCombatWinProbability(0, 0)).toBe(0.5);
   });
 
-  it("lets the raw-selected current soldier win the cubic contest and starts only that member of the pair", () => {
+  it("starts the selected current soldier during contact replay and does not arm k=3", () => {
     const { current, candidate, soldiers, movementStart } = selectedPairFixture();
     current.stats.combat = 75;
     candidate.stats.combat = 25;
 
-    resolveSequentialSwfSoldierContacts(soldiers, movementStart, 0);
-    updateNormalCombatContests(soldiers, 1_000, () => 0.95);
+    const contact = resolveSequentialSwfSoldierContacts(soldiers, movementStart, 1_000, () => 0.95);
+    updateNormalCombatContests(soldiers, 1_000, () => 0);
 
+    expect(contact.impulsesArmed).toBe(0);
     expect(current.combatActionState).toBe("ATTACK_WINDUP");
     expect(current.attackTargetId).toBe(candidate.id);
     expect(candidate.combatActionState).toBe("IDLE");
   });
 
-  it("lets the selected candidate win when the same cubic draw falls above the current soldier's share", () => {
+  it("lets the selected candidate win without re-entering the physical branch", () => {
     const { current, candidate, soldiers, movementStart } = selectedPairFixture();
     current.stats.combat = 75;
     candidate.stats.combat = 25;
 
-    resolveSequentialSwfSoldierContacts(soldiers, movementStart, 0);
-    updateNormalCombatContests(soldiers, 1_000, () => 0.99);
+    const contact = resolveSequentialSwfSoldierContacts(soldiers, movementStart, 1_000, () => 0.99);
+    updateNormalCombatContests(soldiers, 1_000, () => 0);
 
+    expect(contact.impulsesArmed).toBe(0);
     expect(candidate.combatActionState).toBe("ATTACK_WINDUP");
     expect(candidate.attackTargetId).toBe(current.id);
     expect(current.combatActionState).toBe("IDLE");
   });
 
-  it("keeps the legacy combat path available when the selected bridge cannot safely start both sides", () => {
+  it("keeps k=3 and the legacy combat fallback when the selected branch cannot safely start", () => {
     const { current, candidate, soldiers, movementStart } = selectedPairFixture();
     current.stats.combat = 0;
     candidate.stats.combat = 100;
     current.combatActionState = "ATTACK_RECOVERY";
     current.attackRecoveryEndsAt = 10_000;
 
-    resolveSequentialSwfSoldierContacts(soldiers, movementStart, 0);
+    const contact = resolveSequentialSwfSoldierContacts(soldiers, movementStart, 1_000, () => 0);
     updateNormalCombatContests(soldiers, 1_000, () => 0);
 
-    // The selected bridge declines without globally suppressing combat. The
-    // previous resolver can still start the eligible candidate instead.
+    expect(contact.impulsesArmed).toBeGreaterThan(0);
     expect(candidate.combatActionState).toBe("ATTACK_WINDUP");
     expect(candidate.attackTargetId).toBe(current.id);
   });
