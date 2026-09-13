@@ -21,7 +21,7 @@ This file tracks the safe re-introduction of raw-SWF normal melee/contact behavi
 | Selected-pair attacker contest | `333e5dbf...` | device approved | cubic `pw^3` contest for one selected enemy pair |
 | Attack-branch physical skip | `cb10b78a...` | device approved | once selected attack actually starts, do not also arm the k=3 physical-contact branch |
 | Mode-0 defense / HORO ordering | `98aaae2e...` | device approved | `random*200` first, HORO extra `random*100`, strict `>30` forces defense roll 0 |
-| Mode-0 damage ordering | current stage | CI/device pending | base -> MIGHT -> FINISHER threshold -> NINJA_HUNTER |
+| Mode-0 damage ordering | current stage | CI green / device pending | base -> MIGHT -> FINISHER threshold -> NINJA_HUNTER |
 
 ## Still intentionally retained as compatibility safety nets
 
@@ -37,7 +37,7 @@ Do not remove those safety nets in the same commit as another combat semantic ch
 
 The order below is the intended safe sequence, not a license to merge several stages at once.
 
-1. **Finish mode-0 damage order** — current stage.
+1. **Finish mode-0 damage order** — current stage; CI green, device validation pending.
 2. **Exact raw attack-entry gate** — reproduce the `d(i)` eligibility checks that are not represented exactly by `canStartSoldierAttack()`, including the recovered `bx/by`, `sp`, `p`, and frame-state conditions. Keep compatibility fallback until device validated.
 3. **Synchronous selected `atck(...,0)` handoff** — remove revival WINDUP only for a raw-selected contact event after all prerequisites are isolated. Do not globally suppress legacy combat merely because a candidate was selected.
 4. **Raw k=10 lock for both participants** — ten subsequent `d()` updates consume k=10..1; ordinary logic resumes after that. Preserve the already-confirmed delayed fatal cleanup.
