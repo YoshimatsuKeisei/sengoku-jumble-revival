@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  COMBAT_TIMING_CONFIG,
-  REACTION_CONFIG,
-} from "../config";
+import { COMBAT_TIMING_CONFIG } from "../config";
 import { battlefieldSourcePointToWorld, battlefieldWorldPointToSource } from "../battlefieldLayout";
 import { createSoldier } from "../entities/Soldier";
 import type { SoldierBaseStats } from "../types";
@@ -73,7 +70,9 @@ describe("Phase 3H guard", () => {
       expect(target.combatFeedbackMarker).toBe(marker);
       expect(target.hp).toBe(target.maxHp - damage);
       expect(target.reactionState).toBe(damage ? "HIT_STUN" : "NONE");
-      expect(target.knockbackRemainingDistance).toBe(damage ? REACTION_CONFIG.knockbackDistance : 0);
+      // Raw normal melee displacement is owned by rawCombatImpulseSystem;
+      // HIT_STUN now keeps only the hit timing/pose for this path.
+      expect(target.knockbackRemainingDistance).toBe(0);
     }
   });
 
