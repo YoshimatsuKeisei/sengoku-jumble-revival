@@ -7,6 +7,31 @@ export function getNormalGuardProbability(defense: number): number {
   return Math.max(0, Math.min(1, defense / DEFENSE_CONFIG.randomScale));
 }
 
+/**
+ * Raw mode-0 atck() defense gate for ordinary melee contact.
+ *
+ * AVM1 order is important:
+ * 1. consume the ordinary Math.random()*200 defense roll first;
+ * 2. when defender has s12/HORO, consume a second Math.random()*100 roll;
+ * 3. HORO forces the defense roll to 0 only when that second roll is strictly >30;
+ * 4. otherwise compare the original roll with df using <= for guard.
+ *
+ * Keep this separate from the general ranged/special helper so integrating raw
+ * normal-contact RNG ordering cannot perturb already-approved ranged behavior.
+ */
+export function isRawNormalContactGuarded(
+  defender: Soldier,
+  random: RandomSource = Math.random,
+): boolean {
+  const defenseRoll = random() * DEFENSE_CONFIG.randomScale;
+  if (hasSpecialAbility(defender, "HORO")) {
+    const horoRollPercent = random() * 100;
+    if (horoRollPercent > 30) return true;
+  }
+  const defense = getEffectiveDefenseForAttack(defender, "NORMAL_ATTACK");
+  return defenseRoll <= defense;
+}
+
 export function isDamageGuarded(
   defender: Pick<Soldier, "stats">,
   damageKind: AttackKind,
