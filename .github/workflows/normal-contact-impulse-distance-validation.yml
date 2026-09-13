@@ -1,0 +1,44 @@
+name: Validate normal contact impulse distance fix
+
+on:
+  push:
+    branches:
+      - debug/current-20260907-normal-contact-impulse-distance-fix-stage
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Vite production bundle
+        run: npx vite build
+      - name: Focused melee impulse and k-lock regressions
+        run: >-
+          npx vitest run
+          tests/swf-spec/normalContactKLockContactSuppression.test.ts
+          tests/swf-spec/normalContactImpulseConformance.test.ts
+          tests/swf-spec/normalMeleeFacingConformance.test.ts
+          tests/swf-spec/soldierContactSequentialRuntime.test.ts
+          tests/swf-spec/soldierContactCrowdRegression.test.ts
+          tests/swf-spec/rangedTargetImpulseConformance.test.ts
+          --reporter=verbose
+      - name: Full SWF conformance suite
+        run: npx vitest run tests/swf-spec --reporter=verbose
+      - name: Stable movement and base regressions
+        run: >-
+          npx vitest run
+          src/game/systems/baseContactSystem.test.ts
+          src/game/systems/swfIntegrationPreservation.test.ts
+          src/game/systems/phase3eBattlefield.test.ts
+          src/game/systems/phase3fFidelity.test.ts
+          src/game/systems/phase3gFixes.test.ts
+          src/game/systems/phase3hIntegration.test.ts
+          src/game/systems/phase3jPlayerControl.test.ts
+          --reporter=verbose
