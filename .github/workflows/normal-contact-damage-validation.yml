@@ -26,15 +26,14 @@ jobs:
       - run: npm ci
       - name: Vite production bundle
         run: npx vite build
-      - name: Normal-contact damage and shared-helper regressions
+      - name: Normal-contact damage and prior contact regressions
         run: >-
           npx vitest run
           tests/swf-spec/normalContactDamageConformance.test.ts
           tests/swf-spec/normalContactDefenseConformance.test.ts
           tests/swf-spec/normalMeleeFacingConformance.test.ts
           tests/swf-spec/normalContactAttackerSelectionBridge.test.ts
-          src/game/systems/specialAbilitySystem.test.ts
-          src/game/systems/swfSpecialAbilities.test.ts
+          tests/swf-spec/rangedTargetImpulseConformance.test.ts
           --reporter=verbose
       - name: Full SWF conformance suite
         run: npx vitest run tests/swf-spec --reporter=verbose
