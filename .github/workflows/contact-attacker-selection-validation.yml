@@ -1,0 +1,50 @@
+name: Validate selected contact attacker
+
+on:
+  push:
+    branches:
+      - debug/current-20260907-contact-attacker-selection-stage
+    paths:
+      - "src/game/systems/swfContactCandidateSelection.ts"
+      - "src/game/systems/normalCombatSystem.ts"
+      - "swf-spec/rules/combat.json"
+      - "swf-spec/evidence/normal_contact_attacker_selection_avm1.md"
+      - "tests/swf-spec/normalContactAttackerSelectionBridge.test.ts"
+      - ".github/workflows/contact-attacker-selection-validation.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Vite production bundle
+        run: npx vite build
+      - name: Selected attacker bridge and contact regressions
+        run: >-
+          npx vitest run
+          tests/swf-spec/normalContactAttackerSelectionBridge.test.ts
+          tests/swf-spec/swfContactCandidateSelection.test.ts
+          tests/swf-spec/soldierContactSequentialRuntime.test.ts
+          tests/swf-spec/soldierContactCrowdRegression.test.ts
+          tests/swf-spec/normalMeleeFacingConformance.test.ts
+          --reporter=verbose
+      - name: Full SWF conformance suite
+        run: npx vitest run tests/swf-spec --reporter=verbose
+      - name: Stable movement and base regressions
+        run: >-
+          npx vitest run
+          src/game/systems/baseContactSystem.test.ts
+          src/game/systems/swfIntegrationPreservation.test.ts
+          src/game/systems/phase3eBattlefield.test.ts
+          src/game/systems/phase3fFidelity.test.ts
+          src/game/systems/phase3gFixes.test.ts
+          src/game/systems/phase3hIntegration.test.ts
+          src/game/systems/phase3jPlayerControl.test.ts
+          --reporter=verbose
