@@ -7,6 +7,7 @@ import { isDamageGuarded } from "./defenseSystem";
 import { applyForcedMovement } from "./movementSystem";
 import { calculateNormalAttackDamage, hasSpecialAbility } from "./specialAbilitySystem";
 import { isValidCombatTarget } from "./combatTargetSystem";
+import { getRawFiToward, SWF_DIRECTION_FX, SWF_DIRECTION_FY } from "./rawCombatImpulseSystem";
 export { cancelAttack, resetAttackRuntime } from "./attackRuntime";
 import { cancelAttack, resetAttackRuntime } from "./attackRuntime";
 import { isWithinNormalContact } from "./techniqueCombatProfiles";
@@ -44,10 +45,19 @@ export function startSoldierAttack(attacker: Soldier, target: Soldier, currentTi
   return true;
 }
 
+function faceNormalMeleeDefenderAtAttacker(target: Soldier, attacker: Soldier): void {
+  const fi = getRawFiToward(target, attacker);
+  target.facingX = SWF_DIRECTION_FX[fi];
+  target.facingY = SWF_DIRECTION_FY[fi];
+}
+
 function resolveSoldierHit(attacker: Soldier, soldiers: Soldier[], currentTime: number, random: RandomSource): void {
   const target = soldiers.find((candidate) => candidate.id === attacker.attackTargetId);
   if (!isValidCombatTarget(attacker, target) || attacker.isDead || attacker.state !== "NORMAL") return;
   if (!isWithinNormalContact(attacker, target)) return;
+  // Raw atck(sa, sb, 0) quantizes sa.fi toward sb before the ordinary defense
+  // comparison. Preserve that ordering so both H and S outcomes face the attacker.
+  faceNormalMeleeDefenderAtAttacker(target, attacker);
   if (isDamageGuarded(target, "NORMAL_ATTACK", random)) {
     target.combatFeedbackMarker = "S";
     target.combatFeedbackUntil = currentTime + DEFENSE_CONFIG.guardMarkerDurationMs;
